@@ -6,10 +6,10 @@ Subject: [PATCH] Replace Entity active effects map with optimized collection
 Dreeam TODO: check this
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 9e771e3aa2dbf5afb1f5fe9c3d9e6f16031f8df1..6d9b94e08fc8cdc5b2f31753484359a4f673a722 100644
+index 92b253e0f96c742e02a8c8316cd669b949cabf42..21fbf1f88dbf8e767549a8fd0a7e9a8e0e434d54 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -200,6 +200,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -198,6 +198,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
      public static final String ATTRIBUTES_FIELD = "attributes";
      private final AttributeMap attributes;
      public CombatTracker combatTracker = new CombatTracker(this);
@@ -20,7 +20,7 @@ index 9e771e3aa2dbf5afb1f5fe9c3d9e6f16031f8df1..6d9b94e08fc8cdc5b2f31753484359a4
      public final Map<Holder<MobEffect>, MobEffectInstance> activeEffects = Maps.newHashMap();
      private final NonNullList<ItemStack> lastHandItemStacks;
      private final NonNullList<ItemStack> lastArmorItemStacks;
-@@ -1012,8 +1016,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -1010,8 +1014,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
      private void updateSynchronizedMobEffectParticles() {
          // Leaf start - Remove stream in entity visible effects filter
          List<ParticleOptions> list = new ArrayList<>();
@@ -31,7 +31,7 @@ index 9e771e3aa2dbf5afb1f5fe9c3d9e6f16031f8df1..6d9b94e08fc8cdc5b2f31753484359a4
              if (effect.isVisible()) {
                  list.add(effect.getParticleOptions());
              }
-@@ -1021,7 +1026,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -1019,7 +1024,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
          // Leaf end - Remove stream in entity visible effects filter
  
          this.entityData.set(LivingEntity.DATA_EFFECT_PARTICLES, list);

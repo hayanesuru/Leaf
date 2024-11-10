@@ -116,10 +116,10 @@ index b455c7e9d18bac3654daa8510f85cc21202e254b..1f8d52ee2ad0463b8cb1072190f836ea
                              if (((List) object).size() >= i) {
                                  return (List) object;
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 451f2e87457b8da3eeac1c42e5c816c2d3f7578f..30aa461464eb5ede941b914e01428977c4f6fa1b 100644
+index bc4f50c55741c2a664f456a3b7555644ad224d53..7c8d28fe612ef2e37d5d02d449946dce2bb7d524 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1711,7 +1711,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1710,7 +1710,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      private ServerStatus.Players buildPlayerStatus() {

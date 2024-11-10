@@ -3,14 +3,14 @@ From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Mon, 1 Nov 2077 00:00:00 +0800
 Subject: [PATCH] TT20 Lag compensation
 
-Original license: AGPL-3.0
-Original project: https://github.com/snackbag/TT20
+This patch was ported from project: https://github.com/snackbag/TT20
+Project license: AGPL-3.0
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 09e55f62b4cea5b058e04356252f4f56957646b8..279289e0c3dc65fed0ee4b2f5b0ef077ab433d5e 100644
+index 9dce5c34f67799285ee395a9c5d0db5ee6319536..6b9b3d366343a0bef76036b2b150691787f93db6 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1628,6 +1628,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1627,6 +1627,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          this.server.spark.tickStart(); // Paper - spark
          new com.destroystokyo.paper.event.server.ServerTickStartEvent(this.tickCount+1).callEvent(); // Paper - Server Tick Events
  

@@ -49,10 +49,10 @@ index 1967c43ee3a12e63365cc40ee6565307e2fd73cf..6e376d0db5321d8e9b6e0b54617ffd17
  
          assert isValidPath(path);
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index db1fe9818331df1b9e7131b3615bbaed3b31a7aa..451f2e87457b8da3eeac1c42e5c816c2d3f7578f 100644
+index ccd94b0a8822b17bd218aa95e302a28196849027..bc4f50c55741c2a664f456a3b7555644ad224d53 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1816,6 +1816,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1815,6 +1815,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              GameTestTicker.SINGLETON.tick();
          }
  

@@ -78,10 +78,10 @@ index fd7ad7866d9f16c62850d37c98d1736cd54242e4..82b885a6037afa35da76997d9eab6fe3
  
                                  ServerGamePacketListenerImpl.this.player.containerMenu.sendAllDataToRemote(); // Paper - fix slot desync - always refresh player inventory
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 80ddd036b371e663e24496ea1931aedafce711ab..e239919c19e88663d6423bfb7619172c2e15c34c 100644
+index 042e9075bd1b62f9f25647502aad496a4f474967..a2b40565395921ad293068829355275b4655cf54 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3418,7 +3418,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3416,7 +3416,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
              ItemStack itemstack1 = itemstack;
              ItemStack itemstack2 = this.getItemBySlot(enumitemslot);
  
@@ -90,7 +90,7 @@ index 80ddd036b371e663e24496ea1931aedafce711ab..e239919c19e88663d6423bfb7619172c
                  // Paper start - PlayerArmorChangeEvent
                  if (this instanceof ServerPlayer && enumitemslot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
                      final org.bukkit.inventory.ItemStack oldItem = CraftItemStack.asBukkitCopy(itemstack1);
-@@ -3502,7 +3502,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3500,7 +3500,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
          equipmentChanges.forEach((enumitemslot, itemstack) -> {
              ItemStack itemstack1 = itemstack.copy();
  
