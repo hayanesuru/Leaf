@@ -15,10 +15,10 @@ number of palette entries is low. This eliminates the need for
 the map lookup on each entry.
 
 diff --git a/src/main/java/net/minecraft/util/SimpleBitStorage.java b/src/main/java/net/minecraft/util/SimpleBitStorage.java
-index d11fad2a92fc39e9918b0000e737fcbfbe56a50c..5f613be5424a4955ec6cba2a1d4db110bd421849 100644
+index f5ddedf6640962996f5347fb253e1d518a2efbf2..5134e6fa403ff07f24e17aa2b33aaff61af04cb6 100644
 --- a/src/main/java/net/minecraft/util/SimpleBitStorage.java
 +++ b/src/main/java/net/minecraft/util/SimpleBitStorage.java
-@@ -407,39 +407,66 @@ public class SimpleBitStorage implements BitStorage {
+@@ -406,39 +406,66 @@ public class SimpleBitStorage implements BitStorage {
      }
  
      // Paper start - block counting

@@ -9,10 +9,10 @@ Original project: https://github.com/LeavesMC/Leaves
 This patch is Powered by Syncmatica (https://github.com/End-Tech/syncmatica)
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 86a7bcc71e419a22ed00dfaf440e8658888b4218..7bd773b9d3015565f44105a8486f6a85c979fcbd 100644
+index def145674389e1e942a69ae4bdf11b5a0ea2155f..0abef2fd45d384583272a183bae42df5cbacfcec 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -319,6 +319,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -314,6 +314,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
          Objects.requireNonNull(server);
          this.signedMessageDecoder = SignedMessageChain.Decoder.unsigned(uuid, server::enforceSecureProfile);
          this.chatMessageChain = new FutureChain(server.chatExecutor); // CraftBukkit - async chat
@@ -20,7 +20,7 @@ index 86a7bcc71e419a22ed00dfaf440e8658888b4218..7bd773b9d3015565f44105a8486f6a85
      }
  
      // CraftBukkit start - add fields and methods
-@@ -351,6 +352,8 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -346,6 +347,8 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
          );
      // Purpur end
  

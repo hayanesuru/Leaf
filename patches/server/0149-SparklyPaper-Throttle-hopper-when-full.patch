@@ -6,10 +6,10 @@ Subject: [PATCH] SparklyPaper Throttle hopper when full
 Original project: https://github.com/SparklyPower/SparklyPaper
 
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 99fc84e10a10f3d4eededd6ce7be7700e3c3a8e4..58c7c1db907d6c7a7ff99308260dadf487d79864 100644
+index 67425f4270c0745fc962c6ffb90e98bb4362d261..989e0f049805a734d6aa18434dd2a3b2d6c2ace1 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -443,6 +443,11 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -441,6 +441,11 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
              Direction enumdirection = blockEntity.facing.getOpposite();
  
              if (HopperBlockEntity.isFullContainer(iinventory, enumdirection)) {

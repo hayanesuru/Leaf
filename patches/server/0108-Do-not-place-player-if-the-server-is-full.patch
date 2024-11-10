@@ -6,10 +6,10 @@ Subject: [PATCH] Do not place player if the server is full
 Fix https://github.com/PaperMC/Paper/issues/10668
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index cf5892892013ae54fc0a0e7826d820398f5ffa82..29bb61346b7fee7c32e5e3357d42365757f203d9 100644
+index 8e3bbc7a0cf2a3e5999738c0f764544f5e64ef4a..a7fadf66ff2935c6a3751f2121b0e1a8860cc3f9 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -380,6 +380,13 @@ public abstract class PlayerList {
+@@ -377,6 +377,13 @@ public abstract class PlayerList {
              return;
          }
          // Gale end - MultiPaper - do not place player in world if kicked before being spawned in
@@ -23,7 +23,7 @@ index cf5892892013ae54fc0a0e7826d820398f5ffa82..29bb61346b7fee7c32e5e3357d423657
  
          Location loc = ev.getSpawnLocation();
          worldserver1 = ((CraftWorld) loc.getWorld()).getHandle();
-@@ -917,7 +924,7 @@ public abstract class PlayerList {
+@@ -914,7 +921,7 @@ public abstract class PlayerList {
              event.disallow(PlayerLoginEvent.Result.KICK_BANNED, io.papermc.paper.adventure.PaperAdventure.asAdventure(ichatmutablecomponent)); // Paper - Adventure
          } else {
              // return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameprofile) ? IChatBaseComponent.translatable("multiplayer.disconnect.server_full") : null;

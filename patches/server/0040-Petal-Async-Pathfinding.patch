@@ -27,10 +27,10 @@ index 63b827d91a935d6b6f04266eea682da97af79cf2..02d7180e5b932dd8c7e8867f1334cbc4
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java b/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
-index 4d2b6e69ed98aca98ffc50fefc6e535c1afb759d..299a26d731da4b56887b427cf3551d84f0e231e6 100644
+index e74c39e279c6af2742a158100578cb1a00ca07ef..45486f43cdc3f4c3f851ae50a72c89c7688f2e8b 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
-@@ -85,6 +85,38 @@ public class AcquirePoi {
+@@ -84,6 +84,38 @@ public class AcquirePoi {
                                      io.papermc.paper.util.PoiAccess.findNearestPoiPositions(poiManager, poiPredicate, predicate2, entity.blockPosition(), world.purpurConfig.villagerAcquirePoiSearchRadius, world.purpurConfig.villagerAcquirePoiSearchRadius*world.purpurConfig.villagerAcquirePoiSearchRadius, PoiManager.Occupancy.HAS_SPACE, false, 5, poiposes); // Purpur
                                      Set<Pair<Holder<PoiType>, BlockPos>> set = new java.util.HashSet<>(poiposes);
                                      // Paper end - optimise POI access
@@ -69,7 +69,7 @@ index 4d2b6e69ed98aca98ffc50fefc6e535c1afb759d..299a26d731da4b56887b427cf3551d84
                                      Path path = findPathToPois(entity, set);
                                      if (path != null && path.canReach()) {
                                          BlockPos blockPos = path.getTarget();
-@@ -102,6 +134,7 @@ public class AcquirePoi {
+@@ -101,6 +133,7 @@ public class AcquirePoi {
                                              );
                                          }
                                      }

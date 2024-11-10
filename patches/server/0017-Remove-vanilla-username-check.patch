@@ -18,10 +18,10 @@ index 8849862b45ccbbc635a1c316e9870bca81e55c04..5886e395f0b3b5837088bf97bf20ce13
              uniqueId != null ? uniqueId : Util.NIL_UUID,
              name != null ? name : ""
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index fac4130957d35609ea9d281866f95f360fce3b35..2fd40cf41d54e450939d11b8ea183ab248072e22 100644
+index 5e64def50ba96778cbfaaf1dde0bd8193e9b6bfe..885c6b8c82d46f8e21eb648441dba10c3f3a99f6 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -187,7 +187,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -186,7 +186,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
          // Gale start - JettPack - reduce array allocations
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet", me.titaniumtown.ArrayConstants.emptyObjectArray);
          // Paper start - Validate usernames

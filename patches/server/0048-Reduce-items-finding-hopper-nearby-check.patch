@@ -9,10 +9,10 @@ But still recommend to turn-off `checkForMinecartNearItemWhileActive`
 Since `Reduce-hopper-item-checks.patch` will cause lag under massive dropped items
 
 diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
-index 066000b6367e808a82f55adf27c6df1e8f98e450..1fe41abcdc28013e2dae4b5c3ee727759fc3890c 100644
+index a5b392364c2dfceafbee4523699431381db7e7f9..af0f7ce6efa799e6f5ea6d34250d462f51b1c4e3 100644
 --- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
-@@ -243,7 +243,9 @@ public class ItemEntity extends Entity implements TraceableEntity {
+@@ -241,7 +241,9 @@ public class ItemEntity extends Entity implements TraceableEntity {
                  this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
                  return; // Gale - EMC - reduce hopper item checks
              }

@@ -313,10 +313,10 @@ index 0874d1da44c82c87a8061233f1ed089ee0e0179d..6d8fb4fe9733bd1e83af7f8c148bdb54
      }
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 846ddd4fcbb14db6f3eac9169de6850c18db3d94..b36da9d81f0bfd8841f608a3f822bc3b9f61dc86 100644
+index 82b885a6037afa35da76997d9eab6fe3390df5c2..e0962547709d6951cc98da94f028bd4d5b7b25dd 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1816,7 +1816,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -1811,7 +1811,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
      }
  
      public void internalTeleport(double d0, double d1, double d2, float f, float f1, Set<RelativeMovement> set) { // Paper

@@ -9,10 +9,10 @@ Original project: https://github.com/PaperMC/Paper
 Paper pull request: https://github.com/PaperMC/Paper/pull/11000
 
 diff --git a/src/main/java/org/bukkit/map/MapPalette.java b/src/main/java/org/bukkit/map/MapPalette.java
-index 7d4172dbe5247f4cbe776334d99c4e4c40ac7dbb..1cda69ab051a327694215b6eb75e02ce3273beeb 100644
+index 8a12bac4f9b0c5798ea1bd7d7aa10ad5d7ced579..a4cd1c4dc937c9905e91739e6760bf0bc772cabe 100644
 --- a/src/main/java/org/bukkit/map/MapPalette.java
 +++ b/src/main/java/org/bukkit/map/MapPalette.java
-@@ -31,14 +31,19 @@ public final class MapPalette {
+@@ -29,14 +29,19 @@ public final class MapPalette {
      }
  
      private static double getDistance(@NotNull Color c1, @NotNull Color c2) {

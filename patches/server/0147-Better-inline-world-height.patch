@@ -5,10 +5,10 @@ Subject: [PATCH] Better-inline-world-height
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 0bf7ecc7fd0e349bd26351fa3f35ef8a3c93839d..57cced0bb6c9541e57b10cdf0861e3beed67d88b 100644
+index 3d6d0524784a2658b8f61b4797ca4bbee894885a..bb9cf7648826e512159549b6cc44521f3b7cc943 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -731,11 +731,11 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -733,11 +733,11 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
  
      // Gale start - Airplane - inline level height
      private final int minBuildHeight, levelHeightAccessorMinSection, height, maxBuildHeight, levelHeightAccessorMaxSection;
@@ -23,9 +23,9 @@ index 0bf7ecc7fd0e349bd26351fa3f35ef8a3c93839d..57cced0bb6c9541e57b10cdf0861e3be
 +    @Override public final int getMinBuildHeight() { return minBuildHeight; }
 +    @Override public final int getHeight() { return height; }
      // Gale end - Airplane - inline level height
- 
-     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.function.Function<org.spigotmc.SpigotWorldConfig, GaleWorldConfiguration> galeWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - create paper world config & Anti-Xray // Gale - Gale configuration // Gale - Purpur - remove vanilla profiler
-@@ -759,13 +759,13 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.function.Function<org.spigotmc.SpigotWorldConfig, org.galemc.gale.configuration.GaleWorldConfiguration> galeWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - create paper world config & Anti-Xray // Gale - Gale configuration // Gale - Purpur - remove vanilla profiler
+         this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
+@@ -760,13 +760,13 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          this.dimensionTypeRegistration = holder;
          final DimensionType dimensionmanager = (DimensionType) holder.value();
  

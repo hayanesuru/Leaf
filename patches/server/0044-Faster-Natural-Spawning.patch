@@ -22,10 +22,10 @@ index 9c6f5b55b1f1376fa75e216cd366ee47c79fafc4..67d94b649148b3165f09d75d8c9db10d
      static RandomSource createThreadSafe() {
          return new ThreadSafeLegacyRandomSource(RandomSupport.generateUniqueSeed());
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 2eb42ce9d1eb8852e563b707a47bad1d5e7d8f2d..a40aec3a8adf39a94d62b776e845cfc193084bbb 100644
+index 02747911e13fc99df7a69f5d382782e07a375fd3..981bb6faec42c8b4d6d02cf42eebd410da0047b5 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -128,6 +128,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -130,6 +130,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      protected float oThunderLevel;
      public float thunderLevel;
      public final RandomSource random = RandomSource.create();

@@ -5,15 +5,15 @@ Subject: [PATCH] Replace world map with optimized collection
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 748501ec2ecbabd695b7ebf5d5650cb96fbfb5cd..22311d2ee8f1b8ae2c2fa2841dc428e368ad4971 100644
+index 9bfa1d398fb52835e738ff48daf006b480ef30b0..5f4e5b386047258948a0c8772d93bfa8be734ffc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -283,7 +283,7 @@ public final class CraftServer implements Server {
+@@ -280,7 +280,7 @@ public final class CraftServer implements Server {
      private final StructureManager structureManager;
      protected final DedicatedServer console;
      protected final DedicatedPlayerList playerList;
 -    private final Map<String, World> worlds = new LinkedHashMap<String, World>();
 +    private final Map<String, World> worlds = new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<String, World>(); // Leaf - Replace world map with optimized collection
-     private final Object2ObjectMap<UUID, World> worldsByUUID = new Object2ObjectOpenHashMap<>(); // Gale - MultiPaper - CraftBukkit UUID to world map
+     private final it.unimi.dsi.fastutil.objects.Object2ObjectMap<UUID, World> worldsByUUID = new it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap<>(); // Gale - MultiPaper - CraftBukkit UUID to world map
      // private final Map<Class<?>, Registry<?>> registries = new HashMap<>(); // Paper - replace with RegistryAccess
      private YamlConfiguration configuration;

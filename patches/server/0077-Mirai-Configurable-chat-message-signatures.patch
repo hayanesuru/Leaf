@@ -11,15 +11,15 @@ Original license: GPLv3
 Original project: https://github.com/etil2jz/Mirai
 
 diff --git a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
-index f962e82e2c70f328a23dc99193d072f8dd7ad949..8ec7cb984ef4c45a14292388c0268bcc0bc74ddf 100644
+index 506c746980cfca170efd249d035a572361b667c4..5d8833dddc5145868fc2ac673b3387c83cbe6999 100644
 --- a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
 +++ b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
-@@ -319,7 +319,7 @@ public final class ChatProcessor {
+@@ -317,7 +317,7 @@ public final class ChatProcessor {
  
          private void sendToServer(final ChatType.Bound chatType, final @Nullable Function<Audience, net.minecraft.network.chat.Component> msgFunction) {
              final PlayerChatMessage toConsoleMessage = msgFunction == null ? ChatProcessor.this.message : ChatProcessor.this.message.withUnsignedContent(msgFunction.apply(ChatProcessor.this.server.console));
--            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, !GaleGlobalConfiguration.get().logToConsole.chat.notSecureMarker || ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : "Not Secure"); // Gale - do not log Not Secure marker
-+            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, !org.dreeam.leaf.config.modules.network.ChatMessageSignature.enabled || !GaleGlobalConfiguration.get().logToConsole.chat.notSecureMarker || ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : "Not Secure"); // Gale - do not log Not Secure marker // Leaf - Mirai - Configurable chat message signatures
+-            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, !org.galemc.gale.configuration.GaleGlobalConfiguration.get().logToConsole.chat.notSecureMarker || ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : "Not Secure"); // Gale - do not log Not Secure marker
++            ChatProcessor.this.server.logChatMessage(toConsoleMessage.decoratedContent(), chatType, !org.dreeam.leaf.config.modules.network.ChatMessageSignature.enabled || !org.galemc.gale.configuration.GaleGlobalConfiguration.get().logToConsole.chat.notSecureMarker || ChatProcessor.this.server.getPlayerList().verifyChatTrusted(toConsoleMessage) ? null : "Not Secure"); // Gale - do not log Not Secure marker // Leaf - Mirai - Configurable chat message signatures
          }
      }
  
@@ -105,10 +105,10 @@ index 50dc68a005490415b88780397ef6c26859596dd5..162115048cffc824376e54b7f60ae071
      public static record Favicon(byte[] iconBytes) {
          private static final String PREFIX = "data:image/png;base64,";
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 9fab5cb1ea35766d12a826569b900245695ee597..f7489e3f606e564c757f395201230f883ed91355 100644
+index 2e78a464ae2f85722786e9da668f42851d8d65c4..86462d3eff74f373820ccdbb162978d1d4a6d9d6 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -711,6 +711,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -707,6 +707,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
  
      @Override
      public boolean enforceSecureProfile() {
@@ -117,10 +117,10 @@ index 9fab5cb1ea35766d12a826569b900245695ee597..f7489e3f606e564c757f395201230f88
  
          // Paper start - Add setting for proxy online mode status
 diff --git a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 2e2caf1c92cd3616fe40a0cadd5e91f1ebae382d..cf02a980f0110ec9e1277bda846c67b9c6b67f8a 100644
+index 8a3736dbf6ee0b2c6fbb514b2841154d2ad9f0f5..22eb98d51e0cbc996195f7f1ba07c0e42ae1f3cf 100644
 --- a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -338,10 +338,29 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -334,10 +334,29 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
      }
  
      public void send(Packet<?> packet) {
@@ -151,19 +151,19 @@ index 2e2caf1c92cd3616fe40a0cadd5e91f1ebae382d..cf02a980f0110ec9e1277bda846c67b9
          if (packet == null || this.processedDisconnect) { // Spigot
              return;
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index d8c54a86890c0495dac8f2bff43075e4db00447f..536943f9d9cf756a552188b4050f890e8345f524 100644
+index 3ac1446ed791e06e2bbf226b925890ac4d1a16de..2cdfd22baf31df99e2c2b1d114c47cb88569538f 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -1642,7 +1642,7 @@ public abstract class PlayerList {
+@@ -1639,7 +1639,7 @@ public abstract class PlayerList {
          // Paper end
          boolean flag = this.verifyChatTrusted(message);
  
--        this.server.logChatMessage((unsignedFunction == null ? message.decoratedContent() : unsignedFunction.apply(this.server.console)), params, flag || !GaleGlobalConfiguration.get().logToConsole.chat.notSecureMarker ? null : "Not Secure"); // Paper // Gale - do not log Not Secure marker
-+        this.server.logChatMessage((unsignedFunction == null ? message.decoratedContent() : unsignedFunction.apply(this.server.console)), params, !org.dreeam.leaf.config.modules.network.ChatMessageSignature.enabled || flag || !GaleGlobalConfiguration.get().logToConsole.chat.notSecureMarker ? null : "Not Secure"); // Paper // Gale - do not log Not Secure marker // Leaf - Mirai - Configurable chat message signatures
+-        this.server.logChatMessage((unsignedFunction == null ? message.decoratedContent() : unsignedFunction.apply(this.server.console)), params, flag || !org.galemc.gale.configuration.GaleGlobalConfiguration.get().logToConsole.chat.notSecureMarker ? null : "Not Secure"); // Paper // Gale - do not log Not Secure marker
++        this.server.logChatMessage((unsignedFunction == null ? message.decoratedContent() : unsignedFunction.apply(this.server.console)), params, !org.dreeam.leaf.config.modules.network.ChatMessageSignature.enabled || flag || !org.galemc.gale.configuration.GaleGlobalConfiguration.get().logToConsole.chat.notSecureMarker ? null : "Not Secure"); // Paper // Gale - do not log Not Secure marker // Leaf - Mirai - Configurable chat message signatures
          OutgoingChatMessage outgoingchatmessage = OutgoingChatMessage.create(message);
          boolean flag1 = false;
  
-@@ -1671,6 +1671,7 @@ public abstract class PlayerList {
+@@ -1668,6 +1668,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(PlayerChatMessage message) { // Paper - private -> public

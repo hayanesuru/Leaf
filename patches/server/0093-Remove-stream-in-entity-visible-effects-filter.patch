@@ -5,10 +5,10 @@ Subject: [PATCH] Remove stream in entity visible effects filter
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 21336bdb0f05e06355c03367c74a01103fe52a86..2539f688102a3c9c10ddeff39f3562668e9010be 100644
+index 291ae21d002a4215407d18806c94a51e9c32a7c2..9e771e3aa2dbf5afb1f5fe9c3d9e6f16031f8df1 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -1009,7 +1009,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -1010,7 +1010,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
      }
  
      private void updateSynchronizedMobEffectParticles() {

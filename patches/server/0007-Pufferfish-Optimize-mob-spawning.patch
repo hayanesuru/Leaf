@@ -20,7 +20,7 @@ and, in my opinion, worth the low risk of minor mob-spawning-related
 inconsistencies.
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 5fed168aeeab505cd75cb89af09ac3ba8bb5aedb..3b23d29e49678a9cd850f3dc91bbdc0c0ceb03e3 100644
+index 05f805c7e7a6ff6d40b9f86aaac5362ab516be3f..654c381c210d9e353df8f7bca0cd7a434d997a8f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -309,6 +309,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -33,10 +33,10 @@ index 5fed168aeeab505cd75cb89af09ac3ba8bb5aedb..3b23d29e49678a9cd850f3dc91bbdc0c
          AtomicReference<S> atomicreference = new AtomicReference();
          Thread thread = new ca.spottedleaf.moonrise.common.util.TickThread(() -> { // Paper - rewrite chunk system
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 30ddaba93a1b2bb228a9fcdf25e8abab036d9f38..3ca8a80f44ef8c3fbf55250dc1f345e2b1308376 100644
+index c3c817e21c43ad186c5668e5605e70d3b08c1b16..6e74071a082e106a6085c839ec0481dc23bbdc6d 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -375,6 +375,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -371,6 +371,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
                  DedicatedServer.LOGGER.info("JMX monitoring enabled");
              }
  

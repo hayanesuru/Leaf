@@ -48,10 +48,10 @@ index 77699c5fa9681f9ec7aa05cbb50eb60828e193ab..1ba0bd5f0f90c691394307833612ef75
          throw new RuntimeException();
      }
 diff --git a/src/main/java/net/minecraft/util/SimpleBitStorage.java b/src/main/java/net/minecraft/util/SimpleBitStorage.java
-index 0b8b0cf58f637d72eae28e21266df14183f11fb1..397aaa8beb4256404921df8799eb66f12aecf602 100644
+index 5ff7b2c9d97cb428b7a3a54bd53ab385afe92ce1..9dbabdbba39dc410da1bfe69581d9b16668c065d 100644
 --- a/src/main/java/net/minecraft/util/SimpleBitStorage.java
 +++ b/src/main/java/net/minecraft/util/SimpleBitStorage.java
-@@ -209,6 +209,20 @@ public class SimpleBitStorage implements BitStorage {
+@@ -208,6 +208,20 @@ public class SimpleBitStorage implements BitStorage {
      private final int divideAdd; private final long divideAddUnsigned; // Paper - Perf: Optimize SimpleBitStorage
      private final int divideShift;
  
@@ -72,7 +72,7 @@ index 0b8b0cf58f637d72eae28e21266df14183f11fb1..397aaa8beb4256404921df8799eb66f1
      public SimpleBitStorage(int elementBits, int size, int[] data) {
          this(elementBits, size);
          int i = 0;
-@@ -262,6 +276,14 @@ public class SimpleBitStorage implements BitStorage {
+@@ -261,6 +275,14 @@ public class SimpleBitStorage implements BitStorage {
          } else {
              this.data = new long[j];
          }
@@ -87,7 +87,7 @@ index 0b8b0cf58f637d72eae28e21266df14183f11fb1..397aaa8beb4256404921df8799eb66f1
      }
  
      private int cellIndex(int index) {
-@@ -272,33 +294,54 @@ public class SimpleBitStorage implements BitStorage {
+@@ -271,33 +293,54 @@ public class SimpleBitStorage implements BitStorage {
  
      @Override
      public final int getAndSet(int index, int value) { // Paper - Perf: Optimize SimpleBitStorage

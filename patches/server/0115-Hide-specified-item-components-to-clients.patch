@@ -65,10 +65,10 @@ index 573c380e123473e35c0b72c44b32c8d6ba8e61c6..feacc41ecf7f4028e0a1cce5d2012ced
              }
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 6469cd96f0ecb98f4e15e9865837d8c6a07128ad..846ddd4fcbb14db6f3eac9169de6850c18db3d94 100644
+index fd7ad7866d9f16c62850d37c98d1736cd54242e4..82b885a6037afa35da76997d9eab6fe3390df5c2 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2963,7 +2963,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -2958,7 +2958,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
                                  entity.refreshEntityData(ServerGamePacketListenerImpl.this.player);
                                  // SPIGOT-7136 - Allays
                                  if (entity instanceof Allay || entity instanceof net.minecraft.world.entity.animal.horse.AbstractHorse) { // Paper - Fix horse armor desync
@@ -78,10 +78,10 @@ index 6469cd96f0ecb98f4e15e9865837d8c6a07128ad..846ddd4fcbb14db6f3eac9169de6850c
  
                                  ServerGamePacketListenerImpl.this.player.containerMenu.sendAllDataToRemote(); // Paper - fix slot desync - always refresh player inventory
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index d99a80657db3a24f79f094d7dbf81faab506937c..241e2598973939b7d19768cd9ca7cd8f3818c053 100644
+index 80ddd036b371e663e24496ea1931aedafce711ab..e239919c19e88663d6423bfb7619172c2e15c34c 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3417,7 +3417,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3418,7 +3418,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
              ItemStack itemstack1 = itemstack;
              ItemStack itemstack2 = this.getItemBySlot(enumitemslot);
  
@@ -90,7 +90,7 @@ index d99a80657db3a24f79f094d7dbf81faab506937c..241e2598973939b7d19768cd9ca7cd8f
                  // Paper start - PlayerArmorChangeEvent
                  if (this instanceof ServerPlayer && enumitemslot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
                      final org.bukkit.inventory.ItemStack oldItem = CraftItemStack.asBukkitCopy(itemstack1);
-@@ -3501,7 +3501,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3502,7 +3502,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
          equipmentChanges.forEach((enumitemslot, itemstack) -> {
              ItemStack itemstack1 = itemstack.copy();
  

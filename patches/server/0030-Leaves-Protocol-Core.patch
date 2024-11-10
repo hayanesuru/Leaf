@@ -49,7 +49,7 @@ index 1967c43ee3a12e63365cc40ee6565307e2fd73cf..6e376d0db5321d8e9b6e0b54617ffd17
  
          assert isValidPath(path);
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 59797b01bf0f8dd38b0b57179a7bec0e39f17d6f..7adc85c53991f7b144c44b77431d83ea9edfbbed 100644
+index db1fe9818331df1b9e7131b3615bbaed3b31a7aa..451f2e87457b8da3eeac1c42e5c816c2d3f7578f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1816,6 +1816,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -62,10 +62,10 @@ index 59797b01bf0f8dd38b0b57179a7bec0e39f17d6f..7adc85c53991f7b144c44b77431d83ea
              ((Runnable) this.tickables.get(i)).run();
          }
 diff --git a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index c595e2011a00e5344dfdce231b5fd50c084cd9e4..2e2caf1c92cd3616fe40a0cadd5e91f1ebae382d 100644
+index 499572fe78f3b0918d2bbf6ead15a2acf6a07007..8a3736dbf6ee0b2c6fbb514b2841154d2ad9f0f5 100644
 --- a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -170,6 +170,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -166,6 +166,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
@@ -77,7 +77,7 @@ index c595e2011a00e5344dfdce231b5fd50c084cd9e4..2e2caf1c92cd3616fe40a0cadd5e91f1
          // Paper start - Brand support
          if (packet.payload() instanceof net.minecraft.network.protocol.common.custom.BrandPayload brandPayload) {
              this.player.clientBrandName = brandPayload.brand();
-@@ -187,6 +192,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -183,6 +188,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
                  String channels = payload.toString(com.google.common.base.Charsets.UTF_8);
                  for (String channel : channels.split("\0")) {
                      this.getCraftPlayer().addChannel(channel);
@@ -86,10 +86,10 @@ index c595e2011a00e5344dfdce231b5fd50c084cd9e4..2e2caf1c92cd3616fe40a0cadd5e91f1
              } catch (Exception ex) {
                  ServerGamePacketListenerImpl.LOGGER.error("Couldn\'t register custom payload", ex);
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 6923684e361fa4e5e414a1b78192dcdd05377d36..70bdd37ba326fc2a74dc273784fd11261e180372 100644
+index 26a92a77481c46969b68e454b906b3935ad02043..73d67b3bebcf3dff210e25dda0b3df206e129173 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -363,6 +363,8 @@ public abstract class PlayerList {
+@@ -360,6 +360,8 @@ public abstract class PlayerList {
  
          player.didPlayerJoinEvent = true; // Gale - EMC - do not process chat/commands before player has joined
  
@@ -98,7 +98,7 @@ index 6923684e361fa4e5e414a1b78192dcdd05377d36..70bdd37ba326fc2a74dc273784fd1126
          final net.kyori.adventure.text.Component jm = playerJoinEvent.joinMessage();
  
          if (jm != null && !jm.equals(net.kyori.adventure.text.Component.empty())) { // Paper - Adventure
-@@ -610,6 +612,7 @@ public abstract class PlayerList {
+@@ -607,6 +609,7 @@ public abstract class PlayerList {
          return this.remove(entityplayer, net.kyori.adventure.text.Component.translatable("multiplayer.player.left", net.kyori.adventure.text.format.NamedTextColor.YELLOW, io.papermc.paper.configuration.GlobalConfiguration.get().messages.useDisplayNameInQuitMessage ? entityplayer.getBukkitEntity().displayName() : io.papermc.paper.adventure.PaperAdventure.asAdventure(entityplayer.getDisplayName())));
      }
      public net.kyori.adventure.text.Component remove(ServerPlayer entityplayer, net.kyori.adventure.text.Component leaveMessage) {
@@ -107,10 +107,10 @@ index 6923684e361fa4e5e414a1b78192dcdd05377d36..70bdd37ba326fc2a74dc273784fd1126
          org.purpurmc.purpur.task.BossBarTask.removeFromAll(entityplayer.getBukkitEntity()); // Purpur
          ServerLevel worldserver = entityplayer.serverLevel();
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 229075a7c676f71a758506aca5974f19b940e67e..c872b29c638cb8a2bd2fa021398dd5d886928b94 100644
+index 8365daf4b9da71b68493a309f11b94de1e8d56cf..b3cf26055a85aefe0ef19a843733b6dfe93d2641 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -494,6 +494,7 @@ public final class CraftServer implements Server {
+@@ -491,6 +491,7 @@ public final class CraftServer implements Server {
          this.potionBrewer = new io.papermc.paper.potion.PaperPotionBrewer(console); // Paper - custom potion mixes
          datapackManager = new io.papermc.paper.datapack.PaperDatapackManager(console.getPackRepository()); // Paper
          this.spark = new io.papermc.paper.SparksFly(this); // Paper - spark
@@ -118,7 +118,7 @@ index 229075a7c676f71a758506aca5974f19b940e67e..c872b29c638cb8a2bd2fa021398dd5d8
      }
  
      public boolean getCommandBlockOverride(String command) {
-@@ -1125,6 +1126,7 @@ public final class CraftServer implements Server {
+@@ -1122,6 +1123,7 @@ public final class CraftServer implements Server {
          org.purpurmc.purpur.PurpurConfig.registerCommands(); // Purpur
          this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
          this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");

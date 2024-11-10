@@ -5,10 +5,10 @@ Subject: [PATCH] Lithium-HashedList
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index a40aec3a8adf39a94d62b776e845cfc193084bbb..29af019bf3626dc50a0be084de48623698a27235 100644
+index 981bb6faec42c8b4d6d02cf42eebd410da0047b5..3d6d0524784a2658b8f61b4797ca4bbee894885a 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -114,9 +114,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -116,9 +116,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      public static final int TICKS_PER_DAY = 24000;
      public static final int MAX_ENTITY_SPAWN_Y = 20000000;
      public static final int MIN_ENTITY_SPAWN_Y = -20000000;

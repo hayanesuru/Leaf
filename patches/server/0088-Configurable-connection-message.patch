@@ -5,10 +5,10 @@ Subject: [PATCH] Configurable connection message
 
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 536943f9d9cf756a552188b4050f890e8345f524..cf5892892013ae54fc0a0e7826d820398f5ffa82 100644
+index 2cdfd22baf31df99e2c2b1d114c47cb88569538f..8e3bbc7a0cf2a3e5999738c0f764544f5e64ef4a 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -455,7 +455,7 @@ public abstract class PlayerList {
+@@ -452,7 +452,7 @@ public abstract class PlayerList {
          // Ensure that player inventory is populated with its viewer
          player.containerMenu.transferTo(player.containerMenu, bukkitPlayer);
  
@@ -17,7 +17,7 @@ index 536943f9d9cf756a552188b4050f890e8345f524..cf5892892013ae54fc0a0e7826d82039
          this.cserver.getPluginManager().callEvent(playerJoinEvent);
  
          if (!player.connection.isAcceptingMessages()) {
-@@ -468,7 +468,7 @@ public abstract class PlayerList {
+@@ -465,7 +465,7 @@ public abstract class PlayerList {
  
          final net.kyori.adventure.text.Component jm = playerJoinEvent.joinMessage();
  
@@ -26,7 +26,7 @@ index 536943f9d9cf756a552188b4050f890e8345f524..cf5892892013ae54fc0a0e7826d82039
              joinMessage = io.papermc.paper.adventure.PaperAdventure.asVanilla(jm); // Paper - Adventure
              this.server.getPlayerList().broadcastSystemMessage(joinMessage, false); // Paper - Adventure
          }
-@@ -770,7 +770,7 @@ public abstract class PlayerList {
+@@ -767,7 +767,7 @@ public abstract class PlayerList {
              entityplayer.closeContainer(org.bukkit.event.inventory.InventoryCloseEvent.Reason.DISCONNECT); // Paper - Inventory close reason
          }
  
@@ -35,7 +35,7 @@ index 536943f9d9cf756a552188b4050f890e8345f524..cf5892892013ae54fc0a0e7826d82039
          this.cserver.getPluginManager().callEvent(playerQuitEvent);
          entityplayer.getBukkitEntity().disconnect(playerQuitEvent.getQuitMessage());
  
-@@ -1815,4 +1815,29 @@ public abstract class PlayerList {
+@@ -1812,4 +1812,29 @@ public abstract class PlayerList {
      public boolean isAllowCommandsForAllPlayers() {
          return this.allowCommandsForAllPlayers;
      }
