@@ -6,7 +6,7 @@ Subject: [PATCH] Fix-MC-183518
 Related MC issue: https://bugs.mojang.com/browse/MC-183518
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index a6d6e3ad434420223178f813953d9c53db26034a..8607a7d6c270bc8513671f0ecb6b63afa4aaefb0 100644
+index 2445d549fbf972620f2cc13860f826562ff3f4d0..9dce5c34f67799285ee395a9c5d0db5ee6319536 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -311,6 +311,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

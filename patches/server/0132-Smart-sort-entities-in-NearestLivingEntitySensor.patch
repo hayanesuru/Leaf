@@ -3,6 +3,8 @@ From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Tue, 9 Nov 2077 00:00:00 +0800
 Subject: [PATCH] Smart sort entities in NearestLivingEntitySensor
 
+Co-authored-by: Taiyou06 <kaandindar21@gmail.com>
+
 This patch optimizes sorting algorithm by dynamically sorting based
 on entity count, if entity count doesn't reach the Bucket Sort threshold,
 Quick Sort of Fastutil will be used.

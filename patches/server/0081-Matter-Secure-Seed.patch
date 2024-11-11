@@ -10,6 +10,9 @@ Update to BLAKE3
 Original license: GPLv3
 Original project: https://github.com/plasmoapp/matter
 
+Co-authored-by: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
+Co-authored-by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
 index 9ebe1f1797b5be562bc4f6d92b9a4d6022ca2151..dcfcf20ded591cf450b38b9e5ae30ed372afb8db 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServerProperties.java
