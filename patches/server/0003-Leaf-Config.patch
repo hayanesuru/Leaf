@@ -11,7 +11,7 @@ Add per world config
 Add config reload
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index e6d3fb2e7f7c4b5e5298acef7569a046c9062b67..9783e7800d060d0daab25b37b86cbbd811e02f65 100644
+index 4426855192b7dcc58b16d41b8a9d44bbbed3b55f..78d29b5e5047f9f03d1b8e93047953e727611c5e 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -14,6 +14,13 @@ val alsoShade: Configuration by configurations.creating
@@ -41,7 +41,7 @@ index 278adb48400ca9d4fd37bff040b37d4a8dd47282..759b22fc6f949829cef757232357368e
              DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(optionset); // CraftBukkit - CLI argument support
  
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index f39c51ae8ea689cb089cd9d4195276c2cfdaf1b7..5fed168aeeab505cd75cb89af09ac3ba8bb5aedb 100644
+index 4efbd656c57672b84c5d90f987bd57c67fc0c550..05f805c7e7a6ff6d40b9f86aaac5362ab516be3f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1221,6 +1221,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -148,10 +148,10 @@ index 0000000000000000000000000000000000000000..f7ab1ff5f298ff1e5e16fe5396d1e9e6
 +}
 diff --git a/src/main/java/org/dreeam/leaf/config/LeafConfig.java b/src/main/java/org/dreeam/leaf/config/LeafConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d973f9d47abe6fae06916b6362cb9c3b0d59205a
+index 0000000000000000000000000000000000000000..fdbdf3f6a5071ce629d2881e861075dbeef11b42
 --- /dev/null
 +++ b/src/main/java/org/dreeam/leaf/config/LeafConfig.java
-@@ -0,0 +1,270 @@
+@@ -0,0 +1,269 @@
 +package org.dreeam.leaf.config;
 +
 +import io.papermc.paper.configuration.GlobalConfiguration;
@@ -365,7 +365,6 @@ index 0000000000000000000000000000000000000000..d973f9d47abe6fae06916b6362cb9c3b
 +
 +    private static String[] buildSparkHiddenPaths() {
 +        return new String[]{
-+                "misc.sentry-dsn" // Hide Sentry DSN key
 +        };
 +    }
 +

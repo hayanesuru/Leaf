@@ -195,12 +195,32 @@ index 0000000000000000000000000000000000000000..1fc08518f9cc2b6840b5074f181aefc6
 +    }
 +
 +}
+diff --git a/src/main/java/org/dreeam/leaf/config/LeafConfig.java b/src/main/java/org/dreeam/leaf/config/LeafConfig.java
+index fdbdf3f6a5071ce629d2881e861075dbeef11b42..41b24849b6601cdf89ee6cb4125a7127e716c5ee 100644
+--- a/src/main/java/org/dreeam/leaf/config/LeafConfig.java
++++ b/src/main/java/org/dreeam/leaf/config/LeafConfig.java
+@@ -1,6 +1,7 @@
+ package org.dreeam.leaf.config;
+ 
+ import io.papermc.paper.configuration.GlobalConfiguration;
++import org.dreeam.leaf.config.modules.misc.SentryDSN;
+ import org.jetbrains.annotations.Contract;
+ import org.jetbrains.annotations.NotNull;
+ 
+@@ -211,6 +212,7 @@ public class LeafConfig {
+ 
+     private static String[] buildSparkHiddenPaths() {
+         return new String[]{
++                SentryDSN.sentryDsnConfigPath // Hide Sentry DSN key
+         };
+     }
+ 
 diff --git a/src/main/java/org/dreeam/leaf/config/modules/misc/SentryDSN.java b/src/main/java/org/dreeam/leaf/config/modules/misc/SentryDSN.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..29e0a2aa4a6d6228f88c47053556cbd2457edc20
+index 0000000000000000000000000000000000000000..b37aa469c0e1d1b18c1f43a364e00276ce8652e0
 --- /dev/null
 +++ b/src/main/java/org/dreeam/leaf/config/modules/misc/SentryDSN.java
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,37 @@
 +package org.dreeam.leaf.config.modules.misc;
 +
 +import org.apache.logging.log4j.Level;
@@ -213,6 +233,7 @@ index 0000000000000000000000000000000000000000..29e0a2aa4a6d6228f88c47053556cbd2
 +        return EnumConfigCategory.MISC.getBaseKeyName() + ".sentry";
 +    }
 +
++    public static String sentryDsnConfigPath;
 +    public static String sentryDsn = "";
 +    public static String logLevel = "WARN";
 +    public static boolean onlyLogThrown = true;
@@ -220,7 +241,7 @@ index 0000000000000000000000000000000000000000..29e0a2aa4a6d6228f88c47053556cbd2
 +    @Override
 +    public void onLoaded() {
 +        String sentryEnvironment = System.getenv("SENTRY_DSN");
-+        String sentryConfig = config.getString(getBasePath() + ".dsn", sentryDsn, """
++        String sentryConfig = config.getString(sentryDsnConfigPath = getBasePath() + ".dsn", sentryDsn, """
 +                Sentry DSN for improved error logging, leave blank to disable,
 +                Obtain from https://sentry.io/""");
 +
