@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Taiyou06 <kaandindar21@gmail.com>
 Date: Fri, 8 Nov 2024 04:32:35 +0100
-Subject: [PATCH] Branchless-clamp-logic
+Subject: [PATCH] Branchless clamp logic
 
 
 diff --git a/src/main/java/net/minecraft/util/Mth.java b/src/main/java/net/minecraft/util/Mth.java
-index 1bd2529cf4b06daa82d8f4ba1e5d42e55beeefcb..706440f523a21f3b0b60311fc5ed8acbf210a0c4 100644
+index 4d1576b9920c1a0826b03565fe660c33bc285ef6..be00c12930584fc754151d101e439c2f8d94679d 100644
 --- a/src/main/java/net/minecraft/util/Mth.java
 +++ b/src/main/java/net/minecraft/util/Mth.java
 @@ -86,7 +86,10 @@ public class Mth {
