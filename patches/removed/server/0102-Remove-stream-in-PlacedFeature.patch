@@ -3,6 +3,8 @@ From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Tue, 9 Nov 2077 00:00:00 +0800
 Subject: [PATCH] Remove stream in PlacedFeature
 
+Removed since still need to improve
+
 Stream operation in PlacedFeature take much time generating features,
 replace them with for loop uwu
 Before: 3684ms
