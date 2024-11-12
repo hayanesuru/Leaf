@@ -1,8 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Taiyou06 <kaandindar21@gmail.com>
 Date: Fri, 8 Nov 2024 00:06:34 +0100
-Subject: [PATCH] Lithium-IterateOutwardsCache
+Subject: [PATCH] Lithium: IterateOutwardsCache
 
+By: 2No2Name <2No2Name@web.de>
+As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
+Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/src/main/java/net/minecraft/core/BlockPos.java b/src/main/java/net/minecraft/core/BlockPos.java
 index a64e5997b94cc8173f0512d1e282355f14f098ec..1d0f67e10a061225dfe99cbd935c4fb5a4cbe22b 100644

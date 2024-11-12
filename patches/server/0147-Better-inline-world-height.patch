@@ -5,7 +5,7 @@ Subject: [PATCH] Better inline world height
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 3d6d0524784a2658b8f61b4797ca4bbee894885a..bb9cf7648826e512159549b6cc44521f3b7cc943 100644
+index a34ae9bfda0df2834565dc3ea1fb48f7f2efc099..704631730cf7679446a98cea6faeb70eb89c9849 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -733,11 +733,11 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

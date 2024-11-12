@@ -1,11 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Taiyou06 <kaandindar21@gmail.com>
 Date: Fri, 8 Nov 2024 00:14:03 +0100
-Subject: [PATCH] Lithium-HashedList
+Subject: [PATCH] Lithium: HashedList
 
+This patch is based on the following mixins:
+* "me/jellysquid/mods/lithium/mixin/world/block_entity_ticking/collections/WorldMixin.java" (1.16.x/dev branch)
+* "net/caffeinemc/mods/lithium/common/util/collections/HashedReferenceList.java"
+By: 2No2Name <2No2Name@web.de>
+As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
+Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 981bb6faec42c8b4d6d02cf42eebd410da0047b5..3d6d0524784a2658b8f61b4797ca4bbee894885a 100644
+index 981bb6faec42c8b4d6d02cf42eebd410da0047b5..a34ae9bfda0df2834565dc3ea1fb48f7f2efc099 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -116,9 +116,9 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -13,23 +19,26 @@ index 981bb6faec42c8b4d6d02cf42eebd410da0047b5..3d6d0524784a2658b8f61b4797ca4bbe
      public static final int MAX_ENTITY_SPAWN_Y = 20000000;
      public static final int MIN_ENTITY_SPAWN_Y = -20000000;
 -    public final List<TickingBlockEntity> blockEntityTickers = Lists.newArrayList(); // Paper - public
-+    public final List<TickingBlockEntity> blockEntityTickers = org.dreeam.leaf.util.HashedList.wrapper(Lists.newArrayList()); // Paper - public // Jettpack - lithium: hashed_list
++    public final List<TickingBlockEntity> blockEntityTickers = new org.dreeam.leaf.util.HashedReferenceList<>(Lists.newArrayList()); // Paper - public // Leaf - Lithium - hashed list
      protected final NeighborUpdater neighborUpdater;
 -    private final List<TickingBlockEntity> pendingBlockEntityTickers = Lists.newArrayList();
-+    private final List<TickingBlockEntity> pendingBlockEntityTickers = org.dreeam.leaf.util.HashedList.wrapper(Lists.newArrayList()); // Jettpack - lithium: hashed_list
++    private final List<TickingBlockEntity> pendingBlockEntityTickers = new org.dreeam.leaf.util.HashedReferenceList<>(Lists.newArrayList()); // Leaf - Lithium - hashed list
      private boolean tickingBlockEntities;
      public final Thread thread;
      private final boolean isDebug;
-diff --git a/src/main/java/org/dreeam/leaf/util/HashedList.java b/src/main/java/org/dreeam/leaf/util/HashedList.java
+diff --git a/src/main/java/org/dreeam/leaf/util/HashedReferenceList.java b/src/main/java/org/dreeam/leaf/util/HashedReferenceList.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..01b44f4a0273824aa346de8a5f19ba0d00669c54
+index 0000000000000000000000000000000000000000..8c08207496fac9b0cc839293354674e3ce7083ad
 --- /dev/null
-+++ b/src/main/java/org/dreeam/leaf/util/HashedList.java
-@@ -0,0 +1,280 @@
++++ b/src/main/java/org/dreeam/leaf/util/HashedReferenceList.java
+@@ -0,0 +1,282 @@
 +package org.dreeam.leaf.util;
 +
 +import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 +import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
++import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
++import org.jetbrains.annotations.NotNull;
++
 +import java.util.Collection;
 +import java.util.Iterator;
 +import java.util.List;
@@ -41,11 +50,11 @@ index 0000000000000000000000000000000000000000..01b44f4a0273824aa346de8a5f19ba0d
 + * contained by this list must use reference-equality semantics.
 + */
 +@SuppressWarnings("SuspiciousMethodCalls")
-+public class HashedList<T> implements List<T> {
++public class HashedReferenceList<T> implements List<T> {
 +    private final ReferenceArrayList<T> list;
 +    private final Reference2IntOpenHashMap<T> counter;
 +
-+    public HashedList(List<T> list) {
++    public HashedReferenceList(List<T> list) {
 +        this.list = new ReferenceArrayList<>();
 +        this.list.addAll(list);
 +
@@ -84,7 +93,7 @@ index 0000000000000000000000000000000000000000..01b44f4a0273824aa346de8a5f19ba0d
 +
 +    @SuppressWarnings("SuspiciousToArrayCall")
 +    @Override
-+    public <T1> T1[] toArray(T1[] a) {
++    public <T1> T1[] toArray(T1 @NotNull [] a) {
 +        return this.list.toArray(a);
 +    }
 +
@@ -132,16 +141,18 @@ index 0000000000000000000000000000000000000000..01b44f4a0273824aa346de8a5f19ba0d
 +    }
 +
 +    @Override
-+    public boolean removeAll(Collection<?> c) {
-+        for (Object obj : c) {
-+            this.trackReferenceRemoved(obj);
++    public boolean removeAll(@NotNull Collection<?> c) {
++        if (this.size() >= 2 && c.size() > 4 && c instanceof List) {
++            //HashReferenceList uses reference equality, so using ReferenceOpenHashSet is fine
++            c = new ReferenceOpenHashSet<>(c);
 +        }
-+
++        this.counter.keySet().removeAll(c);
 +        return this.list.removeAll(c);
 +    }
 +
 +    @Override
-+    public boolean retainAll(Collection<?> c) {
++    public boolean retainAll(@NotNull Collection<?> c) {
++        this.counter.keySet().retainAll(c);
 +        return this.list.retainAll(c);
 +    }
 +
@@ -206,8 +217,8 @@ index 0000000000000000000000000000000000000000..01b44f4a0273824aa346de8a5f19ba0d
 +
 +    @Override
 +    public ListIterator<T> listIterator(int index) {
-+        return new ListIterator<T>() {
-+            private final ListIterator<T> inner = HashedList.this.list.listIterator(index);
++        return new ListIterator<>() {
++            private final ListIterator<T> inner = HashedReferenceList.this.list.listIterator(index);
 +
 +            @Override
 +            public boolean hasNext() {
@@ -247,10 +258,10 @@ index 0000000000000000000000000000000000000000..01b44f4a0273824aa346de8a5f19ba0d
 +                    throw new NoSuchElementException();
 +                }
 +
-+                T prev = HashedList.this.get(last);
++                T prev = HashedReferenceList.this.get(last);
 +
 +                if (prev != null) {
-+                    HashedList.this.trackReferenceRemoved(prev);
++                    HashedReferenceList.this.trackReferenceRemoved(prev);
 +                }
 +
 +                this.inner.remove();
@@ -264,14 +275,14 @@ index 0000000000000000000000000000000000000000..01b44f4a0273824aa346de8a5f19ba0d
 +                    throw new NoSuchElementException();
 +                }
 +
-+                T prev = HashedList.this.get(last);
++                T prev = HashedReferenceList.this.get(last);
 +
 +                if (prev != t) {
 +                    if (prev != null) {
-+                        HashedList.this.trackReferenceRemoved(prev);
++                        HashedReferenceList.this.trackReferenceRemoved(prev);
 +                    }
 +
-+                    HashedList.this.trackReferenceAdded(t);
++                    HashedReferenceList.this.trackReferenceAdded(t);
 +                }
 +
 +                this.inner.remove();
@@ -279,7 +290,7 @@ index 0000000000000000000000000000000000000000..01b44f4a0273824aa346de8a5f19ba0d
 +
 +            @Override
 +            public void add(T t) {
-+                HashedList.this.trackReferenceAdded(t);
++                HashedReferenceList.this.trackReferenceAdded(t);
 +
 +                this.inner.add(t);
 +            }
@@ -302,7 +313,4 @@ index 0000000000000000000000000000000000000000..01b44f4a0273824aa346de8a5f19ba0d
 +        }
 +    }
 +
-+    public static <T> HashedList<T> wrapper(List<T> list) {
-+        return new HashedList<>(list);
-+    }
 +}
