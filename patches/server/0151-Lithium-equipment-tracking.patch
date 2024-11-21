@@ -3,21 +3,23 @@ From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Tue, 9 Nov 2077 00:00:00 +0800
 Subject: [PATCH] Lithium: equipment tracking
 
+Should have special treatment to ArmorStand, since Paper introduced the configurable
+ArmorStand no-tick, and still gives it ability to update equipment changes.
+Thus added a bypass condition in LivingEntity#collectEquipmentChanges, able to update
+ArmorStand equipment changes even if it is no tick.
+
 This patch is based on the following mixins:
-* "net/caffeinemc/mods/lithium/mixin/util/
-item_component_and_count_tracking/PatchedDataComponentMapMixin.java"
+* "net/caffeinemc/mods/lithium/mixin/util/item_component_and_count_tracking/PatchedDataComponentMapMixin.java"
 * "net/caffeinemc/mods/lithium/mixin/util/item_component_and_count_tracking/ItemStackMixin.java"
-* "net/caffeinemc/mods/lithium/mixin/entity/
-equipment_tracking/equipment_changes/LivingEntityMixin.java"
+* "net/caffeinemc/mods/lithium/mixin/entity/equipment_tracking/equipment_changes/LivingEntityMixin.java"
 * "net/caffeinemc/mods/lithium/mixin/entity/equipment_tracking/ArmorStandMixin.java"
 * "net/caffeinemc/mods/lithium/mixin/entity/equipment_tracking/LivingEntityMixin.java"
 * "net/caffeinemc/mods/lithium/mixin/entity/equipment_tracking/MobMixin.java"
-* "net/caffeinemc/mods/lithium/mixin/entity/equipment_tracking/
-enchantment_ticking/LivingEntityMixin.java"
+* "net/caffeinemc/mods/lithium/mixin/entity/equipment_tracking/enchantment_ticking/LivingEntityMixin.java"
 * "net/caffeinemc/mods/lithium/common/entity/EquipmentEntity.java"
 * "net/caffeinemc/mods/lithium/common/util/change_tracking/ChangePublisher.java"
 * "net/caffeinemc/mods/lithium/common/util/change_tracking/ChangeSubscriber.java"
-
+By: 2No2Name <2No2Name@web.de>
 As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
@@ -315,7 +317,7 @@ index 22da75d8197de29a150c9eade7994deecae53a10..aa8a5938984d6860deb67a36f85c83d9
      public boolean equals(Object object) {
          if (this == object) {
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 9de85972ba32fd2373f70f708aa1bfc6067e6e1c..0e68d854955aea1068d4a605bca701f0a0e2f297 100644
+index 9de85972ba32fd2373f70f708aa1bfc6067e6e1c..47e031130ca30cbe3bb9917cb9a43612ec73b538 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -157,7 +157,7 @@ import org.bukkit.event.entity.EntityTeleportEvent;
@@ -363,15 +365,18 @@ index 9de85972ba32fd2373f70f708aa1bfc6067e6e1c..0e68d854955aea1068d4a605bca701f0
              this.handleHandSwap(map);
              if (!map.isEmpty()) {
                  this.handleEquipmentChanges(map);
-@@ -3392,6 +3398,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3392,6 +3398,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
  
      @Nullable
      private Map<EquipmentSlot, ItemStack> collectEquipmentChanges() {
-+        if (!this.equipmentChanged) return null; // Leaf - Lithium equipment tracking
++        // Leaf start - Lithium equipment tracking
++        final boolean isArmorStandUpdateNoTick = this instanceof net.minecraft.world.entity.decoration.ArmorStand stand && !stand.canTick && stand.noTickEquipmentDirty;
++        if (!isArmorStandUpdateNoTick && !this.equipmentChanged) return null;
++        // Leaf end - Lithium equipment tracking
          Map<EquipmentSlot, ItemStack> map = null;
          EquipmentSlot[] aenumitemslot = EquipmentSlot.VALUES; // Gale - JettPack - reduce array allocations
          int i = aenumitemslot.length;
-@@ -4848,6 +4855,79 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -4848,6 +4858,79 @@ public abstract class LivingEntity extends Entity implements Attackable {
          flag = true;
          return flag;
      }
@@ -522,7 +527,7 @@ index 9d196c8a8a0dc49a54264471429b6ff6da8c2b06..2ba607df6ee0500a7ac51cefd076840a
 +    // Leaf end - Lithium equipment tracking
  }
 diff --git a/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java b/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
-index 3bb46ed871fd56bbbe52cfd2575f9e853e03cd73..6d73ae2a453feeae0aea67bb555c64a0a288c376 100644
+index 3bb46ed871fd56bbbe52cfd2575f9e853e03cd73..7e3dedc1df905ec8da637915649f9a840cbb4ed4 100644
 --- a/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
 +++ b/src/main/java/net/minecraft/world/entity/decoration/ArmorStand.java
 @@ -52,7 +52,7 @@ import org.bukkit.entity.Player;
@@ -534,6 +539,15 @@ index 3bb46ed871fd56bbbe52cfd2575f9e853e03cd73..6d73ae2a453feeae0aea67bb555c64a0
  
      public static final int WOBBLE_TIME = 5;
      private static final boolean ENABLE_ARMS = true;
+@@ -100,7 +100,7 @@ public class ArmorStand extends LivingEntity {
+     public boolean canTick = true;
+     public boolean canTickSetByAPI = false;
+     private boolean noTickPoseDirty = false;
+-    private boolean noTickEquipmentDirty = false;
++    public boolean noTickEquipmentDirty = false; // Leaf - Lithium equipment tracking - private -> public
+     // Paper end - Allow ArmorStands not to tick
+     public boolean canMovementTick = true; // Purpur
+ 
 @@ -269,7 +269,11 @@ public class ArmorStand extends LivingEntity {
  
              for (i = 0; i < this.armorItems.size(); ++i) {
@@ -586,7 +600,21 @@ index 3bb46ed871fd56bbbe52cfd2575f9e853e03cd73..6d73ae2a453feeae0aea67bb555c64a0
              }
          }
          return this.dropAllDeathLoot(world, damageSource); // CraftBukkit - moved from above // Paper
-@@ -1034,4 +1050,10 @@ public class ArmorStand extends LivingEntity {
+@@ -695,10 +711,12 @@ public class ArmorStand extends LivingEntity {
+                 this.updatePose();
+             }
+ 
++            // Leaf start - Lithium equipment tracking
+             if (this.noTickEquipmentDirty) {
+-                this.noTickEquipmentDirty = false;
+                 this.detectEquipmentUpdatesPublic();
++                this.noTickEquipmentDirty = false;
+             }
++            // Leaf end - Lithium equipment tracking
+ 
+             return;
+         }
+@@ -1034,4 +1052,10 @@ public class ArmorStand extends LivingEntity {
          if (this.canMovementTick && this.canMove) super.aiStep();
      }
      // Purpur end
