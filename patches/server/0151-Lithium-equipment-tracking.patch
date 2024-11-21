@@ -5,8 +5,8 @@ Subject: [PATCH] Lithium: equipment tracking
 
 Should have special treatment to ArmorStand, since Paper introduced the configurable
 ArmorStand no-tick, and still gives it ability to update equipment changes.
-Thus added a bypass condition in LivingEntity#collectEquipmentChanges, able to update
-ArmorStand equipment changes even if it is no tick.
+Thus added a bypass condition in LivingEntity#collectEquipmentChanges, always send
+ArmorStand equipment changes even if the ArmorStand is no-tick
 
 This patch is based on the following mixins:
 * "net/caffeinemc/mods/lithium/mixin/util/item_component_and_count_tracking/PatchedDataComponentMapMixin.java"
