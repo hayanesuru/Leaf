@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+Date: Tue, 9 Nov 2077 00:00:00 +0800
+Subject: [PATCH] Fix MC-150224
+
+Related MC issue: https://bugs.mojang.com/browse/MC-150224
+
+This patch was backported from Minecraft snapshot 24w46a.
+
+diff --git a/src/main/java/net/minecraft/world/entity/animal/Rabbit.java b/src/main/java/net/minecraft/world/entity/animal/Rabbit.java
+index 459c0c95a27ddeb72e8714d3c2fcae1870051b3c..2d87d2c405a3c08c844601fe5791493f627b36bb 100644
+--- a/src/main/java/net/minecraft/world/entity/animal/Rabbit.java
++++ b/src/main/java/net/minecraft/world/entity/animal/Rabbit.java
+@@ -193,9 +193,11 @@ public class Rabbit extends Animal implements VariantHolder<Rabbit.Variant> {
+         // Purpur end
+         float f = 0.3F;
+ 
+-        if (this.horizontalCollision || this.moveControl.hasWanted() && this.moveControl.getWantedY() > this.getY() + 0.5D) {
+-            f = 0.5F;
++        // Leaf start - Fix MC-150224
++        if (this.moveControl.getSpeedModifier() <= 0.6) {
++            f = 0.2F;
+         }
++        // Leaf end - Fix MC-150224
+ 
+         Path pathentity = this.navigation.getPath();
+ 
+@@ -207,9 +209,11 @@ public class Rabbit extends Animal implements VariantHolder<Rabbit.Variant> {
+             }
+         }
+ 
+-        if (this.moveControl.getSpeedModifier() <= 0.6D) {
+-            f = 0.2F;
++        // Leaf start - Fix MC-150224
++        if (this.horizontalCollision || this.jumping && this.moveControl.getWantedY() > this.getY() + 0.5) {
++            f = 0.5F;
+         }
++        // Leaf end - Fix MC-150224
+ 
+         return super.getJumpPower(f / 0.42F);
+     }
+@@ -580,7 +584,7 @@ public class Rabbit extends Animal implements VariantHolder<Rabbit.Variant> {
+         public void vanillaTick() { // Purpur
+             if (this.rabbit.onGround() && !this.rabbit.jumping && !((Rabbit.RabbitJumpControl) this.rabbit.jumpControl).wantJump()) {
+                 this.rabbit.setSpeedModifier(0.0D);
+-            } else if (this.hasWanted()) {
++            } else if (this.hasWanted() || this.operation == MoveControl.Operation.JUMPING) { // Leaf - Fix MC-150224
+                 this.rabbit.setSpeedModifier(this.nextJumpSpeed);
+             }
+ 
