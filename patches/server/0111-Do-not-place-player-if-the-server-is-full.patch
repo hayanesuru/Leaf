@@ -6,7 +6,7 @@ Subject: [PATCH] Do not place player if the server is full
 Fix https://github.com/PaperMC/Paper/issues/10668
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 8e3bbc7a0cf2a3e5999738c0f764544f5e64ef4a..a7fadf66ff2935c6a3751f2121b0e1a8860cc3f9 100644
+index 6da4b4d3f00527aabf398ab614140bc6f8c7442c..f3b98a4a66cec8d6c9dc46479d573c2fb453837a 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -377,6 +377,13 @@ public abstract class PlayerList {
