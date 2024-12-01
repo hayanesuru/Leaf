@@ -6,6 +6,8 @@ Subject: [PATCH] Pufferfish: Optimize mob spawning
 Original license: GPL v3
 Original project: https://github.com/pufferfish-gg/Pufferfish
 
+Co-authored-by: booky10 <boooky10@gmail.com>
+
 This patch aims to reduce the main-thread impact of mob spawning by
 offloading as much work as possible to other threads. It is possible for
 inconsistencies to come up, but when they happen they never interfere
@@ -19,6 +21,55 @@ this can result in performance gains of up to 15%, which is significant
 and, in my opinion, worth the low risk of minor mob-spawning-related
 inconsistencies.
 
+diff --git a/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java b/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
+index c21e00812f1aaa1279834a0562d360d6b89e146c..877d2095a066854939f260ca4b0b8c7b5abb620f 100644
+--- a/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
++++ b/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
+@@ -18,7 +18,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+ 
+     private final double maxFragFactor;
+ 
+-    private int iteratorCount;
++    private final java.util.concurrent.atomic.AtomicInteger iteratorCount = new java.util.concurrent.atomic.AtomicInteger(); // Pufferfish - async mob spawning
+ 
+     public IteratorSafeOrderedReferenceSet() {
+         this(16, 0.75f, 16, 0.2);
+@@ -79,7 +79,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+     }
+ 
+     public int createRawIterator() {
+-        ++this.iteratorCount;
++        this.iteratorCount.incrementAndGet(); // Pufferfish - async mob spawning
+         if (this.indexMap.isEmpty()) {
+             return -1;
+         } else {
+@@ -100,7 +100,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+     }
+ 
+     public void finishRawIterator() {
+-        if (--this.iteratorCount == 0) {
++        if (this.iteratorCount.decrementAndGet() == 0) { // Pufferfish - async mob spawning
+             if (this.getFragFactor() >= this.maxFragFactor) {
+                 this.defrag();
+             }
+@@ -117,7 +117,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+                 throw new IllegalStateException();
+             }
+             this.listElements[index] = null;
+-            if (this.iteratorCount == 0 && this.getFragFactor() >= this.maxFragFactor) {
++            if (this.iteratorCount.get() == 0 && this.getFragFactor() >= this.maxFragFactor) { // Pufferfish - async mob spawning
+                 this.defrag();
+             }
+             //this.check();
+@@ -219,7 +219,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+     }
+ 
+     public IteratorSafeOrderedReferenceSet.Iterator<E> iterator(final int flags) {
+-        ++this.iteratorCount;
++        this.iteratorCount.incrementAndGet(); // Pufferfish - async mob spawning
+         return new BaseIterator<>(this, true, (flags & ITERATOR_FLAG_SEE_ADDITIONS) != 0 ? Integer.MAX_VALUE : this.listSize);
+     }
+ 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
 index 05f805c7e7a6ff6d40b9f86aaac5362ab516be3f..654c381c210d9e353df8f7bca0cd7a434d997a8f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
@@ -33,7 +84,7 @@ index 05f805c7e7a6ff6d40b9f86aaac5362ab516be3f..654c381c210d9e353df8f7bca0cd7a43
          AtomicReference<S> atomicreference = new AtomicReference();
          Thread thread = new ca.spottedleaf.moonrise.common.util.TickThread(() -> { // Paper - rewrite chunk system
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index c3c817e21c43ad186c5668e5605e70d3b08c1b16..6e74071a082e106a6085c839ec0481dc23bbdc6d 100644
+index 2b289f84ffe49b46f1ca85893a6e3255f366bc5c..5ed84fbccf65aa91a4e8a19566207e1e7bb49620 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -371,6 +371,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -45,7 +96,7 @@ index c3c817e21c43ad186c5668e5605e70d3b08c1b16..6e74071a082e106a6085c839ec0481dc
          }
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-index c520d824630e8b5c569c3213d019b2548120a50f..01ea21b960b5b32cdb14cefd1c23b50ba5cb8335 100644
+index c520d824630e8b5c569c3213d019b2548120a50f..e9d307dacea2f9b11cda5ecf5a06c7df09d1de90 100644
 --- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 +++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 @@ -127,6 +127,9 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -99,7 +150,7 @@ index c520d824630e8b5c569c3213d019b2548120a50f..01ea21b960b5b32cdb14cefd1c23b50b
                          }
  
                          if (true) { // Paper - rewrite chunk system
-@@ -544,6 +552,40 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -544,6 +552,43 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
              this.level.timings.broadcastChunkUpdates.stopTiming(); // Paper - timing
              // Paper end - chunk tick iteration optimisations
          }
@@ -128,10 +179,13 @@ index c520d824630e8b5c569c3213d019b2548120a50f..01ea21b960b5b32cdb14cefd1c23b50b
 +                    int mapped = distanceManager.getNaturalSpawnChunkCount();
 +                    ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet.Iterator<Entity> objectiterator =
 +                            level.entityTickList.entities.iterator(ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet.ITERATOR_FLAG_SEE_ADDITIONS);
-+                    gg.pufferfish.pufferfish.util.IterableWrapper<Entity> wrappedIterator =
-+                            new gg.pufferfish.pufferfish.util.IterableWrapper<>(objectiterator);
-+                    lastSpawnState = NaturalSpawner.createState(mapped, wrappedIterator, this::getFullChunk, null, true);
-+                    objectiterator.finishedIterating();
++                    try {
++                        gg.pufferfish.pufferfish.util.IterableWrapper<Entity> wrappedIterator =
++                                new gg.pufferfish.pufferfish.util.IterableWrapper<>(objectiterator);
++                        lastSpawnState = NaturalSpawner.createState(mapped, wrappedIterator, this::getFullChunk, null, true);
++                    } finally {
++                        objectiterator.finishedIterating();
++                    }
 +                    _pufferfish_spawnCountsReady.set(true);
 +                });
 +            }
