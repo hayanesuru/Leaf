@@ -69,7 +69,7 @@ index c4965b7582edfdf97cac82c1472f8fcc1a880a6b..d55560a12be8846db7c0969f5e72f3d7
      public void playerTouch(Player player) {}
  
 diff --git a/src/main/java/org/dreeam/leaf/LeafBootstrap.java b/src/main/java/org/dreeam/leaf/LeafBootstrap.java
-index 2f5122a61af183d6a4c20a175122c228b6e9fc48..9055727c16659ae43eb5424f0aa61e419f53483e 100644
+index 0052062cdfcb7672bec177c3d3788f7b1a56d3e5..fbfcb237996674c26d2eff0075c1aa8a447ad2a4 100644
 --- a/src/main/java/org/dreeam/leaf/LeafBootstrap.java
 +++ b/src/main/java/org/dreeam/leaf/LeafBootstrap.java
 @@ -4,6 +4,7 @@ import io.papermc.paper.PaperBootstrap;

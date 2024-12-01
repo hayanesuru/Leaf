@@ -3,6 +3,9 @@ From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
 Date: Thu, 27 Jun 2024 01:13:07 +0800
 Subject: [PATCH] Fix console output display on Pterodactyl panel
 
+Removed since Leaf 1.21.1, since ported jline update from Paper 1.21.3
+No need to add flags `-Dterminal.jline=false` and `-Dterminal.ansi=true`
+
 Fixed console display issue when the terminal used xterm, should work on Pterodactyl, MCSManager and kind of panel software
 
 diff --git a/src/main/java/org/dreeam/leaf/LeafBootstrap.java b/src/main/java/org/dreeam/leaf/LeafBootstrap.java
