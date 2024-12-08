@@ -1,7 +1,7 @@
 plugins {
     java
     `maven-publish`
-    id("io.papermc.paperweight.patcher") version "1.7.6-SNAPSHOT"
+    id("io.papermc.paperweight.patcher") version "1.7.7"
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
@@ -12,13 +12,12 @@ repositories {
     maven(paperMavenPublicUrl) {
         content { onlyForConfigurations(configurations.paperclip.name) }
     }
-    maven(leafMavenPublicUrl) // Quantumleaper
 }
 
 dependencies {
     remapper("net.fabricmc:tiny-remapper:0.10.4:fat")
     decompiler("org.vineflower:vineflower:1.10.1")
-    paperclip("cn.dreeam:quantumleaper:1.0.0-SNAPSHOT")
+    paperclip("io.papermc:paperclip:3.0.3")
 }
 
 allprojects {
@@ -47,6 +46,7 @@ subprojects {
     repositories {
         mavenCentral()
         maven(paperMavenPublicUrl)
+        maven("https://jitpack.io")
         maven("https://ci.pluginwiki.us/plugin/repository/everything/") // Leaf Config - ConfigurationMaster-API
     }
 }
@@ -54,22 +54,16 @@ subprojects {
 paperweight {
     serverProject.set(project(":leaf-server"))
 
-    remapRepo.set("https://maven.fabricmc.net/")
-    decompileRepo.set("https://maven.quiltmc.org/")
+    remapRepo = paperMavenPublicUrl
+    decompileRepo = paperMavenPublicUrl
 
-    useStandardUpstream("Gale") {
-        url.set(github("Dreeam-qwq", "Gale"))
-        ref.set(providers.gradleProperty("galeCommit"))
+    usePaperUpstream(providers.gradleProperty("paperCommit")) {
+        withPaperPatcher {
+            apiPatchDir = layout.projectDirectory.dir("patches/api")
+            apiOutputDir = layout.projectDirectory.dir("Leaf-API")
 
-        withStandardPatcher {
-            apiSourceDirPath.set("gale-api")
-            serverSourceDirPath.set("gale-server")
-
-            apiPatchDir.set(layout.projectDirectory.dir("patches/api"))
-            apiOutputDir.set(layout.projectDirectory.dir("Leaf-API"))
-
-            serverPatchDir.set(layout.projectDirectory.dir("patches/server"))
-            serverOutputDir.set(layout.projectDirectory.dir("Leaf-Server"))
+            serverPatchDir = layout.projectDirectory.dir("patches/server")
+            serverOutputDir = layout.projectDirectory.dir("Leaf-Server")
         }
 
         patchTasks.register("generatedApi") {
@@ -83,12 +77,10 @@ paperweight {
 
 tasks.generateDevelopmentBundle {
     apiCoordinates = "cn.dreeam.leaf:leaf-api"
-    libraryRepositories.set(
-        listOf(
-            "https://repo.maven.apache.org/maven2/",
-            paperMavenPublicUrl,
-            leafMavenPublicUrl
-        )
+    libraryRepositories = listOf(
+        "https://repo.maven.apache.org/maven2/",
+        paperMavenPublicUrl,
+        leafMavenPublicUrl,
     )
 }
 

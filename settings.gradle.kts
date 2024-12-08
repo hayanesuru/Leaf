@@ -11,3 +11,16 @@ for (name in listOf("Leaf-API", "Leaf-Server", "paper-api-generator")) {
     include(projName)
     findProject(":$projName")!!.projectDir = file(name)
 }
+
+if (!file(".git").exists()) {
+    val errorText = """
+
+        =====================[ ERROR ]=====================
+         The project directory is not a properly cloned Git repository.
+
+         See https://github.com/Winds-Studio/Leaf/blob/HEAD/CONTRIBUTING.md
+         for further information on building and modifying Leaf.
+        ===================================================
+    """.trimIndent()
+    error(errorText)
+}
