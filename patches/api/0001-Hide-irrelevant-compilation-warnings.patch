@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martijn Muijsers <martijnmuijsers@live.nl>
+Date: Tue, 29 Nov 2022 01:15:55 +0100
+Subject: [PATCH] Hide irrelevant compilation warnings
+
+License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+Gale - https://galemc.org
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 571534b42cd9c33d6a7bb6fe3bf3a28e33f8e5de..0ac66ab22d5e7912cd888187a7f882dc07f85e60 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -150,6 +150,15 @@ val generateApiVersioningFile by tasks.registering {
+     }
+ }
+ 
++// Gale start - hide irrelevant compilation warnings
++tasks.withType<JavaCompile> {
++    val compilerArgs = options.compilerArgs
++    compilerArgs.add("-Xlint:-module")
++    compilerArgs.add("-Xlint:-removal")
++    compilerArgs.add("-Xlint:-dep-ann")
++}
++// Gale end - hide irrelevant compilation warnings
++
+ tasks.jar {
+     from(generateApiVersioningFile.map { it.outputs.files.singleFile }) {
+         into("META-INF/maven/${project.group}/${project.name}")
+@@ -209,6 +218,8 @@ tasks.withType<Javadoc> {
+             into("build/docs/javadoc")
+         }
+     }
++
++    options.addStringOption("Xdoclint:none", "-quiet") // Gale - hide irrelevant compilation warnings
+ }
+ 
+ tasks.test {

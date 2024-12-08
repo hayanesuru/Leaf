@@ -9,10 +9,10 @@ Original project: https://github.com/PurpurMC/Purpur
 Commit: d49ca07e0098cd9e923d43b7fe67fb7e2a8eb511
 
 diff --git a/com/destroystokyo/paper/entity/ai/VanillaGoal.java b/com/destroystokyo/paper/entity/ai/VanillaGoal.java
-index 02411466bdcf4ff731f01ccebb2c99942e0db878..2718c0e5061838b01881bb231c53f4da348adce3 100644
+index f15a7b4471cd31a487467ec7ecf7a186fa887a51..e7795889133063ac165d5b4783ddcbcbb442f189 100644
 --- a/com/destroystokyo/paper/entity/ai/VanillaGoal.java
 +++ b/com/destroystokyo/paper/entity/ai/VanillaGoal.java
-@@ -436,6 +436,18 @@ public interface VanillaGoal<T extends Mob> extends Goal<T> {
+@@ -441,6 +441,18 @@ public interface VanillaGoal<T extends Mob> extends Goal<T> {
  
      GoalKey<Zombie> ZOMBIE_ATTACK_TURTLE_EGG = create("zombie_attack_turtle_egg", Zombie.class);
  
@@ -28,6 +28,6 @@ index 02411466bdcf4ff731f01ccebb2c99942e0db878..2718c0e5061838b01881bb231c53f4da
 +    GoalKey<IronGolem> RECEIVE_FLOWER = GoalKey.of(IronGolem.class, NamespacedKey.minecraft("receive_flower"));
 +    // Purpur end
 +
-     private static <T extends Mob> @NonNull GoalKey<T> create(final @NonNull String key,
-             final @NonNull Class<T> type) {
+     private static <T extends Mob> GoalKey<T> create(final String key, final Class<T> type) {
          return GoalKey.of(type, NamespacedKey.minecraft(key));
+     }
