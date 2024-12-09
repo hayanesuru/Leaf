@@ -993,7 +993,7 @@ index 05339a176083af667c16f77d76dc1878dafce3f0..9ca55cba185b9de566f911b08d671bee
  }
 diff --git a/src/main/java/net/caffeinemc/mods/lithium/common/world/chunk/LithiumHashPalette.java b/src/main/java/net/caffeinemc/mods/lithium/common/world/chunk/LithiumHashPalette.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..0acca8a5e32acf5a63217fca17928d3925ca37d8
+index 0000000000000000000000000000000000000000..92429036253d8cdbaa6b10732d52081e5cd7a035
 --- /dev/null
 +++ b/src/main/java/net/caffeinemc/mods/lithium/common/world/chunk/LithiumHashPalette.java
 @@ -0,0 +1,198 @@
@@ -1171,8 +1171,8 @@ index 0000000000000000000000000000000000000000..0acca8a5e32acf5a63217fca17928d39
 +    }
 +
 +    @Override
-+    public Palette<T> copy() {
-+        return new LithiumHashPalette<>(this.idList, this.resizeHandler, this.indexBits, this.entries.clone(), new Reference2IntOpenHashMap<>(this.table), this.size);
++    public Palette<T> copy(PaletteResize<T> ctx) {
++        return new LithiumHashPalette<>(this.idList, ctx, this.indexBits, this.entries.clone(), new Reference2IntOpenHashMap<>(this.table), this.size);
 +    }
 +
 +    private void clear() {
