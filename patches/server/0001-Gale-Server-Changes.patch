@@ -3381,28 +3381,18 @@ index 110456deaa662bc1c0f6ba7878bb3074869a4350..3bb31e0da112f231c06c2577f5237d03
                      return true;
                  }
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 5b8b85a295a08ae495f729c595b3a78778965342..25fa2e922ed6055c9e3cbc5a21d0c4de3a9b5179 100644
+index 5b8b85a295a08ae495f729c595b3a78778965342..c57e107a9f9ee03444a38c9bc56a1d4ab32274a9 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -210,6 +210,9 @@ public abstract class Player extends LivingEntity {
+@@ -210,6 +210,7 @@ public abstract class Player extends LivingEntity {
          return (CraftHumanEntity) super.getBukkitEntity();
      }
      // CraftBukkit end
 +    public static int increaseTimeStatisticsInterval; // Gale - Hydrinity - increase time statistics in intervals - store as static field for fast access
-+
-+    public final int sendAllPlayerInfoBucketIndex; // Gale - Purpur - spread out sending all player info
  
      public Player(Level world, BlockPos pos, float yaw, GameProfile gameProfile) {
          super(EntityType.PLAYER, world);
-@@ -217,6 +220,7 @@ public abstract class Player extends LivingEntity {
-         this.cooldowns = this.createItemCooldowns();
-         this.lastDeathLocation = Optional.empty();
-         this.setUUID(gameProfile.getId());
-+        this.sendAllPlayerInfoBucketIndex = Math.floorMod(this.uuid.hashCode(), net.minecraft.server.players.PlayerList.SEND_PLAYER_INFO_INTERVAL); // Gale - Purpur - spread out sending all player info
-         this.gameProfile = gameProfile;
-         this.inventoryMenu = new InventoryMenu(this.inventory, !world.isClientSide, this);
-         this.containerMenu = this.inventoryMenu;
-@@ -297,19 +301,23 @@ public abstract class Player extends LivingEntity {
+@@ -297,19 +298,23 @@ public abstract class Player extends LivingEntity {
          this.moveCloak();
          if (this instanceof ServerPlayer entityplayer) {
              this.foodData.tick(entityplayer);
@@ -3431,7 +3421,7 @@ index 5b8b85a295a08ae495f729c595b3a78778965342..25fa2e922ed6055c9e3cbc5a21d0c4de
          }
  
          int i = 29999999;
-@@ -1856,6 +1864,11 @@ public abstract class Player extends LivingEntity {
+@@ -1856,6 +1861,11 @@ public abstract class Player extends LivingEntity {
      }
  
      public void causeFoodExhaustion(float f, EntityExhaustionEvent.ExhaustionReason reason) {
@@ -5614,10 +5604,10 @@ index 0000000000000000000000000000000000000000..de25d0b4001363e63873af8f0f2165e5
 +}
 diff --git a/src/main/java/org/galemc/gale/configuration/GaleGlobalConfiguration.java b/src/main/java/org/galemc/gale/configuration/GaleGlobalConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f3de24c2bb3303bde231fe64e9b75177ede26df8
+index 0000000000000000000000000000000000000000..37dbe70589328d64e7a6307d5ec3def8c08da9ea
 --- /dev/null
 +++ b/src/main/java/org/galemc/gale/configuration/GaleGlobalConfiguration.java
-@@ -0,0 +1,150 @@
+@@ -0,0 +1,139 @@
 +// Gale - Gale configuration
 +
 +package org.galemc.gale.configuration;
@@ -5696,14 +5686,8 @@ index 0000000000000000000000000000000000000000..f3de24c2bb3303bde231fe64e9b75177
 +    public Misc misc;
 +    public class Misc extends ConfigurationPart {
 +
-+        public boolean verifyChatOrder = true; // Gale - Pufferfish - make chat order verification configurable
 +        public int premiumAccountSlowLoginTimeout = -1; // Gale - make slow login timeout configurable
 +        public boolean ignoreNullLegacyStructureData = false; // Gale - MultiPaper - ignore null legacy structure data
-+
-+        public Keepalive keepalive;
-+        public class Keepalive extends ConfigurationPart {
-+            public boolean sendMultiple = true; // Gale - Purpur - send multiple keep-alive packets
-+        }
 +
 +        // Gale start - YAPFA - last tick time - in TPS command
 +        public LastTickTimeInTpsCommand lastTickTimeInTpsCommand;
@@ -5719,17 +5703,12 @@ index 0000000000000000000000000000000000000000..f3de24c2bb3303bde231fe64e9b75177
 +    public class LogToConsole extends ConfigurationPart { // Gale - EMC - softly log invalid pool element errors
 +
 +        public boolean invalidStatistics = true; // Gale - EMC - do not log invalid statistics
-+        public boolean ignoredAdvancements = true; // Gale - Purpur - do not log ignored advancements
-+        public boolean setBlockInFarChunk = true; // Gale - Purpur - do not log setBlock in far chunks
-+        public boolean unrecognizedRecipes = false; // Gale - Purpur - do not log unrecognized recipes
-+        public boolean legacyMaterialInitialization = false; // Gale - Purpur - do not log legacy Material initialization
 +        public boolean nullIdDisconnections = true; // Gale - Pufferfish - do not log disconnections with null id
 +        public boolean playerLoginLocations = true; // Gale - JettPack - make logging login location configurable
 +
 +        public Chat chat;
 +        public class Chat extends ConfigurationPart {
 +            public boolean emptyMessageWarning = false; // Gale - do not log empty message warnings
-+            public boolean expiredMessageWarning = false; // Gale - do not log expired message warnings
 +            public boolean notSecureMarker = true; // Gale - do not log Not Secure marker
 +        }
 +
@@ -5789,10 +5768,10 @@ index 0000000000000000000000000000000000000000..9db322100dacbf2343fbb86e3e83d99f
 +}
 diff --git a/src/main/java/org/galemc/gale/configuration/GaleWorldConfiguration.java b/src/main/java/org/galemc/gale/configuration/GaleWorldConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..e0f2f8b2a665b995981a867325666426cf93e699
+index 0000000000000000000000000000000000000000..bf971f07037c19bbce3c261349203f3dc76accb5
 --- /dev/null
 +++ b/src/main/java/org/galemc/gale/configuration/GaleWorldConfiguration.java
-@@ -0,0 +1,140 @@
+@@ -0,0 +1,112 @@
 +// Gale - Gale configuration
 +
 +package org.galemc.gale.configuration;
@@ -5829,22 +5808,6 @@ index 0000000000000000000000000000000000000000..e0f2f8b2a665b995981a867325666426
 +    public class SmallOptimizations extends ConfigurationPart {
 +
 +        public boolean saveFireworks = true; // Gale - EMC - make saving fireworks configurable
-+
-+        // Gale start - Airplane - reduce projectile chunk loading
-+        public MaxProjectileChunkLoads maxProjectileChunkLoads;
-+        public class MaxProjectileChunkLoads extends ConfigurationPart {
-+
-+            public int perTick = 10;
-+
-+            public PerProjectile perProjectile;
-+            public class PerProjectile extends ConfigurationPart {
-+                public int max = 10;
-+                public boolean resetMovementAfterReachLimit = false;
-+                public boolean removeFromWorldAfterReachLimit = false;
-+            }
-+
-+        }
-+        // Gale end - Airplane - reduce projectile chunk loading
 +
 +        public ReducedIntervals reducedIntervals;
 +        public class ReducedIntervals extends ConfigurationPart {
@@ -5888,7 +5851,6 @@ index 0000000000000000000000000000000000000000..e0f2f8b2a665b995981a867325666426
 +        public LoadChunks loadChunks;
 +        public class LoadChunks extends ConfigurationPart {
 +            public boolean toSpawnPhantoms = false; // Gale - MultiPaper - don't load chunks to spawn phantoms
-+            public boolean toActivateClimbingEntities = false; // Gale - don't load chunks to activate climbing entities
 +        }
 +
 +    }
@@ -5900,17 +5862,6 @@ index 0000000000000000000000000000000000000000..e0f2f8b2a665b995981a867325666426
 +        public class Fixes extends ConfigurationPart {
 +
 +            public boolean broadcastCritAnimationsAsTheEntityBeingCritted = false; // Gale - MultiPaper - broadcast crit animations as the entity being critted
-+            public boolean keepMooshroomRotationAfterShearing = true; // Gale - Purpur - fix cow rotation when shearing mooshroom
-+
-+            // Gale start - Purpur - fix MC-238526
-+            @Setting("mc-238526")
-+            public boolean mc238526 = false;
-+            // Gale end - Purpur - fix MC-238526
-+
-+            // Gale start - Purpur - fix MC-121706
-+            @Setting("mc-121706")
-+            public boolean mc121706 = false;
-+            // Gale end - Purpur - fix MC-121706
 +
 +            // Gale start - Mirai - fix MC-110386
 +            @Setting("mc-110386")

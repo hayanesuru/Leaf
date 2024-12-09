@@ -7,14 +7,13 @@ Original license: MIT
 Original project: https://github.com/KeYiMC/KeYi
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 0cba31526ae7c0429885bb8802512eaad3573e42..f96ca62d81db8362a9f74f00ff54b151f96c04fe 100644
+index 20e3c0f856ec034b1d7a5617337ac093386b200f..aaa4ba9730697a34d083285ebca2e5671124ff18 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -4000,4 +4000,23 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
-         sendDeathScreen(message);
-     }
-     // Purpur end
-+
+@@ -3921,4 +3921,22 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      */
+     void sendEntityEffect(org.bukkit.@NotNull EntityEffect effect, @NotNull Entity target);
+     // Paper end - entity effect API
 +    // Leaf start - KeYi - Player Skull API
 +    /**
 +     * Get a skull item of a player.

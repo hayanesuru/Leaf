@@ -1,0 +1,139 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: BillyGalbreath <Blake.Galbreath@Gmail.com>
+Date: Tue, 4 Jan 2022 23:05:41 -0600
+Subject: [PATCH] Fix pufferfish issues
+
+
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+index fa0554354afa0d930b7bf815e68e7150ec5a90dd..b24cf3bded2ab26a2b10e5c35ffeb186689d88fe 100644
+--- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+@@ -237,7 +237,7 @@ public class PufferfishConfig {
+     public static int activationDistanceMod;
+ 
+     private static void dynamicActivationOfBrains() throws IOException {
+-        dearEnabled = getBoolean("dab.enabled", "activation-range.enabled", true);
++        dearEnabled = getBoolean("dab.enabled", "activation-range.enabled", false); // Purpur
+         startDistance = getInt("dab.start-distance", "activation-range.start-distance", 12,
+                 "This value determines how far away an entity has to be",
+                 "from the player to start being effected by DEAR.");
+@@ -264,7 +264,7 @@ public class PufferfishConfig {
+     
+     public static boolean throttleInactiveGoalSelectorTick;
+ 	private static void inactiveGoalSelectorThrottle() {
+-		throttleInactiveGoalSelectorTick = getBoolean("inactive-goal-selector-throttle", "inactive-goal-selector-disable", true,
++		throttleInactiveGoalSelectorTick = getBoolean("inactive-goal-selector-throttle", "inactive-goal-selector-disable", false, // Purpur
+ 				"Throttles the AI goal selector in entity inactive ticks.",
+ 				"This can improve performance by a few percent, but has minor gameplay implications.");
+ 	}
+diff --git a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
+index 00470a690b4b0fc8996a03ecd21af8163094184d..8c0d7bbce94f47359e04a08e7e910235cbadd1e9 100644
+--- a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
++++ b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
+@@ -33,6 +33,7 @@ public record ServerBuildInfoImpl(
+     private static final String BRAND_PAPER_NAME = "Paper";
+     private static final String BRAND_GALE_NAME = "Gale"; // Gale - branding changes
+     private static final String BRAND_LEAF_NAME = "Leaf"; // Leaf
++    private static final String BRAND_PUFFERFISH_NAME = "Pufferfish"; // Leaf
+ 
+     private static final String BUILD_DEV = "DEV";
+ 
+@@ -65,7 +66,9 @@ public record ServerBuildInfoImpl(
+     public boolean isBrandCompatible(final @NotNull Key brandId) {
+         return brandId.equals(this.brandId)
+                 || brandId.equals(BRAND_PAPER_ID)
+-                || brandId.equals(BRAND_GALE_ID); // Gale - branding changes // Leaf
++                || brandId.equals(BRAND_GALE_ID) // Gale - branding changes // Leaf
++                || brandId.equals(BRAND_PUFFERFISH_ID) // Leaf
++                || brandId.equals(BRAND_PURPUR_ID); // Leaf
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index d71f1309b9149a47d2b7b90e845c4a0102fe246e..7d37956c3203aea2f4307db489cff7025ff7a2d5 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -333,9 +333,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     public final org.galemc.gale.configuration.GaleConfigurations galeConfigurations; // Gale - Gale configuration
+     public boolean isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
+     private final Set<String> pluginsBlockingSleep = new java.util.HashSet<>(); // Paper - API to allow/disallow tick sleeping
++    public gg.pufferfish.pufferfish.util.AsyncExecutor mobSpawnExecutor = new gg.pufferfish.pufferfish.util.AsyncExecutor("Leaf Async Mob Spawn Thread"); // Pufferfish - optimize mob spawning // Leaf - Unify thread name
+     public boolean lagging = false; // Purpur
+     protected boolean upnp = false; // Purpur
+-    public gg.pufferfish.pufferfish.util.AsyncExecutor mobSpawnExecutor = new gg.pufferfish.pufferfish.util.AsyncExecutor("MobSpawning"); // Pufferfish - optimize mob spawning
+ 
+     public volatile Thread shutdownThread; // Paper
+     public volatile boolean abnormalExit = false; // Paper
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Blaze.java b/src/main/java/net/minecraft/world/entity/monster/Blaze.java
+index 6ec20395ff733561812e7b32887b56ceff6ad864..b706ad5e1be9494c3b139c3f64493d023a0ec698 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Blaze.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Blaze.java
+@@ -40,6 +40,7 @@ public class Blaze extends Monster {
+         this.setPathfindingMalus(PathType.DAMAGE_FIRE, 0.0F);
+         this.xpReward = 10;
+     }
++    // Purpur end
+ 
+     // Purpur start
+     @Override
+@@ -84,6 +85,7 @@ public class Blaze extends Monster {
+     protected boolean isAlwaysExperienceDropper() {
+         return this.level().purpurConfig.blazeAlwaysDropExp;
+     }
++    // Purpur end
+ 
+     @Override
+     protected void registerGoals() {
+diff --git a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
+index f9f271ed471574c967d807897a421c6135d3fcdc..40a1514637a6a26666ba877e6dcf5bc42bd54a51 100644
+--- a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
++++ b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
+@@ -77,7 +77,7 @@ public abstract class Projectile extends Entity implements TraceableEntity {
+             if (!isLoaded) {
+                 if (Projectile.loadedThisTick > gg.pufferfish.pufferfish.PufferfishConfig.maxProjectileLoadsPerTick) {
+                     if (++this.loadedLifetime > gg.pufferfish.pufferfish.PufferfishConfig.maxProjectileLoadsPerProjectile) {
+-                        this.discard();
++                        this.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.DISCARD); // Purpur
+                     }
+                     return;
+                 }
+diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+index 99a95d77f44dddfd7be6c2ebd60e827d9de956b7..090e196cf391dced8adcb8106026d67b2aeac6b0 100644
+--- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -135,7 +135,7 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+         this.defaultBlockState = empty ? VOID_AIR_BLOCKSTATE : AIR_BLOCKSTATE;
+         // Paper end - get block chunk optimisation
+ 
+-        this.lightningTick = new java.util.Random().nextInt(100000) << 1; // Pufferfish - initialize lightning tick
++        this.lightningTick = java.util.concurrent.ThreadLocalRandom.current().nextInt(100000) << 1; // Pufferfish - initialize lightning tick // Purpur - any random will do
+     }
+ 
+     // CraftBukkit start
+diff --git a/src/main/java/org/galemc/gale/version/AbstractPaperVersionFetcher.java b/src/main/java/org/galemc/gale/version/AbstractPaperVersionFetcher.java
+index fab5d5af9ec6a20810ce5e437dd617684cc5768f..d0a031014ec410142d59c8edd577bf035b7e407b 100644
+--- a/src/main/java/org/galemc/gale/version/AbstractPaperVersionFetcher.java
++++ b/src/main/java/org/galemc/gale/version/AbstractPaperVersionFetcher.java
+@@ -101,10 +101,10 @@ public abstract class AbstractPaperVersionFetcher implements VersionFetcher {
+         // Gale end - branding changes - version fetcher
+ 
+         return switch (distance) {
+-            case DISTANCE_ERROR -> text("Error obtaining version information", NamedTextColor.YELLOW);
+-            case 0 -> text("You are running the latest version", NamedTextColor.GREEN);
+-            case DISTANCE_UNKNOWN -> text("Unknown version", NamedTextColor.YELLOW);
+-            default -> text("You are " + distance + " version(s) behind", NamedTextColor.YELLOW)
++            case DISTANCE_ERROR -> text("* Error obtaining version information", NamedTextColor.RED); // Purpur
++            case 0 -> text("* You are running the latest version", NamedTextColor.GREEN); // Purpur
++            case DISTANCE_UNKNOWN -> text("* Unknown version", NamedTextColor.YELLOW); // Purpur
++            default -> text("* You are " + distance + " version(s) behind", NamedTextColor.YELLOW) // Purpur
+                     .append(Component.newline())
+                     .append(text("Download the new version at: ")
+                             .append(text(this.downloadPage, NamedTextColor.GOLD) // Gale - branding changes - version fetcher
+@@ -149,6 +149,6 @@ public abstract class AbstractPaperVersionFetcher implements VersionFetcher {
+             return null;
+         }
+ 
+-        return text("Previous version: " + oldVersion, NamedTextColor.GRAY, TextDecoration.ITALIC);
++        return text("Previous: " + oldVersion, NamedTextColor.GRAY, TextDecoration.ITALIC); // Purpur
+     }
+ }

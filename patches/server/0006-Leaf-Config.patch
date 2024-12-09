@@ -11,7 +11,7 @@ Add per world config
 Add config reload
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 024fa234c689a799280906a3f2fad70ed6b267a6..5db0a7a4b7b2f61eeff48cfa7ab72c8bb1eeb267 100644
+index 0a31324417d630d9c6917c08ecebb39592355fbb..e4362a8c87686cc6053080634c252f50e1f66739 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -27,6 +27,13 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
@@ -29,10 +29,10 @@ index 024fa234c689a799280906a3f2fad70ed6b267a6..5db0a7a4b7b2f61eeff48cfa7ab72c8b
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 300a044bb0f0e377133f24469cea1a9669de6e58..b5d2304cc02f5b0c9ef1dd79a4c77de0a2d1e33c 100644
+index a880f4e5cf712654649ad043e58e073e9a87c0fe..ddf026889cdb816caea60c3da156fa38b078b58a 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
-@@ -126,6 +126,7 @@ public class Main {
+@@ -132,6 +132,7 @@ public class Main {
              Bootstrap.bootStrap();
              Bootstrap.validate();
              Util.startTimerHackThread();
@@ -40,20 +40,6 @@ index 300a044bb0f0e377133f24469cea1a9669de6e58..b5d2304cc02f5b0c9ef1dd79a4c77de0
              Path path1 = Paths.get("server.properties");
              DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(optionset); // CraftBukkit - CLI argument support
  
-diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 66c034c2378129172b910cc50d89301c1cb6f23e..c04fc8f0bf309adbef7a37dea744307b5cee470e 100644
---- a/src/main/java/net/minecraft/server/MinecraftServer.java
-+++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1271,6 +1271,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             org.spigotmc.WatchdogThread.tick();
-             // Paper end - Improved Watchdog Support
-             org.spigotmc.WatchdogThread.hasStarted = true; // Paper
-+
-+            org.dreeam.leaf.config.LeafConfig.regSparkExtraConfig(); // Leaf - Leaf Config
-+
-             Arrays.fill( this.recentTps, 20 );
-             // Paper start - further improve server tick loop
-             long tickSection = Util.getNanos();
 diff --git a/src/main/java/org/dreeam/leaf/config/ConfigModules.java b/src/main/java/org/dreeam/leaf/config/ConfigModules.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..475da1247655dd07ab59273ab5794b04b20e05ed

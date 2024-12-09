@@ -1,0 +1,78 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
+Date: Mon, 17 Jul 2023 08:31:51 +0800
+Subject: [PATCH] Configurable server mod name
+
+Original license: MIT
+Original project: https://github.com/PurpurMC/Purpur
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 7d37956c3203aea2f4307db489cff7025ff7a2d5..67d6050893f180b60c782d1fd0276ec21641ee7f 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -2080,7 +2080,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+     @DontObfuscate
+     public String getServerModName() {
+-        return org.purpurmc.purpur.PurpurConfig.serverModName; // Paper // Purpur
++        return org.dreeam.leaf.config.modules.misc.ServerBrand.serverModName; // Paper // Leaf - Configurable server mod name
+     }
+ 
+     public SystemReport fillSystemReport(SystemReport details) {
+diff --git a/src/main/java/net/minecraft/server/gui/MinecraftServerGui.java b/src/main/java/net/minecraft/server/gui/MinecraftServerGui.java
+index 8f74c2ec5252b6265549589310d742337c91cb2c..6714f2c3288f6d799526cda7c5e9ef4536cd8bd7 100644
+--- a/src/main/java/net/minecraft/server/gui/MinecraftServerGui.java
++++ b/src/main/java/net/minecraft/server/gui/MinecraftServerGui.java
+@@ -56,7 +56,7 @@ public class MinecraftServerGui extends JComponent {
+             ;
+         }
+ 
+-        final JFrame jframe = new JFrame("Purpur Minecraft server"); // Purpur
++        final JFrame jframe = new JFrame(org.dreeam.leaf.config.modules.misc.ServerBrand.serverGUIName); // Leaf - Configurable server GUI name
+         final MinecraftServerGui servergui = new MinecraftServerGui(server);
+ 
+         jframe.setDefaultCloseOperation(2);
+@@ -64,7 +64,7 @@ public class MinecraftServerGui extends JComponent {
+         jframe.pack();
+         jframe.setLocationRelativeTo((Component) null);
+         jframe.setVisible(true);
+-        jframe.setName("Purpur Minecraft server"); // Paper - Improve ServerGUI // Purpur
++        jframe.setName(org.dreeam.leaf.config.modules.misc.ServerBrand.serverGUIName); // Paper - Improve ServerGUI // Leaf - Configurable server GUI name
+ 
+         // Paper start - Improve ServerGUI
+         try {
+@@ -76,7 +76,7 @@ public class MinecraftServerGui extends JComponent {
+         jframe.addWindowListener(new WindowAdapter() {
+             public void windowClosing(WindowEvent windowevent) {
+                 if (!servergui.isClosing.getAndSet(true)) {
+-                    jframe.setTitle("Purpur Minecraft server - shutting down!"); // Purpur
++                    jframe.setTitle(org.dreeam.leaf.config.modules.misc.ServerBrand.serverGUIName + " - shutting down!"); // Leaf - Configurable server GUI name
+                     server.halt(true);
+                     servergui.runFinalizers();
+                 }
+diff --git a/src/main/java/org/dreeam/leaf/config/modules/misc/ServerBrand.java b/src/main/java/org/dreeam/leaf/config/modules/misc/ServerBrand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..6e20b63fcc002dd2d7a148d0315113b12441adc9
+--- /dev/null
++++ b/src/main/java/org/dreeam/leaf/config/modules/misc/ServerBrand.java
+@@ -0,0 +1,20 @@
++package org.dreeam.leaf.config.modules.misc;
++
++import org.dreeam.leaf.config.ConfigModules;
++import org.dreeam.leaf.config.EnumConfigCategory;
++
++public class ServerBrand extends ConfigModules {
++
++    public String getBasePath() {
++        return EnumConfigCategory.MISC.getBaseKeyName() + ".rebrand";
++    }
++
++    public static String serverModName = io.papermc.paper.ServerBuildInfo.buildInfo().brandName();
++    public static String serverGUIName = "Leaf Console";
++
++    @Override
++    public void onLoaded() {
++        serverModName = config.getString(getBasePath() + ".server-mod-name", serverModName);
++        serverGUIName = config.getString(getBasePath() + ".server-gui-name", serverGUIName);
++    }
++}

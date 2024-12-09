@@ -1,43 +1,168 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Github Actions <no-reply@github.com>
-Date: Fri, 21 Jun 2024 03:34:00 +0000
+From: William Blake Galbreath <Blake.Galbreath@GMail.com>
+Date: Tue, 18 Feb 2020 20:30:03 -0600
 Subject: [PATCH] Purpur API Changes
 
-Original license: MIT
-Original project: https://github.com/PurpurMC/Purpur
+Original License: MIT
+Original Project: https://github.com/PurpurMC/Purpur
 
-Commit: d49ca07e0098cd9e923d43b7fe67fb7e2a8eb511
-
-Patches below are removed in this patch:
-Pufferfish-API-Changes.patch
-Build-System-Changes.patch
-Clean-up-version-command-output.patch
-Remove-Timings.patch
-Add-log-suppression-for-LibraryLoader.patch
-
-diff --git a/src/main/java/io/papermc/paper/ServerBuildInfo.java b/src/main/java/io/papermc/paper/ServerBuildInfo.java
-index bef5b7b089f33c8ce1304292804ea56d16e574c9..5873b42c198d7972e4147d019c790b612ae1b735 100644
---- a/src/main/java/io/papermc/paper/ServerBuildInfo.java
-+++ b/src/main/java/io/papermc/paper/ServerBuildInfo.java
-@@ -26,6 +26,13 @@ public interface ServerBuildInfo {
-     Key BRAND_GALE_ID = Key.key("galemc", "gale");
-     // Gale end - branding changes
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 53c640e0dbfda3f7c116fb76b4eb234b12104d47..249691bdd19746f5d2c904c6f6ae6266cbd2db8a 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -190,6 +190,8 @@ tasks.jar {
+ }
+ 
+ tasks.withType<Javadoc> {
++    (options as StandardJavadocDocletOptions).addStringOption("-add-modules", "jdk.incubator.vector") // Purpur - our javadocs need this for pufferfish's SIMD patch
++    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet") // Purpur - silence Paper's bajillion javadoc warnings
+     val options = options as StandardJavadocDocletOptions
+     options.overview = "src/main/javadoc/overview.html"
+     options.use()
+diff --git a/src/main/java/co/aikar/timings/TimedEventExecutor.java b/src/main/java/co/aikar/timings/TimedEventExecutor.java
+index 157617933a772451f6c073d97afaf305769b4d40..438a9c76381ea3f5b774e2232ff56c5dc6f82586 100644
+--- a/src/main/java/co/aikar/timings/TimedEventExecutor.java
++++ b/src/main/java/co/aikar/timings/TimedEventExecutor.java
+@@ -80,9 +80,9 @@ public class TimedEventExecutor implements EventExecutor {
+             executor.execute(listener, event);
+             return;
+         }
+-        try (Timing ignored = timings.startTiming()){
++        //try (Timing ignored = timings.startTiming()){ // Purpur
+             executor.execute(listener, event);
+-        }
++        //} // Purpur
+     }
+ 
+     @Override
+diff --git a/src/main/java/co/aikar/timings/Timing.java b/src/main/java/co/aikar/timings/Timing.java
+index 4195efcfe044618052bb03dea34a4fb2ca7c44f0..8709c955bac34bc546a8e022cfac808bc61ee793 100644
+--- a/src/main/java/co/aikar/timings/Timing.java
++++ b/src/main/java/co/aikar/timings/Timing.java
+@@ -39,6 +39,7 @@ public interface Timing extends AutoCloseable {
+      * @return Timing
+      */
+     @NotNull
++    @io.papermc.paper.annotation.DoNotUse // Purpur
+     Timing startTiming();
+ 
+     /**
+@@ -46,6 +47,7 @@ public interface Timing extends AutoCloseable {
+      *
+      * Will automatically be called when this Timing is used with try-with-resources
+      */
++    @io.papermc.paper.annotation.DoNotUse // Purpur
+     void stopTiming();
+ 
+     /**
+@@ -56,6 +58,7 @@ public interface Timing extends AutoCloseable {
+      * @return Timing
+      */
+     @NotNull
++    @io.papermc.paper.annotation.DoNotUse // Purpur
+     Timing startTimingIfSync();
+ 
+     /**
+@@ -65,12 +68,14 @@ public interface Timing extends AutoCloseable {
+      *
+      * But only if we are on the primary thread.
+      */
++    @io.papermc.paper.annotation.DoNotUse // Purpur
+     void stopTimingIfSync();
+ 
+     /**
+      * @deprecated Doesn't do anything - Removed
+      */
+     @Deprecated
++    @io.papermc.paper.annotation.DoNotUse // Purpur
+     void abort();
+ 
+     /**
+@@ -82,5 +87,6 @@ public interface Timing extends AutoCloseable {
+     TimingHandler getTimingHandler();
+ 
+     @Override
++    @io.papermc.paper.annotation.DoNotUse // Purpur
+     void close();
+ }
+diff --git a/src/main/java/co/aikar/timings/Timings.java b/src/main/java/co/aikar/timings/Timings.java
+index 95b7cdf0677ef71e6885fa78aa5c75bb500f5f53..27a02f0c3261067d8e4ee6169c62cecbbfe50d42 100644
+--- a/src/main/java/co/aikar/timings/Timings.java
++++ b/src/main/java/co/aikar/timings/Timings.java
+@@ -124,7 +124,7 @@ public final class Timings {
+     @NotNull
+     public static Timing ofStart(@NotNull Plugin plugin, @NotNull String name, @Nullable Timing groupHandler) {
+         Timing timing = of(plugin, name, groupHandler);
+-        timing.startTiming();
++        //timing.startTiming(); // Purpur
+         return timing;
+     }
+ 
+@@ -146,7 +146,7 @@ public final class Timings {
+      */
+     public static void setTimingsEnabled(boolean enabled) {
+         if (enabled && !warnedAboutDeprecationOnEnable) {
+-            Bukkit.getLogger().severe(PlainTextComponentSerializer.plainText().serialize(deprecationMessage()));
++            //Bukkit.getLogger().severe(PlainTextComponentSerializer.plainText().serialize(deprecationMessage()));
+             warnedAboutDeprecationOnEnable = true;
+         }
+     }
+diff --git a/src/main/java/co/aikar/timings/TimingsCommand.java b/src/main/java/co/aikar/timings/TimingsCommand.java
+index b83e5ff7ada8771fdf27ba9807c77ba6a4ce12da..f28eec202237461cb489a2b13289d813381a25bc 100644
+--- a/src/main/java/co/aikar/timings/TimingsCommand.java
++++ b/src/main/java/co/aikar/timings/TimingsCommand.java
+@@ -47,7 +47,7 @@ public class TimingsCommand extends BukkitCommand {
+     public TimingsCommand(@NotNull String name) {
+         super(name);
+         this.description = "Manages Spigot Timings data to see performance of the server.";
+-        this.usageMessage = "/timings <reset|report|on|off|verbon|verboff>";
++        this.usageMessage = "/timings";// <reset|report|on|off|verbon|verboff>"; // Purpur
+         this.setPermission("bukkit.command.timings");
+     }
+ 
+@@ -57,7 +57,10 @@ public class TimingsCommand extends BukkitCommand {
+             return true;
+         }
+         if (true) {
+-            sender.sendMessage(Timings.deprecationMessage());
++            net.kyori.adventure.text.minimessage.MiniMessage mm = net.kyori.adventure.text.minimessage.MiniMessage.miniMessage();
++            sender.sendMessage(mm.deserialize("<gold>Purpur has removed timings to save your performance. Please use <click:suggest_command:'/spark'><grey>/spark</grey></click> instead"));
++            sender.sendMessage(mm.deserialize("<gold>For more information, view its documentation at"));
++            sender.sendMessage(mm.deserialize("<gold><click:open_url:'https://spark.lucko.me/docs/Command-Usage'>https://spark.lucko.me/docs/Command-Usage</click>")); // Purpur
+             return true;
+         }
+         if (args.length < 1) {
+@@ -118,7 +121,7 @@ public class TimingsCommand extends BukkitCommand {
+         Preconditions.checkNotNull(args, "Arguments cannot be null");
+         Preconditions.checkNotNull(alias, "Alias cannot be null");
+ 
+-        if (args.length == 1) {
++        if (false && args.length == 1) { // Purpur
+             return StringUtil.copyPartialMatches(args[0], TIMINGS_SUBCOMMANDS,
+                 new ArrayList<String>(TIMINGS_SUBCOMMANDS.size()));
+         }
+diff --git a/src/main/java/com/destroystokyo/paper/util/VersionFetcher.java b/src/main/java/com/destroystokyo/paper/util/VersionFetcher.java
+index 023cc52a9e28e1238c7452c0f3f577f2850fd861..00b3f46ddd26ae08744d3dba211f92624d4b1063 100644
+--- a/src/main/java/com/destroystokyo/paper/util/VersionFetcher.java
++++ b/src/main/java/com/destroystokyo/paper/util/VersionFetcher.java
+@@ -28,6 +28,12 @@ public interface VersionFetcher {
+      */
+     Component getVersionMessage(String serverVersion);
  
 +    // Purpur start
-+    /**
-+     * The brand id for Pufferfish.
-+     */
-+    Key BRAND_PUFFERFISH_ID = Key.key("pufferfish", "pufferfish");
++    default int distance() {
++        return 0;
++    }
 +    // Purpur end
 +
-     // Leaf start
-     /**
-      * The brand id for Purpur.
+     @ApiStatus.Internal
+     class DummyVersionFetcher implements VersionFetcher {
+ 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 3576093460cba9b3ef2cc46b3d4d03eedba5a0f9..ebf04da015cfe394e9c5d3a3c432674df979f93c 100644
+index 2ddaa049b5b14ef7de2899862b3cc69537361b00..2477a560ed345116cd9d4e90f98694b84a1faf28 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -2988,4 +2988,127 @@ public final class Bukkit {
+@@ -3035,4 +3035,127 @@ public final class Bukkit {
      public static Server.Spigot spigot() {
          return server.spigot();
      }
@@ -248,13 +373,13 @@ index 918a045165cdcde264bc24082b7afebb407271de..e98d6321c5f2cdde91b54f8a74cbcc04
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/Material.java b/src/main/java/org/bukkit/Material.java
-index 77a15a99e441bd81650806142581bd5b24f30e10..3ec2154956087a370799f0fa485f3b6cae894c69 100644
+index e89edabd36a6755912694d8a8700da4ebe5c5829..ba2eff0f2ecffbea4b42d5c6e4485ee0087dc981 100644
 --- a/src/main/java/org/bukkit/Material.java
 +++ b/src/main/java/org/bukkit/Material.java
-@@ -5636,4 +5636,40 @@ public enum Material implements Keyed, Translatable, net.kyori.adventure.transla
-     public BlockType asBlockType() {
-         return blockType.get();
+@@ -5811,4 +5811,40 @@ public enum Material implements Keyed, Translatable, net.kyori.adventure.transla
+         return this.asItemType().getDefaultDataTypes();
      }
+     // Paper end - data component API
 +
 +    // Purpur start
 +    public boolean isArmor() {
@@ -293,7 +418,7 @@ index 77a15a99e441bd81650806142581bd5b24f30e10..3ec2154956087a370799f0fa485f3b6c
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/OfflinePlayer.java b/src/main/java/org/bukkit/OfflinePlayer.java
-index a028f2fe541491729856051780b33dba07832fb6..fc64902368a068481f16d5db99c94386caf6b60b 100644
+index 5622fe3165baad8138c22cfc016ed6c3834cf702..6d31b561d915180fcd473b317721064feed28f37 100644
 --- a/src/main/java/org/bukkit/OfflinePlayer.java
 +++ b/src/main/java/org/bukkit/OfflinePlayer.java
 @@ -573,4 +573,106 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
@@ -404,10 +529,10 @@ index a028f2fe541491729856051780b33dba07832fb6..fc64902368a068481f16d5db99c94386
 +    // Purpur end - OfflinePlayer API
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index b1c34f4d44b420930e79dd440328e522b669601f..ab6e3eb18b9c36fdd8f56f491332085aa2ec0c37 100644
+index de2f843fba0a3bff71550b7c978225c7d67df52d..a5ac8a12eee44b90eae331648f76c9b0e5ff66e0 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2318,6 +2318,18 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2336,6 +2336,18 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
  
          // Paper end
  
@@ -423,12 +548,12 @@ index b1c34f4d44b420930e79dd440328e522b669601f..ab6e3eb18b9c36fdd8f56f491332085a
 +        }
 +        // Purpur end
 +
-         // Leaf start
-         @NotNull
-         public org.bukkit.configuration.file.YamlConfiguration getLeafConfig()
-@@ -2641,4 +2653,104 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
-     long getLastTickOversleepTime();
-     // Gale end - YAPFA - last tick time - API
+         /**
+          * Sends the component to the player
+          *
+@@ -2661,6 +2673,106 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+     void allowPausing(@NotNull org.bukkit.plugin.Plugin plugin, boolean value);
+     // Paper end - API to check if the server is sleeping
  
 +    // Purpur start
 +    /**
@@ -530,12 +655,14 @@ index b1c34f4d44b420930e79dd440328e522b669601f..ab6e3eb18b9c36fdd8f56f491332085a
 +     */
 +    void clearBlockHighlights();
 +    // Purpur end
- }
+ 
+     // Gale start - YAPFA - last tick time - API
+     /**
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index ef32a937e6faf1e8a5d6b1207986715bae5a246c..36cf567973900d1e472616748926aecb9afcb42f 100644
+index bef54a6c8290e09cbaac20b03dde8dfb902c96b0..5f7de23e419175e55459df760c7190639ea39f18 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
-@@ -4209,6 +4209,86 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
+@@ -4246,6 +4246,86 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
      @Nullable
      public DragonBattle getEnderDragonBattle();
  
@@ -652,7 +779,7 @@ index 739911cda33b373f99df627a3a378b37d7d461aa..51e78c22cd021722b963fe31d1d9175d
       * Add an entity to the block.
       *
 diff --git a/src/main/java/org/bukkit/command/SimpleCommandMap.java b/src/main/java/org/bukkit/command/SimpleCommandMap.java
-index 5df19bd701c67506689fc7f49d91f99ebfbc83f0..a09b5458191eb5df4787859b72a37fa1fa2bffba 100644
+index 5df19bd701c67506689fc7f49d91f99ebfbc83f0..7740ad53796d08584bb0110f99af5639993e4d71 100644
 --- a/src/main/java/org/bukkit/command/SimpleCommandMap.java
 +++ b/src/main/java/org/bukkit/command/SimpleCommandMap.java
 @@ -153,6 +153,19 @@ public class SimpleCommandMap implements CommandMap {
@@ -675,17 +802,41 @@ index 5df19bd701c67506689fc7f49d91f99ebfbc83f0..a09b5458191eb5df4787859b72a37fa1
          // Paper start - Plugins do weird things to workaround normal registration
          if (target.timings == null) {
              target.timings = co.aikar.timings.TimingsManager.getCommandTiming(null, target);
-@@ -162,7 +175,7 @@ public class SimpleCommandMap implements CommandMap {
+@@ -160,10 +173,10 @@ public class SimpleCommandMap implements CommandMap {
+         // Paper end
+ 
          try {
-             try (co.aikar.timings.Timing ignored = target.timings.startTiming()) { // Paper - use try with resources
+-            try (co.aikar.timings.Timing ignored = target.timings.startTiming()) { // Paper - use try with resources
++            //try (co.aikar.timings.Timing ignored = target.timings.startTiming()) { // Paper - use try with resources // Purpur
              // Note: we don't return the result of target.execute as thats success / failure, we return handled (true) or not handled (false)
 -            target.execute(sender, sentCommandLabel, Arrays.copyOfRange(args, 1, args.length));
+-            } // target.timings.stopTiming(); // Spigot // Paper
 +            target.execute(sender, sentCommandLabel, parsedArgs); // Purpur
-             } // target.timings.stopTiming(); // Spigot // Paper
++            //} // target.timings.stopTiming(); // Spigot // Paper // Purpur
          } catch (CommandException ex) {
              server.getPluginManager().callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerCommandException(ex, target, sender, args))); // Paper
+             //target.timings.stopTiming(); // Spigot // Paper
+diff --git a/src/main/java/org/bukkit/command/defaults/VersionCommand.java b/src/main/java/org/bukkit/command/defaults/VersionCommand.java
+index e64bb57f74e6d6f78927be228825b3e0bdf41f48..a6a283f5cda987fdee4135186c2e865da2b0efc2 100644
+--- a/src/main/java/org/bukkit/command/defaults/VersionCommand.java
++++ b/src/main/java/org/bukkit/command/defaults/VersionCommand.java
+@@ -256,9 +256,11 @@ public class VersionCommand extends BukkitCommand {
+     // Paper start
+     private void setVersionMessage(final @NotNull Component msg) {
+         lastCheck = System.currentTimeMillis();
+-        final Component message = Component.textOfChildren(
+-            Component.text(Bukkit.getVersionMessage(), NamedTextColor.WHITE),
+-            Component.newline(),
++        // Purpur start
++        int distance = getVersionFetcher().distance();
++        final Component message = Component.join(net.kyori.adventure.text.JoinConfiguration.separator(Component.newline()),
++            ChatColor.parseMM("<grey>Current Leaf Version: %s%s*", distance == 0 ? "<green>" : distance > 0 ? "<yellow>" : "<red>", Bukkit.getVersion()),
++            // Purpur end
+             msg
+         );
+         this.versionMessage = Component.text()
 diff --git a/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java b/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java
-index 455ff52d90565838fe7640c3f045b27082a6c2f1..45f5493eebfecf56b7c0ef4659c078dfc62c0612 100644
+index 6fcc15d588239481136876d117ab346a8deac1dd..13b903e785a9ef5e513cb9d6483482133cc5f25b 100644
 --- a/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java
 +++ b/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java
 @@ -227,6 +227,28 @@ public enum EnchantmentTarget {
@@ -718,7 +869,7 @@ index 455ff52d90565838fe7640c3f045b27082a6c2f1..45f5493eebfecf56b7c0ef4659c078df
  
      /**
 diff --git a/src/main/java/org/bukkit/entity/Endermite.java b/src/main/java/org/bukkit/entity/Endermite.java
-index 138d2530de2410f4a9424dabd3e5ce0cd1c1dcd2..10a8d64ad2da0be2c14f34c3e7d1957c6f2883d1 100644
+index 7b379fb21e800a766ad022705a12dff6d42279ab..10a8d64ad2da0be2c14f34c3e7d1957c6f2883d1 100644
 --- a/src/main/java/org/bukkit/entity/Endermite.java
 +++ b/src/main/java/org/bukkit/entity/Endermite.java
 @@ -3,25 +3,21 @@ package org.bukkit.entity;
@@ -734,7 +885,7 @@ index 138d2530de2410f4a9424dabd3e5ce0cd1c1dcd2..10a8d64ad2da0be2c14f34c3e7d1957c
       * @return player spawned status
 -     * @deprecated this functionality no longer exists
       */
--    @Deprecated
+-    @Deprecated(since = "1.17")
      boolean isPlayerSpawned();
  
      /**
@@ -747,12 +898,12 @@ index 138d2530de2410f4a9424dabd3e5ce0cd1c1dcd2..10a8d64ad2da0be2c14f34c3e7d1957c
       * @param playerSpawned player spawned status
 -     * @deprecated this functionality no longer exists
       */
--    @Deprecated
+-    @Deprecated(since = "1.17")
      void setPlayerSpawned(boolean playerSpawned);
      // Paper start
      /**
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index d0ae8a94db20281d3664d74718c65234eb2e5f83..b7d53973ac4e829a03821d59e0b3a28d6f6a4373 100644
+index 19272cff8d6d040e95b2644d70acdac606e06c16..076fe310d500ebb52e705a3a69e895061702f470 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -1172,4 +1172,55 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
@@ -904,7 +1055,7 @@ index bcc6ba95bd21c7972865838c636a03f50b6c1f1a..c3fcd8dd7dbb1e1a18e17c014c1e6411
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index 68c08e7a212bc3e3885f9b5a4d9aef85fcb3b029..a22909446b7193b1de121bdd6d7b6fbf81dc3be4 100644
+index d21a228bbec0302e75c4db5aa1db54f321143587..a4acc3578e935cd1174474bd1f6ff14db4294fe7 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
 @@ -1468,4 +1468,20 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
@@ -954,13 +1105,13 @@ index bc84b892cae5fe7019a3ad481e9da79956efa1fe..48eb5b00c460cccde29d327cef1d63fc
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index c4763ae47c9b893c1b9ae731ab3c1db76e44ae0f..0cba31526ae7c0429885bb8802512eaad3573e42 100644
+index aaa4ba9730697a34d083285ebca2e5671124ff18..e2e826127e3b0d198148cf4105fdb4f2c92b1578 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -3881,4 +3881,123 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
-      */
+@@ -3922,6 +3922,126 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      void sendEntityEffect(org.bukkit.@NotNull EntityEffect effect, @NotNull Entity target);
      // Paper end - entity effect API
+     // Leaf start - KeYi - Player Skull API
 +
 +    // Purpur start
 +    /**
@@ -1080,7 +1231,10 @@ index c4763ae47c9b893c1b9ae731ab3c1db76e44ae0f..0cba31526ae7c0429885bb8802512eaa
 +        sendDeathScreen(message);
 +    }
 +    // Purpur end
- }
++    // Leaf start - KeYi - Player Skull API
+     /**
+      * Get a skull item of a player.
+      * This method runs on main thread, which may freeze the server.
 diff --git a/src/main/java/org/bukkit/entity/Snowman.java b/src/main/java/org/bukkit/entity/Snowman.java
 index 7fbfdb07585c7b28acea1f0c1f58ada0cc744441..21fcca092e2e31baa5ece0de9e44e3fade8c7123 100644
 --- a/src/main/java/org/bukkit/entity/Snowman.java
@@ -1176,10 +1330,10 @@ index c73489f4b745bc84501ce94f0227b034d9768eae..a97129e71f16ec691759add664bdfd35
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
-index ef5b2a0f18c1c126db0b0c4a4d2a57483680665a..e6c8ffc2583af754eaedc55160ef45c61c22e213 100644
+index d1a5424ff3b289f1c82449ef6d88eb52665df41b..f23b0c250f88926c147af0314b5c4d23c5f8dbae 100644
 --- a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
-@@ -307,7 +307,8 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+@@ -308,7 +308,8 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
          WORLD_BORDER,
          /**
           * Damage caused when an entity contacts a block such as a Cactus,
@@ -1207,7 +1361,7 @@ index 8fdfcbc7d20fe0af6b220ab94516247093637621..f6a8928408e11a5ae723366e4ea1280d
           * When a player gets bad omen after killing a patrol captain.
           *
 diff --git a/src/main/java/org/bukkit/event/inventory/InventoryType.java b/src/main/java/org/bukkit/event/inventory/InventoryType.java
-index 7184f80899206bedeac387e9f8a35482801efd4b..e4197c89c04b91732ce96981f8df0a0bdaee24ce 100644
+index 81118a91c2e22e02a1f774d1cc4d3e97064087ce..3ac1e4a821a5b48d3936222cbfddadd3b803deef 100644
 --- a/src/main/java/org/bukkit/event/inventory/InventoryType.java
 +++ b/src/main/java/org/bukkit/event/inventory/InventoryType.java
 @@ -164,7 +164,7 @@ public enum InventoryType {
@@ -1267,7 +1421,7 @@ index f1f97a85ec713c05c882d7588f4a3e4a017f4795..813f6cd253322538bdf96eb323dd23a7
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
-index b59222b8c262545d100a9fd28b3bf1d2a4cf4eb0..4414381ac942c040480d53b03565b160eb85c444 100644
+index 8c9654cd19af8b28fa276a55c5060eb389e60c1c..875124b06d87cd4163f0ab1d4dd75f939622f8aa 100644
 --- a/src/main/java/org/bukkit/inventory/ItemStack.java
 +++ b/src/main/java/org/bukkit/inventory/ItemStack.java
 @@ -19,6 +19,13 @@ import org.bukkit.inventory.meta.ItemMeta;
@@ -1284,10 +1438,10 @@ index b59222b8c262545d100a9fd28b3bf1d2a4cf4eb0..4414381ac942c040480d53b03565b160
  
  /**
   * Represents a stack of items.
-@@ -1137,4 +1144,482 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, Translat
-         return Bukkit.getUnsafe().computeTooltipLines(this, tooltipContext, player);
+@@ -1318,4 +1325,482 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, Translat
+         return this.craftDelegate.matchesWithoutData(item, excludeTypes, ignoreCount);
      }
-     // Paper end - expose itemstack tooltip lines
+     // Paper end - data component API
 +
 +    // Purpur start
 +    /**
@@ -1768,7 +1922,7 @@ index b59222b8c262545d100a9fd28b3bf1d2a4cf4eb0..4414381ac942c040480d53b03565b160
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/inventory/RecipeChoice.java b/src/main/java/org/bukkit/inventory/RecipeChoice.java
-index f1aa67997f904953742e8895e49341c2f73d44a2..993cf7995514fb0ef3c4388bb3ce49c3187ab251 100644
+index 922bb69b5f218e489a6dd5e0f207743c1f1d3d35..9b3e292be334d21eb978373f434bf3811ec4af2b 100644
 --- a/src/main/java/org/bukkit/inventory/RecipeChoice.java
 +++ b/src/main/java/org/bukkit/inventory/RecipeChoice.java
 @@ -191,6 +191,7 @@ public interface RecipeChoice extends Predicate<ItemStack>, Cloneable {
@@ -3550,18 +3704,17 @@ index 0000000000000000000000000000000000000000..cbdad4cf09c170064a45644efdf7aa0b
 +        return getOrDefault(key.translationKey());
 +    }
 +}
-diff --git a/src/test/java/org/bukkit/AnnotationTest.java b/src/test/java/org/bukkit/AnnotationTest.java
-index f9e4b16a21d6cc6c9cbbe06d20c8af25e72e3ddb..4028b230e7fe1c78520f227a377a2a61e8381ecc 100644
---- a/src/test/java/org/bukkit/AnnotationTest.java
-+++ b/src/test/java/org/bukkit/AnnotationTest.java
-@@ -47,6 +47,10 @@ public class AnnotationTest {
-         "org/bukkit/plugin/java/PluginClassLoader",
-         // Generic functional interface
-         "org/bukkit/util/Consumer",
-+        // Purpur start
-+        "gg/pufferfish/pufferfish/sentry/SentryContext",
-+        "gg/pufferfish/pufferfish/sentry/SentryContext$State",
-+        // Purpur end
-         // Paper start
-         "io/papermc/paper/util/TransformingRandomAccessList",
-         "io/papermc/paper/util/TransformingRandomAccessList$TransformedListIterator",
+diff --git a/src/main/java/org/spigotmc/CustomTimingsHandler.java b/src/main/java/org/spigotmc/CustomTimingsHandler.java
+index 12946bd55fcf7c40d39081779a7fa30049ee6165..9c2d605c50cbf9aefa56ec209df9f6cea1392e89 100644
+--- a/src/main/java/org/spigotmc/CustomTimingsHandler.java
++++ b/src/main/java/org/spigotmc/CustomTimingsHandler.java
+@@ -61,7 +61,7 @@ public final class CustomTimingsHandler {
+         handler = timing;
+     }
+ 
+-    public void startTiming() { handler.startTiming(); }
+-    public void stopTiming() { handler.stopTiming(); }
++    public void startTiming() { /*handler.startTiming();*/ } // Purpur
++    public void stopTiming() { /*handler.stopTiming();*/ } // Purpur
+ 
+ }

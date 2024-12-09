@@ -5,19 +5,19 @@ Subject: [PATCH] Remove vanilla username check
 
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 5e64def50ba96778cbfaaf1dde0bd8193e9b6bfe..885c6b8c82d46f8e21eb648441dba10c3f3a99f6 100644
+index 3aeb81bfe583e826b3b8800ea35c95952b1b560e..bec29e561b7d34085b5e09430f6b511816e556bd 100644
 --- a/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -186,7 +186,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
-         // Gale start - JettPack - reduce array allocations
-         Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet", me.titaniumtown.ArrayConstants.emptyObjectArray);
+@@ -185,7 +185,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+     public void handleHello(ServerboundHelloPacket packet) {
+         Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet", new Object[0]);
          // Paper start - Validate usernames
 -        if (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode()
 +        if (!org.dreeam.leaf.config.modules.misc.RemoveVanillaUsernameCheck.enabled // Leaf - Remove Vanilla username check
 +            && io.papermc.paper.configuration.GlobalConfiguration.get().proxies.isProxyOnlineMode()
              && io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.performUsernameValidation
              && !this.iKnowThisMayNotBeTheBestIdeaButPleaseDisableUsernameValidation) {
-             Validate.validState(StringUtil.isReasonablePlayerName(packet.name()), "Invalid characters in username", me.titaniumtown.ArrayConstants.emptyObjectArray);
+             Validate.validState(StringUtil.isReasonablePlayerName(packet.name()), "Invalid characters in username", new Object[0]);
 diff --git a/src/main/java/net/minecraft/server/players/GameProfileCache.java b/src/main/java/net/minecraft/server/players/GameProfileCache.java
 index 34b4166adfae8ff7d1eb73d56a72931b005330a7..18ecb876bb65d2cf5d8fc999a22712f5731d8fcc 100644
 --- a/src/main/java/net/minecraft/server/players/GameProfileCache.java
@@ -32,7 +32,7 @@ index 34b4166adfae8ff7d1eb73d56a72931b005330a7..18ecb876bb65d2cf5d8fc999a22712f5
          } else {
              final AtomicReference<GameProfile> atomicreference = new AtomicReference();
 diff --git a/src/main/java/net/minecraft/util/StringUtil.java b/src/main/java/net/minecraft/util/StringUtil.java
-index 20211f40aeeade9217ece087688974bdf55afc56..90d710bad35dbe92d140755c13f4557a4958b0a7 100644
+index c89fc375aff548a2b03eaf4da3b6a075012df012..68e621ef12d9da67f04086d42360cb08b169aba4 100644
 --- a/src/main/java/net/minecraft/util/StringUtil.java
 +++ b/src/main/java/net/minecraft/util/StringUtil.java
 @@ -64,6 +64,13 @@ public class StringUtil {

@@ -5,7 +5,7 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 20a8c81ae846c3c6cbcc2dec4a14b26057e24af1..024fa234c689a799280906a3f2fad70ed6b267a6 100644
+index 44cd4d90c141b31aa720272edf757af83c444d1e..0a31324417d630d9c6917c08ecebb39592355fbb 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -25,7 +25,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
@@ -17,7 +17,7 @@ index 20a8c81ae846c3c6cbcc2dec4a14b26057e24af1..024fa234c689a799280906a3f2fad70e
      implementation("ca.spottedleaf:concurrentutil:0.0.2") // Paper - Add ConcurrentUtil dependency
      // Paper start
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
-@@ -126,14 +126,14 @@ tasks.jar {
+@@ -129,14 +129,14 @@ tasks.jar {
          val gitBranch = git("rev-parse", "--abbrev-ref", "HEAD").getText().trim() // Paper
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
@@ -149,10 +149,10 @@ index b24265573fdef5d9a964bcd76146f34542c420cf..aa25fd3ee043003f359b2c67a6d0f670
  
      public SystemReport getSystemReport() {
 diff --git a/src/main/java/net/minecraft/world/damagesource/DamageSource.java b/src/main/java/net/minecraft/world/damagesource/DamageSource.java
-index 4d037e899e0b5548be406ad55acd2062603b7da1..379b36944ddb149e2f48221aa39ad090bbd2faeb 100644
+index e9a75029ddaa38139dc7ca0fc65342b0994513b9..91a5be2eaedb0fa94580de60a9625f94ae724235 100644
 --- a/src/main/java/net/minecraft/world/damagesource/DamageSource.java
 +++ b/src/main/java/net/minecraft/world/damagesource/DamageSource.java
-@@ -67,7 +67,7 @@ public class DamageSource {
+@@ -89,7 +89,7 @@ public class DamageSource {
  
      public DamageSource customEventDamager(Entity entity) {
          if (this.directEntity != null) {

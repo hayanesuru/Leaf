@@ -5,12 +5,12 @@ Subject: [PATCH] Leaf config files
 
 
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index de2f843fba0a3bff71550b7c978225c7d67df52d..2b793b072525561345255bf05509b6c68e7b4125 100644
+index a5ac8a12eee44b90eae331648f76c9b0e5ff66e0..229edacd0c1c679cda8b15e0498b22d7a7f7b8d4 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2336,6 +2336,14 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
- 
-         // Paper end
+@@ -2348,6 +2348,14 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+         }
+         // Purpur end
  
 +        // Leaf start
 +        @NotNull
