@@ -37,10 +37,10 @@ index b2d8a858d8767bd6ca52e0b8db84757986c6ed61..f9440014ab2fe753c16b9383f5fffbb8
      @Nullable
 diff --git a/src/main/java/org/dreeam/leaf/config/modules/opt/EntityTTL.java b/src/main/java/org/dreeam/leaf/config/modules/opt/EntityTTL.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..dbab6168992fb9bb50f7cbc49a0cc7aa7e357666
+index 0000000000000000000000000000000000000000..79875406800536e753de92d7e9e6613f0f563a55
 --- /dev/null
 +++ b/src/main/java/org/dreeam/leaf/config/modules/opt/EntityTTL.java
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,59 @@
 +package org.dreeam.leaf.config.modules.opt;
 +
 +import net.minecraft.core.registries.BuiltInRegistries;
@@ -67,16 +67,36 @@ index 0000000000000000000000000000000000000000..dbab6168992fb9bb50f7cbc49a0cc7aa
 +                这些值定义了实体的最大生命周期.
 +                如果实体存活时间超过指定的 tick 将被移除, 设置为 -1 可禁用此功能.""");
 +
-+        // Set some defaults
-+        config.getInt(getBasePath() + ".SNOWBALL", -1);
-+        config.getInt(getBasePath() + ".LLAMA_SPIT", -1);
 +        for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
-+            if (entityType == EntityType.PLAYER) {
++            if (isFilteredEntity(entityType)) {
 +                continue;
 +            }
 +
 +            String type = EntityType.getKey(entityType).getPath().toUpperCase(Locale.ROOT);
 +            entityType.ttl = config.getInt(getBasePath() + "." + type, -1);
 +        }
++    }
++
++    // These entity types cannot be controlled by Entity TTL, and also should not
++    // So just filter them from the config
++    private boolean isFilteredEntity(EntityType<?> entityType) {
++        return entityType == EntityType.PLAYER
++                || entityType == EntityType.MINECART
++                // BlockAttachedEntity start
++                || entityType == EntityType.GLOW_ITEM_FRAME
++                || entityType == EntityType.ITEM_FRAME
++                || entityType == EntityType.PAINTING
++                || entityType == EntityType.LEASH_KNOT
++                // BlockAttachedEntity end
++                // Display start
++                || entityType == EntityType.BLOCK_DISPLAY
++                || entityType == EntityType.ITEM_DISPLAY
++                || entityType == EntityType.TEXT_DISPLAY
++                // Display end
++                || entityType == EntityType.END_CRYSTAL
++                || entityType == EntityType.FALLING_BLOCK
++                || entityType == EntityType.INTERACTION
++                || entityType == EntityType.MARKER
++                || entityType == EntityType.TNT;
 +    }
 +}
