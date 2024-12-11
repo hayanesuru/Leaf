@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: d49ca07e0098cd9e923d43b7fe67fb7e2a8eb511
+Commit: 803bf624d9e6616b879a16e6ce3c7e196468c577
 
 Patches below are removed in this patch:
 Pufferfish-Server-Changes.patch
@@ -31,7 +31,7 @@ Make-pufferfish-config-relocatable.patch
 MC-121706-Fix-mobs-not-looking-up-and-down-when-stra.patch
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 78d29b5e5047f9f03d1b8e93047953e727611c5e..0d250a691a0f28770cbd9f847d8cd00af866b583 100644
+index a56ff254fb752030600fdf1d4ce62ff7ec14765d..d1bcbd39120480b2e1e402040d20b8567019a4b0 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -54,6 +54,12 @@ dependencies {
@@ -772,7 +772,7 @@ index 0d9de4c61c7b26a6ff37c12fde629161fd0c3d5a..2f7897744f4aea718170698881773e90
                          entityitem = entityplayer.drop(itemstack, false, false, false); // CraftBukkit - SPIGOT-2942: Add boolean to call event
                          if (entityitem != null) {
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 6e74071a082e106a6085c839ec0481dc23bbdc6d..e666e12248f2f7b90a702f04d37609f5bcf45278 100644
+index 5ed84fbccf65aa91a4e8a19566207e1e7bb49620..d87c0d251d8ba31d18478fbf107642c600f62c3d 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -114,6 +114,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -3557,7 +3557,7 @@ index 4addcfe248dd4705be7e67551b258ce86c57e194..82d3e442f6d31211701878fc5ae7a346
              if (baseEntity == null) {
                  if (this.isCombat && (!targetEntity.canBeSeenAsEnemy() || targetEntity.level().getDifficulty() == Difficulty.PEACEFUL)) {
 diff --git a/src/main/java/net/minecraft/world/entity/ambient/Bat.java b/src/main/java/net/minecraft/world/entity/ambient/Bat.java
-index c888ca771efa7a570b8302d48e69fbb69bf98bd9..315bcf872fffd5e03c9194040a69eccb03af1aac 100644
+index 13131a24d96094583406329d81bf51bec0d803d5..bad6c54be6ac7fa5de83db79695fbbe7d12e997b 100644
 --- a/src/main/java/net/minecraft/world/entity/ambient/Bat.java
 +++ b/src/main/java/net/minecraft/world/entity/ambient/Bat.java
 @@ -44,12 +44,59 @@ public class Bat extends AmbientCreature {
@@ -3683,14 +3683,15 @@ index c888ca771efa7a570b8302d48e69fbb69bf98bd9..315bcf872fffd5e03c9194040a69eccb
                  b0 = 7;
              } else if (random.nextBoolean()) {
                  return false;
-@@ -273,6 +351,7 @@ public class Bat extends AmbientCreature {
+@@ -272,6 +350,8 @@ public class Bat extends AmbientCreature {
+      */
      private static long nextHalloweenEnd = 0;
-     // Gale end - predict Halloween
  
 +    public static boolean isHalloweenSeason(Level level) { return level.purpurConfig.forceHalloweenSeason || isHalloween(); } // Purpur
-     private static boolean isHalloween() {
-         // Gale start - predict Halloween
-         long currentEpochMillis = System.currentTimeMillis();
++
+     // The Halloween begins at 10/20 0:00, and end with 11/04 0:00
+     // Only when the current Halloween period ends, the `nextHalloweenStart`
+     // and `nextHalloweenEnd` will adjust to the epoch ms of date of next year
 diff --git a/src/main/java/net/minecraft/world/entity/animal/AbstractFish.java b/src/main/java/net/minecraft/world/entity/animal/AbstractFish.java
 index 3231eaa6af2ddfe4095ff2d650f580ebd4d43aea..e8cb124d232f7316cc8c35dd8bd12f79bbcda7d6 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/AbstractFish.java
