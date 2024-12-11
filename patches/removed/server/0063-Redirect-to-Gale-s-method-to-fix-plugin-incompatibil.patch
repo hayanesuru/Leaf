@@ -3,6 +3,9 @@ From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
 Date: Thu, 1 Feb 2024 12:48:58 -0500
 Subject: [PATCH] Redirect to Gale's method to fix plugin incompatibility
 
+Removed since Leaf 1.20.6
+Mojang added attributes that can control player's `Entity Interaction Range`
+and `Block Interaction Range` for every player since 1.20.5
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 index ec126a481fbb276ae435ac501077d221d508c0c1..70bf701ae9aea5b6f322db5aa2ae17009d68a807 100644
