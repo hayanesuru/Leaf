@@ -1,7 +1,7 @@
 plugins {
     java
     `maven-publish`
-    id("io.papermc.paperweight.patcher") version "1.7.6-SNAPSHOT"
+    id("io.papermc.paperweight.patcher") version "1.7.8-SNAPSHOT"
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
@@ -54,8 +54,8 @@ subprojects {
 paperweight {
     serverProject.set(project(":leaf-server"))
 
-    remapRepo.set("https://maven.fabricmc.net/")
-    decompileRepo.set("https://maven.quiltmc.org/")
+    remapRepo.set(paperMavenPublicUrl)
+    decompileRepo.set(paperMavenPublicUrl)
 
     useStandardUpstream("Gale") {
         url.set(github("Dreeam-qwq", "Gale"))

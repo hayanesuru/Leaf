@@ -4,6 +4,8 @@ Date: Sat, 29 Jun 2024 12:04:48 +0100
 Subject: [PATCH] Paper PR: Optimise color distance check in MapPalette by
  removing floating point math
 
+Removed since Leaf 1.21.3, Paper 1.21.3 included it
+
 Original license: GPLv3
 Original project: https://github.com/PaperMC/Paper
 Paper pull request: https://github.com/PaperMC/Paper/pull/11000
