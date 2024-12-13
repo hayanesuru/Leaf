@@ -3,6 +3,7 @@ From: Taiyou06 <kaandindar21@gmail.com>
 Date: Fri, 8 Nov 2024 04:07:25 +0100
 Subject: [PATCH] Better inline world height
 
+Removed since Leaf 1.21.3, Paper 1.21.3 included it
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/common/util/WorldUtil.java b/src/main/java/ca/spottedleaf/moonrise/common/util/WorldUtil.java
 index af9623240ff2d389aa7090623f507720e7dbab7d..a286c8989f8c53fb896be7a3a8e15f850ece1df8 100644

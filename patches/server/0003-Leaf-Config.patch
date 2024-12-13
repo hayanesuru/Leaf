@@ -11,10 +11,10 @@ Add per world config
 Add config reload
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index c3790a8ebeeaaa395449e30ab69f1abfa9637034..a56ff254fb752030600fdf1d4ce62ff7ec14765d 100644
+index a32417619cf253f25f060266a36e895c2e8b623e..2fddb2f371b5b901be668fb60dbf871830ec571f 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -14,6 +14,13 @@ val alsoShade: Configuration by configurations.creating
+@@ -26,6 +26,13 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
  
  dependencies {
      implementation(project(":leaf-api")) // Gale start - project setup - Depend on own API // Leaf
@@ -26,10 +26,10 @@ index c3790a8ebeeaaa395449e30ab69f1abfa9637034..a56ff254fb752030600fdf1d4ce62ff7
 +    // Leaf end - Leaf Config
 +
      // Paper start
-     implementation("org.jline:jline-terminal-jansi:3.21.0")
-     implementation("net.minecrell:terminalconsoleappender:1.3.0")
+     implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
+     implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
 diff --git a/src/main/java/net/minecraft/server/Main.java b/src/main/java/net/minecraft/server/Main.java
-index 278adb48400ca9d4fd37bff040b37d4a8dd47282..759b22fc6f949829cef757232357368ef80d0d34 100644
+index d3219e3d36ef96bb43c2cb7d86f14ef7a702fcac..c7b5429910df7e3c4cfe1ac2f095845fd493c9b1 100644
 --- a/src/main/java/net/minecraft/server/Main.java
 +++ b/src/main/java/net/minecraft/server/Main.java
 @@ -124,6 +124,7 @@ public class Main {
@@ -41,10 +41,10 @@ index 278adb48400ca9d4fd37bff040b37d4a8dd47282..759b22fc6f949829cef757232357368e
              DedicatedServerSettings dedicatedserversettings = new DedicatedServerSettings(optionset); // CraftBukkit - CLI argument support
  
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 4efbd656c57672b84c5d90f987bd57c67fc0c550..05f805c7e7a6ff6d40b9f86aaac5362ab516be3f 100644
+index 24b9711dca7223dd12b24c36cd76f50fbd96fc68..40c2dd482a8e10f1d5262d365841c968dda847cc 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1221,6 +1221,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1242,6 +1242,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              org.spigotmc.WatchdogThread.tick();
              // Paper end - Improved Watchdog Support
              org.spigotmc.WatchdogThread.hasStarted = true; // Paper

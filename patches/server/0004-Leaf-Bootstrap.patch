@@ -6,11 +6,11 @@ Subject: [PATCH] Leaf Bootstrap
 org.bukkit.craftbukkit.Main#main -> LeafBootstrap -> PaperBootstrap -> ...
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index c1e88c31910e96ef07cece05046c0b55e708b52d..c63dfc0b740ce2e544ad920188d7d7dfc2ae3e04 100644
+index be0d38544395a9b3befb898bb961f34e32fe9509..50a2b6e73ba4d8ad65582b2544fa409fd44f36d5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -278,7 +278,8 @@ public class Main {
- 
+                 System.setProperty("jdk.console", "java.base"); // Paper - revert default console provider back to java.base so we can have our own jline
                  //System.out.println("Loading libraries, please wait...");
                  //net.minecraft.server.Main.main(options);
 -                io.papermc.paper.PaperBootstrap.boot(options);

@@ -3,6 +3,8 @@ From: Kevin Raneri <kevin.raneri@gmail.com>
 Date: Thu, 2 Jun 2022 19:54:09 -0500
 Subject: [PATCH] Pufferfish: Entity TTL
 
+Removed since Leaf 1.21.3, Paper 1.21.3 included it
+
 Original license: GPL v3
 Original project: https://github.com/pufferfish-gg/Pufferfish
 

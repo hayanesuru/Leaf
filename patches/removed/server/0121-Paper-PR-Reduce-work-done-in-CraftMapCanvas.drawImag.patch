@@ -5,6 +5,8 @@ Subject: [PATCH] Paper PR: Reduce work done in CraftMapCanvas.drawImage by
  limiting size of image and using System.arraycopy instead of for loops and
  use bitwise operations to do bounds checks.
 
+Removed since Leaf 1.21.3, Paper 1.21.3 included it
+
 Original license: GPLv3
 Original project: https://github.com/PaperMC/Paper
 Paper pull request: https://github.com/PaperMC/Paper/pull/11000

@@ -5,19 +5,19 @@ Subject: [PATCH] Rebrand
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 5ebc35cadc960d428e8a91642ddce0875078d790..4426855192b7dcc58b16d41b8a9d44bbbed3b55f 100644
+index 579877ba9bf17f40313c05ad5b1b219cf4b59ab3..a32417619cf253f25f060266a36e895c2e8b623e 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -13,7 +13,7 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
- val alsoShade: Configuration by configurations.creating
+@@ -25,7 +25,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
+ // Paper end - configure mockito agent that is needed in newer java versions
  
  dependencies {
 -    implementation(project(":gale-api")) // Gale start - project setup - Depend on own API
 +    implementation(project(":leaf-api")) // Gale start - project setup - Depend on own API // Leaf
      // Paper start
-     implementation("org.jline:jline-terminal-jansi:3.21.0")
-     implementation("net.minecrell:terminalconsoleappender:1.3.0")
-@@ -95,14 +95,14 @@ tasks.jar {
+     implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
+     implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
+@@ -109,14 +109,14 @@ tasks.jar {
          val gitBranch = git("rev-parse", "--abbrev-ref", "HEAD").getText().trim() // Paper
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
@@ -38,7 +38,7 @@ index 5ebc35cadc960d428e8a91642ddce0875078d790..4426855192b7dcc58b16d41b8a9d44bb
              "Build-Time" to Instant.now().toString(),
              "Git-Branch" to gitBranch, // Paper
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index ac23c85f17e0a5cd9702888a873cc470428b3e34..6c5c0cc59ff9901b22288f3cd62228c1e52794c5 100644
+index f21106b0897dd6e373970f32f5dd269418528977..6d8634caade010a31a8e1c59684e9bb0e5546380 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
 @@ -593,7 +593,7 @@ public class Metrics {
@@ -162,10 +162,10 @@ index 4d037e899e0b5548be406ad55acd2062603b7da1..379b36944ddb149e2f48221aa39ad090
          DamageSource damageSource = this.cloneInstance();
          damageSource.customEventDamager = entity;
 diff --git a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index 11cf6a20550e252501a92be5bdffafcff007cbf9..54f7aa95cfbcf39bb86ad1b4eb0f9ff2f8526030 100644
+index cbeebb98622025d35557125e784cd8f0b4fbb751..79aca7e7cd2f860464657e77e935391642981fad 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-@@ -182,7 +182,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
+@@ -294,7 +294,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
          We do not want people to report thread issues to Paper,
          but we do want people to report thread issues to Gale.
          */
@@ -175,24 +175,24 @@ index 11cf6a20550e252501a92be5bdffafcff007cbf9..54f7aa95cfbcf39bb86ad1b4eb0f9ff2
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
-index bdfb969f88e68d89a5cad4b145bbc1441a110bac..fba0558f46516f65c678635359f305f865336d3a 100644
+index f6bc955c3496b52cda1a20aabd78769803ef471f..bbeb271fb19091897e99970198a8a110a4aa0858 100644
 --- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
 +++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
-@@ -492,7 +492,7 @@ public class CraftScheduler implements BukkitScheduler {
+@@ -491,7 +491,7 @@ public class CraftScheduler implements BukkitScheduler {
                  this.parsePending();
              } else {
-                 // this.debugTail = this.debugTail.setNext(new CraftAsyncDebugger(currentTick + CraftScheduler.RECENT_TICKS, task.getOwner(), task.getTaskClass())); // Paper
+                 // this.debugTail = this.debugTail.setNext(new CraftAsyncDebugger(this.currentTick + CraftScheduler.RECENT_TICKS, task.getOwner(), task.getTaskClass())); // Paper
 -                task.getOwner().getLogger().log(Level.SEVERE, "Unexpected Async Task in the Sync Scheduler. Report this to Gale"); // Paper // Gale - branding changes
 +                task.getOwner().getLogger().log(Level.SEVERE, "Unexpected Async Task in the Sync Scheduler. Report this to Leaf"); // Paper // Gale - branding changes // Leaf
                  // We don't need to parse pending
                  // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
              }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index 4d0de69b730599d7a89903dd862b89d51ba79e1b..ebf68793373b128e63960e1c60a22d71a46a6b4e 100644
+index e57be8cbe35fdc2ae41b3a0278d244672a303059..6f9aecffd821e041f8edc8b8af419b2617c297fc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-@@ -489,7 +489,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
- 
+@@ -505,7 +505,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
+     // Paper start
      @Override
      public com.destroystokyo.paper.util.VersionFetcher getVersionFetcher() {
 -        return new org.galemc.gale.version.GaleVersionFetcher(); // Gale - branding changes - version fetcher

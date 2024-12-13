@@ -71,12 +71,12 @@ index c21e00812f1aaa1279834a0562d360d6b89e146c..877d2095a066854939f260ca4b0b8c7b
      }
  
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 05f805c7e7a6ff6d40b9f86aaac5362ab516be3f..654c381c210d9e353df8f7bca0cd7a434d997a8f 100644
+index 40c2dd482a8e10f1d5262d365841c968dda847cc..e084dd8f6e299e2ec71d7d5741c92b0e171f34f6 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -309,6 +309,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-     public volatile boolean abnormalExit = false; // Paper
+@@ -319,6 +319,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      public static final long SERVER_INIT = System.nanoTime(); // Paper - Lag compensation
+     private final Set<String> pluginsBlockingSleep = new java.util.HashSet<>(); // Paper - API to allow/disallow tick sleeping
  
 +    public gg.pufferfish.pufferfish.util.AsyncExecutor mobSpawnExecutor = new gg.pufferfish.pufferfish.util.AsyncExecutor("MobSpawning"); // Pufferfish - optimize mob spawning
 +
@@ -84,10 +84,10 @@ index 05f805c7e7a6ff6d40b9f86aaac5362ab516be3f..654c381c210d9e353df8f7bca0cd7a43
          AtomicReference<S> atomicreference = new AtomicReference();
          Thread thread = new ca.spottedleaf.moonrise.common.util.TickThread(() -> { // Paper - rewrite chunk system
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 2b289f84ffe49b46f1ca85893a6e3255f366bc5c..5ed84fbccf65aa91a4e8a19566207e1e7bb49620 100644
+index b4e2512366226d1132d87124b465071e000d2521..535dc6414c6b14ebd652695615e5a62d82f34171 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -371,6 +371,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -368,6 +368,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
                  DedicatedServer.LOGGER.info("JMX monitoring enabled");
              }
  
@@ -96,63 +96,21 @@ index 2b289f84ffe49b46f1ca85893a6e3255f366bc5c..5ed84fbccf65aa91a4e8a19566207e1e
          }
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-index c520d824630e8b5c569c3213d019b2548120a50f..e9d307dacea2f9b11cda5ecf5a06c7df09d1de90 100644
+index d6cfff8574567d0e3a77871c91be988ecfe31e25..4a2d941dab7df6158d7df507c18dfb63ec6e4afa 100644
 --- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 +++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-@@ -127,6 +127,9 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-     // Paper end - rewrite chunk system
-     private ServerChunkCache.ChunkAndHolder[] iterationCopy; // Paper - chunk tick iteration optimisations
+@@ -173,6 +173,8 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+     }
+     // Paper end - chunk tick iteration optimisations
  
 +    public boolean firstRunSpawnCounts = true; // Pufferfish
 +    public final java.util.concurrent.atomic.AtomicBoolean _pufferfish_spawnCountsReady = new java.util.concurrent.atomic.AtomicBoolean(false); // Pufferfish - optimize countmobs
-+
+ 
      public ServerChunkCache(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, int simulationDistance, boolean dsync, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory) {
          this.level = world;
-         this.mainThreadProcessor = new ServerChunkCache.MainThreadExecutor(world);
-@@ -454,6 +457,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-                 // Paper start - Optional per player mob spawns
-                 int naturalSpawnChunkCount = k;
-                 if ((this.spawnFriendlies || this.spawnEnemies) && this.level.paperConfig().entities.spawning.perPlayerMobSpawns) { // don't count mobs when animals and monsters are disabled
-+                    if (!org.dreeam.leaf.config.modules.async.AsyncMobSpawning.enabled) { // Pufferfish - moved down when async processing
-                     // re-set mob counts
-                     for (ServerPlayer player : this.level.players) {
-                         // Paper start - per player mob spawning backoff
-@@ -468,14 +472,18 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-                         }
-                         // Paper end - per player mob spawning backoff
-                     }
--                    spawnercreature_d = NaturalSpawner.createState(naturalSpawnChunkCount, this.level.getAllEntities(), this::getFullChunk, null, true);
-+                    lastSpawnState = NaturalSpawner.createState(naturalSpawnChunkCount, this.level.getAllEntities(), this::getFullChunk, null, true); // Pufferfish - async mob spawning
-+                    } // Pufferfish - (endif) moved down when async processing
-                 } else {
--                    spawnercreature_d = NaturalSpawner.createState(naturalSpawnChunkCount, this.level.getAllEntities(), this::getFullChunk, !this.level.paperConfig().entities.spawning.perPlayerMobSpawns ? new LocalMobCapCalculator(this.chunkMap) : null, false);
-+                    // Pufferfish start - async mob spawning
-+                    lastSpawnState = NaturalSpawner.createState(naturalSpawnChunkCount, this.level.getAllEntities(), this::getFullChunk, !this.level.paperConfig().entities.spawning.perPlayerMobSpawns ? new LocalMobCapCalculator(this.chunkMap) : null, false);
-+                    _pufferfish_spawnCountsReady.set(true);
-+                    // Pufferfish end
-                 }
-                 // Paper end - Optional per player mob spawns
-                 this.level.timings.countNaturalMobs.stopTiming(); // Paper - timings
+@@ -486,6 +488,43 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
  
--                this.lastSpawnState = spawnercreature_d;
-+                //this.lastSpawnState = spawnercreature_d; // Pufferfish - this is managed asynchronously
-                 // Gale start - MultiPaper - skip unnecessary mob spawning computations
-                 } else {
-                     spawnercreature_d = null;
-@@ -503,8 +511,8 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
- 
-                     if (true && this.chunkMap.anyPlayerCloseEnoughForSpawning(chunkcoordintpair)) { // Paper - rewrite chunk system
-                         chunk1.incrementInhabitedTime(j);
--                        if (flagAndHasNaturalSpawn && (this.spawnEnemies || this.spawnFriendlies) && this.level.getWorldBorder().isWithinBounds(chunkcoordintpair) && this.chunkMap.anyPlayerCloseEnoughForSpawning(chunkcoordintpair, true)) { // Spigot // Gale - MultiPaper - skip unnecessary mob spawning computations
--                            NaturalSpawner.spawnForChunk(this.level, chunk1, spawnercreature_d, this.spawnFriendlies, this.spawnEnemies, flag1);
-+                        if (flagAndHasNaturalSpawn && (!org.dreeam.leaf.config.modules.async.AsyncMobSpawning.enabled || _pufferfish_spawnCountsReady.get()) && (this.spawnEnemies || this.spawnFriendlies) && this.level.getWorldBorder().isWithinBounds(chunkcoordintpair) && this.chunkMap.anyPlayerCloseEnoughForSpawning(chunkcoordintpair, true)) { // Spigot // Gale - MultiPaper - skip unnecessary mob spawning computations // Pufferfish
-+                            NaturalSpawner.spawnForChunk(this.level, chunk1, lastSpawnState, this.spawnFriendlies, this.spawnEnemies, flag1); // Pufferfish
-                         }
- 
-                         if (true) { // Paper - rewrite chunk system
-@@ -544,6 +552,43 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-             this.level.timings.broadcastChunkUpdates.stopTiming(); // Paper - timing
-             // Paper end - chunk tick iteration optimisations
+             this.broadcastChangedChunks(); // Gale - Purpur - remove vanilla profiler
          }
 +
 +        // Pufferfish start - optimize mob spawning
@@ -193,7 +151,56 @@ index c520d824630e8b5c569c3213d019b2548120a50f..e9d307dacea2f9b11cda5ecf5a06c7df
 +        // Pufferfish end
      }
  
-     // Gale start - MultiPaper - skip unnecessary mob spawning computations
+     private void broadcastChangedChunks() { // Gale - Purpur - remove vanilla profiler
+@@ -537,6 +576,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+         // Paper start - Optional per player mob spawns
+         final int naturalSpawnChunkCount = j;
+         if ((this.spawnFriendlies || this.spawnEnemies) && this.level.paperConfig().entities.spawning.perPlayerMobSpawns) { // don't count mobs when animals and monsters are disabled
++            if (!org.dreeam.leaf.config.modules.async.AsyncMobSpawning.enabled) { // Pufferfish - moved down when async processing
+             // re-set mob counts
+             for (ServerPlayer player : this.level.players) {
+                 // Paper start - per player mob spawning backoff
+@@ -551,13 +591,17 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+                 }
+                 // Paper end - per player mob spawning backoff
+             }
+-            spawnercreature_d = NaturalSpawner.createState(naturalSpawnChunkCount, this.level.getAllEntities(), this::getFullChunk, null, true);
++            lastSpawnState = NaturalSpawner.createState(naturalSpawnChunkCount, this.level.getAllEntities(), this::getFullChunk, null, true); // Pufferfish - async mob spawning
++            } // Pufferfish - (endif) moved down when async processing
+         } else {
+-            spawnercreature_d = NaturalSpawner.createState(naturalSpawnChunkCount, this.level.getAllEntities(), this::getFullChunk, !this.level.paperConfig().entities.spawning.perPlayerMobSpawns ? new LocalMobCapCalculator(this.chunkMap) : null, false);
++            // Pufferfish start - async mob spawning
++            lastSpawnState = NaturalSpawner.createState(naturalSpawnChunkCount, this.level.getAllEntities(), this::getFullChunk, !this.level.paperConfig().entities.spawning.perPlayerMobSpawns ? new LocalMobCapCalculator(this.chunkMap) : null, false);
++            _pufferfish_spawnCountsReady.set(true);
++            // Pufferfish end
+         }
+         // Paper end - Optional per player mob spawns
+ 
+-        this.lastSpawnState = spawnercreature_d;
++        //this.lastSpawnState = spawnercreature_d; // Pufferfish - this is managed asynchronously
+             // Gale start - MultiPaper - skip unnecessary mob spawning computations
+         } else {
+             spawnercreature_d = null;
+@@ -577,7 +621,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+             // Paper end - PlayerNaturallySpawnCreaturesEvent
+             boolean flag1 = this.level.ticksPerSpawnCategory.getLong(org.bukkit.entity.SpawnCategory.ANIMAL) != 0L && this.level.getLevelData().getGameTime() % this.level.ticksPerSpawnCategory.getLong(org.bukkit.entity.SpawnCategory.ANIMAL) == 0L; // CraftBukkit
+ 
+-            list1 = NaturalSpawner.getFilteredSpawningCategories(spawnercreature_d, this.spawnFriendlies, this.spawnEnemies, flag1, this.level); // CraftBukkit
++            list1 = NaturalSpawner.getFilteredSpawningCategories(lastSpawnState, this.spawnFriendlies, this.spawnEnemies, flag1, this.level); // CraftBukkit // Pufferfish
+         } else {
+             list1 = List.of();
+         }
+@@ -589,8 +633,8 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+             ChunkPos chunkcoordintpair = chunk.getPos();
+ 
+             chunk.incrementInhabitedTime(timeDelta);
+-            if (!list1.isEmpty() && this.level.getWorldBorder().isWithinBounds(chunkcoordintpair) && this.chunkMap.anyPlayerCloseEnoughForSpawning(chunkcoordintpair, true)) { // Spigot
+-                NaturalSpawner.spawnForChunk(this.level, chunk, spawnercreature_d, list1);
++            if (!list1.isEmpty() && this.level.getWorldBorder().isWithinBounds(chunkcoordintpair) && (!org.dreeam.leaf.config.modules.async.AsyncMobSpawning.enabled || _pufferfish_spawnCountsReady.get()) && this.chunkMap.anyPlayerCloseEnoughForSpawning(chunkcoordintpair, true)) { // Spigot // Pufferfish
++                NaturalSpawner.spawnForChunk(this.level, chunk, lastSpawnState, list1); // Pufferfish
+             }
+ 
+             if (true) { // Paper - rewrite chunk system
 diff --git a/src/main/java/net/minecraft/world/level/entity/EntityTickList.java b/src/main/java/net/minecraft/world/level/entity/EntityTickList.java
 index d8b4196adf955f8d414688dc451caac2d9c609d9..80a43def4912a3228cd95117d5c2aac68798b4ec 100644
 --- a/src/main/java/net/minecraft/world/level/entity/EntityTickList.java

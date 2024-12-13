@@ -3,6 +3,8 @@ From: Jake Potrebic <jake.m.potrebic@gmail.com>
 Date: Thu, 31 Oct 2024 20:36:41 -0700
 Subject: [PATCH] Paper: Improve performance of RecipeManager#removeRecipe
 
+Removed since Leaf 1.21.3, Paper 1.21.3 included it
+
 Original license: GPLv3
 Original project: https://github.com/PaperMC/Paper
 Paper pull request: https://github.com/PaperMC/Paper/pull/11547
