@@ -9,11 +9,11 @@ and change store way to sql maybe?
 Original license: GPLv3
 Original project: https://github.com/LeavesMC/Leaves
 
-Commit: 0fcb32c478a8137e692664f332ad2eb0fdd7939b
+Commit: aeeef2213c2295288b71c9162cbe008c4a3defd9
 
 diff --git a/src/main/java/org/leavesmc/leaves/LeavesLogger.java b/src/main/java/org/leavesmc/leaves/LeavesLogger.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..47347a3bdab2ff9818bf8198291d2dabec7da8c6
+index 0000000000000000000000000000000000000000..bc45935c96553c9bd9d9b6ab3a64e28f52862198
 --- /dev/null
 +++ b/src/main/java/org/leavesmc/leaves/LeavesLogger.java
 @@ -0,0 +1,24 @@
@@ -34,10 +34,10 @@ index 0000000000000000000000000000000000000000..47347a3bdab2ff9818bf8198291d2dab
 +    }
 +
 +    public void severe(String msg, Exception exception) {
-+        this.severe(msg + ", " + exception.getCause() + ": " + exception.getMessage());
++        this.log(Level.SEVERE, msg, exception);
 +    }
 +
 +    public void warning(String msg, Exception exception) {
-+        this.warning(msg + ", " + exception.getCause() + ": " + exception.getMessage());
++        this.log(Level.WARNING, msg, exception);
 +    }
 +}

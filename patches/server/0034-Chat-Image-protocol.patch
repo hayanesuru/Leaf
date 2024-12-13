@@ -6,31 +6,31 @@ Subject: [PATCH] Chat Image protocol
 This patch is Powered by ChatImage (https://github.com/kitUIN/ChatImage)
 
 diff --git a/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java b/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
-index 9bff9c7fce4fec7687940f4212ac05d460ab2ab5..6f151c185850738a9f8a575f9c09e3c469f5f9e2 100644
+index db48291d191e1eefb7e497dda7430fc1644bb5ea..4c38648af0a6f258c1618da7c162c44795ae36d6 100644
 --- a/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
 +++ b/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
-@@ -13,6 +13,7 @@ public class ProtocolSupport extends ConfigModules {
- 
+@@ -14,6 +14,7 @@ public class ProtocolSupport extends ConfigModules {
      public static boolean jadeProtocol = false;
      public static boolean appleskinProtocol = false;
+     public static int appleskinSyncTickInterval = 20;
 +    public static boolean chatImageProtocol = false;
      public static boolean xaeroMapProtocol = false;
      public static int xaeroMapServerID = new Random().nextInt();
      public static boolean syncmaticaProtocol = false;
-@@ -23,6 +24,7 @@ public class ProtocolSupport extends ConfigModules {
-     public void onLoaded() {
+@@ -25,6 +26,7 @@ public class ProtocolSupport extends ConfigModules {
          jadeProtocol = config.getBoolean(getBasePath() + ".jade-protocol", jadeProtocol);
          appleskinProtocol = config.getBoolean(getBasePath() + ".appleskin-protocol", appleskinProtocol);
+         appleskinSyncTickInterval = config.getInt(getBasePath() + ".appleskin-protocol-sync-tick-interval", appleskinSyncTickInterval);
 +        chatImageProtocol = config.getBoolean(getBasePath() + ".chatimage-protocol", chatImageProtocol);
          xaeroMapProtocol = config.getBoolean(getBasePath() + ".xaero-map-protocol", xaeroMapProtocol);
          xaeroMapServerID = config.getInt(getBasePath() + ".xaero-map-server-id", xaeroMapServerID);
          syncmaticaProtocol = config.getBoolean(getBasePath() + ".syncmatica-protocol", syncmaticaProtocol);
 diff --git a/src/main/java/org/leavesmc/leaves/protocol/ChatImageProtocol.java b/src/main/java/org/leavesmc/leaves/protocol/ChatImageProtocol.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5ef387ccfe19bb91bbcb926d44e7a01450035a1d
+index 0000000000000000000000000000000000000000..dd652437c0e999f0b523b69bca8f5803611ead6c
 --- /dev/null
 +++ b/src/main/java/org/leavesmc/leaves/protocol/ChatImageProtocol.java
-@@ -0,0 +1,140 @@
+@@ -0,0 +1,143 @@
 +package org.leavesmc.leaves.protocol;
 +
 +import com.google.common.collect.Lists;
@@ -56,6 +56,7 @@ index 0000000000000000000000000000000000000000..5ef387ccfe19bb91bbcb926d44e7a014
 +
 +@LeavesProtocol(namespace = "chatimage")
 +public class ChatImageProtocol {
++
 +    public static final String PROTOCOL_ID = "chatimage";
 +    private static final Map<String, HashMap<Integer, String>> SERVER_BLOCK_CACHE = new HashMap<>();
 +    private static final Map<String, Integer> FILE_COUNT_MAP = new HashMap<>();
@@ -63,7 +64,8 @@ index 0000000000000000000000000000000000000000..5ef387ccfe19bb91bbcb926d44e7a014
 +    public static int MAX_STRING = 532767;
 +    private static final Gson gson = new Gson();
 +
-+    public record FileInfoChannelPacket(String message) implements LeavesCustomPayload<LeavesProtocolManager.LeavesPayload> {
++    public record FileInfoChannelPacket(
++            String message) implements LeavesCustomPayload<LeavesProtocolManager.LeavesPayload> {
 +        private static final ResourceLocation FILE_INFO = ChatImageProtocol.id("file_info");
 +
 +        @New
@@ -82,7 +84,8 @@ index 0000000000000000000000000000000000000000..5ef387ccfe19bb91bbcb926d44e7a014
 +        }
 +    }
 +
-+    public record DownloadFileChannelPacket(String message) implements LeavesCustomPayload<LeavesProtocolManager.LeavesPayload> {
++    public record DownloadFileChannelPacket(
++            String message) implements LeavesCustomPayload<LeavesProtocolManager.LeavesPayload> {
 +        private static final ResourceLocation DOWNLOAD_FILE_CHANNEL = ChatImageProtocol.id("download_file_channel");
 +
 +        @New
@@ -102,7 +105,8 @@ index 0000000000000000000000000000000000000000..5ef387ccfe19bb91bbcb926d44e7a014
 +
 +    }
 +
-+    public record FileChannelPacket(String message) implements LeavesCustomPayload<LeavesProtocolManager.LeavesPayload> {
++    public record FileChannelPacket(
++            String message) implements LeavesCustomPayload<LeavesProtocolManager.LeavesPayload> {
 +        private static final ResourceLocation FILE_CHANNEL = ChatImageProtocol.id("file_channel");
 +
 +        @New
@@ -169,17 +173,17 @@ index 0000000000000000000000000000000000000000..5ef387ccfe19bb91bbcb926d44e7a014
 +    public static void sendToPlayer(CustomPacketPayload payload, ServerPlayer player) {
 +        player.connection.send((Packet<?>) payload);
 +    }
-+
 +}
 diff --git a/src/main/java/org/leavesmc/leaves/protocol/chatimage/ChatImageIndex.java b/src/main/java/org/leavesmc/leaves/protocol/chatimage/ChatImageIndex.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..369917ae4b82b6c1d480a5ac5ebd00e0c55f1fb5
+index 0000000000000000000000000000000000000000..e4b55c5b606fcb92bf035910e82d9f32606d1c2b
 --- /dev/null
 +++ b/src/main/java/org/leavesmc/leaves/protocol/chatimage/ChatImageIndex.java
-@@ -0,0 +1,15 @@
+@@ -0,0 +1,16 @@
 +package org.leavesmc.leaves.protocol.chatimage;
 +
 +public class ChatImageIndex {
++
 +    public int index;
 +    public int total;
 +    public String url;
@@ -192,4 +196,3 @@ index 0000000000000000000000000000000000000000..369917ae4b82b6c1d480a5ac5ebd00e0
 +        this.bytes = bytes;
 +    }
 +}
-\ No newline at end of file

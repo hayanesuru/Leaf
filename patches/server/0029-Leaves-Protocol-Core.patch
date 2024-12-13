@@ -49,10 +49,10 @@ index 1967c43ee3a12e63365cc40ee6565307e2fd73cf..6e376d0db5321d8e9b6e0b54617ffd17
  
          assert isValidPath(path);
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index ccd94b0a8822b17bd218aa95e302a28196849027..bc4f50c55741c2a664f456a3b7555644ad224d53 100644
+index 2550e0e4e40eccb6e01cd0b8287358c105abaebf..f52eb8f076a007167647e49db2734cd43f88b0b6 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1815,6 +1815,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1876,6 +1876,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              GameTestTicker.SINGLETON.tick();
          }
  
@@ -62,10 +62,10 @@ index ccd94b0a8822b17bd218aa95e302a28196849027..bc4f50c55741c2a664f456a3b7555644
              ((Runnable) this.tickables.get(i)).run();
          }
 diff --git a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 499572fe78f3b0918d2bbf6ead15a2acf6a07007..8a3736dbf6ee0b2c6fbb514b2841154d2ad9f0f5 100644
+index 32ab2e0f7bae7d0a54cebdd46c95e574c41ad1e3..c79e9930b090057487b9c83b79935639d885e67b 100644
 --- a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -166,6 +166,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -172,6 +172,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
@@ -77,7 +77,7 @@ index 499572fe78f3b0918d2bbf6ead15a2acf6a07007..8a3736dbf6ee0b2c6fbb514b2841154d
          // Paper start - Brand support
          if (packet.payload() instanceof net.minecraft.network.protocol.common.custom.BrandPayload brandPayload) {
              this.player.clientBrandName = brandPayload.brand();
-@@ -183,6 +188,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -189,6 +194,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
                  String channels = payload.toString(com.google.common.base.Charsets.UTF_8);
                  for (String channel : channels.split("\0")) {
                      this.getCraftPlayer().addChannel(channel);
@@ -86,10 +86,10 @@ index 499572fe78f3b0918d2bbf6ead15a2acf6a07007..8a3736dbf6ee0b2c6fbb514b2841154d
              } catch (Exception ex) {
                  ServerGamePacketListenerImpl.LOGGER.error("Couldn\'t register custom payload", ex);
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 26a92a77481c46969b68e454b906b3935ad02043..73d67b3bebcf3dff210e25dda0b3df206e129173 100644
+index e1ceb6added5c5d473cf25162b77c7cf6bf9da49..f846281cf11357249aea45e1add3e05150bb5615 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -360,6 +360,8 @@ public abstract class PlayerList {
+@@ -364,6 +364,8 @@ public abstract class PlayerList {
  
          player.didPlayerJoinEvent = true; // Gale - EMC - do not process chat/commands before player has joined
  
@@ -98,7 +98,7 @@ index 26a92a77481c46969b68e454b906b3935ad02043..73d67b3bebcf3dff210e25dda0b3df20
          final net.kyori.adventure.text.Component jm = playerJoinEvent.joinMessage();
  
          if (jm != null && !jm.equals(net.kyori.adventure.text.Component.empty())) { // Paper - Adventure
-@@ -607,6 +609,7 @@ public abstract class PlayerList {
+@@ -557,6 +559,7 @@ public abstract class PlayerList {
          return this.remove(entityplayer, net.kyori.adventure.text.Component.translatable("multiplayer.player.left", net.kyori.adventure.text.format.NamedTextColor.YELLOW, io.papermc.paper.configuration.GlobalConfiguration.get().messages.useDisplayNameInQuitMessage ? entityplayer.getBukkitEntity().displayName() : io.papermc.paper.adventure.PaperAdventure.asAdventure(entityplayer.getDisplayName())));
      }
      public net.kyori.adventure.text.Component remove(ServerPlayer entityplayer, net.kyori.adventure.text.Component leaveMessage) {
@@ -107,10 +107,10 @@ index 26a92a77481c46969b68e454b906b3935ad02043..73d67b3bebcf3dff210e25dda0b3df20
          org.purpurmc.purpur.task.BossBarTask.removeFromAll(entityplayer.getBukkitEntity()); // Purpur
          ServerLevel worldserver = entityplayer.serverLevel();
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 8365daf4b9da71b68493a309f11b94de1e8d56cf..b3cf26055a85aefe0ef19a843733b6dfe93d2641 100644
+index b4986e322cb05ad6f98bbf5eee2b571c67e4d9d3..073ad95dc56f3b8d35913058a8eddcd610997124 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -491,6 +491,7 @@ public final class CraftServer implements Server {
+@@ -506,6 +506,7 @@ public final class CraftServer implements Server {
          this.potionBrewer = new io.papermc.paper.potion.PaperPotionBrewer(console); // Paper - custom potion mixes
          datapackManager = new io.papermc.paper.datapack.PaperDatapackManager(console.getPackRepository()); // Paper
          this.spark = new io.papermc.paper.SparksFly(this); // Paper - spark
@@ -118,7 +118,7 @@ index 8365daf4b9da71b68493a309f11b94de1e8d56cf..b3cf26055a85aefe0ef19a843733b6df
      }
  
      public boolean getCommandBlockOverride(String command) {
-@@ -1122,6 +1123,7 @@ public final class CraftServer implements Server {
+@@ -1137,6 +1138,7 @@ public final class CraftServer implements Server {
          org.purpurmc.purpur.PurpurConfig.registerCommands(); // Purpur
          this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
          this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
@@ -202,10 +202,10 @@ index 0000000000000000000000000000000000000000..986d2a6641ff8017dddf3e5f2655adfc
 +}
 diff --git a/src/main/java/org/leavesmc/leaves/protocol/core/LeavesProtocolManager.java b/src/main/java/org/leavesmc/leaves/protocol/core/LeavesProtocolManager.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b76eb38942171d22dcd767ea353f012e5920f1f5
+index 0000000000000000000000000000000000000000..87b1502c1b980d33cae205ae35d336f7450e5e94
 --- /dev/null
 +++ b/src/main/java/org/leavesmc/leaves/protocol/core/LeavesProtocolManager.java
-@@ -0,0 +1,436 @@
+@@ -0,0 +1,435 @@
 +package org.leavesmc.leaves.protocol.core;
 +
 +import com.google.common.collect.ImmutableSet;
@@ -493,10 +493,9 @@ index 0000000000000000000000000000000000000000..b76eb38942171d22dcd767ea353f012e
 +
 +            Map<ProtocolHandler.MinecraftRegister, Method> map = MINECRAFT_REGISTER.get(protocol);
 +            for (ProtocolHandler.MinecraftRegister register : map.keySet()) {
-+                if (register.ignoreId() || register.channelId().equals(channel[1]) ||
-+                    ArrayUtils.contains(register.channelIds(), channel[1])) {
++                if (register.ignoreId() || ArrayUtils.contains(register.channelId(), channel[1])) {
 +                    try {
-+                        map.get(register).invoke(null, player);
++                        map.get(register).invoke(null, player, channel[1]);
 +                    } catch (InvocationTargetException | IllegalAccessException exception) {
 +                        LOGGER.warning("Failed to handle minecraft register, " + exception.getCause() + ": " + exception.getMessage());
 +                    }
@@ -644,10 +643,10 @@ index 0000000000000000000000000000000000000000..b76eb38942171d22dcd767ea353f012e
 +}
 diff --git a/src/main/java/org/leavesmc/leaves/protocol/core/ProtocolHandler.java b/src/main/java/org/leavesmc/leaves/protocol/core/ProtocolHandler.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..9d71f8e6af24301bedf60f5c87e0bb3c1697d5e3
+index 0000000000000000000000000000000000000000..22f47824e0d0ae9050d3a7fd6f59e1d0a7cde561
 --- /dev/null
 +++ b/src/main/java/org/leavesmc/leaves/protocol/core/ProtocolHandler.java
-@@ -0,0 +1,63 @@
+@@ -0,0 +1,56 @@
 +package org.leavesmc.leaves.protocol.core;
 +
 +import java.lang.annotation.ElementType;
@@ -660,13 +659,11 @@ index 0000000000000000000000000000000000000000..9d71f8e6af24301bedf60f5c87e0bb3c
 +    @Target(ElementType.METHOD)
 +    @Retention(RetentionPolicy.RUNTIME)
 +    public @interface Init {
-+
 +    }
 +
 +    @Target(ElementType.METHOD)
 +    @Retention(RetentionPolicy.RUNTIME)
 +    public @interface PayloadReceiver {
-+
 +        Class<? extends LeavesCustomPayload<?>> payload();
 +
 +        String[] payloadId() default "";
@@ -685,28 +682,23 @@ index 0000000000000000000000000000000000000000..9d71f8e6af24301bedf60f5c87e0bb3c
 +    @Target(ElementType.METHOD)
 +    @Retention(RetentionPolicy.RUNTIME)
 +    public @interface PlayerJoin {
-+
 +    }
 +
 +    @Target(ElementType.METHOD)
 +    @Retention(RetentionPolicy.RUNTIME)
 +    public @interface PlayerLeave {
-+
 +    }
 +
 +    @Target(ElementType.METHOD)
 +    @Retention(RetentionPolicy.RUNTIME)
 +    public @interface ReloadServer {
-+
 +    }
 +
 +    @Target(ElementType.METHOD)
 +    @Retention(RetentionPolicy.RUNTIME)
 +    public @interface MinecraftRegister {
 +
-+        String channelId() default "";
-+
-+        String[] channelIds() default {};
++        String[] channelId() default "";
 +
 +        boolean ignoreId() default false;
 +    }

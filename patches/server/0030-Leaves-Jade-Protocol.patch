@@ -9,10 +9,10 @@ Original project: https://github.com/LeavesMC/Leaves
 This patch is Powered by Jade (https://github.com/Snownee/Jade)
 
 diff --git a/src/main/java/net/minecraft/world/entity/animal/armadillo/Armadillo.java b/src/main/java/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-index ffa91dc71b303240eee8d3e5ae98319a7e92b066..e696d2a0b12c520b3ae82443107af678e9e36c22 100644
+index 35e89ecad020a2a5320a757b154fbf409bb2b19b..8e8345d9062b1e666cd1b987c44175741b094d07 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/armadillo/Armadillo.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-@@ -63,7 +63,7 @@ public class Armadillo extends Animal {
+@@ -61,7 +61,7 @@ public class Armadillo extends Animal {
      public final AnimationState rollOutAnimationState = new AnimationState();
      public final AnimationState rollUpAnimationState = new AnimationState();
      public final AnimationState peekAnimationState = new AnimationState();
@@ -22,10 +22,10 @@ index ffa91dc71b303240eee8d3e5ae98319a7e92b066..e696d2a0b12c520b3ae82443107af678
  
      public Armadillo(EntityType<? extends Animal> type, Level world) {
 diff --git a/src/main/java/net/minecraft/world/entity/animal/frog/Tadpole.java b/src/main/java/net/minecraft/world/entity/animal/frog/Tadpole.java
-index c51637514bf671c08dbe4e5ac55566b92b5876f9..5addd3243dd63041442f2a6bcf92a2128e4242c1 100644
+index 2b3e722a5c802fbbebb339df4398905e144fd174..72a858ac4ebcfa7520a74bd52501521af64ffcab 100644
 --- a/src/main/java/net/minecraft/world/entity/animal/frog/Tadpole.java
 +++ b/src/main/java/net/minecraft/world/entity/animal/frog/Tadpole.java
-@@ -291,7 +291,7 @@ public class Tadpole extends AbstractFish {
+@@ -277,7 +277,7 @@ public class Tadpole extends AbstractFish {
  
      }
  
@@ -35,10 +35,10 @@ index c51637514bf671c08dbe4e5ac55566b92b5876f9..5addd3243dd63041442f2a6bcf92a212
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerData.java b/src/main/java/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerData.java
-index 6684ded7135f943f8cea954b417f596369215357..0621c6c026678cb4ac3626342d73290c0f2803d9 100644
+index a49f83784f85f5420091692aae588ef067aa5fcd..137f777d324d0a0addc2e43913e196bc9f09e004 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerData.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/trialspawner/TrialSpawnerData.java
-@@ -72,7 +72,7 @@ public class TrialSpawnerData {
+@@ -73,7 +73,7 @@ public class TrialSpawnerData {
      });
      public final Set<UUID> detectedPlayers;
      public final Set<UUID> currentMobs;
@@ -61,12 +61,12 @@ index 38078c44b35e917d1d243a5f8599aa858d8611de..13dbadfb50278b79b33d9dce10413c93
      private final Predicate<LootContext> compositeCondition;
      private final List<LootItemFunction> functions;
 diff --git a/src/main/java/net/minecraft/world/level/storage/loot/LootTable.java b/src/main/java/net/minecraft/world/level/storage/loot/LootTable.java
-index edaf7f1692ae059581f3abc24bb228874e6d114b..f09cfc472d4dbdc8cb0b6a45ef240b25a865ffba 100644
+index c2bded5094097f5615a2ddb0718942486ede93b5..78fd2b33174a0c8b1dec99009bc2c8d41f6cbfe0 100644
 --- a/src/main/java/net/minecraft/world/level/storage/loot/LootTable.java
 +++ b/src/main/java/net/minecraft/world/level/storage/loot/LootTable.java
 @@ -58,7 +58,7 @@ public class LootTable {
      public static final Codec<Holder<LootTable>> CODEC = RegistryFileCodec.create(Registries.LOOT_TABLE, LootTable.DIRECT_CODEC);
-     private final LootContextParamSet paramSet;
+     private final ContextKeySet paramSet;
      private final Optional<ResourceLocation> randomSequence;
 -    private final List<LootPool> pools;
 +    public final List<LootPool> pools; // Leaves - private -> public
@@ -100,7 +100,7 @@ index 1d2f2bb352abf6772cd20293575fc79e8e64ce3b..b157dfaf1efffebd3f2ae8cb8fcf0972
  
      protected LootPoolEntryContainer(List<LootItemCondition> conditions) {
 diff --git a/src/main/java/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java b/src/main/java/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
-index 71989359192c8f30a1a8d343a2c6cb5b92330491..ec273bd4d0e61f54532df599f00695e8b9d44800 100644
+index 61d47a1e86a26bdee49d0ae931aeb92417ab02c2..1116f194b457ef736bf9e836c190817610008ef6 100644
 --- a/src/main/java/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
 +++ b/src/main/java/net/minecraft/world/level/storage/loot/entries/NestedLootTable.java
 @@ -25,7 +25,7 @@ public class NestedLootTable extends LootPoolSingletonContainer {
@@ -142,7 +142,7 @@ index c63bdbd72ecd45b8d5862a996636c0ce1e87166e..4e91895387b214cadc658b150ed6b88e
  }
 diff --git a/src/main/java/org/leavesmc/leaves/protocol/jade/JadeProtocol.java b/src/main/java/org/leavesmc/leaves/protocol/jade/JadeProtocol.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..fed4f91689f635dc107987e3714129250e2d458a
+index 0000000000000000000000000000000000000000..41e4f98203b2e4392b0f76a560a4ed22db31adef
 --- /dev/null
 +++ b/src/main/java/org/leavesmc/leaves/protocol/jade/JadeProtocol.java
 @@ -0,0 +1,310 @@
@@ -307,7 +307,7 @@ index 0000000000000000000000000000000000000000..fed4f91689f635dc107987e371412925
 +
 +        try {
 +            shearableBlocks = Collections.unmodifiableList(LootTableMineableCollector.execute(
-+                    MinecraftServer.getServer().reloadableRegistries().get().registryOrThrow(Registries.LOOT_TABLE),
++                    MinecraftServer.getServer().reloadableRegistries().lookup().lookupOrThrow(Registries.LOOT_TABLE),
 +                    Items.SHEARS.getDefaultInstance()));
 +        } catch (Throwable ignore) {
 +            shearableBlocks = List.of();
@@ -1248,7 +1248,7 @@ index 0000000000000000000000000000000000000000..6e32eed15f028020223e2500849b4db3
 \ No newline at end of file
 diff --git a/src/main/java/org/leavesmc/leaves/protocol/jade/provider/ItemStorageExtensionProvider.java b/src/main/java/org/leavesmc/leaves/protocol/jade/provider/ItemStorageExtensionProvider.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..797558f3804a1a8143eafafd5dc46cc72ea19a42
+index 0000000000000000000000000000000000000000..3efa3ceb9654bc53adb61ded96c0ad08eb9b083d
 --- /dev/null
 +++ b/src/main/java/org/leavesmc/leaves/protocol/jade/provider/ItemStorageExtensionProvider.java
 @@ -0,0 +1,138 @@
@@ -1302,7 +1302,7 @@ index 0000000000000000000000000000000000000000..797558f3804a1a8143eafafd5dc46cc7
 +            case RandomizableContainer te when te.getLootTable() != null -> {
 +                return List.of();
 +            }
-+            case ContainerEntity containerEntity when containerEntity.getLootTable() != null -> {
++            case ContainerEntity containerEntity when containerEntity.getContainerLootTable() != null -> {
 +                return List.of();
 +            }
 +            default -> {
@@ -3114,15 +3114,16 @@ index 0000000000000000000000000000000000000000..a046ae4e542efcadd0001b7225440c30
 +}
 diff --git a/src/main/java/org/leavesmc/leaves/protocol/jade/util/LootTableMineableCollector.java b/src/main/java/org/leavesmc/leaves/protocol/jade/util/LootTableMineableCollector.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..63f4d0a31232525db3620095fc662f0225c5f306
+index 0000000000000000000000000000000000000000..81575cfa4c5a6f1a1aadbf9ea7743cd1d053f925
 --- /dev/null
 +++ b/src/main/java/org/leavesmc/leaves/protocol/jade/util/LootTableMineableCollector.java
-@@ -0,0 +1,105 @@
+@@ -0,0 +1,109 @@
 +package org.leavesmc.leaves.protocol.jade.util;
 +
 +import com.google.common.collect.Lists;
 +import net.minecraft.advancements.critereon.ItemPredicate;
-+import net.minecraft.core.Registry;
++import net.minecraft.core.Holder;
++import net.minecraft.core.HolderGetter;
 +import net.minecraft.core.registries.BuiltInRegistries;
 +import net.minecraft.world.item.ItemStack;
 +import net.minecraft.world.level.block.Block;
@@ -3138,19 +3139,20 @@ index 0000000000000000000000000000000000000000..63f4d0a31232525db3620095fc662f02
 +import org.leavesmc.leaves.protocol.jade.tool.ShearsToolHandler;
 +
 +import java.util.List;
++import java.util.Optional;
 +import java.util.function.Function;
 +
 +public class LootTableMineableCollector {
 +
-+    private final Registry<LootTable> lootRegistry;
++    private final HolderGetter<LootTable> lootRegistry;
 +    private final ItemStack toolItem;
 +
-+    public LootTableMineableCollector(Registry<LootTable> lootRegistry, ItemStack toolItem) {
++    public LootTableMineableCollector(HolderGetter<LootTable> lootRegistry, ItemStack toolItem) {
 +        this.lootRegistry = lootRegistry;
 +        this.toolItem = toolItem;
 +    }
 +
-+    public static @NotNull List<Block> execute(Registry<LootTable> lootRegistry, ItemStack toolItem) {
++    public static @NotNull List<Block> execute(HolderGetter<LootTable> lootRegistry, ItemStack toolItem) {
 +        LootTableMineableCollector collector = new LootTableMineableCollector(lootRegistry, toolItem);
 +        List<Block> list = Lists.newArrayList();
 +        for (Block block : BuiltInRegistries.BLOCK) {
@@ -3158,9 +3160,11 @@ index 0000000000000000000000000000000000000000..63f4d0a31232525db3620095fc662f02
 +                continue;
 +            }
 +
-+            LootTable lootTable = lootRegistry.get(block.getLootTable());
-+            if (collector.doLootTable(lootTable)) {
-+                list.add(block);
++            if (block.getLootTable().isPresent()) {
++                LootTable lootTable = lootRegistry.get(block.getLootTable().get()).map(Holder::value).orElse(null);
++                if (collector.doLootTable(lootTable)) {
++                    list.add(block);
++                }
 +            }
 +        }
 +        return list;
@@ -3196,7 +3200,7 @@ index 0000000000000000000000000000000000000000..63f4d0a31232525db3620095fc662f02
 +                }
 +            }
 +        } else if (entry instanceof NestedLootTable nestedLootTable) {
-+            LootTable lootTable = nestedLootTable.contents.map(lootRegistry::get, Function.identity());
++            LootTable lootTable = nestedLootTable.contents.map($ -> lootRegistry.get($).map(Holder::value).orElse(null), Function.identity());
 +            return doLootTable(lootTable);
 +        } else {
 +            return isCorrectConditions(entry.conditions, toolItem);
@@ -3210,8 +3214,8 @@ index 0000000000000000000000000000000000000000..63f4d0a31232525db3620095fc662f02
 +        }
 +
 +        LootItemCondition condition = conditions.getFirst();
-+        if (condition instanceof MatchTool matchTool) {
-+            ItemPredicate itemPredicate = matchTool.predicate().orElse(null);
++        if (condition instanceof MatchTool(Optional<ItemPredicate> predicate)) {
++            ItemPredicate itemPredicate = predicate.orElse(null);
 +            return itemPredicate != null && itemPredicate.test(toolItem);
 +        } else if (condition instanceof AnyOfCondition anyOfCondition) {
 +            for (LootItemCondition child : anyOfCondition.terms) {

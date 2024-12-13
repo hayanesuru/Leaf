@@ -9,10 +9,10 @@ Original project: https://github.com/LeavesMC/Leaves
 This patch is Powered by Syncmatica (https://github.com/End-Tech/syncmatica)
 
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index def145674389e1e942a69ae4bdf11b5a0ea2155f..0abef2fd45d384583272a183bae42df5cbacfcec 100644
+index 8018b41a8e36a8b27de369f00e250c7dd9340907..6f00bc85205a4c481d85f95e30aeb61ab3db1e8a 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -314,6 +314,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -324,6 +324,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
          Objects.requireNonNull(server);
          this.signedMessageDecoder = SignedMessageChain.Decoder.unsigned(uuid, server::enforceSecureProfile);
          this.chatMessageChain = new FutureChain(server.chatExecutor); // CraftBukkit - async chat
@@ -20,7 +20,7 @@ index def145674389e1e942a69ae4bdf11b5a0ea2155f..0abef2fd45d384583272a183bae42df5
      }
  
      // CraftBukkit start - add fields and methods
-@@ -346,6 +347,8 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -356,6 +357,8 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
          );
      // Purpur end
  
@@ -30,11 +30,11 @@ index def145674389e1e942a69ae4bdf11b5a0ea2155f..0abef2fd45d384583272a183bae42df5
      public void tick() {
          if (this.ackBlockChangesUpTo > -1) {
 diff --git a/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java b/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
-index c159340c3d7d90601bb69a4e1b997e372d48841a..9bff9c7fce4fec7687940f4212ac05d460ab2ab5 100644
+index e7923e98fb05494e81412f40503b8cc1a219747b..db48291d191e1eefb7e497dda7430fc1644bb5ea 100644
 --- a/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
 +++ b/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
-@@ -15,6 +15,9 @@ public class ProtocolSupport extends ConfigModules {
-     public static boolean appleskinProtocol = false;
+@@ -16,6 +16,9 @@ public class ProtocolSupport extends ConfigModules {
+     public static int appleskinSyncTickInterval = 20;
      public static boolean xaeroMapProtocol = false;
      public static int xaeroMapServerID = new Random().nextInt();
 +    public static boolean syncmaticaProtocol = false;
@@ -43,8 +43,8 @@ index c159340c3d7d90601bb69a4e1b997e372d48841a..9bff9c7fce4fec7687940f4212ac05d4
  
      @Override
      public void onLoaded() {
-@@ -22,5 +25,12 @@ public class ProtocolSupport extends ConfigModules {
-         appleskinProtocol = config.getBoolean(getBasePath() + ".appleskin-protocol", appleskinProtocol);
+@@ -24,5 +27,12 @@ public class ProtocolSupport extends ConfigModules {
+         appleskinSyncTickInterval = config.getInt(getBasePath() + ".appleskin-protocol-sync-tick-interval", appleskinSyncTickInterval);
          xaeroMapProtocol = config.getBoolean(getBasePath() + ".xaero-map-protocol", xaeroMapProtocol);
          xaeroMapServerID = config.getInt(getBasePath() + ".xaero-map-server-id", xaeroMapServerID);
 +        syncmaticaProtocol = config.getBoolean(getBasePath() + ".syncmatica-protocol", syncmaticaProtocol);

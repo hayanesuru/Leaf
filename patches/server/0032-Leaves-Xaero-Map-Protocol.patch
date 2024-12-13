@@ -9,10 +9,10 @@ Original project: https://github.com/LeavesMC/Leaves
 This patch is Powered by Xaero Map
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index bbd64da6ffa78c7e2376f38456681aaf1823528a..135a53742607dfccff17aa86f80f106b4a31f6b0 100644
+index f846281cf11357249aea45e1add3e05150bb5615..243d5f479a11d9cbc867f034f9fa55ff7e27fb92 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -1338,6 +1338,7 @@ public abstract class PlayerList {
+@@ -1305,6 +1305,7 @@ public abstract class PlayerList {
          player.connection.send(new ClientboundInitializeBorderPacket(worldborder));
          player.connection.send(new ClientboundSetTimePacket(world.getGameTime(), world.getDayTime(), world.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)));
          player.connection.send(new ClientboundSetDefaultSpawnPositionPacket(world.getSharedSpawnPos(), world.getSharedSpawnAngle()));
@@ -21,7 +21,7 @@ index bbd64da6ffa78c7e2376f38456681aaf1823528a..135a53742607dfccff17aa86f80f106b
              // CraftBukkit start - handle player weather
              // entityplayer.connection.send(new PacketPlayOutGameStateChange(PacketPlayOutGameStateChange.START_RAINING, 0.0F));
 diff --git a/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java b/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
-index ec6fd416786e4a38ed797819138fbdc83348541d..c159340c3d7d90601bb69a4e1b997e372d48841a 100644
+index 90ab5ec9906207cbe835e56eb4560cd89af9fcfe..e7923e98fb05494e81412f40503b8cc1a219747b 100644
 --- a/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
 +++ b/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
 @@ -3,6 +3,8 @@ package org.dreeam.leaf.config.modules.network;
@@ -33,10 +33,10 @@ index ec6fd416786e4a38ed797819138fbdc83348541d..c159340c3d7d90601bb69a4e1b997e37
  public class ProtocolSupport extends ConfigModules {
  
      public String getBasePath() {
-@@ -11,10 +13,14 @@ public class ProtocolSupport extends ConfigModules {
- 
+@@ -12,11 +14,15 @@ public class ProtocolSupport extends ConfigModules {
      public static boolean jadeProtocol = false;
      public static boolean appleskinProtocol = false;
+     public static int appleskinSyncTickInterval = 20;
 +    public static boolean xaeroMapProtocol = false;
 +    public static int xaeroMapServerID = new Random().nextInt();
  
@@ -44,6 +44,7 @@ index ec6fd416786e4a38ed797819138fbdc83348541d..c159340c3d7d90601bb69a4e1b997e37
      public void onLoaded() {
          jadeProtocol = config.getBoolean(getBasePath() + ".jade-protocol", jadeProtocol);
          appleskinProtocol = config.getBoolean(getBasePath() + ".appleskin-protocol", appleskinProtocol);
+         appleskinSyncTickInterval = config.getInt(getBasePath() + ".appleskin-protocol-sync-tick-interval", appleskinSyncTickInterval);
 +        xaeroMapProtocol = config.getBoolean(getBasePath() + ".xaero-map-protocol", xaeroMapProtocol);
 +        xaeroMapServerID = config.getInt(getBasePath() + ".xaero-map-server-id", xaeroMapServerID);
      }

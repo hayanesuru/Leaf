@@ -6,28 +6,28 @@ Subject: [PATCH] Asteor Bar protocol
 This patch is Powered by AsteorBar (https://github.com/afoxxvi/AsteorBarMod)
 
 diff --git a/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java b/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
-index 6f151c185850738a9f8a575f9c09e3c469f5f9e2..1d8d321ac3f6c8bf12afe22d8b3f37655fa8c46c 100644
+index 4c38648af0a6f258c1618da7c162c44795ae36d6..a81c0a7bc71b86eb652abcd06099d36f4de71ae9 100644
 --- a/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
 +++ b/src/main/java/org/dreeam/leaf/config/modules/network/ProtocolSupport.java
-@@ -13,6 +13,7 @@ public class ProtocolSupport extends ConfigModules {
- 
+@@ -14,6 +14,7 @@ public class ProtocolSupport extends ConfigModules {
      public static boolean jadeProtocol = false;
      public static boolean appleskinProtocol = false;
+     public static int appleskinSyncTickInterval = 20;
 +    public static boolean asteorBarProtocol = false;
      public static boolean chatImageProtocol = false;
      public static boolean xaeroMapProtocol = false;
      public static int xaeroMapServerID = new Random().nextInt();
-@@ -24,6 +25,7 @@ public class ProtocolSupport extends ConfigModules {
-     public void onLoaded() {
+@@ -26,6 +27,7 @@ public class ProtocolSupport extends ConfigModules {
          jadeProtocol = config.getBoolean(getBasePath() + ".jade-protocol", jadeProtocol);
          appleskinProtocol = config.getBoolean(getBasePath() + ".appleskin-protocol", appleskinProtocol);
+         appleskinSyncTickInterval = config.getInt(getBasePath() + ".appleskin-protocol-sync-tick-interval", appleskinSyncTickInterval);
 +        asteorBarProtocol = config.getBoolean(getBasePath() + ".asteorbar-protocol", asteorBarProtocol);
          chatImageProtocol = config.getBoolean(getBasePath() + ".chatimage-protocol", chatImageProtocol);
          xaeroMapProtocol = config.getBoolean(getBasePath() + ".xaero-map-protocol", xaeroMapProtocol);
          xaeroMapServerID = config.getInt(getBasePath() + ".xaero-map-server-id", xaeroMapServerID);
 diff --git a/src/main/java/org/leavesmc/leaves/protocol/AsteorBarProtocol.java b/src/main/java/org/leavesmc/leaves/protocol/AsteorBarProtocol.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ed8d9888a24d3ae6cf8fe2f8b269554102e451df
+index 0000000000000000000000000000000000000000..e6f3a52c3b6a23d8a8f7c4ae7828efa5dd51523e
 --- /dev/null
 +++ b/src/main/java/org/leavesmc/leaves/protocol/AsteorBarProtocol.java
 @@ -0,0 +1,106 @@
@@ -106,7 +106,7 @@ index 0000000000000000000000000000000000000000..ed8d9888a24d3ae6cf8fe2f8b2695541
 +                    previousSaturationLevels.put(player.getUUID(), saturation);
 +                }
 +
-+                float exhaustion = data.getExhaustionLevel();
++                float exhaustion = data.exhaustionLevel;
 +                Float previousExhaustion = previousExhaustionLevels.get(player.getUUID());
 +                if (previousExhaustion == null || Math.abs(exhaustion - previousExhaustion) >= THRESHOLD) {
 +                    ProtocolUtils.sendPayloadPacket(player, NETWORK_KEY, buf -> {
