@@ -5,7 +5,7 @@ Subject: [PATCH] Bump Dependencies
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 1cc87374beed7b4a2cfdd278b076e20b1e9febc8..ba3690dade7df2c09e926c17349fe0d168b5f0b7 100644
+index 1cc87374beed7b4a2cfdd278b076e20b1e9febc8..fb1e0abc769ecc2c83d2047ad6ed7b733718eb55 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -9,11 +9,13 @@ java {
@@ -56,7 +56,7 @@ index 1cc87374beed7b4a2cfdd278b076e20b1e9febc8..ba3690dade7df2c09e926c17349fe0d1
      api("org.apache.logging.log4j:log4j-api:$log4jVersion")
      api("org.slf4j:slf4j-api:$slf4jVersion")
 -    api("io.sentry:sentry:5.4.0") // Pufferfish
-+    api("io.sentry:sentry:8.0.0-beta.3") // Pufferfish // Leaf - Bump Dependencies
++    api("io.sentry:sentry:8.0.0-rc.2") // Pufferfish // Leaf - Bump Dependencies
  
      implementation("org.ow2.asm:asm:9.7.1")
      implementation("org.ow2.asm:asm-commons:9.7.1")
@@ -77,7 +77,7 @@ index 1cc87374beed7b4a2cfdd278b076e20b1e9febc8..ba3690dade7df2c09e926c17349fe0d1
  
      // Paper start - add checker
 -    val checkerQual = "org.checkerframework:checker-qual:3.33.0"
-+    val checkerQual = "org.checkerframework:checker-qual:3.48.2" // Leaf - Bump Dependencies
++    val checkerQual = "org.checkerframework:checker-qual:3.48.3" // Leaf - Bump Dependencies
      compileOnlyApi(checkerQual)
      testCompileOnly(checkerQual)
      // Paper end
