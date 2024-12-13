@@ -9,10 +9,10 @@ Original project: https://github.com/Cryptite/Slice
 Co-authored-by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 1dc2af59bafa5a5dc6721da02cde19a3ca77af28..b2ae3fdf128e7d66e3f3430266321a6a09fa0be6 100644
+index 61a990d17adaa9f4144d8a1010e764ae5b4ee2fa..35a73243ce9a27af0c12ef7fb8b1a183f3efaaa5 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -307,6 +307,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+@@ -332,6 +332,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
      private boolean tpsBar = false; // Purpur
      private boolean compassBar = false; // Purpur
      private boolean ramBar = false; // Purpur
@@ -21,10 +21,10 @@ index 1dc2af59bafa5a5dc6721da02cde19a3ca77af28..b2ae3fdf128e7d66e3f3430266321a6a
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index bf3561764bab8e1b237c2b9760181853f60c8fa7..fa658c59c61449e6499f5f0c334df180e532f883 100644
+index 3d6a728c6f9542109e7466d590bb8f015b8c4ac1..e1ceb6added5c5d473cf25162b77c7cf6bf9da49 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -901,10 +901,10 @@ public abstract class PlayerList {
+@@ -865,10 +865,10 @@ public abstract class PlayerList {
          ServerLevel worldserver1 = entityplayer1.serverLevel();
          LevelData worlddata = worldserver1.getLevelData();
  
@@ -37,7 +37,7 @@ index bf3561764bab8e1b237c2b9760181853f60c8fa7..fa658c59c61449e6499f5f0c334df180
          entityplayer1.connection.send(new ClientboundSetDefaultSpawnPositionPacket(worldserver.getSharedSpawnPos(), worldserver.getSharedSpawnAngle()));
          entityplayer1.connection.send(new ClientboundChangeDifficultyPacket(worlddata.getDifficulty(), worlddata.isDifficultyLocked()));
          entityplayer1.connection.send(new ClientboundSetExperiencePacket(entityplayer1.experienceProgress, entityplayer1.totalExperience, entityplayer1.experienceLevel));
-@@ -965,6 +965,8 @@ public abstract class PlayerList {
+@@ -931,6 +931,8 @@ public abstract class PlayerList {
          return entityplayer1;
      }
  
@@ -47,11 +47,11 @@ index bf3561764bab8e1b237c2b9760181853f60c8fa7..fa658c59c61449e6499f5f0c334df180
          this.sendActiveEffects(player, player.connection);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 88668656c8586d758b636561066d96dd883e6201..75f1e56281014a8fc7e682478307d8f40ad4bdcc 100644
+index d0bdce91b073344f218c1624cd66fdda5d3e5b0e..414e30430eb7bcb935ef2cc038fcb7c27747bdd4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1365,6 +1365,25 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
-         // Paper end
+@@ -1366,6 +1366,25 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         // Paper end - Teleportation API
      }
  
 +    // Slice start

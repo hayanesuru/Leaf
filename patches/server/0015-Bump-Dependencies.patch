@@ -6,19 +6,10 @@ Subject: [PATCH] Bump Dependencies
 TODO - Dreeam: Bump & test dependencies, impl new features?
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index d1bcbd39120480b2e1e402040d20b8567019a4b0..47ade0d7de17d2ad306b1f872d9399edcc295cf2 100644
+index 3b0cd45cb07d9563c84901729f1f7edc498653bd..c35ffb8565218d9368cc583ae96ea86424184eed 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -22,7 +22,7 @@ dependencies {
-     // Leaf end - Leaf Config
- 
-     // Paper start
--    implementation("org.jline:jline-terminal-jansi:3.21.0")
-+    implementation("org.jline:jline-terminal-jansi:3.27.1") // Leaf - Bump Dependencies
-     implementation("net.minecrell:terminalconsoleappender:1.3.0")
-     implementation("net.kyori:adventure-text-serializer-ansi:4.17.0") // Keep in sync with adventureVersion from Paper-API build file
-     /*
-@@ -31,28 +31,32 @@ dependencies {
+@@ -44,28 +44,32 @@ dependencies {
            all its classes to check if they are plugins.
            Scanning takes about 1-2 seconds so adding this speeds up the server start.
       */
@@ -38,12 +29,11 @@ index d1bcbd39120480b2e1e402040d20b8567019a4b0..47ade0d7de17d2ad306b1f872d9399ed
      implementation("org.ow2.asm:asm-commons:9.7.1")
      implementation("org.spongepowered:configurate-yaml:4.2.0-SNAPSHOT") // Paper - config files
      implementation("commons-lang:commons-lang:2.6")
--    runtimeOnly("org.xerial:sqlite-jdbc:3.46.0.0")
--    runtimeOnly("com.mysql:mysql-connector-j:8.4.0")
--    runtimeOnly("com.lmax:disruptor:3.4.4") // Paper
+-    runtimeOnly("org.xerial:sqlite-jdbc:3.46.1.3")
 +    runtimeOnly("org.xerial:sqlite-jdbc:3.47.1.0") // Leaf - Bump Dependencies
-+    runtimeOnly("com.mysql:mysql-connector-j:9.1.0") // Leaf - Bump Dependencies
-+    runtimeOnly("com.lmax:disruptor:3.4.4") // Paper // Leaf - Bump Dependencies // Dreeam TODO - Waiting Log4j 3.x to support disruptor 4.0.0
+     runtimeOnly("com.mysql:mysql-connector-j:9.1.0")
+-    runtimeOnly("com.lmax:disruptor:3.4.4") // Paper
++    runtimeOnly("com.lmax:disruptor:3.4.4") // Paper // Dreeam TODO - Waiting Log4j 3.x to support disruptor 4.0.0
      // Paper start - Use Velocity cipher
 -    implementation("com.velocitypowered:velocity-native:3.3.0-SNAPSHOT") {
 +    implementation("com.velocitypowered:velocity-native:3.4.0-SNAPSHOT") { // Leaf - Bump Dependencies
@@ -62,7 +52,7 @@ index d1bcbd39120480b2e1e402040d20b8567019a4b0..47ade0d7de17d2ad306b1f872d9399ed
  
      // Purpur start
      implementation("org.mozilla:rhino-runtime:1.7.15")
-@@ -60,13 +64,13 @@ dependencies {
+@@ -73,14 +77,16 @@ dependencies {
      implementation("dev.omega24:upnp4j:1.0")
      // Purpur end
  
@@ -71,18 +61,22 @@ index d1bcbd39120480b2e1e402040d20b8567019a4b0..47ade0d7de17d2ad306b1f872d9399ed
 -    testImplementation("org.junit.platform:junit-platform-suite-engine:1.10.0")
 -    testImplementation("org.hamcrest:hamcrest:2.2")
 -    testImplementation("org.mockito:mockito-core:5.14.1")
-+    testImplementation("io.github.classgraph:classgraph:4.8.179") // Paper - mob goal test // Leaf - Bump Dependencies
-+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.3") // Leaf - Bump Dependencies
-+    testImplementation("org.junit.platform:junit-platform-suite-engine:1.11.3") // Leaf - Bump Dependencies
+-    mockitoAgent("org.mockito:mockito-core:5.14.1") { isTransitive = false } // Paper - configure mockito agent that is needed in newer java versions
++    // Leaf start - Bump Dependencies
++    testImplementation("io.github.classgraph:classgraph:4.8.179") // Paper - mob goal test
++    testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
++    testImplementation("org.junit.platform:junit-platform-suite-engine:1.11.3")
 +    testImplementation("org.hamcrest:hamcrest:3.0")
-+    testImplementation("org.mockito:mockito-core:5.14.2") // Leaf - Bump Dependencies
++    testImplementation("org.mockito:mockito-core:5.14.2")
++    mockitoAgent("org.mockito:mockito-core:5.14.2") { isTransitive = false } // Paper - configure mockito agent that is needed in newer java versions
      testImplementation("org.ow2.asm:asm-tree:9.7.1")
 -    testImplementation("org.junit-pioneer:junit-pioneer:2.2.0") // Paper - CartesianTest
-+    testImplementation("org.junit-pioneer:junit-pioneer:2.3.0") // Paper - CartesianTest // Leaf - Bump Dependencies
++    testImplementation("org.junit-pioneer:junit-pioneer:2.3.0") // Paper - CartesianTest
++    // Leaf end - Bump Dependencies
      implementation("net.neoforged:srgutils:1.0.9") // Paper - mappings handling
      implementation("net.neoforged:AutoRenamingTool:2.0.3") // Paper - remap plugins
      // Paper start - Remap reflection
-@@ -79,6 +83,8 @@ dependencies {
+@@ -93,6 +99,8 @@ dependencies {
      implementation("me.lucko:spark-api:0.1-20240720.200737-2")
      implementation("me.lucko:spark-paper:1.10.119-SNAPSHOT")
      // Paper end - spark
@@ -91,7 +85,7 @@ index d1bcbd39120480b2e1e402040d20b8567019a4b0..47ade0d7de17d2ad306b1f872d9399ed
  }
  
  paperweight {
-@@ -276,3 +282,8 @@ sourceSets {
+@@ -295,3 +303,8 @@ sourceSets {
      }
  }
  // Gale end - package license into jar

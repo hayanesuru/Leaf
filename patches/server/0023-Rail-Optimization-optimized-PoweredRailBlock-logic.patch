@@ -12,7 +12,7 @@ powered rail logic from a single rail instead of each block iterating separately
 expensive but also completely unnecessary and with a lot of massive overhead
 
 diff --git a/src/main/java/net/minecraft/world/level/block/PoweredRailBlock.java b/src/main/java/net/minecraft/world/level/block/PoweredRailBlock.java
-index 8fc65c32a3c6e6842a76b36f45e1b1c23abbc480..b2a3150f08db32dcfecff0390eec810c9ec18a24 100644
+index bd14c08defe8afc5ceca59d16a5b1dbad178f594..b37ab12d4c51aca1576a14147a959188031d0fd7 100644
 --- a/src/main/java/net/minecraft/world/level/block/PoweredRailBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/PoweredRailBlock.java
 @@ -29,7 +29,7 @@ public class PoweredRailBlock extends BaseRailBlock {

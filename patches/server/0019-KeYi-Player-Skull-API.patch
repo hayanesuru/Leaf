@@ -7,10 +7,10 @@ Original license: MIT
 Original project: https://github.com/KeYiMC/KeYi
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 173e4a075078af67f030750c9a6294ab3f796677..88668656c8586d758b636561066d96dd883e6201 100644
+index 63065a22ff359c142bab23fccacfd5ebd86f81a5..d0bdce91b073344f218c1624cd66fdda5d3e5b0e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3663,4 +3663,31 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3675,4 +3675,31 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          this.getHandle().connection.send(new net.minecraft.network.protocol.game.ClientboundPlayerCombatKillPacket(getEntityId(), io.papermc.paper.adventure.PaperAdventure.asVanilla(message)));
      }
      // Purpur end

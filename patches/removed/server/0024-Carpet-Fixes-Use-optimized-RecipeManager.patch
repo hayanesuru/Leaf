@@ -3,6 +3,8 @@ From: nostalgic853 <yuu8583@proton.me>
 Date: Tue, 25 Oct 2022 00:57:45 +0800
 Subject: [PATCH] Carpet-Fixes: Use optimized RecipeManager
 
+Removed since Leaf / MC 1.21.3
+
 This patch is based on the following mixin:
 "carpetfixes/mixins/optimizations/RecipeManager_fasterMixin.java"
 By: fxmorin <28154542+fxmorin@users.noreply.github.com>
