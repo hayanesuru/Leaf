@@ -7,18 +7,10 @@ Replace `thenApply` with `thenCompose`. Once one task is completed then the next
 to prevent blocking threads while waiting to complete all tasks. But may cause the sequence of future compose disorder.
 
 diff --git a/src/main/java/net/minecraft/Util.java b/src/main/java/net/minecraft/Util.java
-index 1360aa8202542d3d0f32247f1123575fc2c38ff1..b177428857e17a0fb9df0031d60e3027d5b996a1 100644
+index 1360aa8202542d3d0f32247f1123575fc2c38ff1..8701e64aa7287093f8cac3921e0189f94c62cae9 100644
 --- a/src/main/java/net/minecraft/Util.java
 +++ b/src/main/java/net/minecraft/Util.java
-@@ -40,6 +40,7 @@ import java.time.Duration;
- import java.time.Instant;
- import java.time.ZonedDateTime;
- import java.time.format.DateTimeFormatter;
-+import java.util.ArrayList;
- import java.util.Arrays;
- import java.util.EnumMap;
- import java.util.Iterator;
-@@ -586,17 +587,44 @@ public class Util {
+@@ -586,17 +586,44 @@ public class Util {
          return enumMap;
      }
  
@@ -48,7 +40,7 @@ index 1360aa8202542d3d0f32247f1123575fc2c38ff1..b177428857e17a0fb9df0031d60e3027
 +    private static <V> CompletableFuture<List<V>> sequenceFaster(List<? extends CompletableFuture<V>> futures, CompletableFuture<Void> completableFuture) {
 +        return completableFuture.thenCompose(void_ ->
 +                CompletableFuture.supplyAsync(() -> {
-+                            List<V> list = new ArrayList<>();
++                            List<V> list = new java.util.ArrayList<>();
 +
 +                            for (CompletableFuture<V> future : futures) {
 +                                list.add(future.join());

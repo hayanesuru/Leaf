@@ -67,7 +67,7 @@ index 38428ba2c522108f4f9f7986bc3535d1232ac1f8..02f143b41350660486de79e240259245
                      return blockState;
                  }
 diff --git a/src/main/java/net/minecraft/world/level/levelgen/material/MaterialRuleList.java b/src/main/java/net/minecraft/world/level/levelgen/material/MaterialRuleList.java
-index 0e6dfe2635ea5f5e410049b05f94f5083b2f18a4..e19086b3a65d992cf6687222557a34a896e84385 100644
+index 0e6dfe2635ea5f5e410049b05f94f5083b2f18a4..75a378bea8fdb03b6864fad49bc38fee83523bd9 100644
 --- a/src/main/java/net/minecraft/world/level/levelgen/material/MaterialRuleList.java
 +++ b/src/main/java/net/minecraft/world/level/levelgen/material/MaterialRuleList.java
 @@ -9,13 +9,16 @@ public record MaterialRuleList(NoiseChunk.BlockStateFiller[] materialRuleList) i
@@ -81,10 +81,10 @@ index 0e6dfe2635ea5f5e410049b05f94f5083b2f18a4..e19086b3a65d992cf6687222557a34a8
 -            }
 +        // Leaf start - Avoid iterator allocation
 +        BlockState blockState = null;
-+        int s = this.materialRuleList.size();
++        int length = this.materialRuleList.length;
 +
-+        for (int i = 0; blockState == null && i < s; i++) {
-+            NoiseChunk.BlockStateFiller blockStateFiller = this.materialRuleList.get(i);
++        for (int i = 0; blockState == null && i < length; i++) {
++            NoiseChunk.BlockStateFiller blockStateFiller = this.materialRuleList[i];
 +            blockState = blockStateFiller.calculate(pos);
          }
  
