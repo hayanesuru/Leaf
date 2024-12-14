@@ -10,31 +10,39 @@ which the contains iteration call is very expensive if called everytime
 In the test, it can improve ~30% performance in ~1577000 times of canHoldAnyFluid calls (~159ms -> ~111ms)
 
 diff --git a/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java b/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
-index cabb4b79248725ea8f831d5f1b27902c3c9ea262..d97e98e4c4076694be465eb65e95cd1629b025ec 100644
+index cabb4b79248725ea8f831d5f1b27902c3c9ea262..d371c3846917a7cea17cd38510d366535c2b6954 100644
 --- a/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -844,6 +844,7 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -844,6 +844,8 @@ public abstract class BlockBehaviour implements FeatureElement {
          private VoxelShape[] occlusionShapesByFace;
          private boolean propagatesSkylightDown;
          private int lightBlock;
 +        private boolean canHoldAnyFluidInternal; // Leaf - Cache canHoldAnyFluid result
++        private boolean canHoldAnyFluidInternalInit; // Leaf - Cache canHoldAnyFluid result
  
          // Paper start - rewrite chunk system
          private boolean isConditionallyFullOpaque;
-@@ -999,6 +1000,7 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -999,6 +1001,8 @@ public abstract class BlockBehaviour implements FeatureElement {
  
              this.propagatesSkylightDown = ((Block) this.owner).propagatesSkylightDown(this.asState());
              this.lightBlock = ((Block) this.owner).getLightBlock(this.asState());
-+            this.canHoldAnyFluidInternal = net.minecraft.world.level.material.FlowingFluid.canHoldAnyFluid(this.asState()); // Leaf - Cache canHoldAnyFluid result
++            this.canHoldAnyFluidInternal = false; // Leaf - Cache canHoldAnyFluid result
++            this.canHoldAnyFluidInternalInit = false; // Leaf - Cache canHoldAnyFluid result
              // Paper start - rewrite chunk system
              this.isConditionallyFullOpaque = this.canOcclude & this.useShapeForLightOcclusion;
              // Paper end - rewrite chunk system
-@@ -1058,6 +1060,12 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -1058,6 +1062,18 @@ public abstract class BlockBehaviour implements FeatureElement {
              return this.legacySolid;
          }
  
 +        // Leaf start - Cache canHoldAnyFluid result
 +        public boolean canHoldAnyFluidInternal() {
++            // Lazy load cache
++            if (!canHoldAnyFluidInternalInit) {
++                canHoldAnyFluidInternal = net.minecraft.world.level.material.FlowingFluid.canHoldAnyFluid(this.asState());
++                canHoldAnyFluidInternalInit = true;
++            }
++
 +            return canHoldAnyFluidInternal;
 +        }
 +        // Leaf end - Cache canHoldAnyFluid result
