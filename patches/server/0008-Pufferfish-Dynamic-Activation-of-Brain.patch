@@ -69,7 +69,7 @@ index c8c2394558952d7ca57d29874485251b8f2b3400..24eaa9a2e6f0cf198a307058e655d5eb
      @Nullable
      private Component description;
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index ba1fc908290db310bec38c8eb1a3e464dd105bf6..fdeb3e58de44bba282cc5aa37f744a9e8c27ed46 100644
+index 3b10055c589575078bed8c79b3a0967d3f237957..97e63541e76d0dfeb18d69c08114e9652ab30c96 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
 @@ -237,10 +237,10 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
@@ -258,10 +258,10 @@ index 9d9d58ab055b5bccedd6ebc9f6853ca8206cde65..64f3204b4b6ac0c57d0eb833a959f666
          super.customServerAiStep(world);
          if ((this.tickCount + this.getId()) % 120 == 0) {
 diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-index de542de264d2a4ffa84699c34d3c576578c3d2a5..99f1c604a2e67043cbc53092a50d84b745640069 100644
+index 08c780e9e1e167b84f70dce691bb564c8420b286..bb5a924c203be427e3faf84917b86622fdec5f25 100644
 --- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
 +++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
-@@ -142,6 +142,8 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -140,6 +140,8 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          return holder.is(PoiTypes.MEETING);
      });
  
@@ -270,7 +270,7 @@ index de542de264d2a4ffa84699c34d3c576578c3d2a5..99f1c604a2e67043cbc53092a50d84b7
      public Villager(EntityType<? extends Villager> entityType, Level world) {
          this(entityType, world, VillagerType.PLAINS);
      }
-@@ -245,6 +247,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -243,6 +245,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
      }
      // Spigot End
  
@@ -278,7 +278,7 @@ index de542de264d2a4ffa84699c34d3c576578c3d2a5..99f1c604a2e67043cbc53092a50d84b7
      @Override
      protected void customServerAiStep(ServerLevel world) {
          // Paper start - EAR 2
-@@ -252,7 +255,11 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -250,7 +253,11 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
      }
      protected void customServerAiStep(ServerLevel world, final boolean inactive) {
          // Paper end - EAR 2

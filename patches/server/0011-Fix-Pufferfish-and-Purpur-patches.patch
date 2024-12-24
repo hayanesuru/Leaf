@@ -131,16 +131,16 @@ index eb8ea4df3996a22d46a6fdc1df2fa1f26aa95aec..7434eac75587ed82e60a25145f42ec3e
                  this.disconnectAsync(Component.literal("Book too large!"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION); // Paper - kick event cause // Paper - add proper async disconnect
                  return;
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 68f94543395c143234957cd5e33600a0c4b1c87d..3665fa73fb0bd788335a8bbbdaa8f5aba0b45d8b 100644
+index 68f94543395c143234957cd5e33600a0c4b1c87d..ee64667e5c33afd68d4458bffd858c66db4c1421 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -579,13 +579,29 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -579,13 +579,28 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      // Purpur end
  
      // Purpur start - copied from Mob - API for any mob to burn daylight
 +    // Gale start - JettPack - optimize sun burn tick - cache eye blockpos - copied from Mob#isSunBurnTick
 +    private BlockPos cached_eye_blockpos;
-+    private int cached_position_hashcode;
++    private net.minecraft.world.phys.Vec3 cached_position;
 +    // Gale end - JettPack - optimize sun burn tick - cache eye blockpos - copied from Mob#isSunBurnTick
 +
      public boolean isSunBurnTick() {
@@ -148,10 +148,9 @@ index 68f94543395c143234957cd5e33600a0c4b1c87d..3665fa73fb0bd788335a8bbbdaa8f5ab
 -            float f = this.getLightLevelDependentMagicValue();
 -            BlockPos blockposition = BlockPos.containing(this.getX(), this.getEyeY(), this.getZ());
 +            // Gale start - JettPack - optimize sun burn tick - optimizations and cache eye blockpos - copied from Mob#isSunBurnTick
-+            int positionHashCode = this.position.hashCode();
-+            if (this.cached_position_hashcode != positionHashCode) {
++            if (this.cached_position != this.position) {
 +                this.cached_eye_blockpos = BlockPos.containing(this.getX(), this.getEyeY(), this.getZ());
-+                this.cached_position_hashcode = positionHashCode;
++                this.cached_position = this.position;
 +            }
 +
 +            float f = this.getLightLevelDependentMagicValue(cached_eye_blockpos); // Pass BlockPos to getBrightness
@@ -197,7 +196,7 @@ index 260e9b0398ddaacacfe5de352ac686ef273a6167..6f3986ba57ce794a1f78b8960a7c8de8
              // Purpur start
              if (entity instanceof LivingEntity entityliving) {
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index dfae42ed76d11438ac79d083c82914c60f0e606e..6c603c83d9caeed480f5d67854e40c3fa8ff20dd 100644
+index a2ab53e70328b4ac0d019ebbd3d3cffeeb29d76b..6c603c83d9caeed480f5d67854e40c3fa8ff20dd 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
 @@ -1746,11 +1746,6 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
@@ -206,35 +205,14 @@ index dfae42ed76d11438ac79d083c82914c60f0e606e..6c603c83d9caeed480f5d67854e40c3f
  
 -    // Gale start - JettPack - optimize sun burn tick - cache eye blockpos
 -    private BlockPos cached_eye_blockpos;
--    private int cached_position_hashcode;
+-    private net.minecraft.world.phys.Vec3 cached_position;
 -    // Gale end - JettPack - optimize sun burn tick - cache eye blockpos
 -
      public boolean isSunBurnTick() {
          // Purpur - implemented in Entity - API for any mob to burn daylight
          return super.isSunBurnTick();
-diff --git a/src/main/java/net/minecraft/world/entity/ai/behavior/TradeWithVillager.java b/src/main/java/net/minecraft/world/entity/ai/behavior/TradeWithVillager.java
-index b96e596fb123f5b69d2b2f5b4a65537beaab33e6..0f6ff2fb3c5df42a44e5082c2408d5262c187870 100644
---- a/src/main/java/net/minecraft/world/entity/ai/behavior/TradeWithVillager.java
-+++ b/src/main/java/net/minecraft/world/entity/ai/behavior/TradeWithVillager.java
-@@ -21,6 +21,7 @@ public class TradeWithVillager extends Behavior<Villager> {
-     private static final Item[] WHEAT_SINGLETON_ARRAY = {Items.WHEAT};
-     private @org.jetbrains.annotations.NotNull Item @org.jetbrains.annotations.Nullable [] trades = null;
-     // Gale end - optimize villager data storage
-+    private static final Item[] NETHER_WART_SINGLETON_ARRAY = {Items.NETHER_WART}; // Leaf - sync with Gale's Optimize-villager-data-storage.patch
- 
-     public TradeWithVillager() {
-         super(
-@@ -64,7 +65,7 @@ public class TradeWithVillager extends Behavior<Villager> {
- 
-             // Purpur start
-             if (world.purpurConfig.villagerClericsFarmWarts && world.purpurConfig.villagerClericFarmersThrowWarts && entity.getVillagerData().getProfession() == VillagerProfession.CLERIC && entity.getInventory().countItem(Items.NETHER_WART) > Items.NETHER_WART.getDefaultMaxStackSize() / 2) {
--                throwHalfStack(entity, ImmutableSet.of(Items.NETHER_WART), villager);
-+                throwHalfStack(entity, NETHER_WART_SINGLETON_ARRAY, villager); // Leaf - sync with Gale's Optimize-villager-data-storage.patch
-             }
-             // Purpur end
- 
 diff --git a/src/main/java/net/minecraft/world/entity/ai/sensing/SecondaryPoiSensor.java b/src/main/java/net/minecraft/world/entity/ai/sensing/SecondaryPoiSensor.java
-index 675126d9ab94b6c69d0436a42b9594a567aca6e4..67f16bd710e0c04b4e2dac2c2cf5862853f3f4f4 100644
+index d548d1b2686667d809f363cd0ae4444bc3918bf2..c3519eb6b28d180c9a5bf673037f1c4324ba5685 100644
 --- a/src/main/java/net/minecraft/world/entity/ai/sensing/SecondaryPoiSensor.java
 +++ b/src/main/java/net/minecraft/world/entity/ai/sensing/SecondaryPoiSensor.java
 @@ -22,19 +22,15 @@ public class SecondaryPoiSensor extends Sensor<Villager> {
@@ -244,7 +222,7 @@ index 675126d9ab94b6c69d0436a42b9594a567aca6e4..67f16bd710e0c04b4e2dac2c2cf58628
 +        // Purpur start - make sure clerics don't wander to soul sand when the option is off
          // Gale start - Lithium - skip secondary POI sensor if absent
          var secondaryPoi = entity.getVillagerData().getProfession().secondaryPoi();
--        if (secondaryPoi == null) { // Gale - optimize villager data storage
+-        if (secondaryPoi.isEmpty()) {
 -            entity.getBrain().eraseMemory(MemoryModuleType.SECONDARY_JOB_SITE);
 -            return;
 -        }
@@ -252,7 +230,7 @@ index 675126d9ab94b6c69d0436a42b9594a567aca6e4..67f16bd710e0c04b4e2dac2c2cf58628
 -        // Purpur start - make sure clerics don't wander to soul sand when the option is off
          Brain<?> brain = entity.getBrain();
 -        if (!world.purpurConfig.villagerClericsFarmWarts && entity.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.CLERIC) {
-+        if (secondaryPoi == null || (!world.purpurConfig.villagerClericsFarmWarts && entity.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.CLERIC)) {
++        if (secondaryPoi.isEmpty() || (!world.purpurConfig.villagerClericsFarmWarts && entity.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.CLERIC)) {
              brain.eraseMemory(MemoryModuleType.SECONDARY_JOB_SITE);
              return;
          }
@@ -293,19 +271,6 @@ index 07db4557ab0d7a4a0f5432257bd18195d2de7255..c334f0bdd4d5e1e5468216b13e6f5350
  
      @Override
      protected void registerGoals() {
-diff --git a/src/main/java/net/minecraft/world/entity/npc/VillagerProfession.java b/src/main/java/net/minecraft/world/entity/npc/VillagerProfession.java
-index 4f3ce7ff387835b8a14eb36c90700fdb837a933c..6dd64c56581fcf42ceafaeed557ee5214f67184f 100644
---- a/src/main/java/net/minecraft/world/entity/npc/VillagerProfession.java
-+++ b/src/main/java/net/minecraft/world/entity/npc/VillagerProfession.java
-@@ -31,7 +31,7 @@ public record VillagerProfession(
-     public static final VillagerProfession ARMORER = register("armorer", PoiTypes.ARMORER, SoundEvents.VILLAGER_WORK_ARMORER);
-     public static final VillagerProfession BUTCHER = register("butcher", PoiTypes.BUTCHER, SoundEvents.VILLAGER_WORK_BUTCHER);
-     public static final VillagerProfession CARTOGRAPHER = register("cartographer", PoiTypes.CARTOGRAPHER, SoundEvents.VILLAGER_WORK_CARTOGRAPHER);
--    public static final VillagerProfession CLERIC = register("cleric", PoiTypes.CLERIC, ImmutableSet.of(Items.NETHER_WART), ImmutableSet.of(Blocks.SOUL_SAND), SoundEvents.VILLAGER_WORK_CLERIC); // Purpur
-+    public static final VillagerProfession CLERIC = register("cleric", PoiTypes.CLERIC, new Item[] {Items.NETHER_WART}, Blocks.SOUL_SAND, SoundEvents.VILLAGER_WORK_CLERIC); // Purpur // Leaf - sync with Gale's Optimize-villager-data-storage.patch
-     public static final VillagerProfession FARMER = register(
-         "farmer",
-         PoiTypes.FARMER,
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
 index a7fe724fd2aec7a72781e7b3ab74ff317cec8fbf..fd22b5374fe5de11474f495ea941b8dd10e2d41f 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
