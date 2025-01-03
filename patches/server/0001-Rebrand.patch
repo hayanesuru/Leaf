@@ -70,6 +70,25 @@ index f21106b0897dd6e373970f32f5dd269418528977..6d8634caade010a31a8e1c59684e9bb0
  
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>(2); // Gale - metrics - reduce HashMap capacity
+diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
+index 2beea17d87464683faaefa835206f2654df9bde0..c066586ce43b3ae5c64d52a3a93c8c8ee883b499 100644
+--- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
++++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
+@@ -40,12 +40,12 @@ public class PaperVersionFetcher extends org.galemc.gale.version.AbstractPaperVe
+ 
+     public PaperVersionFetcher() {
+         super(
+-            "master",
++            "ver/1.21.3", // Leaf
+             "https://papermc.io/downloads/paper",
+             "PaperMC",
+             "Paper",
+             "PaperMC",
+-            "Paper"
++            "Paper-archive" // Leaf
+         );
+     }
+ 
 diff --git a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java b/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
 index b78828e83d8128eace986aeb73213da3b3f905e4..9869bec65f4d0fbd5ed5aff896a8956e7ea2747f 100644
 --- a/src/main/java/com/destroystokyo/paper/console/PaperConsole.java
@@ -215,7 +234,7 @@ index 0b5979723bb30f9011ac64c36d894aa41713ec9b..e220f5601f6b92b7b280ce8ebe64117d
          if (stream != null) {
 diff --git a/src/main/java/org/dreeam/leaf/version/LeafVersionFetcher.java b/src/main/java/org/dreeam/leaf/version/LeafVersionFetcher.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..8ebc1b7f2fb43ff78ed9e0a32d86e58882be1c74
+index 0000000000000000000000000000000000000000..a02577f08929747ea6ee964ca7289508499e1a3d
 --- /dev/null
 +++ b/src/main/java/org/dreeam/leaf/version/LeafVersionFetcher.java
 @@ -0,0 +1,17 @@
@@ -227,7 +246,7 @@ index 0000000000000000000000000000000000000000..8ebc1b7f2fb43ff78ed9e0a32d86e588
 +
 +    public LeafVersionFetcher() {
 +        super(
-+                "ver/1.21.1",
++                "ver/1.21.3",
 +                "https://github.com/Winds-Studio/Leaf",
 +                "Winds-Studio",
 +                "Leaf",

@@ -2,7 +2,7 @@ name: Build Leaf 1.21.3
 
 on:
   push:
-    branches: [ "dev/1.21.3" ]
+    branches: [ "ver/1.21.3" ]
   pull_request:
     branches: [ "ver/1.21.3" ]
 
