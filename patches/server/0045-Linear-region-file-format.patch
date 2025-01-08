@@ -12,7 +12,7 @@ This format saves about 50% of disk space.
 Documentation: https://github.com/xymb-endcrystalme/LinearRegionFileFormatTools
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index c35ffb8565218d9368cc583ae96ea86424184eed..1e3dc0cf613a621bbf0873bcffb01c69aa119e92 100644
+index 635ec3ef8bd96f73527ee50ca87c8f2e6b8232b2..92fc2ab1fd20d31d1c5476f8f2349f0f64fbec9d 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -33,6 +33,11 @@ dependencies {
@@ -20,13 +20,13 @@ index c35ffb8565218d9368cc583ae96ea86424184eed..1e3dc0cf613a621bbf0873bcffb01c69
      // Leaf end - Leaf Config
  
 +    // LinearPaper start
-+    implementation("com.github.luben:zstd-jni:1.5.6-8")
++    implementation("com.github.luben:zstd-jni:1.5.6-9")
 +    implementation("org.lz4:lz4-java:1.8.0")
 +    // LinearPaper end
 +
      // Paper start
-     implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
-     implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
+     // Leaf start - Bump Dependencies
+     implementation("org.jline:jline-terminal-ffm:3.28.0") // use ffm on java 22+ // Leaf Bu
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/ChunkSystemRegionFileStorage.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/ChunkSystemRegionFileStorage.java
 index a814512fcfb85312474ae2c2c21443843bf57831..f80c75c561313625b694b433692aa429b8f8fde9 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/io/ChunkSystemRegionFileStorage.java
