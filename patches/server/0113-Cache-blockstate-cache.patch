@@ -5,10 +5,10 @@ Subject: [PATCH] Cache blockstate cache
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java b/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
-index ca2b57d13128717ebb772dd6523d2909f12560cd..cabb4b79248725ea8f831d5f1b27902c3c9ea262 100644
+index 9b94d8bf3415734776c81297d5d34eea46ad7e78..65d8ac795282117ba88003e7a703ee649a359473 100644
 --- a/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -1446,6 +1446,10 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -1438,6 +1438,10 @@ public abstract class BlockBehaviour implements FeatureElement {
  
              private static final Direction[] DIRECTIONS = Direction.values();
              private static final int SUPPORT_TYPE_COUNT = SupportType.values().length;
@@ -19,7 +19,7 @@ index ca2b57d13128717ebb772dd6523d2909f12560cd..cabb4b79248725ea8f831d5f1b27902c
              protected final VoxelShape collisionShape;
              protected boolean largeCollisionShape; // Leaf - not final
              private final boolean[] faceSturdy;
-@@ -1459,7 +1463,7 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -1451,7 +1455,7 @@ public abstract class BlockBehaviour implements FeatureElement {
                      throw new IllegalStateException(String.format(Locale.ROOT, "%s has a collision shape and an offset type, but is not marked as dynamicShape in its properties.", BuiltInRegistries.BLOCK.getKey(block)));
                  } else {
                      // Leaf start - Remove stream
@@ -28,7 +28,7 @@ index ca2b57d13128717ebb772dd6523d2909f12560cd..cabb4b79248725ea8f831d5f1b27902c
                          if (this.collisionShape.min(axis) < 0.0D || this.collisionShape.max(axis) > 1.0D) {
                              this.largeCollisionShape = true;
                              break;
-@@ -1472,7 +1476,7 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -1464,7 +1468,7 @@ public abstract class BlockBehaviour implements FeatureElement {
  
                      for (int j = 0; j < i; ++j) {
                          Direction enumdirection = aenumdirection[j];

@@ -10,10 +10,10 @@ which the contains iteration call is very expensive if called everytime
 In the test, it can improve ~30% performance in ~1577000 times of canHoldAnyFluid calls (~159ms -> ~111ms)
 
 diff --git a/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java b/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
-index cabb4b79248725ea8f831d5f1b27902c3c9ea262..d371c3846917a7cea17cd38510d366535c2b6954 100644
+index 65d8ac795282117ba88003e7a703ee649a359473..b0df5ac8efdca17498f7f87bb86e376122aa6fe3 100644
 --- a/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -844,6 +844,8 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -836,6 +836,8 @@ public abstract class BlockBehaviour implements FeatureElement {
          private VoxelShape[] occlusionShapesByFace;
          private boolean propagatesSkylightDown;
          private int lightBlock;
@@ -22,7 +22,7 @@ index cabb4b79248725ea8f831d5f1b27902c3c9ea262..d371c3846917a7cea17cd38510d36653
  
          // Paper start - rewrite chunk system
          private boolean isConditionallyFullOpaque;
-@@ -999,6 +1001,8 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -991,6 +993,8 @@ public abstract class BlockBehaviour implements FeatureElement {
  
              this.propagatesSkylightDown = ((Block) this.owner).propagatesSkylightDown(this.asState());
              this.lightBlock = ((Block) this.owner).getLightBlock(this.asState());
@@ -31,7 +31,7 @@ index cabb4b79248725ea8f831d5f1b27902c3c9ea262..d371c3846917a7cea17cd38510d36653
              // Paper start - rewrite chunk system
              this.isConditionallyFullOpaque = this.canOcclude & this.useShapeForLightOcclusion;
              // Paper end - rewrite chunk system
-@@ -1058,6 +1062,18 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -1050,6 +1054,18 @@ public abstract class BlockBehaviour implements FeatureElement {
              return this.legacySolid;
          }
  
