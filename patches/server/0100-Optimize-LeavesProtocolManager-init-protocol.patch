@@ -353,12 +353,12 @@ index 87b1502c1b980d33cae205ae35d336f7450e5e94..89cc2bc49c9a8d6ae5dd3ff10ac96e42
          @Override
          public void write(@NotNull FriendlyByteBuf buf) {
 diff --git a/src/main/java/org/leavesmc/leaves/protocol/jade/JadeProtocol.java b/src/main/java/org/leavesmc/leaves/protocol/jade/JadeProtocol.java
-index 41e4f98203b2e4392b0f76a560a4ed22db31adef..7777bfba21233625b21876ae55e09157ce84e04c 100644
+index 3f21db1707c961242090f2edd54b72f233c59d79..a7d9bd324f8a83e0424194711af66f691172b3f6 100644
 --- a/src/main/java/org/leavesmc/leaves/protocol/jade/JadeProtocol.java
 +++ b/src/main/java/org/leavesmc/leaves/protocol/jade/JadeProtocol.java
-@@ -98,6 +98,10 @@ public class JadeProtocol {
+@@ -89,6 +89,10 @@ public class JadeProtocol {
      public static final PairHierarchyLookup<IServerDataProvider<BlockAccessor>> blockDataProviders = new PairHierarchyLookup<>(new HierarchyLookup<>(Block.class), new HierarchyLookup<>(BlockEntity.class));
-     public static final WrappedHierarchyLookup<IServerExtensionProvider<ItemStack>> itemStorageProviders = new WrappedHierarchyLookup<>();
+     public static final WrappedHierarchyLookup<IServerExtensionProvider<ItemStack>> itemStorageProviders = WrappedHierarchyLookup.forAccessor();
  
 +    public static boolean shouldEnable() {
 +        return org.dreeam.leaf.config.modules.network.ProtocolSupport.jadeProtocol;
@@ -367,7 +367,7 @@ index 41e4f98203b2e4392b0f76a560a4ed22db31adef..7777bfba21233625b21876ae55e09157
      @Contract("_ -> new")
      public static @NotNull ResourceLocation id(String path) {
          return new ResourceLocation(PROTOCOL_ID, path);
-@@ -169,19 +173,11 @@ public class JadeProtocol {
+@@ -161,19 +165,11 @@ public class JadeProtocol {
  
      @ProtocolHandler.PlayerJoin
      public static void onPlayerJoin(ServerPlayer player) {
@@ -384,10 +384,10 @@ index 41e4f98203b2e4392b0f76a560a4ed22db31adef..7777bfba21233625b21876ae55e09157
 -            return;
 -        }
 -
-         MinecraftServer server = MinecraftServer.getServer();
-         server.execute(() -> {
-             Level world = player.level();
-@@ -230,10 +226,6 @@ public class JadeProtocol {
+         MinecraftServer.getServer().execute(() -> {
+             EntityAccessor accessor = payload.data().unpack(player);
+             if (accessor == null) {
+@@ -210,10 +206,6 @@ public class JadeProtocol {
  
      @ProtocolHandler.PayloadReceiver(payload = RequestBlockPayload.class, payloadId = "request_block")
      public static void requestBlockData(ServerPlayer player, RequestBlockPayload payload) {
@@ -397,7 +397,7 @@ index 41e4f98203b2e4392b0f76a560a4ed22db31adef..7777bfba21233625b21876ae55e09157
 -
          MinecraftServer server = MinecraftServer.getServer();
          server.execute(() -> {
-             Level world = player.level();
+             BlockAccessor accessor = payload.data().unpack(player);
 diff --git a/src/main/java/org/leavesmc/leaves/protocol/syncmatica/CommunicationManager.java b/src/main/java/org/leavesmc/leaves/protocol/syncmatica/CommunicationManager.java
 index 0704ac7825c69e69097b3e7c77763044f9fa9e1e..c039765237d56def91a1e630a0510062305fd585 100644
 --- a/src/main/java/org/leavesmc/leaves/protocol/syncmatica/CommunicationManager.java

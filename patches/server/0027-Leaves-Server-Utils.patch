@@ -9,7 +9,7 @@ and change store way to sql maybe?
 Original license: GPLv3
 Original project: https://github.com/LeavesMC/Leaves
 
-Commit: aeeef2213c2295288b71c9162cbe008c4a3defd9
+Commit: 41476d86922416c45f703df2871890831fc42bb5
 
 diff --git a/src/main/java/org/leavesmc/leaves/LeavesLogger.java b/src/main/java/org/leavesmc/leaves/LeavesLogger.java
 new file mode 100644
