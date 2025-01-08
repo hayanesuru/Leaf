@@ -5,6 +5,9 @@
 # Linux temp files
 *~
 
+# vim
+.*.sw[a-p]
+
 # IntelliJ
 *.iml
 .idea

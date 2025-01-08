@@ -5,5 +5,3 @@
 - [ ] check multithreaded tracker, that moonrise change
 - [ ] Check and apply work patches
 - [ ] Backport Cache canHoldAnyFluid result to 1.21.1
-- [ ] tracking todos
-- [ ] Update gitignore
