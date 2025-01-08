@@ -271,6 +271,18 @@ index 07db4557ab0d7a4a0f5432257bd18195d2de7255..c334f0bdd4d5e1e5468216b13e6f5350
  
      @Override
      protected void registerGoals() {
+diff --git a/src/main/java/net/minecraft/world/entity/npc/Villager.java b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+index fd373d98f836c057c30c4fbd5d7618cc4e757b78..bd4a96e2b4b539bafe13605e80706311c15263a7 100644
+--- a/src/main/java/net/minecraft/world/entity/npc/Villager.java
++++ b/src/main/java/net/minecraft/world/entity/npc/Villager.java
+@@ -354,6 +354,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+         if (!inactive && (getRider() == null || !this.isControllable()) && this.behaviorTick++ % this.activatedPriority == 0) { // Purpur
+             this.getBrain().tick(world, this); // Paper
+         }
++        else if (this.isLobotomized && shouldRestock()) restock(); // Leaf - Purpur - Fix
+         // Pufferfish end
+         if (this.assignProfessionWhenSpawned) {
+             this.assignProfessionWhenSpawned = false;
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java b/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
 index a7fe724fd2aec7a72781e7b3ab74ff317cec8fbf..fd22b5374fe5de11474f495ea941b8dd10e2d41f 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/Projectile.java
