@@ -143,7 +143,7 @@ index 6bdc683b5ade408ee27f1d6636b4d60c8c89cb7c..bc6d3898d8784e50a0e2264bbb5bde63
          ignored.add("goal_selector_1");
          ignored.add("goal_selector_2");
 diff --git a/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java b/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
-index 41c95f00b4b2bea6d31f85e268c33d7f6184823e..34ad08eedd74a9948c661e7411a2d217259c2f8b 100644
+index 41c95f00b4b2bea6d31f85e268c33d7f6184823e..1fe7458f9114a6b60ddc4dd90728aecb0b1e9e3f 100644
 --- a/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
 +++ b/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
 @@ -70,10 +70,10 @@ public class PaperPluginsCommand extends BukkitCommand {
@@ -240,7 +240,7 @@ index 41c95f00b4b2bea6d31f85e268c33d7f6184823e..34ad08eedd74a9948c661e7411a2d217
          final int sizeSpigotPlugins = spigotPlugins.size();
          final int sizePlugins = sizePaperPlugins + sizeSpigotPlugins;
 -        final boolean hasAllPluginTypes = (sizePaperPlugins > 0 && sizeSpigotPlugins > 0);
-+        final boolean hasAllPluginTypes = (sizePaperPlugins > 0 && sizeSpigotPlugins > 0); // Purpur - Improve output of plugins command
++        final boolean hasAllPluginTypes = true || (sizePaperPlugins > 0 && sizeSpigotPlugins > 0); // Purpur - Improve output of plugins command
  
 -        final Component infoMessage = Component.text().append(INFO_ICON_SERVER_PLUGIN).append(Component.text("Server Plugins (%s):".formatted(sizePlugins), NamedTextColor.WHITE)).build();
 +        //final Component infoMessage = Component.text().append(INFO_ICON_SERVER_PLUGIN).append(Component.text("Server Plugins (%s):".formatted(sizePlugins), NamedTextColor.WHITE)).build(); // Purpur - Improve output of plugins command
