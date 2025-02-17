@@ -14621,7 +14621,7 @@ index 4bee1ba137d078563cedfdd184a8b4603df17487..d3f5242fc66529bf3137da4d505a6cf5
                          double d2 = nearestPlayer.distanceToSqr(d, y, d1);
                          if (level.isLoadedAndInBounds(mutableBlockPos) && isRightDistanceToPlayerAndSpawnPoint(level, chunk, mutableBlockPos, d2)) { // Paper - don't load chunks for mob spawn
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index 4d183fb445c43621c5ce95edc1af27b6a41f0acb..a22ef98cf584fd9e66ac86ce2f66ec04e6353608 100644
+index 4d183fb445c43621c5ce95edc1af27b6a41f0acb..6030c4eefd77969a1a9251de76d4291dcb0a2092 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
 @@ -317,7 +317,7 @@ public class ServerExplosion implements Explosion {
@@ -14652,7 +14652,7 @@ index 4d183fb445c43621c5ce95edc1af27b6a41f0acb..a22ef98cf584fd9e66ac86ce2f66ec04
 +        } else {
 +            Location location = new Location(this.level.getWorld(), this.center.x, this.center.y, this.center.z);
 +            org.bukkit.block.Block block = location.getBlock();
-+            org.bukkit.block.BlockState blockState = (this.damageSource.getDirectBlockState() != null) ? this.damageSource.getDirectBlockState() : block.getState();
++            org.bukkit.block.BlockState blockState = (this.damageSource.causingBlockSnapshot() != null) ? this.damageSource.causingBlockSnapshot() : block.getState();
 +            if(!new org.purpurmc.purpur.event.PreBlockExplodeEvent(location.getBlock(), this.blockInteraction == Explosion.BlockInteraction.DESTROY_WITH_DECAY ? 1.0F / this.radius : 1.0F, blockState, org.bukkit.craftbukkit.CraftExplosionResult.toBukkit(getBlockInteraction())).callEvent()) {
 +                this.wasCanceled = true;
 +                return;
@@ -15944,7 +15944,7 @@ index 88e7320a48b08f052ae1cac914ebbcb905baf693..a20bf795d56a8b8aa1536eed887b5795
                                  if (!blockState.is(Blocks.KELP)
                                      && !blockState.is(Blocks.KELP_PLANT)
 diff --git a/net/minecraft/world/level/block/StonecutterBlock.java b/net/minecraft/world/level/block/StonecutterBlock.java
-index 04706b35549d7d9c1684a106ab6bff6de8199bc9..3e1780bf622dde39ca2717e30ec5d79fa0fa872e 100644
+index 04706b35549d7d9c1684a106ab6bff6de8199bc9..9dc7c3d0d6f8bcbc670fe10e594fa9c5495cffab 100644
 --- a/net/minecraft/world/level/block/StonecutterBlock.java
 +++ b/net/minecraft/world/level/block/StonecutterBlock.java
 @@ -93,4 +93,14 @@ public class StonecutterBlock extends Block {
@@ -15956,7 +15956,7 @@ index 04706b35549d7d9c1684a106ab6bff6de8199bc9..3e1780bf622dde39ca2717e30ec5d79f
 +    @Override
 +    public void stepOn(Level level, BlockPos pos, BlockState state, net.minecraft.world.entity.Entity entity) {
 +        if (level.purpurConfig.stonecutterDamage > 0.0F && entity instanceof net.minecraft.world.entity.LivingEntity) {
-+            entity.hurtServer((net.minecraft.server.level.ServerLevel) level, entity.damageSources().stonecutter().directBlock(level, pos), level.purpurConfig.stonecutterDamage);
++            entity.hurtServer((net.minecraft.server.level.ServerLevel) level, entity.damageSources().stonecutter().eventBlockDamager(level, pos), level.purpurConfig.stonecutterDamage);
 +        }
 +        super.stepOn(level, pos, state, entity);
 +    }
