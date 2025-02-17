@@ -3,8 +3,6 @@ From: Github Actions <no-reply@github.com>
 Date: Thu, 16 Jan 2025 11:21:12 +0000
 Subject: [PATCH] Purpur Server Paper Changes
 
-TODO: Add Improve output of plugins command back tonight
-
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
@@ -144,6 +142,134 @@ index 6bdc683b5ade408ee27f1d6636b4d60c8c89cb7c..bc6d3898d8784e50a0e2264bbb5bde63
  
          ignored.add("goal_selector_1");
          ignored.add("goal_selector_2");
+diff --git a/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java b/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
+index 41c95f00b4b2bea6d31f85e268c33d7f6184823e..34ad08eedd74a9948c661e7411a2d217259c2f8b 100644
+--- a/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
++++ b/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
+@@ -70,10 +70,10 @@ public class PaperPluginsCommand extends BukkitCommand {
+         this.setAliases(List.of("pl"));
+     }
+ 
+-    private static <T> List<Component> formatProviders(final TreeMap<String, PluginProvider<T>> plugins) {
++    private static <T> List<Component> formatProviders(final TreeMap<String, PluginProvider<T>> plugins, CommandSender sender) { // Purpur - Improve output of plugins command
+         final List<Component> components = new ArrayList<>(plugins.size());
+         for (final PluginProvider<T> entry : plugins.values()) {
+-            components.add(formatProvider(entry));
++            components.add(formatProvider(entry, sender)); // Purpur - Improve output of plugins command
+         }
+ 
+         boolean isFirst = true;
+@@ -100,21 +100,72 @@ public class PaperPluginsCommand extends BukkitCommand {
+         return formattedSubLists;
+     }
+ 
+-    private static Component formatProvider(final PluginProvider<?> provider) {
++    private static Component formatProvider(final PluginProvider<?> provider, CommandSender sender) { // Purpur - Improve output of plugins command
+         final TextComponent.Builder builder = Component.text();
+         if (provider instanceof final SpigotPluginProvider spigotPluginProvider && CraftMagicNumbers.isLegacy(spigotPluginProvider.getMeta())) {
+             builder.append(LEGACY_PLUGIN_STAR);
+         }
+ 
+         final String name = provider.getMeta().getName();
+-        final Component pluginName = Component.text(name, fromStatus(provider))
+-            .clickEvent(ClickEvent.runCommand("/version " + name));
++        // Purpur start - Improve output of plugins command
++        Component pluginName = Component.text(name, fromStatus(provider))
++            .clickEvent(ClickEvent.suggestCommand("/version " + name));
++
++        if (sender instanceof org.bukkit.entity.Player && sender.hasPermission("bukkit.command.version")) {
++            // Event components
++            String description = provider.getMeta().getDescription();
++            TextComponent.Builder hover = Component.text();
++            hover.append(Component.text("Version: ", NamedTextColor.WHITE)).append(Component.text(provider.getMeta().getVersion(), NamedTextColor.GREEN));
++
++            if (description != null) {
++                hover.append(Component.newline())
++                    .append(Component.text("Description: ", NamedTextColor.WHITE))
++                    .append(Component.text(description, NamedTextColor.GREEN));
++            }
++
++            if (provider.getMeta().getWebsite() != null) {
++                hover.append(Component.newline())
++                    .append(Component.text("Website: ", NamedTextColor.WHITE))
++                    .append(Component.text(provider.getMeta().getWebsite(), NamedTextColor.GREEN));
++            }
++
++            if (!provider.getMeta().getAuthors().isEmpty()) {
++                hover.append(Component.newline());
++                if (provider.getMeta().getAuthors().size() == 1) {
++                    hover.append(Component.text("Author: "));
++                } else {
++                    hover.append(Component.text("Authors: "));
++                }
++
++                hover.append(getAuthors(provider.getMeta()));
++            }
++
++            pluginName = pluginName.hoverEvent(hover.build());
++        }
++        // Purpur end - Improve output of plugins command
+ 
+         builder.append(pluginName);
+ 
+         return builder.build();
+     }
+ 
++    // Purpur start - Improve output of plugins command
++    private static TextComponent getAuthors(final PluginMeta pluginMeta) {
++        TextComponent.Builder builder = Component.text();
++        List<String> authors = pluginMeta.getAuthors();
++
++        for (int i = 0; i < authors.size(); i++) {
++            if (i > 0) {
++                builder.append(Component.text(i < authors.size() - 1 ? ", " : " and ", NamedTextColor.WHITE));
++            }
++
++            builder.append(Component.text(authors.get(i), NamedTextColor.GREEN));
++        }
++
++        return builder.build();
++    }
++    // Purpur end - Improve output of plugins command
++
+     private static Component header(final String header, final int color, final int count, final boolean showSize) {
+         final TextComponent.Builder componentHeader = Component.text().color(TextColor.color(color))
+             .append(Component.text(header));
+@@ -186,25 +237,25 @@ public class PaperPluginsCommand extends BukkitCommand {
+         final int sizePaperPlugins = paperPlugins.size();
+         final int sizeSpigotPlugins = spigotPlugins.size();
+         final int sizePlugins = sizePaperPlugins + sizeSpigotPlugins;
+-        final boolean hasAllPluginTypes = (sizePaperPlugins > 0 && sizeSpigotPlugins > 0);
++        final boolean hasAllPluginTypes = (sizePaperPlugins > 0 && sizeSpigotPlugins > 0); // Purpur - Improve output of plugins command
+ 
+-        final Component infoMessage = Component.text().append(INFO_ICON_SERVER_PLUGIN).append(Component.text("Server Plugins (%s):".formatted(sizePlugins), NamedTextColor.WHITE)).build();
++        //final Component infoMessage = Component.text().append(INFO_ICON_SERVER_PLUGIN).append(Component.text("Server Plugins (%s):".formatted(sizePlugins), NamedTextColor.WHITE)).build(); // Purpur - Improve output of plugins command
+ 
+-        sender.sendMessage(infoMessage);
++        //sender.sendMessage(infoMessage); // Purpur - Improve output of plugins command
+ 
+-        if (!paperPlugins.isEmpty()) {
++        //if (!paperPlugins.isEmpty()) { // Purpur - Improve output of plugins command
+             sender.sendMessage(header("Paper Plugins", 0x0288D1, sizePaperPlugins, hasAllPluginTypes));
+-        }
++        //} // Purpur - Improve output of plugins command
+ 
+-        for (final Component component : formatProviders(paperPlugins)) {
++        for (Component component : formatProviders(paperPlugins, sender)) { // Purpur - Improve output of plugins command
+             sender.sendMessage(component);
+         }
+ 
+-        if (!spigotPlugins.isEmpty()) {
++        //if (!spigotPlugins.isEmpty()) { // Purpur - Improve output of plugins command
+             sender.sendMessage(header("Bukkit Plugins", 0xED8106, sizeSpigotPlugins, hasAllPluginTypes));
+-        }
++        //} // Purpur - Improve output of plugins command
+ 
+-        for (final Component component : formatProviders(spigotPlugins)) {
++        for (Component component : formatProviders(spigotPlugins, sender)) { // Purpur - Improve output of plugins command
+             sender.sendMessage(component);
+         }
+ 
 diff --git a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
 index 352d62385e56d5805510596ec9424e5d14336861..b4d4ad2dc7d719d72c0786791f803fbcf0982d1f 100644
 --- a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
