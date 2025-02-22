@@ -13,9 +13,9 @@ public class OnlyPlayerPushable extends ConfigModules {
 
     @Override
     public void onLoaded() {
-        enabled = config.getBoolean(getBasePath(), enabled, """
-            Enable to make only player pushable
-            This option override the armorstand doCollisionEntityLookups and
-            ...write in docs""");
+        enabled = config.getBoolean(getBasePath(), enabled, config.pickStringRegionBased(
+            "Enable to make only player pushable",
+            "是否只允许玩家被实体推动"
+        ));
     }
 }
