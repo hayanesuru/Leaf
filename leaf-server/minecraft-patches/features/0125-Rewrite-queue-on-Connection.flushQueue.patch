@@ -5,27 +5,19 @@ Subject: [PATCH] Rewrite queue on Connection.flushQueue
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 7b78c0af4a83bd39a5bc2d6554cc677bd4c0c822..eb9d99d657ae01c36af7cf4a75e206b917a14c39 100644
+index 7b78c0af4a83bd39a5bc2d6554cc677bd4c0c822..5498a5bc1e4af413569a9f3b280c561884c66718 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -35,6 +35,7 @@ import io.netty.handler.timeout.TimeoutException;
- import java.net.InetSocketAddress;
- import java.net.SocketAddress;
- import java.nio.channels.ClosedChannelException;
-+import java.util.ArrayDeque;
- import java.util.Objects;
- import java.util.Queue;
- import java.util.concurrent.RejectedExecutionException;
-@@ -85,7 +86,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -85,7 +85,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      private static final ProtocolInfo<ServerHandshakePacketListener> INITIAL_PROTOCOL = HandshakeProtocols.SERVERBOUND;
      private final PacketFlow receiving;
      private volatile boolean sendLoginDisconnect = true;
 -    private final Queue<WrappedConsumer> pendingActions = Queues.newConcurrentLinkedQueue(); // Paper - Optimize network
-+    private final Queue<WrappedConsumer> pendingActions = new ArrayDeque<>(); // Paper - Optimize network // Leaf - Rewrite queue on Connection.flushQueue
++    private final Queue<WrappedConsumer> pendingActions = new java.util.ArrayDeque<>(); // Paper - Optimize network // Leaf - Rewrite queue on Connection.flushQueue
      public Channel channel;
      public SocketAddress address;
      // Spigot start
-@@ -541,10 +542,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -541,10 +541,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          if (io.papermc.paper.util.MCUtil.isMainThread()) {
              return this.processQueue();
          } else if (this.isPending) {
@@ -41,7 +33,7 @@ index 7b78c0af4a83bd39a5bc2d6554cc677bd4c0c822..eb9d99d657ae01c36af7cf4a75e206b9
          }
          return false;
      }
-@@ -554,29 +556,19 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -554,29 +555,19 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
              return true;
          }
  
