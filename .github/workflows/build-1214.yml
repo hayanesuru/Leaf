@@ -10,7 +10,7 @@ jobs:
       build_number: ${{ github.run_number }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up GraalVM JDK 21
         uses: graalvm/setup-graalvm@v1
         with:
@@ -32,7 +32,7 @@ jobs:
         env:
           GRAALVM_ARGS: "-Dgraal.CompilerConfiguration=enterprise -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true --add-modules jdk.incubator.vector"
       - name: Cache patched sources
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ./*/src
@@ -82,7 +82,7 @@ jobs:
     runs-on: blacksmith-8vcpu-ubuntu-2204
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up GraalVM JDK 21
         uses: graalvm/setup-graalvm@v1
         with:
@@ -90,7 +90,7 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           cache: gradle
       - name: Restore patched sources
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ./*/src
@@ -109,7 +109,7 @@ jobs:
         run: |
           mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-reobf.jar ./leaf-1.21.4-${{ needs.setup.outputs.build_number }}-reobf.jar
       - name: Upload Reobf jar
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: leaf-reobf-jar
           path: ./leaf-1.21.4-${{ needs.setup.outputs.build_number }}-reobf.jar
@@ -119,7 +119,7 @@ jobs:
     runs-on: blacksmith-8vcpu-ubuntu-2204
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up GraalVM JDK 21
         uses: graalvm/setup-graalvm@v1
         with:
@@ -127,7 +127,7 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           cache: gradle
       - name: Restore patched sources
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ./*/src
@@ -135,7 +135,7 @@ jobs:
             ./.gradle
           key: ${{ runner.os }}-patched-${{ github.sha }}
       - name: Download all jars
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
       - name: Move jars to expected locations
         run: |
           mkdir -p ./artifacts
@@ -153,12 +153,12 @@ jobs:
           # Uncomment when ready to implement:
           # ./gradlew publishDevBundlePublicationToLeafRepository -PpublishDevBundle=true
       - name: Upload Leaf as build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Leaf 1.21.4
           path: ./leaf-1.21.4-*.jar
       - name: Release Leaf
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: "Leaf 1.21.4"
           tag_name: "ver-1.21.4"
