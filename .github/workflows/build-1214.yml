@@ -1,49 +1,147 @@
 name: Build Leaf 1.21.4
-
 on:
   push:
     branches: [ "ver/1.21.4" ]
 
 jobs:
-  build:
+  setup:
     runs-on: blacksmith-8vcpu-ubuntu-2204
-    env:
-      BUILD_NUMBER: ${{ github.run_number }}
-      GRAALVM_ARGS: "-Dgraal.CompilerConfiguration=enterprise -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true --add-modules jdk.incubator.vector"
-
+    outputs:
+      build_number: ${{ github.run_number }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@main
-
+        uses: actions/checkout@v3
       - name: Set up GraalVM JDK 21
-        uses: graalvm/setup-graalvm@main
+        uses: graalvm/setup-graalvm@v1
         with:
           java-version: 21
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           cache: gradle
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
       - name: Configure Git
         run: |
           git config --global user.email "no-reply@github.com"
           git config --global user.name "Github Actions"
-
       - name: Apply patches
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" applyAllPatches --stacktrace --no-daemon
-
-      - name: Create MojmapPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" createMojmapPaperclipJar --stacktrace --no-daemon
-
-      - name: Create ReobfPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --no-daemon
-
-      - name: Rename Paperclip JARs
         run: |
-          mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-mojmap.jar ./leaf-1.21.4-${{ env.BUILD_NUMBER }}-mojmap.jar
-          mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-reobf.jar ./leaf-1.21.4-${{ env.BUILD_NUMBER }}-reobf.jar
+          ./gradlew -Dorg.gradle.jvmargs="${GRAALVM_ARGS}" \
+          -Dorg.gradle.parallel=true \
+          -Dorg.gradle.caching=true \
+          applyAllPatches --stacktrace --no-daemon
+        env:
+          GRAALVM_ARGS: "-Dgraal.CompilerConfiguration=enterprise -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true --add-modules jdk.incubator.vector"
+      - name: Cache patched sources
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./*/src
+            ./*/build
+            ./.gradle
+          key: ${{ runner.os }}-patched-${{ github.sha }}
 
+  build-mojmap:
+    needs: setup
+    runs-on: blacksmith-8vcpu-ubuntu-2204
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up GraalVM JDK 21
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: 21
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          cache: gradle
+      - name: Restore patched sources
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./*/src
+            ./*/build
+            ./.gradle
+          key: ${{ runner.os }}-patched-${{ github.sha }}
+      - name: Create MojmapPaperclipJar
+        run: |
+          ./gradlew -Dorg.gradle.jvmargs="${GRAALVM_ARGS}" \
+          -Dorg.gradle.parallel=true \
+          -Dorg.gradle.caching=true \
+          createMojmapPaperclipJar --stacktrace --no-daemon
+        env:
+          GRAALVM_ARGS: "-Dgraal.CompilerConfiguration=enterprise -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true --add-modules jdk.incubator.vector"
+      - name: Rename Mojmap Jar
+        run: |
+          mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-mojmap.jar ./leaf-1.21.4-${{ needs.setup.outputs.build_number }}-mojmap.jar
+      - name: Upload Mojmap jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: leaf-mojmap-jar
+          path: ./leaf-1.21.4-${{ needs.setup.outputs.build_number }}-mojmap.jar
+
+  build-reobf:
+    needs: setup
+    runs-on: blacksmith-8vcpu-ubuntu-2204
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up GraalVM JDK 21
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: 21
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          cache: gradle
+      - name: Restore patched sources
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./*/src
+            ./*/build
+            ./.gradle
+          key: ${{ runner.os }}-patched-${{ github.sha }}
+      - name: Create ReobfPaperclipJar
+        run: |
+          ./gradlew -Dorg.gradle.jvmargs="${GRAALVM_ARGS}" \
+          -Dorg.gradle.parallel=true \
+          -Dorg.gradle.caching=true \
+          -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --no-daemon
+        env:
+          GRAALVM_ARGS: "-Dgraal.CompilerConfiguration=enterprise -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true --add-modules jdk.incubator.vector"
+      - name: Rename Reobf Jar
+        run: |
+          mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-reobf.jar ./leaf-1.21.4-${{ needs.setup.outputs.build_number }}-reobf.jar
+      - name: Upload Reobf jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: leaf-reobf-jar
+          path: ./leaf-1.21.4-${{ needs.setup.outputs.build_number }}-reobf.jar
+
+  publish:
+    needs: [setup, build-mojmap, build-reobf]
+    runs-on: blacksmith-8vcpu-ubuntu-2204
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up GraalVM JDK 21
+        uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: 21
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          cache: gradle
+      - name: Restore patched sources
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./*/src
+            ./*/build
+            ./.gradle
+          key: ${{ runner.os }}-patched-${{ github.sha }}
+      - name: Download all jars
+        uses: actions/download-artifact@v3
+      - name: Move jars to expected locations
+        run: |
+          mkdir -p ./artifacts
+          mv ./leaf-mojmap-jar/leaf-1.21.4-${{ needs.setup.outputs.build_number }}-mojmap.jar ./leaf-1.21.4-${{ needs.setup.outputs.build_number }}-mojmap.jar
+          mv ./leaf-reobf-jar/leaf-1.21.4-${{ needs.setup.outputs.build_number }}-reobf.jar ./leaf-1.21.4-${{ needs.setup.outputs.build_number }}-reobf.jar
+          cp ./leaf-1.21.4-${{ needs.setup.outputs.build_number }}-mojmap.jar ./leaf-1.21.4-${{ needs.setup.outputs.build_number }}.jar
       - name: Publish API
         continue-on-error: true
         run: |
@@ -51,26 +149,20 @@ jobs:
           export REPO_USER=${{ secrets.REPO_USER }}
           echo "REPO_PASSWORD=${{ secrets.REPO_PASSWORD }}" >> $GITHUB_ENV
           export REPO_PASSWORD=${{ secrets.REPO_PASSWORD }}
-          ./gradlew publish
+          ./gradlew -Dorg.gradle.parallel=true -Dorg.gradle.caching=true publish
           # Uncomment when ready to implement:
           # ./gradlew publishDevBundlePublicationToLeafRepository -PpublishDevBundle=true
-
       - name: Upload Leaf as build artifact
-        uses: actions/upload-artifact@main
+        uses: actions/upload-artifact@v3
         with:
           name: Leaf 1.21.4
           path: ./leaf-1.21.4-*.jar
-
-      - name: Prepare jar for release
-        run: mv ./leaf-1.21.4-${{ env.BUILD_NUMBER }}-mojmap.jar ./leaf-1.21.4-${{ env.BUILD_NUMBER }}.jar
-
       - name: Release Leaf
-        # TODO: Replace with a maintained action as marvinpinto/action-automatic-releases is archived
-        # Recommended alternatives: softprops/action-gh-release or ncipollo/release-action
-        uses: marvinpinto/action-automatic-releases@master
+        uses: softprops/action-gh-release@v1
         with:
-          title: "Leaf 1.21.4"
-          automatic_release_tag: "ver-1.21.4"
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: "./leaf-1.21.4-${{ env.BUILD_NUMBER }}.jar"
+          name: "Leaf 1.21.4"
+          tag_name: "ver-1.21.4"
+          files: "./leaf-1.21.4-${{ needs.setup.outputs.build_number }}.jar"
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
