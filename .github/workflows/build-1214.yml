@@ -31,18 +31,18 @@ jobs:
           git config --global user.name "Github Actions"
 
       - name: Apply patches
-        run: ./gradlew -Dorg.gradle.jvmargs="$GRAALVM_ARGS" applyAllPatches --stacktrace --no-daemon
+        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" applyAllPatches --stacktrace --no-daemon
 
       - name: Create MojmapPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="$GRAALVM_ARGS" createMojmapPaperclipJar --stacktrace --no-daemon
+        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" createMojmapPaperclipJar --stacktrace --no-daemon
 
       - name: Create ReobfPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="$GRAALVM_ARGS" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --no-daemon
+        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --no-daemon
 
       - name: Rename Paperclip JARs
         run: |
-          mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-mojmap.jar ./leaf-1.21.4-$RUN_NUMBER-mojmap.jar
-          mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-reobf.jar ./leaf-1.21.4-$RUN_NUMBER-reobf.jar
+          mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-mojmap.jar ./leaf-1.21.4-${{ env.RUN_NUMBER }}-mojmap.jar
+          mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-reobf.jar ./leaf-1.21.4-${{ env.RUN_NUMBER }}-reobf.jar
 
       - name: Publish API
         continue-on-error: true
@@ -62,7 +62,7 @@ jobs:
           path: ./leaf-1.21.4-*.jar
 
       - name: Prepare jar for release
-        run: mv ./leaf-1.21.4-$RUN_NUMBER-mojmap.jar ./leaf-1.21.4-$RUN_NUMBER.jar
+        run: mv ./leaf-1.21.4-${{ env.RUN_NUMBER }}-mojmap.jar ./leaf-1.21.4-${{ env.RUN_NUMBER }}.jar
 
       - name: Release Leaf
         # TODO: Replace with a maintained action as marvinpinto/action-automatic-releases is archived
@@ -72,5 +72,5 @@ jobs:
           title: "Leaf 1.21.4"
           automatic_release_tag: "ver-1.21.4"
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          files: "./leaf-1.21.4-$RUN_NUMBER.jar"
+          files: "./leaf-1.21.4-${{ env.RUN_NUMBER }}.jar"
           prerelease: false
