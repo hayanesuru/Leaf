@@ -13,23 +13,31 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@main
-      
+        
       - name: Setup Gradle Cache
         uses: actions/cache@v4
         with:
           path: |
-            ~/.gradle/caches
+            ~/.gradle/caches/modules-2
+            ~/.gradle/caches/jars-*
+            ~/.gradle/caches/transforms-*
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'buildSrc/**/*.kt') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      
+      - name: Gradle Cache Cleanup
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties
+          find ~/.gradle/caches -name "*.lock" -type f -delete
       
       - name: Set up GraalVM JDK 21
         uses: graalvm/setup-graalvm@main
         with:
           java-version: 21
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-          cache: gradle
+          cache: 'maven'
           set-java-home: true
           components: 'native-image'
       
@@ -58,6 +66,13 @@ jobs:
       
       - name: Create ReobfPaperclipJar
         run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --no-daemon --parallel
+      
+      - name: Gradle Cache Prune
+        run: |
+          du -sh ~/.gradle/caches || true
+          find ~/.gradle/caches -name "*.jar" -type f -atime +30 -delete || true
+          find ~/.gradle/caches -name "*.pom" -type f -atime +30 -delete || true
+          du -sh ~/.gradle/caches || true
       
       - name: Rename Paperclip JARs
         run: |
