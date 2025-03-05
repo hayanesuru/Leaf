@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@main
-        
+      
       - name: Setup Gradle Cache
         uses: actions/cache@v4
         with:
@@ -28,9 +28,10 @@ jobs:
       
       - name: Gradle Cache Cleanup
         run: |
-          rm -f ~/.gradle/caches/modules-2/modules-2.lock
-          rm -f ~/.gradle/caches/modules-2/gc.properties
-          find ~/.gradle/caches -name "*.lock" -type f -delete
+          mkdir -p ~/.gradle/caches/modules-2
+          [ -f ~/.gradle/caches/modules-2/modules-2.lock ] && rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          [ -f ~/.gradle/caches/modules-2/gc.properties ] && rm -f ~/.gradle/caches/modules-2/gc.properties
+          find ~/.gradle/caches -name "*.lock" -type f -delete || echo "No lock files found to delete"
       
       - name: Set up GraalVM JDK 21
         uses: graalvm/setup-graalvm@main
@@ -66,13 +67,19 @@ jobs:
       
       - name: Create ReobfPaperclipJar
         run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --no-daemon --parallel
-      
+
       - name: Gradle Cache Prune
         run: |
-          du -sh ~/.gradle/caches || true
-          find ~/.gradle/caches -name "*.jar" -type f -atime +30 -delete || true
-          find ~/.gradle/caches -name "*.pom" -type f -atime +30 -delete || true
-          du -sh ~/.gradle/caches || true
+          if [ -d ~/.gradle/caches ]; then
+            echo "Before pruning:"
+            du -sh ~/.gradle/caches || echo "Could not determine cache size"
+            find ~/.gradle/caches -name "*.jar" -type f -atime +30 -delete || echo "No old JAR files to delete"
+            find ~/.gradle/caches -name "*.pom" -type f -atime +30 -delete || echo "No old POM files to delete"
+            echo "After pruning:"
+            du -sh ~/.gradle/caches || echo "Could not determine cache size"
+          else
+            echo "Gradle cache directory does not exist yet"
+          fi
       
       - name: Rename Paperclip JARs
         run: |
