@@ -5,7 +5,7 @@ Subject: [PATCH] Rewrite queue on Connection.flushQueue
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 7b78c0af4a83bd39a5bc2d6554cc677bd4c0c822..570a6b844319491b1e07df0a3e55d0b29533c649 100644
+index 7b78c0af4a83bd39a5bc2d6554cc677bd4c0c822..dd3ed93700202e581cabccf4d53f6fd71810008d 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -85,7 +85,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -115,3 +115,55 @@ index 7b78c0af4a83bd39a5bc2d6554cc677bd4c0c822..570a6b844319491b1e07df0a3e55d0b2
  
      private static final int MAX_PER_TICK = io.papermc.paper.configuration.GlobalConfiguration.get().misc.maxJoinsPerTick; // Paper - Buffer joins to world
      private static int joinAttemptsThisTick; // Paper - Buffer joins to world
+@@ -910,19 +938,44 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+         this.bandwidthDebugMonitor = new BandwidthDebugMonitor(bandwithLogger);
+     }
+ 
+-    // Paper start - Optimize network
++    // Paper start - Optimize network - // Leaf start - Rewrite queue on Connection.flushQueue
+     public void clearPacketQueue() {
+         final net.minecraft.server.level.ServerPlayer player = getPlayer();
+-        for (final Consumer<Connection> queuedAction : this.pendingActions) {
+-            if (queuedAction instanceof PacketSendAction packetSendAction) {
+-                final Packet<?> packet = packetSendAction.packet;
+-                if (packet.hasFinishListener()) {
+-                    packet.onPacketDispatchFinish(player, null);
++
++        if (org.dreeam.leaf.config.modules.network.ConnectionFlushQueueRewrite.enabled) {
++            // When using Leaf's queue rewrite, ensure thread safety via event loop
++            if (this.channel != null && !this.channel.eventLoop().inEventLoop()) {
++                this.channel.eventLoop().execute(() -> this.clearPacketQueue());
++                return;
++            }
++
++            // Take a snapshot to avoid ConcurrentModificationException
++            java.util.List<Consumer<Connection>> queueSnapshot = new java.util.ArrayList<>(this.pendingActions);
++            for (Consumer<Connection> queuedAction : queueSnapshot) {
++                if (queuedAction instanceof PacketSendAction packetSendAction) {
++                    final Packet<?> packet = packetSendAction.packet;
++                    if (packet.hasFinishListener()) {
++                        packet.onPacketDispatchFinish(player, null);
++                    }
++                }
++            }
++            this.pendingActions.clear();
++        } else {
++            // Original Paper behavior - use synchronization
++            synchronized (this.pendingActions) {
++                for (final Consumer<Connection> queuedAction : this.pendingActions) {
++                    if (queuedAction instanceof PacketSendAction packetSendAction) {
++                        final Packet<?> packet = packetSendAction.packet;
++                        if (packet.hasFinishListener()) {
++                            packet.onPacketDispatchFinish(player, null);
++                        }
++                    }
+                 }
++                this.pendingActions.clear();
+             }
+         }
+-        this.pendingActions.clear();
+     }
++    // Leaf end - Rewrite queue on Connection.flushQueue
+ 
+     private static class InnerUtil { // Attempt to hide these methods from ProtocolLib, so it doesn't accidently pick them up.
+ 
