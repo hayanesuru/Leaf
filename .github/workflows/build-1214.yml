@@ -38,7 +38,6 @@ jobs:
         with:
           java-version: 21
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-          cache: 'maven'
           set-java-home: true
           components: 'native-image'
       
@@ -67,7 +66,7 @@ jobs:
       
       - name: Create ReobfPaperclipJar
         run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --no-daemon --parallel
-
+      
       - name: Gradle Cache Prune
         run: |
           if [ -d ~/.gradle/caches ]; then
