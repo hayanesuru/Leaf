@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@main
       
       - name: Setup Gradle Cache
-        uses: actions/cache@v4
+        uses: useblacksmith/cache@v5
         with:
           path: |
             ~/.gradle/caches/modules-2
@@ -39,7 +39,6 @@ jobs:
           java-version: 21
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           set-java-home: true
-          components: 'native-image'
       
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
