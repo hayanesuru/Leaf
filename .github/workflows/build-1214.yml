@@ -2,6 +2,7 @@ name: Build Leaf 1.21.4
 on:
   push:
     branches: [ "ver/1.21.4" ]
+  workflow_dispatch:
 jobs:
   build:
     runs-on: blacksmith-8vcpu-ubuntu-2204
