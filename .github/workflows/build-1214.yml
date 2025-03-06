@@ -11,11 +11,15 @@ jobs:
       BUILD_NUMBER: ${{ github.run_number }}
       GRAALVM_ARGS: "-Dgraal.CompilerConfiguration=enterprise -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.LoopUnroll=true -Dgraal.SpeculativeGuardMovement=true --add-modules jdk.incubator.vector"
       GRADLE_OPTS: "-Dorg.gradle.parallel=true -Dorg.gradle.caching=true -Dorg.gradle.configureondemand=true -Dkotlin.incremental=true"
+      GRADLE_MEMORY: "-Xmx4g -XX:MaxMetaspaceSize=2g"
+      PATCH_PARALLELISM: "16"
     outputs:
       build_number: ${{ env.BUILD_NUMBER }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@main
+        with:
+          fetch-depth: 50
       
       - name: Setup Gradle Cache
         uses: useblacksmith/cache@v5
@@ -25,7 +29,10 @@ jobs:
             ~/.gradle/caches/jars-*
             ~/.gradle/caches/transforms-*
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'buildSrc/**/*.kt') }}
+            # Add patches cache
+            .gradle/patchCache
+            .gradle/patched
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'buildSrc/**/*.kt', 'patches/**/*.patch') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
       
@@ -50,6 +57,10 @@ jobs:
         run: |
           git config --global user.email "no-reply@github.com"
           git config --global user.name "Github Actions"
+          # Speed up git operations
+          git config --global core.preloadindex true
+          git config --global core.fscache true
+          git config --global gc.auto 256
     
       - name: Configure Gradle Properties
         run: |
@@ -57,17 +68,29 @@ jobs:
           echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
           echo "org.gradle.parallel=true" >> ~/.gradle/gradle.properties
           echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
-          echo "org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=1g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
+          echo "org.gradle.jvmargs=${{ env.GRADLE_MEMORY }} -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
           echo "kotlin.incremental=true" >> ~/.gradle/gradle.properties
+          # Add patch parallelism configuration 
+          echo "leafPatches.parallelism=${{ env.PATCH_PARALLELISM }}" >> ~/.gradle/gradle.properties
       
       - name: Apply patches
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" applyAllPatches --stacktrace --no-daemon --parallel
+        run: |
+          # Analyze available system resources for optimal settings
+          echo "CPU cores: $(nproc)"
+          echo "Memory: $(free -h)"
+          
+          # Run patch application with optimized settings
+          ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" \
+                   -Dleaf.patcher.parallelism=${{ env.PATCH_PARALLELISM }} \
+                   applyAllPatches \
+                   --stacktrace --no-daemon --parallel \
+                   --max-workers=8
       
       - name: Create MojmapPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" createMojmapPaperclipJar --stacktrace --no-daemon --parallel
+        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" createMojmapPaperclipJar --stacktrace --no-daemon --parallel --max-workers=8
       
       - name: Create ReobfPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --no-daemon --parallel
+        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --no-daemon --parallel --max-workers=8
       
       # Start API publishing in background
       - name: Start API Publishing
@@ -79,9 +102,9 @@ jobs:
             export REPO_USER=${{ secrets.REPO_USER }}
             echo "REPO_PASSWORD=${{ secrets.REPO_PASSWORD }}" >> $GITHUB_ENV
             export REPO_PASSWORD=${{ secrets.REPO_PASSWORD }}
-            ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" publish --parallel > publish_api_log.txt 2>&1
+            ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" publish --parallel --max-workers=4 > publish_api_log.txt 2>&1
             # Uncomment when ready to implement:
-            # ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" publishDevBundlePublicationToLeafRepository -PpublishDevBundle=true --parallel >> publish_api_log.txt 2>&1
+            # ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" publishDevBundlePublicationToLeafRepository -PpublishDevBundle=true --parallel >> publish_api_log.txt 2>&1
             echo "API_PUBLISH_DONE=true" >> $GITHUB_ENV
           ) &
           
