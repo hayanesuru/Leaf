@@ -3,6 +3,7 @@ on:
   push:
     branches: [ "ver/1.21.4" ]
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: blacksmith-8vcpu-ubuntu-2204
@@ -10,6 +11,8 @@ jobs:
       BUILD_NUMBER: ${{ github.run_number }}
       GRAALVM_ARGS: "-Dgraal.CompilerConfiguration=enterprise -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.LoopUnroll=true -Dgraal.SpeculativeGuardMovement=true --add-modules jdk.incubator.vector"
       GRADLE_OPTS: "-Dorg.gradle.parallel=true -Dorg.gradle.caching=true -Dorg.gradle.configureondemand=true -Dkotlin.incremental=true"
+    outputs:
+      build_number: ${{ env.BUILD_NUMBER }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@main
@@ -84,8 +87,45 @@ jobs:
           mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-mojmap.jar ./leaf-1.21.4-${{ env.BUILD_NUMBER }}-mojmap.jar
           mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-reobf.jar ./leaf-1.21.4-${{ env.BUILD_NUMBER }}-reobf.jar
       
+      - name: Upload Leaf as build artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: Leaf 1.21.4
+          path: ./leaf-1.21.4-*.jar
+
+  publish-api:
+    needs: build
+    runs-on: blacksmith-8vcpu-ubuntu-2204
+    env:
+      BUILD_NUMBER: ${{ needs.build.outputs.build_number }}
+      GRAALVM_ARGS: "-Dgraal.CompilerConfiguration=enterprise -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.LoopUnroll=true -Dgraal.SpeculativeGuardMovement=true --add-modules jdk.incubator.vector"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+      
+      - name: Set up GraalVM JDK 21
+        uses: graalvm/setup-graalvm@main
+        with:
+          java-version: 21
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          set-java-home: true
+      
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      - name: Configure Gradle Properties
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
+          echo "org.gradle.parallel=true" >> ~/.gradle/gradle.properties
+          echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
+          echo "org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=1g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
+          echo "kotlin.incremental=true" >> ~/.gradle/gradle.properties
+      
+      - name: Apply patches
+        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" applyAllPatches --stacktrace --no-daemon --parallel
+      
       - name: Publish API
-        continue-on-error: true
         run: |
           echo "REPO_USER=${{ secrets.REPO_USER }}" >> $GITHUB_ENV
           export REPO_USER=${{ secrets.REPO_USER }}
@@ -94,13 +134,18 @@ jobs:
           ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" publish --parallel
           # Uncomment when ready to implement:
           # ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" publishDevBundlePublicationToLeafRepository -PpublishDevBundle=true --parallel
-      
-      - name: Upload Leaf as build artifact
-        uses: actions/upload-artifact@main
+
+  release:
+    needs: [build, publish-api]
+    runs-on: ubuntu-latest
+    env:
+      BUILD_NUMBER: ${{ needs.build.outputs.build_number }}
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
         with:
           name: Leaf 1.21.4
-          path: ./leaf-1.21.4-*.jar
-      
+          
       - name: Prepare jar for release
         run: mv ./leaf-1.21.4-${{ env.BUILD_NUMBER }}-mojmap.jar ./leaf-1.21.4-${{ env.BUILD_NUMBER }}.jar
       
