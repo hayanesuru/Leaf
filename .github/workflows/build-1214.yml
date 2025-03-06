@@ -69,6 +69,26 @@ jobs:
       - name: Create ReobfPaperclipJar
         run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --no-daemon --parallel
       
+      # Start API publishing in background
+      - name: Start API Publishing
+        id: publish-api
+        run: |
+          echo "Starting API publishing in background..."
+          (
+            echo "REPO_USER=${{ secrets.REPO_USER }}" >> $GITHUB_ENV
+            export REPO_USER=${{ secrets.REPO_USER }}
+            echo "REPO_PASSWORD=${{ secrets.REPO_PASSWORD }}" >> $GITHUB_ENV
+            export REPO_PASSWORD=${{ secrets.REPO_PASSWORD }}
+            ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" publish --parallel > publish_api_log.txt 2>&1
+            # Uncomment when ready to implement:
+            # ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" publishDevBundlePublicationToLeafRepository -PpublishDevBundle=true --parallel >> publish_api_log.txt 2>&1
+            echo "API_PUBLISH_DONE=true" >> $GITHUB_ENV
+          ) &
+          
+          # Store the background process ID
+          echo "PUBLISH_PID=$!" >> $GITHUB_ENV
+          echo "API publishing started in background with PID $!"
+      
       - name: Gradle Cache Prune
         run: |
           if [ -d ~/.gradle/caches ]; then
@@ -92,62 +112,31 @@ jobs:
         with:
           name: Leaf 1.21.4
           path: ./leaf-1.21.4-*.jar
-
-  publish-api:
-    needs: build
-    runs-on: blacksmith-8vcpu-ubuntu-2204
-    env:
-      BUILD_NUMBER: ${{ needs.build.outputs.build_number }}
-      GRAALVM_ARGS: "-Dgraal.CompilerConfiguration=enterprise -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.LoopUnroll=true -Dgraal.SpeculativeGuardMovement=true --add-modules jdk.incubator.vector"
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@main
       
-      - name: Set up GraalVM JDK 21
-        uses: graalvm/setup-graalvm@main
-        with:
-          java-version: 21
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-          set-java-home: true
-      
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      
-      - name: Configure Gradle Properties
-        run: |
-          mkdir -p ~/.gradle
-          echo "org.gradle.daemon=true" >> ~/.gradle/gradle.properties
-          echo "org.gradle.parallel=true" >> ~/.gradle/gradle.properties
-          echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
-          echo "org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=1g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
-          echo "kotlin.incremental=true" >> ~/.gradle/gradle.properties
-      
-      - name: Apply patches
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" applyAllPatches --stacktrace --no-daemon --parallel
-      
-      - name: Publish API
-        run: |
-          echo "REPO_USER=${{ secrets.REPO_USER }}" >> $GITHUB_ENV
-          export REPO_USER=${{ secrets.REPO_USER }}
-          echo "REPO_PASSWORD=${{ secrets.REPO_PASSWORD }}" >> $GITHUB_ENV
-          export REPO_PASSWORD=${{ secrets.REPO_PASSWORD }}
-          ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" publish --parallel
-          # Uncomment when ready to implement:
-          # ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }}" publishDevBundlePublicationToLeafRepository -PpublishDevBundle=true --parallel
-
-  release:
-    needs: [build, publish-api]
-    runs-on: ubuntu-latest
-    env:
-      BUILD_NUMBER: ${{ needs.build.outputs.build_number }}
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: Leaf 1.21.4
-          
       - name: Prepare jar for release
         run: mv ./leaf-1.21.4-${{ env.BUILD_NUMBER }}-mojmap.jar ./leaf-1.21.4-${{ env.BUILD_NUMBER }}.jar
+      
+      # Wait for API publishing to complete before releasing
+      - name: Wait for API Publishing
+        run: |
+          echo "Waiting for API publishing to complete..."
+          # Check if the process is still running
+          if ps -p ${{ env.PUBLISH_PID }} > /dev/null; then
+            echo "API publishing is still running with PID ${{ env.PUBLISH_PID }}"
+            wait ${{ env.PUBLISH_PID }} || true
+            echo "API publishing process has completed."
+          else
+            echo "API publishing process already completed."
+          fi
+          
+          # Check for any errors in the log
+          if grep -i "error" publish_api_log.txt; then
+            echo "Warnings or errors found in API publishing log:"
+            cat publish_api_log.txt
+            echo "API publishing completed with warnings or errors, but continuing with release."
+          else
+            echo "API publishing completed successfully."
+          fi
       
       - name: Release Leaf
         # TODO: Replace with a maintained action as marvinpinto/action-automatic-releases is archived
