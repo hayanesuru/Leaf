@@ -37,7 +37,6 @@ echo "" >> $RELEASE_NOTES
 
 # Commits log
 echo "### 📜 Commits:" >> $RELEASE_NOTES
-echo "***" >> $RELEASE_NOTES
 echo "" >> $RELEASE_NOTES
 echo "$COMMIT_LOG" >> $RELEASE_NOTES
 echo "" >> $RELEASE_NOTES
@@ -46,7 +45,7 @@ echo "### 🔒 Checksums" >> $RELEASE_NOTES
 # Get checksums
 ARTIFACTS_DIR="."
 if [ -d "$ARTIFACTS_DIR" ]; then
-  for file in "$ARTIFACTS_DIR"/*.jar; do
+  for file in "$ARTIFACTS_DIR"/leaf-1.21.4-"${BUILD_NUMBER}".jar; do
     if [ -f "$file" ]; then
       MD5=$(md5sum "$file" | awk '{ print $1 }')
       SHA256=$(sha256sum "$file" | awk '{ print $1 }')
