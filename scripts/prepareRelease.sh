@@ -16,10 +16,11 @@ echo "✨Current branch: $CURRENT_BRANCH"
 # Latest tag name
 LATEST_TAG=$(git describe --tags --abbrev=0)
 if [ -z "$LATEST_TAG" ]; then
-  echo "⚠️No previous release found. Using initial commit."
   LATEST_TAG=$(git rev-list --max-parents=0 HEAD)
+  echo "⚠️No previous release found. Using initial commit."
+else
+  echo "✨Latest tag: $LATEST_TAG"
 fi
-echo "✨Latest tag: $LATEST_TAG"
 
 # Commit of the latest tag
 LAST_RELEASE_COMMIT=$(git rev-list -n 1 "$LATEST_TAG")
@@ -29,53 +30,61 @@ echo "✨Last release commit: $LAST_RELEASE_COMMIT"
 COMMIT_LOG=$(git log "$LAST_RELEASE_COMMIT"..HEAD --pretty=format:"- [\`%h\`](https://github.com/"${GITHUB_REPO}"/commit/%H) %s (%an)")
 if [ -z "$COMMIT_LOG" ]; then
   COMMIT_LOG="⚠️No new commits since $LATEST_TAG."
+else
+  echo "✅Commits log generated"
 fi
-echo "✅Commits log generated"
 
 # Release notes header
 echo "" >> $RELEASE_NOTES
 
 # Commits log
-echo "### 📜 Commits:" >> $RELEASE_NOTES
-echo "" >> $RELEASE_NOTES
-echo "$COMMIT_LOG" >> $RELEASE_NOTES
-echo "" >> $RELEASE_NOTES
-echo "### 🔒 Checksums" >> $RELEASE_NOTES
+{
+  echo "### 📜 Commits:"
+  echo ""
+  echo "$COMMIT_LOG"
+  echo ""
+  echo "### 🔒 Checksums"
+} >> $RELEASE_NOTES
 
 # Get checksums
-ARTIFACTS_DIR="."
-if [ -d "$ARTIFACTS_DIR" ]; then
-  for file in "$ARTIFACTS_DIR"/leaf-1.21.4-"${BUILD_NUMBER}".jar; do
-    if [ -f "$file" ]; then
-      MD5=$(md5sum "$file" | awk '{ print $1 }')
-      SHA256=$(sha256sum "$file" | awk '{ print $1 }')
-      FILENAME=$(basename "$file")
+file="./leaf-1.21.4-"${BUILD_NUMBER}".jar"
+if [ -f "$file" ]; then
+  MD5=$(md5sum "$file" | awk '{ print $1 }')
+  SHA256=$(sha256sum "$file" | awk '{ print $1 }')
+  FILENAME=$(basename "$file")
 
-      echo "|           | $FILENAME |" >> $RELEASE_NOTES
-      echo "| --------- | --------- |" >> $RELEASE_NOTES
-      echo "| MD5       | $MD5      |" >> $RELEASE_NOTES
-      echo "| SHA256    | $SHA256   |" >> $RELEASE_NOTES
-    fi
-  done
+  {
+    echo "|           | $FILENAME |"
+    echo "| --------- | --------- |"
+    echo "| MD5       | $MD5      |"
+    echo "| SHA256    | $SHA256   |"
+  } >> $RELEASE_NOTES
+
+  echo "🔒Checksums calculated:"
+  echo "   MD5: $MD5"
+  echo "   SHA256: $SHA256"
 else
   echo "⚠️No artifacts found." >> $RELEASE_NOTES
 fi
-echo "🔒Checksums calculated"
 
 # EOL warning
 if [ "$IS_EOL" = true ]; then
-  echo "" >> $RELEASE_NOTES
-  echo "> [!WARNING]" >> $RELEASE_NOTES
-  echo "> This version of Leaf is end-of-life and will only receive critical bugfixes from upstream." >> $RELEASE_NOTES
-  echo "> Update to latest version and gain better performance!" >> $RELEASE_NOTES
+  {
+    echo ""
+    echo "> [!WARNING]"
+    echo "> This version of Leaf is end-of-life and will only receive critical bugfixes from upstream."
+    echo "> Update to latest version and gain better performance!"
+  } >> $RELEASE_NOTES
 fi
 
 # Unsupported warning
 if [ "$IS_UNSUPPORTED" = true ]; then
-  echo "" >> $RELEASE_NOTES
-  echo "> [!CAUTION]" >> $RELEASE_NOTES
-  echo "> This version of Leaf is unsupported and will not receive any bugfixes." >> $RELEASE_NOTES
-  echo "> Use at your own risk!" >> $RELEASE_NOTES
+  {
+    echo ""
+    echo "> [!CAUTION]"
+    echo "> This version of Leaf is unsupported and will not receive any bugfixes."
+    echo "> Use at your own risk!"
+  } >> $RELEASE_NOTES
 fi
 
 # Delete last tag
