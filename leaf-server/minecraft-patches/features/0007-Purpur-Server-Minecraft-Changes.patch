@@ -724,7 +724,7 @@ index f262a7c5ae4e7d56f16f5c0f4f145a2e428abbe4..614c7d9f673c926562acc8fa3b378862
      private JComponent buildOnboardingPanel() {
          String onboardingLink = "https://docs.papermc.io/paper/next-steps";
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index b69a1a5a81cb0a8d4d01c8ab1de039e46f3426f6..e3f8a469042636e4e49456d3bff862384d8ea1b8 100644
+index 101f1a87a5fe920b57a5179da41cc91d88afa32e..94ee31a4a02edb003b98a09b0311355c1db4f547 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -205,6 +205,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -896,7 +896,7 @@ index b69a1a5a81cb0a8d4d01c8ab1de039e46f3426f6..e3f8a469042636e4e49456d3bff86238
          this.serverLevelData.setThundering(false, org.bukkit.event.weather.ThunderChangeEvent.Cause.SLEEP); // Paper - Add cause to Weather/ThunderChangeEvents
          // CraftBukkit start
          // If we stop due to everyone sleeping we should reset the weather duration to some other random value.
-@@ -2659,7 +2729,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2660,7 +2730,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              // Spigot start
              if (entity.getBukkitEntity() instanceof org.bukkit.inventory.InventoryHolder && (!(entity instanceof ServerPlayer) || entity.getRemovalReason() != Entity.RemovalReason.KILLED)) { // SPIGOT-6876: closeInventory clears death message
                  // Paper start - Fix merchant inventory not closing on entity removal
