@@ -78,10 +78,10 @@ index 55f708438e5d71cf14f4e632fc20a65b4bfb7d25..54895ed9ad9b9b2c4c12cfcce89af453
          // Gale end - MultiPaper - skip unnecessary mob spawning computations
          int _int = this.level.getGameRules().getInt(GameRules.RULE_RANDOMTICKING);
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index f869deca50e463f34a003be473c7bfbe51b297ec..0c080481190262c61450e439350720bb1ed8f5f5 100644
+index 1ba275fd76970774922bcd91bea6bf779bab32b7..a96f4f45d465b6f0e5b061877bd11f3caeeb1625 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1232,7 +1232,7 @@ public class ServerGamePacketListenerImpl
+@@ -1235,7 +1235,7 @@ public class ServerGamePacketListenerImpl
              }
  
              if (byteTotal > byteAllowed) {
