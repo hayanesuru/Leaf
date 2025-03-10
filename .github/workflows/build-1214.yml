@@ -22,6 +22,7 @@ jobs:
         uses: useblacksmith/cache@v5
         with:
           path: |
+            ~/.gradle/caches
             ~/.gradle/caches/modules-2
             ~/.gradle/caches/jars-*
             ~/.gradle/caches/transforms-*
@@ -75,12 +76,11 @@ jobs:
                    --stacktrace --parallel \
                    --max-workers=$PARALLELISM \
                    --build-cache \
-                   --configuration-cache \
-                   --configuration-cache-problems=warn \
+                   --no-configuration-cache \
                    --no-daemon
 
       - name: Create MojmapPaperclipJar
-        run: ./gradlew createMojmapPaperclipJar --stacktrace --parallel --no-daemon
+        run: ./gradlew createMojmapPaperclipJar --stacktrace --parallel --no-daemon --no-configuration-cache
 
       - name: Start API Publishing
         id: publish-api
