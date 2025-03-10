@@ -27,6 +27,7 @@ jobs:
             ~/.gradle/caches/transforms-*
             ~/.gradle/wrapper
             ~/.gradle/build-cache-*
+            ~/.gradle/configuration-cache-*
             .gradle/patchCache
             .gradle/patched
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'buildSrc/**/*.kt', 'patches/**/*.patch') }}
@@ -75,7 +76,8 @@ jobs:
                    --stacktrace --parallel \
                    --max-workers=$PARALLELISM \
                    --build-cache \
-                   --configuration-cache
+                   --configuration-cache \
+                   --no-configuration-cache-question
 
       - name: Create MojmapPaperclipJar
         run: ./gradlew createMojmapPaperclipJar --stacktrace --parallel
