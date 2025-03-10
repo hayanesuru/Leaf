@@ -78,7 +78,7 @@ jobs:
           # Run patch application with optimized settings
           ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" \
                    -Dleaf.patcher.parallelism=$PARALLELISM \
-                   -Dleaf.patcher.incremental=true
+                   -Dleaf.patcher.incremental=true \
                    applyAllPatches \
                    --stacktrace --parallel \
                    --max-workers=$PARALLELISM \
