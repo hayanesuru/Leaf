@@ -9,7 +9,6 @@ jobs:
     runs-on: blacksmith-8vcpu-ubuntu-2204
     env:
       BUILD_NUMBER: ${{ github.run_number }}
-      GRAALVM_ARGS: "-Dgraal.CompilerConfiguration=enterprise -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true -Dgraal.LoopUnroll=true -Dgraal.SpeculativeGuardMovement=true --add-modules jdk.incubator.vector"
       GRADLE_MEMORY: "-Xmx4g -XX:MaxMetaspaceSize=2g"
     outputs:
       build_number: ${{ env.BUILD_NUMBER }}
@@ -43,7 +42,7 @@ jobs:
       - name: Setup java
         uses: useblacksmith/setup-java@v5
         with:
-          distribution: 'graalvm'
+          distribution: 'temurin'
           java-version: '21'
 
       - name: Grant execute permission for gradlew
@@ -69,7 +68,7 @@ jobs:
       - name: Apply patches
         run: |
           PARALLELISM=$(($(nproc) * 2))
-          ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" \
+          ./gradlew -Dorg.gradle.jvmargs="${{ env.GRADLE_MEMORY }}" \
                    -Dleaf.patcher.parallelism=$PARALLELISM \
                    -Dleaf.patcher.incremental=true \
                    applyAllPatches \
@@ -79,16 +78,16 @@ jobs:
                    --configuration-cache
 
       - name: Create MojmapPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" createMojmapPaperclipJar --stacktrace --parallel
+        run: ./gradlew createMojmapPaperclipJar --stacktrace --parallel
 
       - name: Create ReobfPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --parallel
+        run: ./gradlew -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --parallel
 
       - name: Start API Publishing
         id: publish-api
         run: |
           (
-            ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" publish --parallel --max-workers=4 > publish_api_log.txt 2>&1
+            ./gradlew publish --parallel --max-workers=4 > publish_api_log.txt 2>&1
             echo "API_PUBLISH_DONE=true" >> $GITHUB_ENV
           ) &
           echo "PUBLISH_PID=$!" >> $GITHUB_ENV
