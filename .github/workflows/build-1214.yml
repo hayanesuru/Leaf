@@ -28,7 +28,6 @@ jobs:
             ~/.gradle/caches/transforms-*
             ~/.gradle/wrapper
             ~/.gradle/build-cache-*
-            # Add patches cache
             .gradle/patchCache
             .gradle/patched
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties', 'buildSrc/**/*.kt', 'patches/**/*.patch') }}
@@ -39,14 +38,13 @@ jobs:
         run: |
           mkdir -p ~/.gradle/caches/modules-2
           [ -f ~/.gradle/caches/modules-2/modules-2.lock ] && rm -f ~/.gradle/caches/modules-2/modules-2.lock
-          [ -f ~/.gradle/caches/modules-2/gc.properties ] && rm -f ~/.gradle/caches/modules-2/gc.properties
-          find ~/.gradle/caches -name "*.lock" -type f -delete || echo "No lock files found to delete"
+          find ~/.gradle/caches -name "*.lock" -type f -delete || echo "No lock files found"
 
-      - name: Set up GraalVM JDK 21
-        uses: graalvm/setup-graalvm@main
+      - name: Setup java
+        uses: useblacksmith/setup-java@v5
         with:
-          java-version: 21
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          distribution: 'graalvm'
+          java-version: '21'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -55,7 +53,6 @@ jobs:
         run: |
           git config --global user.email "no-reply@github.com"
           git config --global user.name "Github Actions"
-          # Speed up git operations
           git config --global core.preloadindex true
           git config --global core.fscache true
           git config --global gc.auto 256
@@ -68,19 +65,10 @@ jobs:
           echo "org.gradle.caching=true" >> ~/.gradle/gradle.properties
           echo "org.gradle.jvmargs=${{ env.GRADLE_MEMORY }} -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
           echo "kotlin.incremental=true" >> ~/.gradle/gradle.properties
-          # Add patch parallelism configuration 
 
       - name: Apply patches
         run: |
           PARALLELISM=$(($(nproc) * 2))
-          echo "Using parallelism: $PARALLELISM"
-          
-          # Enable configuration cache (crucial for task graph caching)
-          mkdir -p ~/.gradle
-          echo "org.gradle.configuration-cache=true" >> ~/.gradle/gradle.properties
-          echo "org.gradle.configuration-cache.max-problems=5" >> ~/.gradle/gradle.properties
-          
-          # Run patch application with optimized settings
           ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" \
                    -Dleaf.patcher.parallelism=$PARALLELISM \
                    -Dleaf.patcher.incremental=true \
@@ -88,45 +76,25 @@ jobs:
                    --stacktrace --parallel \
                    --max-workers=$PARALLELISM \
                    --build-cache \
-                   --configuration-cache 
+                   --configuration-cache
 
       - name: Create MojmapPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" createMojmapPaperclipJar --stacktrace --parallel --$PARALLELISM
+        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" createMojmapPaperclipJar --stacktrace --parallel
 
       - name: Create ReobfPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --parallel --$PARALLELISM
+        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --parallel
 
-      # Start API publishing in background
       - name: Start API Publishing
         id: publish-api
         run: |
-          echo "Starting API publishing in background..."
           (
             ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" publish --parallel --max-workers=4 > publish_api_log.txt 2>&1
-            # Uncomment when ready to implement:
-            # ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" publishDevBundlePublicationToLeafRepository -PpublishDevBundle=true --parallel >> publish_api_log.txt 2>&1
             echo "API_PUBLISH_DONE=true" >> $GITHUB_ENV
           ) &
-          
-          # Store the background process ID
           echo "PUBLISH_PID=$!" >> $GITHUB_ENV
-          echo "API publishing started in background with PID $!"
         env:
           REPO_USER: ${{ secrets.REPO_USER }}
           REPO_PASSWORD: ${{ secrets.REPO_PASSWORD }}
-
-      - name: Gradle Cache Prune
-        run: |
-          if [ -d ~/.gradle/caches ]; then
-            echo "Before pruning:"
-            du -sh ~/.gradle/caches || echo "Could not determine cache size"
-            find ~/.gradle/caches -name "*.jar" -type f -atime +30 -delete || echo "No old JAR files to delete"
-            find ~/.gradle/caches -name "*.pom" -type f -atime +30 -delete || echo "No old POM files to delete"
-            echo "After pruning:"
-            du -sh ~/.gradle/caches || echo "Could not determine cache size"
-          else
-            echo "Gradle cache directory does not exist yet"
-          fi
 
       - name: Rename Paperclip JARs
         run: |
@@ -139,36 +107,12 @@ jobs:
           name: Leaf 1.21.4
           path: ./leaf-1.21.4-*.jar
 
-      - name: Prepare for release
-        continue-on-error: true
-        run: |
-          chmod +x ./scripts/prepareRelease.sh
-          ./scripts/prepareRelease.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPO: ${{ github.repository }}
-
-      # Wait for API publishing to complete before releasing
       - name: Wait for API Publishing
         run: |
-          echo "Waiting for API publishing to complete..."
-          # Check if the process is still running
           if ps -p ${{ env.PUBLISH_PID }} > /dev/null; then
-            echo "API publishing is still running with PID ${{ env.PUBLISH_PID }}"
             wait ${{ env.PUBLISH_PID }} || true
-            echo "API publishing process has completed."
-          else
-            echo "API publishing process already completed."
           fi
-          
-          # Check for any errors in the log
-          if grep -i "error" publish_api_log.txt; then
-            echo "Warnings or errors found in API publishing log:"
-            cat publish_api_log.txt
-            echo "API publishing completed with warnings or errors, but continuing with release."
-          else
-            echo "API publishing completed successfully."
-          fi
+          grep -i "error" publish_api_log.txt && echo "Found errors in log" || echo "No errors found"
 
       - name: Release Leaf
         uses: softprops/action-gh-release@master
