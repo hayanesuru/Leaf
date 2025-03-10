@@ -106,6 +106,15 @@ jobs:
           name: Leaf 1.21.4
           path: ./leaf-1.21.4-*.jar
 
+      - name: Prepare release notes and artifacts
+        run: |
+          chmod +x ./scripts/prepareRelease.sh
+          ./scripts/prepareRelease.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          BUILD_NUMBER: ${{ env.BUILD_NUMBER }}
+
       - name: Wait for API Publishing
         run: |
           if ps -p ${{ env.PUBLISH_PID }} > /dev/null; then
