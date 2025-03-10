@@ -46,9 +46,6 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
       - name: Configure Git
         run: |
           git config --global user.email "no-reply@github.com"
@@ -79,13 +76,11 @@ jobs:
                    --max-workers=$PARALLELISM \
                    --build-cache \
                    --configuration-cache \
-                   --configuration-cache-problems=warn
+                   --configuration-cache-problems=warn \
+                   --no-daemon
 
       - name: Create MojmapPaperclipJar
-        run: ./gradlew createMojmapPaperclipJar --stacktrace --parallel
-
-      - name: Create ReobfPaperclipJar
-        run: ./gradlew -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --parallel
+        run: ./gradlew createMojmapPaperclipJar --stacktrace --parallel --no-daemon
 
       - name: Start API Publishing
         id: publish-api
@@ -102,7 +97,6 @@ jobs:
       - name: Rename Paperclip JARs
         run: |
           mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-mojmap.jar ./leaf-1.21.4-${{ env.BUILD_NUMBER }}-mojmap.jar
-          mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-reobf.jar ./leaf-1.21.4-${{ env.BUILD_NUMBER }}-reobf.jar
 
       - name: Upload Leaf as build artifact
         uses: actions/upload-artifact@main
