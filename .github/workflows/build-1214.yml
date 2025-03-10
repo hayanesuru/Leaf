@@ -75,6 +75,11 @@ jobs:
           PARALLELISM=$(($(nproc) * 2))
           echo "Using parallelism: $PARALLELISM"
           
+          # Enable configuration cache (crucial for task graph caching)
+          mkdir -p ~/.gradle
+          echo "org.gradle.configuration-cache=true" >> ~/.gradle/gradle.properties
+          echo "org.gradle.configuration-cache.max-problems=5" >> ~/.gradle/gradle.properties
+          
           # Run patch application with optimized settings
           ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" \
                    -Dleaf.patcher.parallelism=$PARALLELISM \
@@ -82,7 +87,8 @@ jobs:
                    applyAllPatches \
                    --stacktrace --parallel \
                    --max-workers=$PARALLELISM \
-                   --build-cache 
+                   --build-cache \
+                   --configuration-cache 
 
       - name: Create MojmapPaperclipJar
         run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" createMojmapPaperclipJar --stacktrace --parallel --$PARALLELISM
