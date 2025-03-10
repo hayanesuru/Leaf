@@ -78,16 +78,18 @@ jobs:
           # Run patch application with optimized settings
           ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" \
                    -Dleaf.patcher.parallelism=$PARALLELISM \
+                   -Dleaf.patcher.incremental=true
+                   -Dleaf.patcher.cacheResults=true \
                    applyAllPatches \
-                   --stacktrace --no-daemon --parallel \
+                   --stacktrace --parallel \
                    --max-workers=$PARALLELISM \
                    --build-cache 
 
       - name: Create MojmapPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" createMojmapPaperclipJar --stacktrace --no-daemon --parallel --max-workers=8
+        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" createMojmapPaperclipJar --stacktrace --parallel --max-workers=8
 
       - name: Create ReobfPaperclipJar
-        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --no-daemon --parallel --max-workers=8
+        run: ./gradlew -Dorg.gradle.jvmargs="${{ env.GRAALVM_ARGS }} ${{ env.GRADLE_MEMORY }}" -Dpaperweight.debug=true createReobfPaperclipJar --stacktrace --parallel --max-workers=8
 
       # Start API publishing in background
       - name: Start API Publishing
