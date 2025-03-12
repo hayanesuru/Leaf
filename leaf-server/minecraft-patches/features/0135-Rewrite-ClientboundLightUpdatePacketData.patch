@@ -5,14 +5,15 @@ Subject: [PATCH] Rewrite ClientboundLightUpdatePacketData
 
 
 diff --git a/net/minecraft/network/protocol/game/ClientboundLightUpdatePacketData.java b/net/minecraft/network/protocol/game/ClientboundLightUpdatePacketData.java
-index a0b54f3a3d11e0f0f1cb806406a870ba36da8f07..304365f61d6fde632c1c09cb889d466ee70aa518 100644
+index a0b54f3a3d11e0f0f1cb806406a870ba36da8f07..234280499fe1bc495bcdd4c3e144d1f99b7e6975 100644
 --- a/net/minecraft/network/protocol/game/ClientboundLightUpdatePacketData.java
 +++ b/net/minecraft/network/protocol/game/ClientboundLightUpdatePacketData.java
-@@ -16,30 +16,109 @@ import net.minecraft.world.level.lighting.LevelLightEngine;
+@@ -16,30 +16,113 @@ import net.minecraft.world.level.lighting.LevelLightEngine;
  
  public class ClientboundLightUpdatePacketData {
      private static final StreamCodec<ByteBuf, byte[]> DATA_LAYER_STREAM_CODEC = ByteBufCodecs.byteArray(2048);
 +
++    // Leaf start - Rewrite ClientboundLightUpdatePacketData
 +    // Static constants to avoid allocations
 +    private static final byte[][] EMPTY_ARRAY = new byte[0][];
 +
@@ -33,6 +34,7 @@ index a0b54f3a3d11e0f0f1cb806406a870ba36da8f07..304365f61d6fde632c1c09cb889d466e
 +    private final byte[][] blockUpdates;
 +    private final int skyUpdateCount;
 +    private final int blockUpdateCount;
++    // Leaf end - Rewrite ClientboundLightUpdatePacketData
  
      public ClientboundLightUpdatePacketData(ChunkPos chunkPos, LevelLightEngine lightEngine, @Nullable BitSet skyLight, @Nullable BitSet blockLight) {
 -        this.skyYMask = new BitSet();
@@ -43,6 +45,7 @@ index a0b54f3a3d11e0f0f1cb806406a870ba36da8f07..304365f61d6fde632c1c09cb889d466e
 -        this.blockUpdates = Lists.newArrayList();
 -
 -        for (int i = 0; i < lightEngine.getLightSectionCount(); i++) {
++        // Leaf start - Rewrite ClientboundLightUpdatePacketData
 +        int sectionCount = lightEngine.getLightSectionCount();
 +
 +        // Round up to nearest long boundary (64 bits) to prevent BitSet expansion
@@ -127,16 +130,18 @@ index a0b54f3a3d11e0f0f1cb806406a870ba36da8f07..304365f61d6fde632c1c09cb889d466e
 +
 +        this.skyUpdateCount = skyCount;
 +        this.blockUpdateCount = blockCount;
++        // Leaf end - Rewrite ClientboundLightUpdatePacketData
      }
  
      public ClientboundLightUpdatePacketData(FriendlyByteBuf buffer, int x, int z) {
-@@ -47,8 +126,28 @@ public class ClientboundLightUpdatePacketData {
+@@ -47,8 +130,30 @@ public class ClientboundLightUpdatePacketData {
          this.blockYMask = buffer.readBitSet();
          this.emptySkyYMask = buffer.readBitSet();
          this.emptyBlockYMask = buffer.readBitSet();
 -        this.skyUpdates = buffer.readList(DATA_LAYER_STREAM_CODEC);
 -        this.blockUpdates = buffer.readList(DATA_LAYER_STREAM_CODEC);
 +
++        // Leaf start - Rewrite ClientboundLightUpdatePacketData
 +        // Read lists directly as arrays to avoid intermediate collections
 +        List<byte[]> skyList = buffer.readList(DATA_LAYER_STREAM_CODEC);
 +        List<byte[]> blockList = buffer.readList(DATA_LAYER_STREAM_CODEC);
@@ -158,10 +163,11 @@ index a0b54f3a3d11e0f0f1cb806406a870ba36da8f07..304365f61d6fde632c1c09cb889d466e
 +
 +        this.skyUpdateCount = skySize;
 +        this.blockUpdateCount = blockSize;
++        // Leaf end - Rewrite ClientboundLightUpdatePacketData
      }
  
      public void write(FriendlyByteBuf buffer) {
-@@ -56,25 +155,31 @@ public class ClientboundLightUpdatePacketData {
+@@ -56,25 +161,33 @@ public class ClientboundLightUpdatePacketData {
          buffer.writeBitSet(this.blockYMask);
          buffer.writeBitSet(this.emptySkyYMask);
          buffer.writeBitSet(this.emptyBlockYMask);
@@ -180,6 +186,7 @@ index a0b54f3a3d11e0f0f1cb806406a870ba36da8f07..304365f61d6fde632c1c09cb889d466e
 -            } else {
 -                skyLight.set(index);
 -                updates.add(dataLayerData.copy().getData());
++        // Leaf start - Rewrite ClientboundLightUpdatePacketData
 +        // Avoid creating unnecessary objects when writing
 +        if (this.skyUpdateCount > 0) {
 +            // Use direct array access for efficiency
@@ -189,7 +196,7 @@ index a0b54f3a3d11e0f0f1cb806406a870ba36da8f07..304365f61d6fde632c1c09cb889d466e
              }
 +        } else {
 +            buffer.writeVarInt(0);
-+        }
+         }
 +
 +        if (this.blockUpdateCount > 0) {
 +            // Use direct array access for efficiency
@@ -199,7 +206,8 @@ index a0b54f3a3d11e0f0f1cb806406a870ba36da8f07..304365f61d6fde632c1c09cb889d466e
 +            }
 +        } else {
 +            buffer.writeVarInt(0);
-         }
++        }
++        // Leaf end - Rewrite ClientboundLightUpdatePacketData
      }
  
 +    // Getter methods
@@ -207,20 +215,20 @@ index a0b54f3a3d11e0f0f1cb806406a870ba36da8f07..304365f61d6fde632c1c09cb889d466e
      public BitSet getSkyYMask() {
          return this.skyYMask;
      }
-@@ -84,7 +189,7 @@ public class ClientboundLightUpdatePacketData {
+@@ -84,7 +197,7 @@ public class ClientboundLightUpdatePacketData {
      }
  
      public List<byte[]> getSkyUpdates() {
 -        return this.skyUpdates;
-+        return this.skyUpdateCount > 0 ? Arrays.asList(this.skyUpdates) : List.of(); // Leaf - Rewrite ClientboundLightUpdatePacketData
++        return this.skyUpdateCount > 0 ? java.util.Arrays.asList(this.skyUpdates) : List.of(); // Leaf - Rewrite ClientboundLightUpdatePacketData
      }
  
      public BitSet getBlockYMask() {
-@@ -96,6 +201,6 @@ public class ClientboundLightUpdatePacketData {
+@@ -96,6 +209,6 @@ public class ClientboundLightUpdatePacketData {
      }
  
      public List<byte[]> getBlockUpdates() {
 -        return this.blockUpdates;
-+        return this.blockUpdateCount > 0 ? Arrays.asList(this.blockUpdates) : List.of(); // Leaf - Rewrite ClientboundLightUpdatePacketData
++        return this.blockUpdateCount > 0 ? java.util.Arrays.asList(this.blockUpdates) : List.of(); // Leaf - Rewrite ClientboundLightUpdatePacketData
      }
  }
