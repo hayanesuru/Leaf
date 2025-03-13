@@ -76,14 +76,3 @@ index 6b6aaeca14178b5b709e20ae13552d42217f15c0..c10ed10dd843bfa12be3f80a244cda94
              CompoundTag compoundTag = packStructureData(
                  StructurePieceSerializationContext.fromLevel(level), pos, chunk.getAllStarts(), chunk.getAllReferences()
              );
-@@ -605,8 +615,8 @@ public record SerializableChunkData(
-                 list,
-                 list2,
-                 list1,
--                compoundTag
--                , persistentDataContainer // CraftBukkit - persistentDataContainer
-+                compoundTag,
-+                persistentDataContainer // CraftBukkit - persistentDataContainer
-             );
-         }
-     }
