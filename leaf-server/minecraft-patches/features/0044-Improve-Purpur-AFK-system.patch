@@ -19,10 +19,10 @@ index ee7bdfd8f9da8d5989c9cc25f8cbcc94640361c5..fb18f69cb26132fc8c53b185454c6aad
              org.purpurmc.purpur.command.DemoCommand.register(this.dispatcher); // Purpur - Add demo command
              org.purpurmc.purpur.command.PingCommand.register(this.dispatcher); // Purpur - Add ping command
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index dfb4524d80f642eff1b146dd2fbfa07f21d844c6..2c67693cc3781eb5aee10b4dfb9617cbe107e922 100644
+index f89d28595fa9ca12e414f7b3cc86085ff0769e72..29fd9cea422e1ee09f6983a9b72847fbeaf57e3d 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -2460,6 +2460,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2467,6 +2467,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
      // Purpur start - AFK API
      private boolean isAfk = false;
@@ -33,7 +33,7 @@ index dfb4524d80f642eff1b146dd2fbfa07f21d844c6..2c67693cc3781eb5aee10b4dfb9617cb
  
      @Override
      public void setAfk(boolean afk) {
-@@ -2497,6 +2501,18 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2504,6 +2508,18 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              String prefix = (split.length > 0 ? split[0] : "").replace(org.purpurmc.purpur.PurpurConfig.afkTabListPrefix, "");
              String suffix = (split.length > 1 ? split[1] : "").replace(org.purpurmc.purpur.PurpurConfig.afkTabListSuffix, "");
              if (afk) {
@@ -53,7 +53,7 @@ index dfb4524d80f642eff1b146dd2fbfa07f21d844c6..2c67693cc3781eb5aee10b4dfb9617cb
              } else {
                  getBukkitEntity().setPlayerListName(prefix + scoreboardName + suffix, true);
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 543e7e278bb94c0bc996c377f8778df8a0b0440b..24aca7ba2cc3ec5f05bb4ea7d373feb730d8dd90 100644
+index f10946b641e0af144ca653850c5d5292c0095412..90ff9e0a0b7ef1307ed4ee839571cf1aa5632c15 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2270,6 +2270,8 @@ public class ServerGamePacketListenerImpl
@@ -138,7 +138,7 @@ index 543e7e278bb94c0bc996c377f8778df8a0b0440b..24aca7ba2cc3ec5f05bb4ea7d373feb7
          this.cserver.getPluginManager().callEvent(event);
          command = event.getMessage().substring(1);
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 3d6efee3469302f37e60a9013f6a3adf970a580a..03f3e1de0c5df76a4d14c5dc62647ecfc2b17dce 100644
+index 386423589443051b8c461926c570352dd612a051..84f9a8a606ede4ef8361a2683d775121e57b6d9b 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -668,6 +668,7 @@ public abstract class PlayerList {
