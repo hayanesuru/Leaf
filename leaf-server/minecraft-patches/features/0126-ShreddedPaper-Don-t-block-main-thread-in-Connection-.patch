@@ -6,7 +6,7 @@ Subject: [PATCH] ShreddedPaper: Don't block main thread in
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 570a6b844319491b1e07df0a3e55d0b29533c649..5a8133497d9c1260a3bba7e9dc7f3b059bbe6b1a 100644
+index 9aeadf792eb7c6c39044df00fa7ff80017ba72d0..2aba58b4c1afb843b61d9a5113ed058b06278348 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -325,6 +325,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {

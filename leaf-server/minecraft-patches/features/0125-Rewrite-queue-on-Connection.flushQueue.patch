@@ -5,7 +5,7 @@ Subject: [PATCH] Rewrite queue on Connection.flushQueue
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 7b78c0af4a83bd39a5bc2d6554cc677bd4c0c822..a5c0dd4b150fe85ab7633b1232e211f67de035b6 100644
+index 00a82873d226f113278632a53c0faca420dd67d4..9aeadf792eb7c6c39044df00fa7ff80017ba72d0 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -85,7 +85,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
