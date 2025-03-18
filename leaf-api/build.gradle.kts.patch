@@ -27,7 +27,7 @@
 +    // Leaf start - Bump Dependencies
 +    api("com.google.guava:guava:33.4.0-jre")
 +    api("com.google.code.gson:gson:2.12.1")
-+    api("org.yaml:snakeyaml:2.4")
++    api("org.yaml:snakeyaml:2.3") // 2.4 removed `org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder`
 +    // Leaf end - Bump Dependencies
      api("org.joml:joml:1.10.8") {
          isTransitive = false // https://github.com/JOML-CI/JOML/issues/352
