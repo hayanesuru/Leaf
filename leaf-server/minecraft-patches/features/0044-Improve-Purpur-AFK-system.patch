@@ -53,7 +53,7 @@ index f89d28595fa9ca12e414f7b3cc86085ff0769e72..29fd9cea422e1ee09f6983a9b72847fb
              } else {
                  getBukkitEntity().setPlayerListName(prefix + scoreboardName + suffix, true);
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index f10946b641e0af144ca653850c5d5292c0095412..a069760d916da9dd9efa99fd01b41e5dfe88acf3 100644
+index f10946b641e0af144ca653850c5d5292c0095412..90535f96479c936c516949ffc5def9e63b0daa95 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2272,6 +2272,7 @@ public class ServerGamePacketListenerImpl
@@ -110,14 +110,14 @@ index f10946b641e0af144ca653850c5d5292c0095412..a069760d916da9dd9efa99fd01b41e5d
              this.player.resetLastActionTime();
              // CraftBukkit start
              if (sync) {
-@@ -2443,6 +2450,46 @@ public class ServerGamePacketListenerImpl
+@@ -2443,6 +2450,40 @@ public class ServerGamePacketListenerImpl
          }
      }
  
 +    // Leaf start - Improve Purpur AFK system
 +    public static final Map<java.util.UUID, Long> afkCooldown = new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>();
 +    private boolean performAfkCooldown(String command) {
-+        if (!"afk".equals(command)) {
++        if (!org.dreeam.leaf.config.modules.gameplay.AfkCommand.enabled || !"afk".equals(command)) {
 +            return false;
 +        }
 +
@@ -132,13 +132,7 @@ index f10946b641e0af144ca653850c5d5292c0095412..a069760d916da9dd9efa99fd01b41e5d
 +        Long cooldown = afkCooldown.get(uuid);
 +        long currentTime = System.nanoTime();
 +
-+        boolean ifnull = cooldown != null;
-+        System.out.println(ifnull);
-+        if (ifnull) {
-+            System.out.println((currentTime - cooldown) / 1_000_000_000 <= org.purpurmc.purpur.PurpurConfig.afkCommandCooldown);
-+            System.out.println((currentTime - cooldown) / 1_000_000_000);
-+        }
-+        if (ifnull && (currentTime - cooldown) / 1_000_000_000 <= org.purpurmc.purpur.PurpurConfig.afkCommandCooldown) {
++        if (cooldown != null && (currentTime - cooldown) / 1_000_000_000 <= org.purpurmc.purpur.PurpurConfig.afkCommandCooldown) {
 +            String msg = org.purpurmc.purpur.PurpurConfig.afkCooldown;
 +
 +            if (msg != null && !msg.isEmpty()) {
