@@ -292,7 +292,7 @@ index 4ed9611994c5c8da01fede690197527c5b3a5731..00a82873d226f113278632a53c0faca4
          }
          // Paper end - Buffer joins to world
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index 748816e3f325468f523bdb8dfb94992883ed1989..427788e8747ae8d3a49c0dc094e04b6d7727daa2 100644
+index 43842de34adda95e78025c2b00639b31b774a78b..398aac2a63ae84bb8b9bfb7be6e6d56bf019abda 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
 @@ -108,6 +108,12 @@ public class Main {
@@ -305,9 +305,9 @@ index 748816e3f325468f523bdb8dfb94992883ed1989..427788e8747ae8d3a49c0dc094e04b6d
 +            org.purpurmc.purpur.PurpurConfig.registerMinecraftDebugCommands = purpurConfiguration.getBoolean("settings.register-minecraft-debug-commands"); // Purpur - register minecraft debug commands
 +            // Purpur end - Add toggle for enchant level clamping - load config files early
 +
+             org.dreeam.leaf.config.LeafConfig.loadConfig(); // Leaf - Leaf config
              io.papermc.paper.plugin.PluginInitializerManager.load(optionSet); // Paper
              Bootstrap.bootStrap();
-             Bootstrap.validate();
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
 index a76b67a846b12a7b3d0c41b6ac4833d4f0372531..5fb7a76faf72f7d91122e5bf01c51853164a73c0 100644
 --- a/net/minecraft/server/MinecraftServer.java

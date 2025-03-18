@@ -11,17 +11,17 @@ Add per world config
 Add config reload
 
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index 9aa664537cc37e44db46d5a2a64ae3116938c681..748816e3f325468f523bdb8dfb94992883ed1989 100644
+index 9aa664537cc37e44db46d5a2a64ae3116938c681..43842de34adda95e78025c2b00639b31b774a78b 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -112,6 +112,7 @@ public class Main {
+@@ -108,6 +108,7 @@ public class Main {
+                 JvmProfiler.INSTANCE.start(Environment.SERVER);
+             }
+ 
++            org.dreeam.leaf.config.LeafConfig.loadConfig(); // Leaf - Leaf config
+             io.papermc.paper.plugin.PluginInitializerManager.load(optionSet); // Paper
              Bootstrap.bootStrap();
              Bootstrap.validate();
-             Util.startTimerHackThread();
-+            org.dreeam.leaf.config.LeafConfig.loadConfig(); // Leaf - Leaf config
-             Path path1 = Paths.get("server.properties");
-             DedicatedServerSettings dedicatedServerSettings = new DedicatedServerSettings(optionSet); // CraftBukkit - CLI argument support
-             dedicatedServerSettings.forceSave();
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
 index f33fb9b30863dd8ff7207db905fcfb7547b09383..4ba85d704ffebae38f7a76a97a182e3674730c6f 100644
 --- a/net/minecraft/server/MinecraftServer.java
