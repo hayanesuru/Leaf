@@ -8,7 +8,7 @@ Co-authored-by: Taiyou06 <kaandindar21@gmail.com>
 FastBitRadix Sort will be used. (see https://ieeexplore.ieee.org/document/7822019 for more)
 When entity count reached the threshold, Bucket Sort will be used.
 
-In non-strict test, this can give ~50-90% improvement (54MSPT -> 44MSPT),
+In non-strict test, this can give ~60-110% improvement (14MSPT -> 10.5MSPT),
 under 625 villagers situation.
 
 diff --git a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
