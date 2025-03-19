@@ -8,7 +8,6 @@ These numbers are gotten with 2000 villagers searching for a Job
 Paper: 3859ms
 Leaf : 1363ms (-64% reduction)
 
-
 diff --git a/net/minecraft/world/entity/ai/behavior/SetLookAndInteract.java b/net/minecraft/world/entity/ai/behavior/SetLookAndInteract.java
 index 13359e484486a5280f408955fe2a365cd3c34a43..d326bf267123ff26d85e63aeb273baf4b59613d6 100644
 --- a/net/minecraft/world/entity/ai/behavior/SetLookAndInteract.java
