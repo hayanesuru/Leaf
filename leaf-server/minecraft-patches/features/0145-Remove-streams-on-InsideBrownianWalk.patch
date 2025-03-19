@@ -3,7 +3,7 @@ From: Taiyou06 <kaandindar21@gmail.com>
 Date: Wed, 19 Mar 2025 15:18:58 +0100
 Subject: [PATCH] Remove streams on InsideBrownianWalk
 
-This method is maninly visible when ton of villagers suddenly wants to sleep
+This method is mainly visible when ton of villagers suddenly wants to sleep
 Safe optimization, no need to provide any numbers.
 
 diff --git a/net/minecraft/world/entity/ai/behavior/InsideBrownianWalk.java b/net/minecraft/world/entity/ai/behavior/InsideBrownianWalk.java
