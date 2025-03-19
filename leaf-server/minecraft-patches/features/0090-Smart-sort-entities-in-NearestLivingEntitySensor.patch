@@ -12,18 +12,10 @@ In non-strict test, this can give ~60-110% improvement (524ms on Paper, 204ms on
 under 625 villagers situation.
 
 diff --git a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
-index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..5ba8bc485d1c06f16060789dd42a82cc66b5bcc0 100644
+index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..9ef531551bb135d4b6a1ca9c3320e35fa62d7c41 100644
 --- a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
-@@ -1,7 +1,6 @@
- package net.minecraft.world.entity.ai.sensing;
- 
- import com.google.common.collect.ImmutableSet;
--import java.util.Comparator;
- import java.util.List;
- import java.util.Set;
- import net.minecraft.server.level.ServerLevel;
-@@ -13,18 +12,92 @@ import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
+@@ -13,18 +13,92 @@ import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
  import net.minecraft.world.phys.AABB;
  
  public class NearestLivingEntitySensor<T extends LivingEntity> extends Sensor<T> {
@@ -63,7 +55,7 @@ index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..5ba8bc485d1c06f16060789dd42a82cc
 +            bits[i] = Double.doubleToRawLongBits(reference.distanceToSqr(entities[i]));
 +        }
 +
-+        fastRadixSort(entities, bits, 0, entities.length-1, 62);
++        fastRadixSort(entities, bits, 0, entities.length - 1, 62);
 +        return entities;
 +    }
 +
@@ -87,19 +79,19 @@ index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..5ba8bc485d1c06f16060789dd42a82cc
 +            }
 +        }
 +
-+        if (low < j) fastRadixSort(ents, bits, low, j, bit-1);
-+        if (i < high) fastRadixSort(ents, bits, i, high, bit-1);
++        if (low < j) fastRadixSort(ents, bits, low, j, bit - 1);
++        if (i < high) fastRadixSort(ents, bits, i, high, bit - 1);
 +    }
 +
 +    private void insertionSort(LivingEntity[] ents, long[] bits, int low, int high) {
-+        for (int i = low+1; i <= high; i++) {
++        for (int i = low + 1; i <= high; i++) {
 +            int j = i;
 +            LivingEntity e = ents[j];
 +            long b = bits[j];
 +
-+            while (j > low && bits[j-1] > b) {
-+                ents[j] = ents[j-1];
-+                bits[j] = bits[j-1];
++            while (j > low && bits[j - 1] > b) {
++                ents[j] = ents[j - 1];
++                bits[j] = bits[j - 1];
 +                j--;
 +            }
 +
