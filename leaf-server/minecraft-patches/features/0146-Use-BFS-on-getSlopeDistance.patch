@@ -8,7 +8,6 @@ Paper: ~75ms
 Leaf: ~48ms (-36%)
 This should help drastically on the farms that use actively changing fluids.
 
-
 diff --git a/net/minecraft/world/level/material/FlowingFluid.java b/net/minecraft/world/level/material/FlowingFluid.java
 index 4c2c2efd5380ff1fa5ad7553b51babae20f516ae..618a8af8fe30c39bb8c93dcc324f4ae1c48e704e 100644
 --- a/net/minecraft/world/level/material/FlowingFluid.java
