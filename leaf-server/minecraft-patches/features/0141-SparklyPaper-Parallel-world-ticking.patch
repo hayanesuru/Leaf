@@ -272,7 +272,7 @@ index 5ab2c8333178335515e619b87ae420f948c83bd1..3b378ef89bdf64190f21003ee3dc0f87
              }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 3597f7dd2d71fe136604518985e3d14461a6aad4..dd1c55e983bc1ddc9a77a0b825b78eba62c201ec 100644
+index 8744690b69be75f9dbcfe5a52bb90ed387eaffd7..fc6f6bc888018e879479ce24988d58f1f7e958f1 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1,5 +1,6 @@
@@ -364,7 +364,7 @@ index 3597f7dd2d71fe136604518985e3d14461a6aad4..dd1c55e983bc1ddc9a77a0b825b78eba
      protected void tickChildren(BooleanSupplier hasTimeLeft) {
          this.getPlayerList().getPlayers().forEach(serverPlayer1 -> serverPlayer1.connection.suspendFlushing());
          this.server.getScheduler().mainThreadHeartbeat(); // CraftBukkit
-@@ -1733,28 +1757,50 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1737,28 +1761,50 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          }
  
          this.isIteratingOverLevels = true; // Paper - Throw exception on world create while being ticked
@@ -433,7 +433,7 @@ index 3597f7dd2d71fe136604518985e3d14461a6aad4..dd1c55e983bc1ddc9a77a0b825b78eba
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
          this.tickConnection();
-@@ -1834,6 +1880,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1838,6 +1884,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          Map<ResourceKey<Level>, ServerLevel> oldLevels = this.levels;
          Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
          newLevels.remove(level.dimension());
