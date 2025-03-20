@@ -12,15 +12,26 @@ In non-strict test, this can give ~60-110% improvement (524ms on Paper, 204ms on
 under 625 villagers situation.
 
 diff --git a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
-index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..9ef531551bb135d4b6a1ca9c3320e35fa62d7c41 100644
+index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..7f9550af4dce9c6442080c39d19e824f63115d7c 100644
 --- a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
-@@ -13,18 +13,92 @@ import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
+@@ -1,7 +1,7 @@
+ package net.minecraft.world.entity.ai.sensing;
+ 
+ import com.google.common.collect.ImmutableSet;
+-import java.util.Comparator;
++import java.util.Arrays;
+ import java.util.List;
+ import java.util.Set;
+ import net.minecraft.server.level.ServerLevel;
+@@ -13,18 +13,101 @@ import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
  import net.minecraft.world.phys.AABB;
  
  public class NearestLivingEntitySensor<T extends LivingEntity> extends Sensor<T> {
-+    // Leaf start - Optimized entity sorting
++    // Leaf start - Optimized entity sorting with buffer reuse
 +    private static final int SMALL_ARRAY_THRESHOLD = 2;
++    private LivingEntity[] entityBuffer = new LivingEntity[0];
++    private long[] bitsBuffer = new long[0];
 +
      @Override
      protected void doTick(ServerLevel level, T entity) {
@@ -29,15 +40,16 @@ index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..9ef531551bb135d4b6a1ca9c3320e35f
 -        List<LivingEntity> entitiesOfClass = level.getEntitiesOfClass(
 -            LivingEntity.class, aabb, matchableEntity -> matchableEntity != entity && matchableEntity.isAlive()
 +        double range = entity.getAttributeValue(Attributes.FOLLOW_RANGE);
++        double rangeSqr = range * range;
 +        AABB aabb = entity.getBoundingBox().inflate(range, range, range);
 +
 +        List<LivingEntity> entities = level.getEntitiesOfClass(
-+            LivingEntity.class, aabb, e -> e != entity && e.isAlive()
++            LivingEntity.class, aabb, e -> e != entity && e.isAlive() && entity.distanceToSqr(e) <= rangeSqr
          );
 -        entitiesOfClass.sort(Comparator.comparingDouble(entity::distanceToSqr));
 +
-+        LivingEntity[] sorted = smartSort(entities.toArray(new LivingEntity[0]), entity);
-+        List<LivingEntity> sortedList = List.of(sorted);
++        LivingEntity[] sorted = smartSort(entities, entity);
++        List<LivingEntity> sortedList = Arrays.asList(sorted);
 +
          Brain<?> brain = entity.getBrain();
 -        brain.setMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES, entitiesOfClass);
@@ -47,16 +59,24 @@ index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..9ef531551bb135d4b6a1ca9c3320e35f
 +            new NearestVisibleLivingEntities(level, entity, sortedList));
 +    }
 +
-+    private LivingEntity[] smartSort(LivingEntity[] entities, T reference) {
-+        if (entities.length <= 1) return entities;
++    private LivingEntity[] smartSort(List<LivingEntity> entities, T reference) {
++        int size = entities.size();
++        if (size <= 1) return entities.toArray(new LivingEntity[0]);
 +
-+        long[] bits = new long[entities.length];
-+        for (int i = 0; i < entities.length; i++) {
-+            bits[i] = Double.doubleToRawLongBits(reference.distanceToSqr(entities[i]));
++        if (entityBuffer.length < size) {
++            entityBuffer = new LivingEntity[size];
++            bitsBuffer = new long[size];
 +        }
 +
-+        fastRadixSort(entities, bits, 0, entities.length - 1, 62);
-+        return entities;
++        for (int i = 0; i < size; i++) {
++            LivingEntity e = entities.get(i);
++            entityBuffer[i] = e;
++            bitsBuffer[i] = Double.doubleToRawLongBits(reference.distanceToSqr(e));
++        }
++
++        fastRadixSort(entityBuffer, bitsBuffer, 0, size - 1, 62);
++
++        return Arrays.copyOf(entityBuffer, size);
 +    }
 +
 +    private void fastRadixSort(LivingEntity[] ents, long[] bits, int low, int high, int bit) {
@@ -101,17 +121,15 @@ index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..9ef531551bb135d4b6a1ca9c3320e35f
 +    }
 +
 +    private void swap(LivingEntity[] ents, long[] bits, int a, int b) {
-+        // Swap entities
 +        LivingEntity te = ents[a];
 +        ents[a] = ents[b];
 +        ents[b] = te;
 +
-+        // Swap bits
 +        long tb = bits[a];
 +        bits[a] = bits[b];
 +        bits[b] = tb;
      }
-+    // Leaf end - Optimized entity sorting
++    // Leaf end - Optimized entity sorting with buffer reuse
  
      @Override
      public Set<MemoryModuleType<?>> requires() {
