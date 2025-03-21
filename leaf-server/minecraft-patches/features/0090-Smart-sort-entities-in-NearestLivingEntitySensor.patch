@@ -12,22 +12,14 @@ In non-strict test, this can give ~60-110% improvement (524ms on Paper, 204ms on
 under 625 villagers situation.
 
 diff --git a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
-index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..7f9550af4dce9c6442080c39d19e824f63115d7c 100644
+index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..83af90c7a2e425b775abd7907895d211ced07955 100644
 --- a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
-@@ -1,7 +1,7 @@
- package net.minecraft.world.entity.ai.sensing;
- 
- import com.google.common.collect.ImmutableSet;
--import java.util.Comparator;
-+import java.util.Arrays;
- import java.util.List;
- import java.util.Set;
- import net.minecraft.server.level.ServerLevel;
-@@ -13,18 +13,101 @@ import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
+@@ -13,18 +13,102 @@ import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
  import net.minecraft.world.phys.AABB;
  
  public class NearestLivingEntitySensor<T extends LivingEntity> extends Sensor<T> {
++
 +    // Leaf start - Optimized entity sorting with buffer reuse
 +    private static final int SMALL_ARRAY_THRESHOLD = 2;
 +    private LivingEntity[] entityBuffer = new LivingEntity[0];
@@ -49,7 +41,7 @@ index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..7f9550af4dce9c6442080c39d19e824f
 -        entitiesOfClass.sort(Comparator.comparingDouble(entity::distanceToSqr));
 +
 +        LivingEntity[] sorted = smartSort(entities, entity);
-+        List<LivingEntity> sortedList = Arrays.asList(sorted);
++        List<LivingEntity> sortedList = java.util.Arrays.asList(sorted);
 +
          Brain<?> brain = entity.getBrain();
 -        brain.setMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES, entitiesOfClass);
@@ -76,7 +68,7 @@ index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..7f9550af4dce9c6442080c39d19e824f
 +
 +        fastRadixSort(entityBuffer, bitsBuffer, 0, size - 1, 62);
 +
-+        return Arrays.copyOf(entityBuffer, size);
++        return java.util.Arrays.copyOf(entityBuffer, size);
 +    }
 +
 +    private void fastRadixSort(LivingEntity[] ents, long[] bits, int low, int high, int bit) {

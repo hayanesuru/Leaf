@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.ThreadFactory;
 
 public class SparklyPaperServerLevelTickExecutorThreadFactory implements ThreadFactory {
+
     private final String worldName;
 
     public SparklyPaperServerLevelTickExecutorThreadFactory(final String worldName) {

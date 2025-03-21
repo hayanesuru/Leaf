@@ -10,7 +10,6 @@ public class AsyncChunkSend extends ConfigModules {
         return EnumConfigCategory.ASYNC.getBaseKeyName() + ".async-chunk-send";
     }
 
-    @Experimental
     public static boolean enabled = false;
 
     @Override

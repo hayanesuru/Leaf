@@ -2,12 +2,15 @@ package org.dreeam.leaf.config.modules.async;
 
 import org.dreeam.leaf.config.ConfigModules;
 import org.dreeam.leaf.config.EnumConfigCategory;
+import org.dreeam.leaf.config.annotations.Experimental;
 
 public class SparklyPaperParallelWorldTicking extends ConfigModules {
+
     public String getBasePath() {
         return EnumConfigCategory.ASYNC.getBaseKeyName() + ".parallel-world-tracking";
     }
 
+    @Experimental
     public static boolean enabled = false;
     public static int threads = 8;
     public static boolean logContainerCreationStacktraces = false;
