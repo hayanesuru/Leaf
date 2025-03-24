@@ -63,29 +63,19 @@ public class CompactSineLUT {
     }
 
     private static float lookup(int index) {
-        // A special case... Is there some way to eliminate this?
-        if (index == 32768) {
-            return SINE_TABLE_MIDPOINT;
-        }
-
-        // Trigonometric identity: sin(-x) = -sin(x)
-        // Given a domain of 0 <= x <= 2*pi, just negate the value if x > pi.
-        // This allows the sin table size to be halved.
         int neg = (index & 0x8000) << 16;
 
-        // All bits set if (pi/2 <= x), none set otherwise
-        // Extracts the 15th bit from 'half'
+        //im sorry
+        int specialCaseMask = ~((index ^ 32768) | -((index ^ 32768))) >> 31;
+
         int mask = (index << 17) >> 31;
-
-        // Trigonometric identity: sin(x) = sin(pi/2 - x)
         int pos = (0x8001 & mask) + (index ^ mask);
-
-        // Wrap the position in the table. Moving this down to immediately before the array access
-        // seems to help the Hotspot compiler optimize the bit math better.
         pos &= 0x7fff;
 
-        // Fetch the corresponding value from the LUT and invert the sign bit as needed
-        // This directly manipulate the sign bit on the float bits to simplify logic
-        return Float.intBitsToFloat(SINE_TABLE_INT[pos] ^ neg);
+        int normalResult = SINE_TABLE_INT[pos] ^ neg;
+        int specialResult = Float.floatToRawIntBits(SINE_TABLE_MIDPOINT);
+
+        // Select between normalResult and specialResult using the mask
+        return Float.intBitsToFloat((normalResult & ~specialCaseMask) | (specialResult & specialCaseMask));
     }
 }
