@@ -64,7 +64,7 @@ subprojects {
 }
 
 paperweight {
-    upstreams.register("paper") {
+    upstreams.paper {
         repo = github("Dreeam-qwq", "Paper")
         ref = providers.gradleProperty("paperCommit")
 

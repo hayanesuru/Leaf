@@ -12,7 +12,7 @@ plugins {
 }
 
 if (!file(".git").exists()) {
-    // Gale start - build changes
+    // Leaf start - project setup
     val errorText = """
         
         =====================[ ERROR ]=====================
@@ -29,7 +29,7 @@ if (!file(".git").exists()) {
          for further information on building and modifying Paper forks.
         ===================================================
     """.trimIndent()
-    // Gale end - build changes
+    // Leaf end - project setup
     error(errorText)
 }
 
