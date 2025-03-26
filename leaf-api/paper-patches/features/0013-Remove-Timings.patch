@@ -729,7 +729,7 @@ index 51d54b87106aa17c2de9ab22eae22d176c7d0bfc..00000000000000000000000000000000
 -}
 diff --git a/src/main/java/co/aikar/timings/TimingHistory.java b/src/main/java/co/aikar/timings/TimingHistory.java
 deleted file mode 100644
-index 6f6eb1a2e6c8d49014a7ae44540ee282bae5200e..0000000000000000000000000000000000000000
+index c8287776ad585d04fb4fa3290cd73d7097035ea0..0000000000000000000000000000000000000000
 --- a/src/main/java/co/aikar/timings/TimingHistory.java
 +++ /dev/null
 @@ -1,357 +0,0 @@
@@ -1024,7 +1024,7 @@ index 6f6eb1a2e6c8d49014a7ae44540ee282bae5200e..00000000000000000000000000000000
 -        final TicksRecord ticksRecord = new TicksRecord();
 -        final PingRecord pingRecord = new PingRecord();
 -        final TimingData fst = TimingsManager.FULL_SERVER_TICK.minuteData.clone();
--        final double tps = 1E9 / ( System.nanoTime() - lastMinuteTime ) * ticksRecord.timed;
+-        final double tps = 1E9 / (System.nanoTime() - lastMinuteTime) * ticksRecord.timed;
 -        final double usedMemory = TimingsManager.FULL_SERVER_TICK.avgUsedMemory;
 -        final double freeMemory = TimingsManager.FULL_SERVER_TICK.avgFreeMemory;
 -        final double loadAvg = ManagementFactory.getOperatingSystemMXBean().getSystemLoadAverage();
@@ -1742,7 +1742,7 @@ index b83e5ff7ada8771fdf27ba9807c77ba6a4ce12da..00000000000000000000000000000000
 -}
 diff --git a/src/main/java/co/aikar/timings/TimingsManager.java b/src/main/java/co/aikar/timings/TimingsManager.java
 deleted file mode 100644
-index e72ad05abada04426e32a73d02b21cb69079d268..0000000000000000000000000000000000000000
+index 83a70358e9b7d3d9ae76cf130915b3c33d09a793..0000000000000000000000000000000000000000
 --- a/src/main/java/co/aikar/timings/TimingsManager.java
 +++ /dev/null
 @@ -1,192 +0,0 @@
@@ -1901,9 +1901,9 @@ index e72ad05abada04426e32a73d02b21cb69079d268..00000000000000000000000000000000
 -    public static Timing getCommandTiming(@Nullable String pluginName, @NotNull Command command) {
 -        Plugin plugin = null;
 -        final Server server = Bukkit.getServer();
--        if (!(  server == null || pluginName == null ||
--                "minecraft".equals(pluginName) || "bukkit".equals(pluginName) ||
--                "spigot".equalsIgnoreCase(pluginName) || "paper".equals(pluginName)
+-        if (!(server == null || pluginName == null ||
+-            "minecraft".equals(pluginName) || "bukkit".equals(pluginName) ||
+-            "spigot".equalsIgnoreCase(pluginName) || "paper".equals(pluginName)
 -        )) {
 -            plugin = server.getPluginManager().getPlugin(pluginName);
 -        }
@@ -2910,7 +2910,7 @@ index abe256e1e45ce28036da4aa1586715bc8a1a3414..9eab8024e0675865f17669847759a26d
          return i >= j && i <= k;
      }
 diff --git a/src/main/java/org/bukkit/command/SimpleCommandMap.java b/src/main/java/org/bukkit/command/SimpleCommandMap.java
-index 32c81559507a8e5085c91d466cda69d0dc11327e..7e9f1237f197094318fc41df2e2fa58fbc81e528 100644
+index 5df19bd701c67506689fc7f49d91f99ebfbc83f0..cfbf141dc47740822efdbb054208fccea917da66 100644
 --- a/src/main/java/org/bukkit/command/SimpleCommandMap.java
 +++ b/src/main/java/org/bukkit/command/SimpleCommandMap.java
 @@ -39,7 +39,6 @@ public class SimpleCommandMap implements CommandMap {
@@ -2929,9 +2929,9 @@ index 32c81559507a8e5085c91d466cda69d0dc11327e..7e9f1237f197094318fc41df2e2fa58f
          label = label.toLowerCase(Locale.ROOT).trim();
          fallbackPrefix = fallbackPrefix.toLowerCase(Locale.ROOT).trim();
          boolean registered = register(label, command, false, fallbackPrefix);
-@@ -166,23 +164,13 @@ public class SimpleCommandMap implements CommandMap {
-         parsedArgs = event.getArgs();
-         // Purpur end - ExecuteCommandEvent
+@@ -153,23 +151,13 @@ public class SimpleCommandMap implements CommandMap {
+             return false;
+         }
  
 -        // Paper start - Plugins do weird things to workaround normal registration
 -        if (target.timings == null) {
@@ -2942,7 +2942,7 @@ index 32c81559507a8e5085c91d466cda69d0dc11327e..7e9f1237f197094318fc41df2e2fa58f
          try {
 -            try (co.aikar.timings.Timing ignored = target.timings.startTiming()) { // Paper - use try with resources
              // Note: we don't return the result of target.execute as thats success / failure, we return handled (true) or not handled (false)
-             target.execute(sender, sentCommandLabel, parsedArgs); // Purpur - ExecuteCommandEvent
+             target.execute(sender, sentCommandLabel, Arrays.copyOfRange(args, 1, args.length));
 -            } // target.timings.stopTiming(); // Spigot // Paper
          } catch (CommandException ex) {
              server.getPluginManager().callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerCommandException(ex, target, sender, args))); // Paper
@@ -2998,30 +2998,10 @@ index 2e6d62c4f3687e299c34e876c503b400e13be05a..e7f1a35610d53891d346a3284cca1bca
  
      // Paper start
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index 2fae50a9d1f0d9ecd91036697dedd64bc56f7d3b..bf299cfe88c383d489de0c36fd9a4922cfeab572 100644
+index ce45dbc7b02c405f1b3460563cf87e7888702ba9..c43ce5b7bed3297cd655a7f2ed4b4717e139bbfd 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-@@ -39,11 +39,9 @@ import org.bukkit.plugin.PluginDescriptionFile;
- import org.bukkit.plugin.PluginLoader;
- import org.bukkit.plugin.RegisteredListener;
- import org.bukkit.plugin.SimplePluginManager;
--import org.bukkit.plugin.TimedRegisteredListener;
- import org.bukkit.plugin.UnknownDependencyException;
- import org.jetbrains.annotations.NotNull;
- import org.jetbrains.annotations.Nullable;
--import org.spigotmc.CustomTimingsHandler; // Spigot
- import org.yaml.snakeyaml.error.YAMLException;
- 
- /**
-@@ -239,7 +237,6 @@ public final class JavaPluginLoader implements PluginLoader {
-         Preconditions.checkArgument(plugin != null, "Plugin can not be null");
-         Preconditions.checkArgument(listener != null, "Listener can not be null");
- 
--        boolean useTimings = server.getPluginManager().useTimings();
-         Map<Class<? extends Event>, Set<RegisteredListener>> ret = new HashMap<Class<? extends Event>, Set<RegisteredListener>>();
-         Set<Method> methods;
-         try {
-@@ -300,7 +297,7 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -297,7 +297,7 @@ public final class JavaPluginLoader implements PluginLoader {
                  }
              }
  
@@ -3030,21 +3010,15 @@ index 2fae50a9d1f0d9ecd91036697dedd64bc56f7d3b..bf299cfe88c383d489de0c36fd9a4922
                  @Override
                  public void execute(@NotNull Listener listener, @NotNull Event event) throws EventException { // Paper
                      try {
-@@ -314,12 +311,8 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -311,7 +311,7 @@ public final class JavaPluginLoader implements PluginLoader {
                          throw new EventException(t);
                      }
                  }
 -            }, plugin, method, eventClass); // Paper
--            if (false) { // Spigot - RL handles useTimings check now
--                eventSet.add(new TimedRegisteredListener(listener, executor, eh.priority(), plugin, eh.ignoreCancelled()));
--            } else {
--                eventSet.add(new RegisteredListener(listener, executor, eh.priority(), plugin, eh.ignoreCancelled()));
--            }
 +            }; // Paper // Leaf - Remove Timings
-+            eventSet.add(new RegisteredListener(listener, executor, eh.priority(), plugin, eh.ignoreCancelled())); // Leaf - Remove Timings
+             eventSet.add(new RegisteredListener(listener, executor, eh.priority(), plugin, eh.ignoreCancelled()));
          }
          return ret;
-     }
 diff --git a/src/main/java/org/spigotmc/CustomTimingsHandler.java b/src/main/java/org/spigotmc/CustomTimingsHandler.java
 deleted file mode 100644
 index 5fbacfcf108432c5187aa9a4092d00d7d5b0fd53..0000000000000000000000000000000000000000

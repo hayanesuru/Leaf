@@ -9,7 +9,7 @@ Added some asynchronous structure locate methods in World,
 requires async-locator to be enabled in Leaf config, or else it will fall back to sync methods.
 
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index bc95f529bc7e443a9ec4e8a4a255a32a6c27f355..64ea97cce246d5eab8f45de64bbf92245c3f9330 100644
+index 50f9f84081573706ebd6f0ebc2cbf6c0596c9691..ed5b17ad660f61c01e86384c0a800e518679d070 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -4077,6 +4077,60 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient

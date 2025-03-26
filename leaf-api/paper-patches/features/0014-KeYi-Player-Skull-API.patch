@@ -7,13 +7,13 @@ Original license: MIT
 Original project: https://github.com/KeYiMC/KeYi
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index c806e63b5fc44e9e75035346591cbcea9fc12ca2..69f7a2fa54b667f2bb97454d6be9f6322a9aa43d 100644
+index cb8da28d86d44b3633cf47f75141c9a093c63dab..7d223c7da83b2e51c07aa832da08774bb1e9f206 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -4047,4 +4047,23 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
-         sendDeathScreen(message);
-     }
-     // Purpur end
+@@ -3904,4 +3904,23 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+      * @param score New death screen score of player
+      */
+     void setDeathScreenScore(int score);
 +
 +    // Leaf start - KeYi - Player Skull API
 +    /**
