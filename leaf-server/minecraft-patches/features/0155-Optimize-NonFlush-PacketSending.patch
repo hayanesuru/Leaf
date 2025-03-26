@@ -1,0 +1,55 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Taiyou06 <kaandindar21@gmail.com>
+Date: Wed, 26 Mar 2025 17:33:30 +0100
+Subject: [PATCH] Optimize NonFlush PacketSending
+
+Places like entity tracking make heavy use of packet sending,
+and internally netty will use some very expensive thread wakeup
+calls when scheduling.
+
+Thanks to various hacks in ProtocolLib as well as other
+plugins, we cannot simply use a queue of packets to group
+send on execute. We have to call execute for each packet.
+
+Tux's suggestion here is exactly what was needed - tag
+the Runnable indicating it should not make a wakeup call.
+
+Big thanks to Tux for making this possible as I had given
+up on this optimisation before he came along.
+
+Locally this patch drops the entity tracker tick by a full 1.5x.
+
+Co-authored-by: Quang Tran <3d7777456@gmail.com>
+
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index 5b46036868b6c9d082e35591e58735e16adaae62..208674673169b7258d9411d818870a640df08b24 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -147,6 +147,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     @Nullable public SocketAddress haProxyAddress; // Paper - Add API to get player's proxy address
+     // Paper start - Optimize network
+     public boolean isPending = true;
++    private io.netty.channel.SingleThreadEventLoop eventLoop; // Leaf - optimise packets that are not flushed
+     public boolean queueImmunity;
+     // Paper end - Optimize network
+ 
+@@ -158,6 +159,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     public void channelActive(ChannelHandlerContext context) throws Exception {
+         super.channelActive(context);
+         this.channel = context.channel();
++        this.eventLoop = (io.netty.channel.SingleThreadEventLoop) this.channel.eventLoop(); // Leaf - optimise packets that are not flushed
+         this.address = this.channel.remoteAddress();
+         this.preparing = false; // Spigot
+         if (this.delayedDisconnect != null) {
+@@ -477,6 +479,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+         if (this.channel.eventLoop().inEventLoop()) {
+             this.doSendPacket(packet, sendListener, flush);
+         } else {
++            // Leaf start - optimise packets that are not flushed
++            if (!flush && org.dreeam.leaf.config.modules.network.OptimizeNonFlushPacketSending.enabled) {
++                this.eventLoop.lazyExecute(() -> this.doSendPacket(packet, sendListener, flush));
++            } else
++            // Leaf end - optimise packets that are not flushed
+             this.channel.eventLoop().execute(() -> this.doSendPacket(packet, sendListener, flush));
+         }
+     }
