@@ -1,7 +1,7 @@
-name: Build Leaf 1.21.4
+name: Build Leaf 1.21.5
 on:
   push:
-    branches: [ "ver/1.21.4" ]
+    branches: [ "ver/1.21.5" ] # no build until update finished
   workflow_dispatch:
 
 jobs:
@@ -95,13 +95,13 @@ jobs:
 
       - name: Rename Paperclip JARs
         run: |
-          mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-mojmap.jar ./leaf-1.21.4-${{ env.BUILD_NUMBER }}-mojmap.jar
+          mv leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-mojmap.jar ./leaf-1.21.5-${{ env.BUILD_NUMBER }}.jar
 
       - name: Upload Leaf as build artifact
         uses: actions/upload-artifact@main
         with:
-          name: Leaf 1.21.4
-          path: ./leaf-1.21.4-*.jar
+          name: Leaf 1.21.5
+          path: ./leaf-1.21.5-*.jar
 
       - name: Prepare release notes and artifacts
         run: |
@@ -122,11 +122,11 @@ jobs:
       - name: Release Leaf
         uses: softprops/action-gh-release@master
         with:
-          name: "Leaf 1.21.4"
-          tag_name: "ver-1.21.4"
-          files: "./leaf-1.21.4-${{ env.BUILD_NUMBER }}.jar"
+          name: "Leaf 1.21.5"
+          tag_name: "ver-1.21.5"
+          files: "./leaf-1.21.5-${{ env.BUILD_NUMBER }}.jar"
           body_path: "./release_notes.md"
           token: "${{ secrets.GITHUB_TOKEN }}"
           target_commitish: "${{ github.sha }}"
           draft: false
-          prerelease: false
+          prerelease: true

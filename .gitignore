@@ -25,7 +25,5 @@ run
 leaf-api/build.gradle.kts
 leaf-server/build.gradle.kts
 leaf-server/src/minecraft
-gale-api
-gale-server
 paper-api
 paper-server

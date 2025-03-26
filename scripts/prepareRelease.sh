@@ -6,9 +6,6 @@ IS_UNSUPPORTED=false
 
 RELEASE_NOTES="release_notes.md"
 
-# Rename Leaf jar
-mv ./leaf-1.21.4-"${BUILD_NUMBER}"-mojmap.jar ./leaf-1.21.4-"${BUILD_NUMBER}".jar
-
 # Branch name
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "✨Current branch: $CURRENT_BRANCH"
@@ -47,7 +44,7 @@ echo "" >> $RELEASE_NOTES
 } >> $RELEASE_NOTES
 
 # Get checksums
-file="./leaf-1.21.4-"${BUILD_NUMBER}".jar"
+file="./leaf-1.21.5-"${BUILD_NUMBER}".jar"
 if [ -f "$file" ]; then
   MD5=$(md5sum "$file" | awk '{ print $1 }')
   SHA256=$(sha256sum "$file" | awk '{ print $1 }')
@@ -88,5 +85,5 @@ if [ "$IS_UNSUPPORTED" = true ]; then
 fi
 
 # Delete last tag
-gh release delete ver-1.21.4 --cleanup-tag -y -R "${GITHUB_REPO}"
+gh release delete ver-1.21.5 --cleanup-tag -y -R "${GITHUB_REPO}"
 echo "🚀Ready for release"
