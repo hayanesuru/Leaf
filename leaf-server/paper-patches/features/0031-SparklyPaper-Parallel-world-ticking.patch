@@ -519,7 +519,7 @@ index 973b297a22c0cc53f966582c67c3688f4b2205c7..61f9e88a7760b4bf23674ac8594dd315
          this.getNMS().tick(level, this.position, level.random);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java
-index 768d3f93da2522d467183654260a8bd8653588b1..58fdc0e7bb5d377c6dad1af6307d5d0d11b1ee45 100644
+index 768d3f93da2522d467183654260a8bd8653588b1..5cef786fa2e5dfd3e7b79918bc73af02891b0bea 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java
 @@ -26,6 +26,27 @@ public abstract class CraftBlockEntityState<T extends BlockEntity> extends Craft
@@ -557,7 +557,7 @@ index 768d3f93da2522d467183654260a8bd8653588b1..58fdc0e7bb5d377c6dad1af6307d5d0d
 -        this.snapshotDisabled = DISABLE_SNAPSHOT;
 -        if (DISABLE_SNAPSHOT) {
 +        this.snapshotDisabled = getDisableSnapshotTL(); // SparklyPaper - parallel world ticking // Leaf - SparklyPaper - parallel world ticking mod (collapse original behavior)
-+        if (getDisableSnapshotTL()) { // SparklyPaper - parallel world ticking // Leaf - SparklyPaper - parallel world ticking mod (collapse original behavior)
++        if (this.snapshotDisabled) { // SparklyPaper - parallel world ticking // Leaf - SparklyPaper - parallel world ticking mod (collapse original behavior)
              this.snapshot = this.tileEntity;
          } else {
              this.snapshot = this.createSnapshot(tileEntity);
@@ -612,7 +612,7 @@ index 55572e799b5c8a74a546ac8febc14f80d5731c52..08a06c23c831a4de45b3e537228b8379
          // Paper end
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index c2552c3706831f7012b5b449fa43c7d5990056a4..7ab321d649ab94926d45820b782107c432c6dc39 100644
+index c2552c3706831f7012b5b449fa43c7d5990056a4..2f9b7627f1801239ee6a89f334a266629b98c989 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -961,6 +961,28 @@ public class CraftEventFactory {
@@ -644,16 +644,19 @@ index c2552c3706831f7012b5b449fa43c7d5990056a4..7ab321d649ab94926d45820b782107c4
  
      public static boolean handleBlockSpreadEvent(LevelAccessor world, BlockPos source, BlockPos target, net.minecraft.world.level.block.state.BlockState block, int flag) {
          // Suppress during worldgen
-@@ -972,7 +994,7 @@ public class CraftEventFactory {
+@@ -972,7 +994,10 @@ public class CraftEventFactory {
          CraftBlockState state = CraftBlockStates.getBlockState(world, target, flag);
          state.setData(block);
  
 -        BlockSpreadEvent event = new BlockSpreadEvent(state.getBlock(), CraftBlock.at(world, CraftEventFactory.sourceBlockOverride != null ? CraftEventFactory.sourceBlockOverride : source), state);
-+        BlockSpreadEvent event = new BlockSpreadEvent(state.getBlock(), CraftBlock.at(world, CraftEventFactory.getSourceBlockOverrideRT() != null ? CraftEventFactory.getSourceBlockOverrideRT() : source), state); // SparklyPaper - parallel world ticking // Leaf - SparklyPaper - parallel world ticking mod (collapse original behavior)
++        // Leaf start - SparklyPaper parallel world ticking mod (collapse original behavior)
++        final BlockPos sourceBlockOverrideRTSnap = getSourceBlockOverrideRT();
++        BlockSpreadEvent event = new BlockSpreadEvent(state.getBlock(), CraftBlock.at(world, sourceBlockOverrideRTSnap != null ? sourceBlockOverrideRTSnap : source), state); // SparklyPaper - parallel world ticking
++        // Leaf end
          Bukkit.getPluginManager().callEvent(event);
  
          if (!event.isCancelled()) {
-@@ -2265,7 +2287,7 @@ public class CraftEventFactory {
+@@ -2265,7 +2290,7 @@ public class CraftEventFactory {
          CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemStack.copyWithCount(1));
  
          org.bukkit.event.block.BlockDispenseEvent event = new org.bukkit.event.block.BlockDispenseEvent(bukkitBlock, craftItem.clone(), CraftVector.toBukkit(to));
