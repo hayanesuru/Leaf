@@ -5,17 +5,10 @@ Subject: [PATCH] Remove streams on PlayerDetector
 
 
 diff --git a/net/minecraft/world/level/block/entity/trialspawner/PlayerDetector.java b/net/minecraft/world/level/block/entity/trialspawner/PlayerDetector.java
-index 774d4028f0be7c388abb47f8eb97011341f50f59..80e69b296594e589fa680d0fa08e42f1c07d82a9 100644
+index 774d4028f0be7c388abb47f8eb97011341f50f59..1597af2092e993efb1c02f92ed14d8c5a500403a 100644
 --- a/net/minecraft/world/level/block/entity/trialspawner/PlayerDetector.java
 +++ b/net/minecraft/world/level/block/entity/trialspawner/PlayerDetector.java
-@@ -1,5 +1,6 @@
- package net.minecraft.world.level.block.entity.trialspawner;
- 
-+import java.util.ArrayList;
- import java.util.List;
- import java.util.Objects;
- import java.util.UUID;
-@@ -21,27 +22,42 @@ import net.minecraft.world.phys.Vec3;
+@@ -21,27 +21,42 @@ import net.minecraft.world.phys.Vec3;
  import net.minecraft.world.phys.shapes.CollisionContext;
  
  public interface PlayerDetector {
@@ -30,7 +23,7 @@ index 774d4028f0be7c388abb47f8eb97011341f50f59..80e69b296594e589fa680d0fa08e42f1
 -        .toList();
 -    PlayerDetector INCLUDING_CREATIVE_PLAYERS = (level, entitySelector, pos, maxDistance, requireLineOfSight) -> entitySelector.getPlayers(
 +        );
-+        List<UUID> result = new ArrayList<>();
++        List<UUID> result = new java.util.ArrayList<>();
 +        for (Player player : players) {
 +            if (!requireLineOfSight || inLineOfSight(level, pos.getCenter(), player.getEyePosition())) {
 +                result.add(player.getUUID());
@@ -48,7 +41,7 @@ index 774d4028f0be7c388abb47f8eb97011341f50f59..80e69b296594e589fa680d0fa08e42f1
 -        .map(Entity::getUUID)
 -        .toList();
 +        );
-+        List<UUID> result = new ArrayList<>();
++        List<UUID> result = new java.util.ArrayList<>();
 +        for (Player player : players) {
 +            if (!requireLineOfSight || inLineOfSight(level, pos.getCenter(), player.getEyePosition())) {
 +                result.add(player.getUUID());
@@ -65,7 +58,7 @@ index 774d4028f0be7c388abb47f8eb97011341f50f59..80e69b296594e589fa680d0fa08e42f1
 -            .map(Entity::getUUID)
 -            .toList();
 +        List<? extends Entity> sheep = entitySelector.getEntities(level, EntityType.SHEEP, aabb, LivingEntity::isAlive);
-+        List<UUID> result = new ArrayList<>();
++        List<UUID> result = new java.util.ArrayList<>();
 +        for (Entity entity : sheep) {
 +            if (!requireLineOfSight || inLineOfSight(level, pos.getCenter(), entity.getEyePosition())) {
 +                result.add(entity.getUUID());
@@ -75,12 +68,12 @@ index 774d4028f0be7c388abb47f8eb97011341f50f59..80e69b296594e589fa680d0fa08e42f1
      };
  
      List<UUID> detect(ServerLevel level, PlayerDetector.EntitySelector entitySelector, BlockPos pos, double maxDistance, boolean flag);
-@@ -78,14 +94,27 @@ public interface PlayerDetector {
+@@ -78,14 +93,27 @@ public interface PlayerDetector {
              return new PlayerDetector.EntitySelector() {
                  @Override
                  public List<Player> getPlayers(ServerLevel level, Predicate<? super Player> predicate) {
 -                    return players.stream().filter(predicate).toList();
-+                    List<Player> result = new ArrayList<>();
++                    List<Player> result = new java.util.ArrayList<>();
 +                    for (Player player : players) {
 +                        if (predicate.test(player)) {
 +                            result.add(player);
@@ -94,7 +87,7 @@ index 774d4028f0be7c388abb47f8eb97011341f50f59..80e69b296594e589fa680d0fa08e42f1
                      ServerLevel level, EntityTypeTest<Entity, T> typeTest, AABB boundingBox, Predicate<? super T> predicate
                  ) {
 -                    return players.stream().map(typeTest::tryCast).filter(Objects::nonNull).filter(predicate).toList();
-+                    List<T> result = new ArrayList<>();
++                    List<T> result = new java.util.ArrayList<>();
 +                    for (Player player : players) {
 +                        T entity = typeTest.tryCast(player);
 +                        if (entity != null && predicate.test(entity)) {

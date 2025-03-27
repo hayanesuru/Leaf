@@ -27,7 +27,6 @@ public class SparklyPaperParallelWorldTicking extends ConfigModules {
                 **实验性功能**
                 启用并行世界处理以提高多核系统的性能.""");
 
-
         enabled = config.getBoolean(getBasePath() + ".enabled", enabled);
         threads = config.getInt(getBasePath() + ".threads", threads);
         threads = enabled ? threads : 0;

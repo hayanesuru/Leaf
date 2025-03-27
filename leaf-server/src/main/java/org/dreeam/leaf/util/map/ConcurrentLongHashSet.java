@@ -3,8 +3,8 @@ package org.dreeam.leaf.util.map;
 import it.unimi.dsi.fastutil.longs.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
@@ -41,8 +41,8 @@ public final class ConcurrentLongHashSet extends LongOpenHashSet implements Long
     /**
      * Creates a new concurrent long set with the specified parameters.
      *
-     * @param initialCapacity the initial capacity
-     * @param loadFactor the load factor
+     * @param initialCapacity  the initial capacity
+     * @param loadFactor       the load factor
      * @param concurrencyLevel the concurrency level
      */
     public ConcurrentLongHashSet(int initialCapacity, float loadFactor, int concurrencyLevel) {
@@ -465,9 +465,7 @@ public final class ConcurrentLongHashSet extends LongOpenHashSet implements Long
         void clear() {
             lock.lock();
             try {
-                for (int i = 0; i < used.length; i++) {
-                    used[i] = false;
-                }
+                Arrays.fill(used, false);
                 size = 0;
             } finally {
                 lock.unlock();
