@@ -1253,7 +1253,7 @@ index 623c069f1fe079e020c6391a3db1a3d95cd3dbf5..a660bad3dfdb442c6aca5eb939ee103e
 +    // Purpur end - Shift right click to use exp for mending
  }
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index ea34bb4913e7357f5b76a64443f7e744abdf7b5e..de115ee71fa240440b54c553e0d3ddaf4c0dfca0 100644
+index 060becd4c0b7aa399496ad70ba28cb3449cfaea3..b72b3fdfad0be25f6ece6b934c47a748509de5d6 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -54,6 +54,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -1264,20 +1264,18 @@ index ea34bb4913e7357f5b76a64443f7e744abdf7b5e..de115ee71fa240440b54c553e0d3ddaf
  
      public ServerCommonPacketListenerImpl(MinecraftServer server, Connection connection, CommonListenerCookie cookie, net.minecraft.server.level.ServerPlayer player) { // CraftBukkit
          this.server = server;
-@@ -173,6 +174,13 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
-                 ServerGamePacketListenerImpl.LOGGER.error("Couldn't register custom payload", ex);
-                 this.disconnect(Component.literal("Invalid payload REGISTER!"), org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PAYLOAD); // Paper - kick event cause
+@@ -186,6 +187,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+             if (identifier.equals(MINECRAFT_BRAND)) {
+                 this.player.clientBrandName = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.wrappedBuffer(data)).readUtf(256);
              }
-+        // Purpur start - Purpur client support
-+        } else if (identifier.equals(PURPUR_CLIENT)) {
-+            try {
++            // Purpur start - Purpur client support
++            else if (identifier.equals(PURPUR_CLIENT)) {
 +                player.purpurClient = true;
-+            } catch (Exception ignore) {
 +            }
-+        // Purpur end - Purpur client support
-         } else if (identifier.equals(ServerCommonPacketListenerImpl.CUSTOM_UNREGISTER)) {
-             try {
-                 String channels = payload.toString(com.google.common.base.Charsets.UTF_8);
++            // Purpur end - Purpur client support
+ 
+             this.cserver.getMessenger().dispatchIncomingMessage(this.player.getBukkitEntity(), identifier.toString(), data);
+         } catch (final Exception e) {
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 index a3d0d331d367b8ddfd0ac450acd143ce7d3f7a9a..5fcd389b5483c4c11e7a007b2b6abb9abc1db6b2 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
