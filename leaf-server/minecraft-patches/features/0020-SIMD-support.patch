@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martijn Muijsers <martijnmuijsers@live.nl>
+Date: Thu, 24 Nov 2022 01:19:12 +0100
+Subject: [PATCH] SIMD support
+
+License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+Gale - https://galemc.org
+
+This patch is based on the following patch:
+"Add SIMD utilities"
+By: Kevin Raneri <kevin.raneri@gmail.com>
+As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish)
+Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+
+diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
+index c71034e9077280ccd7b4d7a9986eb6ec1536472a..a86ede54cfeb416a8c0c85fe90862e65e6505b62 100644
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -190,6 +190,13 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         com.destroystokyo.paper.Metrics.PaperMetrics.startMetrics(); // Paper - start metrics
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
+ 
++        // Gale start - Pufferfish - SIMD support
++        // Initialize vectorization
++        try {
++            gg.pufferfish.pufferfish.simd.SIMDDetection.initialize();
++        } catch (Throwable ignored) {}
++        // Gale end - Pufferfish - SIMD support
++
+         this.setPvpAllowed(properties.pvp);
+         this.setFlightAllowed(properties.allowFlight);
+         this.setMotd(properties.motd);

@@ -11,3 +11,6 @@
 - [ ] Add purpur config changes to docs moved config
 - [ ] check Dont send useless entity packets
 - [ ] Use different state to separate config reload
+
+# 1.21.5
+- [ ] Reduce array allocations when paper patched all
