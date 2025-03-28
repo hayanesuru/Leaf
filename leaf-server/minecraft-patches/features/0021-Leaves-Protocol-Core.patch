@@ -54,7 +54,7 @@ index 047a09cf4a2c32e714aacedeccb0928ef2c7dfa9..dddbb18992348fb7e8a6552423d13480
              this.tickables.get(i).run();
          }
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index b72b3fdfad0be25f6ece6b934c47a748509de5d6..3b15b80512834686ffa48b97d3e133d71bf27d82 100644
+index 921ad69b699f693e3dfc8d912b0f1a05d8f81743..285af1576d6bef09f094b7e990b5bcd6eafda71f 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -151,6 +151,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -69,7 +69,7 @@ index b72b3fdfad0be25f6ece6b934c47a748509de5d6..3b15b80512834686ffa48b97d3e133d7
          // Paper start
          if (packet.payload() instanceof net.minecraft.network.protocol.common.custom.BrandPayload(String brand)) {
              this.player.clientBrandName = brand;
-@@ -209,6 +214,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -210,6 +215,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          final String channel = new String(data, from, length, java.nio.charset.StandardCharsets.US_ASCII);
          if (register) {
              this.getCraftPlayer().addChannel(channel);
