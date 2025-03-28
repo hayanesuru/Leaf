@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martijn Muijsers <martijnmuijsers@live.nl>
+Date: Fri, 25 Nov 2022 18:42:45 +0100
+Subject: [PATCH] Set Gale permissions root
+
+License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+Gale - https://galemc.org
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/permissions/CraftDefaultPermissions.java b/src/main/java/org/bukkit/craftbukkit/util/permissions/CraftDefaultPermissions.java
+index e0e61115ada9a49d4c528c5d4e02a1ca571d9531..0a808c5d242b2d9bea82d9d219227fbaf5741bf4 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/permissions/CraftDefaultPermissions.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/permissions/CraftDefaultPermissions.java
+@@ -5,6 +5,7 @@ import org.bukkit.util.permissions.DefaultPermissions;
+ 
+ public final class CraftDefaultPermissions {
+     private static final String ROOT = "minecraft";
++    public static final String GALE_ROOT = "gale"; // Gale - set Gale permissions root
+ 
+     private CraftDefaultPermissions() {}
+ 

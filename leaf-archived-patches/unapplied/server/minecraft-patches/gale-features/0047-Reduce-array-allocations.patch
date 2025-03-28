@@ -1,0 +1,363 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martijn Muijsers <martijnmuijsers@live.nl>
+Date: Sat, 26 Nov 2022 11:25:45 +0100
+Subject: [PATCH] Reduce array allocations
+
+License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+Gale - https://galemc.org
+
+This patch is based on the following patch:
+"reduce allocs"
+By: Simon Gardling <titaniumtown@gmail.com>
+As part of: JettPack (https://gitlab.com/Titaniumtown/JettPack)
+Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+
+diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
+index d21ce54ebb5724c04eadf56a2cde701d5eeb5db2..b6af8da084c83ee38bb3ecea6a98feb0c1c74d2a 100644
+--- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
++++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
+@@ -378,7 +378,6 @@ public final class ChunkEntitySlices {
+ 
+     private static final class BasicEntityList<E extends Entity> {
+ 
+-        private static final Entity[] EMPTY = new Entity[0];
+         private static final int DEFAULT_CAPACITY = 4;
+ 
+         private E[] storage;
+@@ -389,7 +388,7 @@ public final class ChunkEntitySlices {
+         }
+ 
+         public BasicEntityList(final int cap) {
+-            this.storage = (E[])(cap <= 0 ? EMPTY : new Entity[cap]);
++            this.storage = (E[])(cap <= 0 ? me.titaniumtown.ArrayConstants.emptyEntityArray : new Entity[cap]); // Gale - JettPack - reduce array allocations
+         }
+ 
+         public boolean isEmpty() {
+@@ -401,7 +400,7 @@ public final class ChunkEntitySlices {
+         }
+ 
+         private void resize() {
+-            if (this.storage == EMPTY) {
++            if (this.storage == me.titaniumtown.ArrayConstants.emptyEntityArray) { // Gale - JettPack - reduce array allocations
+                 this.storage = (E[])new Entity[DEFAULT_CAPACITY];
+             } else {
+                 this.storage = Arrays.copyOf(this.storage, this.storage.length * 2);
+diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
+index 26207443b1223119c03db478d7e816d9cdf8e618..bbd1c262674b42eb9ea2830acb8bf94182f971f9 100644
+--- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
++++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
+@@ -14,10 +14,8 @@ import net.minecraft.world.level.entity.LevelCallback;
+ 
+ public final class ServerEntityLookup extends EntityLookup {
+ 
+-    private static final Entity[] EMPTY_ENTITY_ARRAY = new Entity[0];
+-
+     private final ServerLevel serverWorld;
+-    public final ReferenceList<Entity> trackerEntities = new ReferenceList<>(EMPTY_ENTITY_ARRAY); // Moonrise - entity tracker
++    public final ReferenceList<Entity> trackerEntities = new ReferenceList<>(me.titaniumtown.ArrayConstants.emptyEntityArray); // Moonrise - entity tracker // Gale - JettPack - reduce array allocations
+ 
+     public ServerEntityLookup(final ServerLevel world, final LevelCallback<Entity> worldCallback) {
+         super(world, worldCallback);
+diff --git a/net/minecraft/nbt/ByteArrayTag.java b/net/minecraft/nbt/ByteArrayTag.java
+index 6927124a4ea1f460158bf25679104b6f9e9ccee4..dba08f2668d65ae5483f325af3a79b5a63919c50 100644
+--- a/net/minecraft/nbt/ByteArrayTag.java
++++ b/net/minecraft/nbt/ByteArrayTag.java
+@@ -174,7 +174,7 @@ public class ByteArrayTag extends CollectionTag<ByteTag> {
+ 
+     @Override
+     public void clear() {
+-        this.data = new byte[0];
++        this.data = me.titaniumtown.ArrayConstants.emptyByteArray; // Gale - JettPack - reduce array allocations
+     }
+ 
+     @Override
+diff --git a/net/minecraft/nbt/CompoundTag.java b/net/minecraft/nbt/CompoundTag.java
+index 361bc458e0bb590c43da60a1cd993a2785ee45e9..3bce1e8ef90e95abd8b1111f1160f952d2493e69 100644
+--- a/net/minecraft/nbt/CompoundTag.java
++++ b/net/minecraft/nbt/CompoundTag.java
+@@ -409,7 +409,7 @@ public class CompoundTag implements Tag {
+             throw new ReportedException(this.createReport(key, ByteArrayTag.TYPE, var3));
+         }
+ 
+-        return new byte[0];
++        return me.titaniumtown.ArrayConstants.emptyByteArray; // Gale - JettPack - reduce array allocations
+     }
+ 
+     public int[] getIntArray(String key) {
+@@ -421,7 +421,7 @@ public class CompoundTag implements Tag {
+             throw new ReportedException(this.createReport(key, IntArrayTag.TYPE, var3));
+         }
+ 
+-        return new int[0];
++        return me.titaniumtown.ArrayConstants.emptyIntArray; // Gale - JettPack - reduce array allocations
+     }
+ 
+     public long[] getLongArray(String key) {
+@@ -433,7 +433,7 @@ public class CompoundTag implements Tag {
+             throw new ReportedException(this.createReport(key, LongArrayTag.TYPE, var3));
+         }
+ 
+-        return new long[0];
++        return me.titaniumtown.ArrayConstants.emptyLongArray; // Gale - JettPack - reduce array allocations
+     }
+ 
+     public CompoundTag getCompound(String key) {
+diff --git a/net/minecraft/nbt/IntArrayTag.java b/net/minecraft/nbt/IntArrayTag.java
+index 7e27546bcb587d03b6de2ab43244e6c61fdb55f4..c7f35f332117305bf0e34eb8b73ddfa73958e434 100644
+--- a/net/minecraft/nbt/IntArrayTag.java
++++ b/net/minecraft/nbt/IntArrayTag.java
+@@ -181,7 +181,7 @@ public class IntArrayTag extends CollectionTag<IntTag> {
+ 
+     @Override
+     public void clear() {
+-        this.data = new int[0];
++        this.data = me.titaniumtown.ArrayConstants.emptyIntArray; // Gale - JettPack - reduce array allocations
+     }
+ 
+     @Override
+diff --git a/net/minecraft/nbt/ListTag.java b/net/minecraft/nbt/ListTag.java
+index 8bbe48a4d7d1771d17bec60b70bdf8e086bfd1c7..5ab487178544f6bc6b0c90d7a54b5c3ea1cdfbe9 100644
+--- a/net/minecraft/nbt/ListTag.java
++++ b/net/minecraft/nbt/ListTag.java
+@@ -258,7 +258,7 @@ public class ListTag extends CollectionTag<Tag> {
+             }
+         }
+ 
+-        return new int[0];
++        return me.titaniumtown.ArrayConstants.emptyIntArray; // Gale - JettPack - reduce array allocations
+     }
+ 
+     public long[] getLongArray(int index) {
+@@ -269,7 +269,7 @@ public class ListTag extends CollectionTag<Tag> {
+             }
+         }
+ 
+-        return new long[0];
++        return me.titaniumtown.ArrayConstants.emptyLongArray; // Gale - JettPack - reduce array allocations
+     }
+ 
+     public double getDouble(int index) {
+diff --git a/net/minecraft/nbt/LongArrayTag.java b/net/minecraft/nbt/LongArrayTag.java
+index 7274aa8ccae9294dcdb718cbd4997f841eeb9eba..d33466f2ad3aa967fd2e6c0efa73805ba725b3c2 100644
+--- a/net/minecraft/nbt/LongArrayTag.java
++++ b/net/minecraft/nbt/LongArrayTag.java
+@@ -185,7 +185,7 @@ public class LongArrayTag extends CollectionTag<LongTag> {
+ 
+     @Override
+     public void clear() {
+-        this.data = new long[0];
++        this.data = me.titaniumtown.ArrayConstants.emptyLongArray; // Gale - JettPack - reduce array allocations
+     }
+ 
+     @Override
+diff --git a/net/minecraft/network/CipherBase.java b/net/minecraft/network/CipherBase.java
+index 121685cacef111fbec0057d386f748497bc3a36d..b4a4fafec1a8e279ec1e31e58fee2d5d34fb8289 100644
+--- a/net/minecraft/network/CipherBase.java
++++ b/net/minecraft/network/CipherBase.java
+@@ -7,8 +7,8 @@ import javax.crypto.ShortBufferException;
+ 
+ public class CipherBase {
+     private final Cipher cipher;
+-    private byte[] heapIn = new byte[0];
+-    private byte[] heapOut = new byte[0];
++    private byte[] heapIn = me.titaniumtown.ArrayConstants.emptyByteArray; // Gale - JettPack - reduce array allocations
++    private byte[] heapOut = me.titaniumtown.ArrayConstants.emptyByteArray; // Gale - JettPack - reduce array allocations
+ 
+     protected CipherBase(Cipher cipher) {
+         this.cipher = cipher;
+diff --git a/net/minecraft/network/chat/contents/TranslatableContents.java b/net/minecraft/network/chat/contents/TranslatableContents.java
+index 68727deaedd55aa86e76fbc6cc2cfb67913f7add..bad5787de2034dbb0eabb9458a47a89e30dec886 100644
+--- a/net/minecraft/network/chat/contents/TranslatableContents.java
++++ b/net/minecraft/network/chat/contents/TranslatableContents.java
+@@ -29,7 +29,7 @@ import net.minecraft.util.ExtraCodecs;
+ import net.minecraft.world.entity.Entity;
+ 
+ public class TranslatableContents implements ComponentContents {
+-    public static final Object[] NO_ARGS = new Object[0];
++    public static final Object[] NO_ARGS = me.titaniumtown.ArrayConstants.emptyObjectArray; // Gale - JettPack - reduce array allocations
+     private static final Codec<Object> PRIMITIVE_ARG_CODEC = ExtraCodecs.JAVA.validate(TranslatableContents::filterAllowedArguments);
+     private static final Codec<Object> ARG_CODEC = Codec.either(PRIMITIVE_ARG_CODEC, ComponentSerialization.CODEC)
+         .xmap(
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index acb1168aba0069f9ac7f47d96f0f4945b37c3888..148be9d5e10d7a770814a10dc40bfb70b71d4021 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -1224,7 +1224,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+ 
+     public static List<Entity> getCurrentlyTickingEntities() {
+         Entity ticking = currentlyTickingEntity.get();
+-        List<Entity> ret = java.util.Arrays.asList(ticking == null ? new Entity[0] : new Entity[] { ticking });
++        List<Entity> ret = java.util.Arrays.asList(ticking == null ? me.titaniumtown.ArrayConstants.emptyEntityArray : new Entity[] { ticking }); // Gale - JettPack - reduce array allocations
+ 
+         return ret;
+     }
+diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 0f180795a7ab58f4376551ae6c313573696677f0..a3d0d331d367b8ddfd0ac450acd143ce7d3f7a9a 100644
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -2786,7 +2786,7 @@ public class ServerGamePacketListenerImpl
+                                         target.refreshEntityData(ServerGamePacketListenerImpl.this.player);
+                                         // SPIGOT-7136 - Allays
+                                         if (target instanceof Allay || target instanceof net.minecraft.world.entity.animal.horse.AbstractHorse) { // Paper - Fix horse armor desync
+-                                            ServerGamePacketListenerImpl.this.send(new net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket(target.getId(), Arrays.stream(net.minecraft.world.entity.EquipmentSlot.values()).map((slot) -> Pair.of(slot, ((LivingEntity) target).getItemBySlot(slot).copy())).collect(Collectors.toList()), true)); // Paper - sanitize
++                                            ServerGamePacketListenerImpl.this.send(new net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket(target.getId(), Arrays.stream(net.minecraft.world.entity.EquipmentSlot.VALUES_ARRAY).map((slot) -> Pair.of(slot, ((LivingEntity) target).getItemBySlot(slot).copy())).collect(Collectors.toList()), true)); // Paper - sanitize // Gale - JettPack - reduce array allocations
+                                         }
+ 
+                                         ServerGamePacketListenerImpl.this.player.containerMenu.sendAllDataToRemote(); // Paper - fix slot desync - always refresh player inventory
+diff --git a/net/minecraft/server/players/StoredUserList.java b/net/minecraft/server/players/StoredUserList.java
+index d445e8f126f077d8419c52fa5436ea963a1a42a4..39483f7b453d6faedeccc1ab1eda76669395ea5a 100644
+--- a/net/minecraft/server/players/StoredUserList.java
++++ b/net/minecraft/server/players/StoredUserList.java
+@@ -70,7 +70,7 @@ public abstract class StoredUserList<K, V extends StoredUserEntry<K>> {
+     }
+ 
+     public String[] getUserList() {
+-        return this.map.keySet().toArray(new String[0]);
++        return this.map.keySet().toArray(me.titaniumtown.ArrayConstants.emptyStringArray); // Gale - JettPack - reduce array allocations
+     }
+ 
+     public boolean isEmpty() {
+diff --git a/net/minecraft/util/ZeroBitStorage.java b/net/minecraft/util/ZeroBitStorage.java
+index 09fd99c9cbd23b5f3c899bfb00c9b89651948ed8..5c1103ef028e5ffe6ce0eadc861dd3b2c8f3ed9f 100644
+--- a/net/minecraft/util/ZeroBitStorage.java
++++ b/net/minecraft/util/ZeroBitStorage.java
+@@ -5,7 +5,7 @@ import java.util.function.IntConsumer;
+ import org.apache.commons.lang3.Validate;
+ 
+ public class ZeroBitStorage implements BitStorage {
+-    public static final long[] RAW = new long[0];
++    public static final long[] RAW = me.titaniumtown.ArrayConstants.emptyLongArray; // Gale - JettPack - reduce array allocations
+     private final int size;
+ 
+     public ZeroBitStorage(int size) {
+diff --git a/net/minecraft/world/entity/EquipmentSlot.java b/net/minecraft/world/entity/EquipmentSlot.java
+index c65595c0a55b0aeebb2cf858da99329d2192976e..0a5611b1ece4dbe2887e7fbdef45f58e7f4d53ad 100644
+--- a/net/minecraft/world/entity/EquipmentSlot.java
++++ b/net/minecraft/world/entity/EquipmentSlot.java
+@@ -19,7 +19,8 @@ public enum EquipmentSlot implements StringRepresentable {
+     BODY(EquipmentSlot.Type.ANIMAL_ARMOR, 0, 1, 6, "body");
+ 
+     public static final int NO_COUNT_LIMIT = 0;
+-    public static final List<EquipmentSlot> VALUES = List.of(values());
++    public static final EquipmentSlot[] VALUES_ARRAY = values(); // Gale - JettPack - reduce array allocations
++    public static final List<EquipmentSlot> VALUES = List.of(VALUES_ARRAY); // Gale - JettPack - reduce array allocations
+     public static final IntFunction<EquipmentSlot> BY_ID = ByIdMap.continuous(equipmentSlot -> equipmentSlot.id, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
+     public static final StringRepresentable.EnumCodec<EquipmentSlot> CODEC = StringRepresentable.fromEnum(EquipmentSlot::values);
+     public static final StreamCodec<ByteBuf, EquipmentSlot> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, equipmentSlot -> equipmentSlot.id);
+diff --git a/net/minecraft/world/entity/EquipmentSlotGroup.java b/net/minecraft/world/entity/EquipmentSlotGroup.java
+index 028dff862850c63d0b66902e99dd0bf685a7aa0d..b2d8b6883e2527c13794d23d27a4647ab1e255dd 100644
+--- a/net/minecraft/world/entity/EquipmentSlotGroup.java
++++ b/net/minecraft/world/entity/EquipmentSlotGroup.java
+@@ -29,6 +29,7 @@ public enum EquipmentSlotGroup implements StringRepresentable {
+     private final int id;
+     private final String key;
+     private final Predicate<EquipmentSlot> predicate;
++    public static final EquipmentSlotGroup[] VALUES_ARRAY = EquipmentSlotGroup.values(); // Gale - JettPack - reduce array allocations
+ 
+     private EquipmentSlotGroup(final int id, final String key, final Predicate<EquipmentSlot> predicate) {
+         this.id = id;
+diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
+index 76f50437396f8f856381d0fbef52953ef7c263f6..f6c0f9275dd737c0142d6e4be07be71ad50b4732 100644
+--- a/net/minecraft/world/item/ItemStack.java
++++ b/net/minecraft/world/item/ItemStack.java
+@@ -1145,7 +1145,7 @@ public final class ItemStack implements DataComponentHolder {
+     private void addAttributeTooltips(Consumer<Component> tooltipAdder, @Nullable Player player) {
+         ItemAttributeModifiers itemAttributeModifiers = this.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+         if (itemAttributeModifiers.showInTooltip()) {
+-            for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.values()) {
++            for (EquipmentSlotGroup equipmentSlotGroup : EquipmentSlotGroup.VALUES_ARRAY) { // Gale - JettPack - reduce array allocations
+                 MutableBoolean mutableBoolean = new MutableBoolean(true);
+                 this.forEachModifier(equipmentSlotGroup, (attribute, modifier) -> {
+                     if (mutableBoolean.isTrue()) {
+diff --git a/net/minecraft/world/item/crafting/ShapedRecipePattern.java b/net/minecraft/world/item/crafting/ShapedRecipePattern.java
+index bfda76974ea8d4397e2c2ebf5bdcb5d7e5f0bab5..cabbc93409ca99180d115e2f23419ee1824d5801 100644
+--- a/net/minecraft/world/item/crafting/ShapedRecipePattern.java
++++ b/net/minecraft/world/item/crafting/ShapedRecipePattern.java
+@@ -121,7 +121,7 @@ public final class ShapedRecipePattern {
+         }
+ 
+         if (pattern.size() == i3) {
+-            return new String[0];
++            return me.titaniumtown.ArrayConstants.emptyStringArray; // Gale - JettPack - reduce array allocations
+         } else {
+             String[] strings = new String[pattern.size() - i3 - i2];
+ 
+diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
+index 39e4a6237d105ea4a695659d5f47314184e44d75..b831f189bcee62a41a16017c2bb958aeee728984 100644
+--- a/net/minecraft/world/level/Level.java
++++ b/net/minecraft/world/level/Level.java
+@@ -1849,7 +1849,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+     public org.bukkit.entity.Entity[] getChunkEntities(int chunkX, int chunkZ) {
+         ca.spottedleaf.moonrise.patches.chunk_system.level.entity.ChunkEntitySlices slices = ((ServerLevel)this).moonrise$getEntityLookup().getChunk(chunkX, chunkZ);
+         if (slices == null) {
+-            return new org.bukkit.entity.Entity[0];
++            return me.titaniumtown.ArrayConstants.emptyBukkitEntityArray; // Gale - JettPack - reduce array allocations
+         }
+ 
+         List<org.bukkit.entity.Entity> ret = new java.util.ArrayList<>();
+@@ -1860,7 +1860,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+             }
+         }
+ 
+-        return ret.toArray(new org.bukkit.entity.Entity[0]);
++        return ret.toArray(me.titaniumtown.ArrayConstants.emptyBukkitEntityArray); // Gale - JettPack - reduce array allocations
+     }
+     // Paper end - rewrite chunk system
+ 
+diff --git a/net/minecraft/world/level/block/ComposterBlock.java b/net/minecraft/world/level/block/ComposterBlock.java
+index 86f9c284f434a16888beb60b89f460de2c0450a8..c8ffb634df661a6a4520731be725b51480764976 100644
+--- a/net/minecraft/world/level/block/ComposterBlock.java
++++ b/net/minecraft/world/level/block/ComposterBlock.java
+@@ -410,7 +410,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+ 
+         @Override
+         public int[] getSlotsForFace(Direction side) {
+-            return new int[0];
++            return me.titaniumtown.ArrayConstants.emptyIntArray; // Gale - JettPack - reduce array allocations
+         }
+ 
+         @Override
+@@ -445,7 +445,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+ 
+         @Override
+         public int[] getSlotsForFace(Direction side) {
+-            return side == Direction.UP ? new int[]{0} : new int[0];
++            return side == Direction.UP ? me.titaniumtown.ArrayConstants.zeroSingletonIntArray : me.titaniumtown.ArrayConstants.emptyIntArray; // Gale - JettPack - reduce array allocations
+         }
+ 
+         @Override
+@@ -496,7 +496,7 @@ public class ComposterBlock extends Block implements WorldlyContainerHolder {
+ 
+         @Override
+         public int[] getSlotsForFace(Direction side) {
+-            return side == Direction.DOWN ? new int[]{0} : new int[0];
++            return side == Direction.DOWN ? me.titaniumtown.ArrayConstants.zeroSingletonIntArray : me.titaniumtown.ArrayConstants.emptyIntArray; // Gale - JettPack - reduce array allocations
+         }
+ 
+         @Override
+diff --git a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
+index cb4b8567c029e3a53aafda2755e3773ea8b95af7..ad9f009dd6c86e08c193839479b4b3285afd7dfb 100644
+--- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
+@@ -44,7 +44,7 @@ public abstract class AbstractFurnaceBlockEntity extends BaseContainerBlockEntit
+     protected static final int SLOT_FUEL = 1;
+     protected static final int SLOT_RESULT = 2;
+     public static final int DATA_LIT_TIME = 0;
+-    private static final int[] SLOTS_FOR_UP = new int[]{0};
++    private static final int[] SLOTS_FOR_UP = me.titaniumtown.ArrayConstants.zeroSingletonIntArray; // Gale - JettPack - reduce array allocations
+     private static final int[] SLOTS_FOR_DOWN = new int[]{2, 1};
+     private static final int[] SLOTS_FOR_SIDES = new int[]{1};
+     public static final int DATA_LIT_DURATION = 1;
+diff --git a/net/minecraft/world/scores/Team.java b/net/minecraft/world/scores/Team.java
+index 7b08f2fba99e3eef98f5b36db4081da9ab93f415..9192cb0761c6ec2ddec2c75dbc654d16951d6352 100644
+--- a/net/minecraft/world/scores/Team.java
++++ b/net/minecraft/world/scores/Team.java
+@@ -70,7 +70,7 @@ public abstract class Team {
+         public final int id;
+ 
+         public static String[] getAllNames() {
+-            return BY_NAME.keySet().toArray(new String[0]);
++            return BY_NAME.keySet().toArray(me.titaniumtown.ArrayConstants.emptyStringArray); // Gale - JettPack - reduce array allocations
+         }
+ 
+         @Nullable

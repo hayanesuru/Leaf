@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martijn Muijsers <martijnmuijsers@live.nl>
+Date: Thu, 24 Nov 2022 23:39:32 +0100
+Subject: [PATCH] Do not log invalid statistics
+
+License: MIT (https://opensource.org/licenses/MIT)
+Gale - https://galemc.org
+
+This patch is based on the following patch:
+"Ignore statistics warnings"
+By: Aikar <aikar@aikar.co>
+As part of: EmpireCraft (https://github.com/starlis/empirecraft)
+Licensed under: MIT (https://opensource.org/licenses/MIT)
+
+diff --git a/net/minecraft/stats/ServerStatsCounter.java b/net/minecraft/stats/ServerStatsCounter.java
+index 6c5205fe1dc6387a77b1edbdcab748d39e775d7f..b26dbe807e5cb0a42f6c06b933397902310e5616 100644
+--- a/net/minecraft/stats/ServerStatsCounter.java
++++ b/net/minecraft/stats/ServerStatsCounter.java
+@@ -113,16 +113,20 @@ public class ServerStatsCounter extends StatsCounter {
+                                             Util.ifElse(
+                                                 this.getStat(type, string1),
+                                                 stat -> this.stats.put(stat, compound1.getInt(string1)),
+-                                                () -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.file, string1)
++                                                () -> {
++                                                    if (org.galemc.gale.configuration.GaleGlobalConfiguration.get().logToConsole.invalidStatistics) LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.file, string1); // Gale - EMC - do not log invalid statistics
++                                                }
+                                             );
+                                         } else {
+-                                            LOGGER.warn(
++                                            if (org.galemc.gale.configuration.GaleGlobalConfiguration.get().logToConsole.invalidStatistics) LOGGER.warn( // Gale - EMC - do not log invalid statistics
+                                                 "Invalid statistic value in {}: Don't know what {} is for key {}", this.file, compound1.get(string1), string1
+                                             );
+                                         }
+                                     }
+                                 },
+-                                () -> LOGGER.warn("Invalid statistic type in {}: Don't know what {} is", this.file, string)
++                                () -> {
++                                    if (org.galemc.gale.configuration.GaleGlobalConfiguration.get().logToConsole.invalidStatistics) LOGGER.warn("Invalid statistic type in {}: Don't know what {} is", this.file, string); // Gale - EMC - do not log invalid statistics
++                                }
+                             );
+                         }
+                     }

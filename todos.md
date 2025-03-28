@@ -11,3 +11,4 @@
 - [ ] Add server full join config explanation to docs
 - [ ] Add purpur config changes to docs moved config
 - [ ] check Dont send useless entity packets
+- [ ] Use different state to separate config reload

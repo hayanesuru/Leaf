@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martijn Muijsers <martijnmuijsers@live.nl>
+Date: Sat, 24 Dec 2022 22:50:13 +0100
+Subject: [PATCH] Make slow login timeout configurable
+
+License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+Gale - https://galemc.org
+
+diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+index 0fdf22af66945c1b6987e07f6c8a167110033b53..e802cecf30a2bfa4390ca70c45a9840032c8c046 100644
+--- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
+@@ -127,7 +127,11 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+             this.finishLoginAndWaitForClient(this.authenticatedProfile);
+         }
+ 
+-        if (this.tick++ == 600) {
++        // Gale start - make slow login timeout configurable
++        int slowLoginTimeout = org.galemc.gale.configuration.GaleGlobalConfiguration.get().misc.premiumAccountSlowLoginTimeout;
++
++        if (this.tick++ >= (slowLoginTimeout < 1 ? MAX_TICKS_BEFORE_LOGIN : slowLoginTimeout)) {
++            // Gale end - make slow login timeout configurable
+             this.disconnect(Component.translatable("multiplayer.disconnect.slow_login"));
+         }
+     }

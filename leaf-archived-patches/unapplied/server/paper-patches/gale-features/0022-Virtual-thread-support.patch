@@ -1,0 +1,35 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Martijn Muijsers <martijnmuijsers@live.nl>
+Date: Wed, 9 Aug 2023 15:04:56 +0200
+Subject: [PATCH] Virtual thread support
+
+License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
+Gale - https://galemc.org
+
+diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
+index dbe3d8748c1e6fbad7ee4ccf39dfc0422b0ce50b..3d8ed4ff9a5a30d123508aeb485250271b528a6e 100644
+--- a/src/main/java/com/destroystokyo/paper/Metrics.java
++++ b/src/main/java/com/destroystokyo/paper/Metrics.java
+@@ -975,6 +975,22 @@ public class Metrics {
+                 }));
+                 // Gale end - SIMD support - include in metrics
+ 
++                // Gale start - virtual thread support - include in metrics
++                Map<String, Map<String, Integer>> virtualThreadSupportMap = new HashMap<>(2);
++                {
++                    Map<String, Integer> entry = new HashMap<>(2);
++                    boolean isSupported = org.galemc.gale.virtualthread.VirtualThreadService.isSupported();
++                    try {
++                        int javaMajorVersion = org.galemc.gale.virtualthread.VirtualThreadService.getJavaMajorVersion();
++                        entry.put(isSupported + " (Java " + javaMajorVersion + ")", 1);
++                    } catch (Exception ignored) {
++                        entry.put(String.valueOf(isSupported), 1);
++                    }
++                    virtualThreadSupportMap.put(String.valueOf(isSupported), entry);
++                }
++                metrics.addCustomChart(new Metrics.DrilldownPie("virtual_thread_support", () -> virtualThreadSupportMap));
++                // Gale end - virtual thread support - include in metrics
++
+             }
+ 
+         }
