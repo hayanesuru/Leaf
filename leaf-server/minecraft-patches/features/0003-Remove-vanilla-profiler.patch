@@ -37,7 +37,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index f8969a68cd352ce4fe5109205e78f5e19ab6e020..9a25fea61abf062571d1261a0d9664d02782377a 100644
+index 9dd86cf63dd93620adb539a7a80a8d01c7ac08a2..2c20ffe36ebba53e9cb2ffc79bb25e8fb3bae207 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -55,7 +55,6 @@ import net.minecraft.server.commands.CloneCommands;
@@ -72,7 +72,7 @@ index f8969a68cd352ce4fe5109205e78f5e19ab6e020..9a25fea61abf062571d1261a0d9664d0
          ContextChain contextChain = this.finishParsing(parseResults, command, commandSourceStack, label); // CraftBukkit // Paper - Add UnknownCommandEvent
  
          try {
-@@ -386,8 +382,6 @@ public class Commands {
+@@ -385,8 +381,6 @@ public class Commands {
                  commandSourceStack.sendFailure(Component.literal(Util.describeError(var12)));
                  LOGGER.error("'/{}' threw an exception", command, var12);
              }
@@ -81,7 +81,7 @@ index f8969a68cd352ce4fe5109205e78f5e19ab6e020..9a25fea61abf062571d1261a0d9664d0
          }
      }
  
-@@ -444,7 +438,7 @@ public class Commands {
+@@ -443,7 +437,7 @@ public class Commands {
              int max = Math.max(1, server.getGameRules().getInt(GameRules.RULE_MAX_COMMAND_CHAIN_LENGTH));
              int _int = server.getGameRules().getInt(GameRules.RULE_MAX_COMMAND_FORK_COUNT);
  
@@ -169,10 +169,10 @@ index 18071dcc69cc28471dddb7de94e803ec1e5fc2e4..e30bb9c4046200c1a6e4e917d15b205f
      }
  }
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf3f5ce054 100644
+index 5bb1b96390671fb4eb59a8d795a97e8fb061cc0d..c1a411c21ad3eed6412a7fc4d1c348854d8d35d9 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -114,19 +114,8 @@ import net.minecraft.util.TimeUtil;
+@@ -113,19 +113,8 @@ import net.minecraft.util.TimeUtil;
  import net.minecraft.util.debugchart.RemoteDebugSampleType;
  import net.minecraft.util.debugchart.SampleLogger;
  import net.minecraft.util.debugchart.TpsDebugDimensions;
@@ -192,7 +192,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
  import net.minecraft.util.thread.ReentrantBlockableEventLoop;
  import net.minecraft.world.Difficulty;
  import net.minecraft.world.RandomSequences;
-@@ -199,13 +188,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -198,13 +187,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      public LevelStorageSource.LevelStorageAccess storageSource;
      public final PlayerDataStorage playerDataStorage;
      private final List<Runnable> tickables = Lists.newArrayList();
@@ -206,7 +206,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
      private ServerConnectionListener connection;
      public final ChunkProgressListenerFactory progressListenerFactory;
      @Nullable
-@@ -997,9 +979,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -913,9 +895,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          shutdownThread = Thread.currentThread(); // Paper - Improved watchdog support
          org.spigotmc.WatchdogThread.doStop(); // Paper - Improved watchdog support
          // CraftBukkit end
@@ -216,7 +216,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
  
          LOGGER.info("Stopping server");
          Commands.COMMAND_SENDING_POOL.shutdownNow(); // Paper - Perf: Async command map building; Shutdown and don't bother finishing
-@@ -1237,18 +1216,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1155,22 +1134,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  // Spigot end
  
                  boolean flag = l == 0L;
@@ -234,16 +234,12 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
 -                    profilerFiller.push("tick");
                      this.tickFrame.start();
                      this.tickServer(flag ? () -> false : this::haveTime);
-                     // Paper start - rewrite chunk system
-@@ -1259,7 +1231,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-                     }
-                     // Paper end - rewrite chunk system
                      this.tickFrame.end();
 -                    profilerFiller.popPush("nextTickWait");
                      this.mayHaveDelayedTasks = true;
                      this.delayedTasksMaxNextTickTimeNanos = Math.max(Util.getNanos() + l, this.nextTickTimeNanos);
                      this.startMeasuringTaskExecutionTime();
-@@ -1269,11 +1240,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1180,11 +1151,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                          this.tickRateManager.endTickWork();
                      }
  
@@ -255,7 +251,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
  
                  this.isReady = true;
                  JvmProfiler.INSTANCE.onServerTick(this.smoothedTickTimeMillis);
-@@ -1446,7 +1413,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1356,7 +1323,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @Override
      public void doRunTask(TickTask task) {
@@ -263,31 +259,15 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
          super.doRunTask(task);
      }
  
-@@ -1536,12 +1502,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
- 
-         this.ticksUntilAutosave--;
-         // Paper start - Incremental chunk and player saving
--        final ProfilerFiller profiler = Profiler.get();
-         int playerSaveInterval = io.papermc.paper.configuration.GlobalConfiguration.get().playerAutoSave.rate;
-         if (playerSaveInterval < 0) {
-             playerSaveInterval = autosavePeriod;
+@@ -1449,7 +1415,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             this.autoSave();
          }
--        profiler.push("save");
-         final boolean fullSave = autosavePeriod > 0 && this.tickCount % autosavePeriod == 0;
-         try {
-             this.isSaving = true;
-@@ -1556,10 +1520,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-         } finally {
-             this.isSaving = false;
-         }
--        profiler.pop();
-         // Paper end - Incremental chunk and player saving
  
 -        ProfilerFiller profilerFiller = Profiler.get();
          this.runAllTasks(); // Paper - move runAllTasks() into full server tick (previously for timings)
          this.server.spark.executeMainThreadTasks(); // Paper - spark
          // Paper start - Server Tick Events
-@@ -1568,7 +1530,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1458,7 +1423,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          new com.destroystokyo.paper.event.server.ServerTickEndEvent(this.tickCount, ((double)(endTime - lastTick) / 1000000D), remaining).callEvent();
          // Paper end - Server Tick Events
          this.server.spark.tickEnd(((double)(endTime - lastTick) / 1000000D)); // Paper - spark
@@ -295,7 +275,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
          long l = Util.getNanos() - nanos;
          int i1 = this.tickCount % 100;
          this.aggregatedTickTimesNanos = this.aggregatedTickTimesNanos - this.tickTimesNanos[i1];
-@@ -1581,16 +1542,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1471,16 +1435,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          this.tickTimes60s.add(this.tickCount, l);
          // Paper end - Add tick times API and /mspt command
          this.logTickMethodTime(nanos);
@@ -312,7 +292,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
          LOGGER.debug("Autosave finished");
      }
  
-@@ -1656,7 +1613,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1546,7 +1506,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      protected void tickChildren(BooleanSupplier hasTimeLeft) {
@@ -320,7 +300,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
          this.getPlayerList().getPlayers().forEach(serverPlayer1 -> serverPlayer1.connection.suspendFlushing());
          this.server.getScheduler().mainThreadHeartbeat(); // CraftBukkit
          // Paper start - Folia scheduler API
-@@ -1674,9 +1630,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1564,9 +1523,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          });
          // Paper end - Folia scheduler API
          io.papermc.paper.adventure.providers.ClickCallbackProviderImpl.CALLBACK_MANAGER.handleQueue(this.tickCount); // Paper
@@ -330,16 +310,15 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
  
          // CraftBukkit start
          // Run tasks that are waiting on processing
-@@ -1711,17 +1665,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1600,7 +1557,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             serverLevel.hasPhysicsEvent = org.bukkit.event.block.BlockPhysicsEvent.getHandlerList().getRegisteredListeners().length > 0; // Paper - BlockPhysicsEvent
              serverLevel.hasEntityMoveEvent = io.papermc.paper.event.entity.EntityMoveEvent.getHandlerList().getRegisteredListeners().length > 0; // Paper - Add EntityMoveEvent
              serverLevel.updateLagCompensationTick(); // Paper - lag compensation
-             net.minecraft.world.level.block.entity.HopperBlockEntity.skipHopperEvents = serverLevel.paperConfig().hopper.disableMoveEvent || org.bukkit.event.inventory.InventoryMoveItemEvent.getHandlerList().getRegisteredListeners().length == 0; // Paper - Perf: Optimize Hoppers
 -            profilerFiller.push(() -> serverLevel + " " + serverLevel.dimension().location());
              /* Drop global time updates
              if (this.tickCount % 20 == 0) {
--                profilerFiller.push("timeSync");
-                 this.synchronizeTime(serverLevel);
--                profilerFiller.pop();
+                 profilerFiller.push("timeSync");
+@@ -1609,8 +1565,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              }
              // CraftBukkit end */
  
@@ -348,7 +327,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
              try {
                  serverLevel.tick(hasTimeLeft);
              } catch (Throwable var7) {
-@@ -1730,34 +1679,24 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1619,34 +1573,24 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  throw new ReportedException(crashReport);
              }
  
@@ -362,7 +341,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
          this.tickConnection();
 -        profilerFiller.popPush("players");
          this.playerList.tick();
-         if (SharedConstants.IS_RUNNING_IN_IDE && this.tickRateManager.runsNormally()) {
+         if (this.tickRateManager.runsNormally()) {
              GameTestTicker.SINGLETON.tick();
          }
  
@@ -383,7 +362,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
      }
  
      public void tickConnection() {
-@@ -1773,14 +1712,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1662,14 +1606,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      public void forceTimeSynchronization() {
@@ -398,7 +377,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
      }
  
      public boolean isLevelEnabled(Level level) {
-@@ -2600,55 +2534,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2484,55 +2423,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
      // CraftBukkit end
  
@@ -454,7 +433,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
      public Path getWorldPath(LevelResource levelResource) {
          return this.storageSource.getLevelPath(levelResource);
      }
-@@ -2698,24 +2583,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2582,24 +2472,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          return this.isSaving;
      }
  
@@ -479,7 +458,7 @@ index d61dcc909a04fb024df509b88dbe5cd455aad622..8b42972dde96f04ba0de53e57e192edf
      public int getMaxChainedNeighborUpdates() {
          return 1000000;
      }
-@@ -2821,55 +2688,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2705,55 +2577,6 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      public record ServerResourcePackInfo(UUID id, String url, String hash, boolean isRequired, @Nullable Component prompt) {
      }
  
@@ -681,10 +660,10 @@ index a3192400b37274620977e5a40d4283bfec3ab9b3..f23b17416eadc0e800ca34918ac78c03
          String string = String.format(
              Locale.ROOT, "%s-%s-%s", Util.getFilenameFormattedDateTime(), server.getWorldData().getLevelName(), SharedConstants.getCurrentVersion().getId()
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 7b54f1842dd455ecf96aa1534b38d3b86b3bcc01..ba82d2e69d40feb834923c3d0980285d8d489359 100644
+index c697b3adeabd4f913e9e5e0b90c620a2a642f35d..f63758938361f6b866b38bac98fcfb2dd15b4b81 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -800,12 +800,6 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -731,12 +731,6 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          return this.settings.getProperties().serverResourcePackInfo;
      }
  
@@ -728,19 +707,19 @@ index 4221af18f5087badb5cd8c7cf66ab3312edf0394..f102afff61d5577a0f5002f2a52335bd
  
      private int getRadiusForLayer(ChunkStatus status, boolean needsGeneration) {
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index b3f498558614243cf633dcd71e3c49c2c55e6e0f..d3d9926d504fa6b3384be5ae06b2843ebb7f807c 100644
+index 00a5ed09caa2689543bd47bcd93d5a6141d0af46..bbd21c296e0b9bb000a9c47be1ec27ea553d3b40 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -60,8 +60,6 @@ import net.minecraft.server.network.ServerPlayerConnection;
- import net.minecraft.util.CsvOutput;
+@@ -62,8 +62,6 @@ import net.minecraft.util.CsvOutput;
  import net.minecraft.util.Mth;
  import net.minecraft.util.StaticCache2D;
+ import net.minecraft.util.TriState;
 -import net.minecraft.util.profiling.Profiler;
 -import net.minecraft.util.profiling.ProfilerFiller;
  import net.minecraft.util.thread.BlockableEventLoop;
  import net.minecraft.util.thread.ConsecutiveExecutor;
  import net.minecraft.world.entity.Entity;
-@@ -410,15 +408,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -490,15 +488,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      }
  
      protected void tick(BooleanSupplier hasMoreTime) {
@@ -756,11 +735,27 @@ index b3f498558614243cf633dcd71e3c49c2c55e6e0f..d3d9926d504fa6b3384be5ae06b2843e
      }
  
      public boolean hasWork() {
+@@ -616,7 +609,6 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+                 (CompletionStage<? extends Object>)completableFuture1, (optional, object) -> optional
+             )
+             .thenApplyAsync(optional -> {
+-                Profiler.get().incrementCounter("chunkLoad");
+                 if (optional.isPresent()) {
+                     ChunkAccess chunkAccess = optional.get().read(this.level, this.poiManager, this.storageInfo(), chunkPos);
+                     this.markPosition(chunkPos, chunkAccess.getPersistedStatus().getChunkType());
+@@ -817,7 +809,6 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+                     }
+                 }
+ 
+-                Profiler.get().incrementCounter("chunkSave");
+                 this.activeChunkWrites.incrementAndGet();
+                 SerializableChunkData serializableChunkData = SerializableChunkData.copyOf(this.level, chunk);
+                 CompletableFuture<CompoundTag> completableFuture = CompletableFuture.supplyAsync(serializableChunkData::write, Util.backgroundExecutor());
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 6540b2d6a1062d883811ce240c49d30d1925b291..9500fc2f841819b0d40e8a6e48353bb28b6dbe49 100644
+index c50a1a01d167696134bd65b2d28db323d81d6ebd..51c636b3bb5088b5caf0f93ec34987efe7e55e5f 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -25,8 +25,6 @@ import net.minecraft.network.protocol.Packet;
+@@ -26,8 +26,6 @@ import net.minecraft.network.protocol.Packet;
  import net.minecraft.server.MinecraftServer;
  import net.minecraft.server.level.progress.ChunkProgressListener;
  import net.minecraft.util.VisibleForDebug;
@@ -769,14 +764,43 @@ index 6540b2d6a1062d883811ce240c49d30d1925b291..9500fc2f841819b0d40e8a6e48353bb2
  import net.minecraft.util.thread.BlockableEventLoop;
  import net.minecraft.world.entity.Entity;
  import net.minecraft.world.entity.MobCategory;
-@@ -467,37 +465,28 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -230,8 +228,6 @@ public class ServerChunkCache extends ChunkSource {
+                 return ifLoaded;
+             }
+             // Paper end - Perf: Optimise getChunkAt calls for loaded chunks
+-            ProfilerFiller profilerFiller = Profiler.get();
+-            profilerFiller.incrementCounter("getChunk");
+             long packedChunkPos = ChunkPos.asLong(x, z);
+ 
+             for (int i = 0; i < 4; i++) {
+@@ -243,7 +239,6 @@ public class ServerChunkCache extends ChunkSource {
+                 }
+             }
+ 
+-            profilerFiller.incrementCounter("getChunkCacheMiss");
+             CompletableFuture<ChunkResult<ChunkAccess>> chunkFutureMainThread = this.getChunkFutureMainThread(x, z, chunkStatus, requireChunk);
+             this.mainThreadProcessor.managedBlock(chunkFutureMainThread::isDone);
+             // com.destroystokyo.paper.io.SyncLoadFinder.logSyncLoad(this.level, x, z); // Paper - Add debug for sync chunk loads
+@@ -306,11 +301,8 @@ public class ServerChunkCache extends ChunkSource {
+             // CraftBukkit end
+             this.addTicket(new Ticket(TicketType.UNKNOWN, i), chunkPos);
+             if (this.chunkAbsent(visibleChunkIfPresent, i)) {
+-                ProfilerFiller profilerFiller = Profiler.get();
+-                profilerFiller.push("chunkLoad");
+                 this.runDistanceManagerUpdates();
+                 visibleChunkIfPresent = this.getVisibleChunkIfPresent(packedChunkPos);
+-                profilerFiller.pop();
+                 if (this.chunkAbsent(visibleChunkIfPresent, i)) {
+                     throw (IllegalStateException)Util.pauseInIde(new IllegalStateException("No chunk holder after ticket has been added"));
+                 }
+@@ -394,36 +386,26 @@ public class ServerChunkCache extends ChunkSource {
+ 
      // CraftBukkit start - modelled on below
      public void purgeUnload() {
-         if (true) return; // Paper - rewrite chunk system
 -        ProfilerFiller gameprofilerfiller = Profiler.get();
- 
+-
 -        gameprofilerfiller.push("purge");
-         this.distanceManager.purgeStaleTickets();
+         this.ticketStorage.purgeStaleTickets();
          this.runDistanceManagerUpdates();
 -        gameprofilerfiller.popPush("unload");
          this.chunkMap.tick(() -> true);
@@ -790,13 +814,12 @@ index 6540b2d6a1062d883811ce240c49d30d1925b291..9500fc2f841819b0d40e8a6e48353bb2
 -        ProfilerFiller profilerFiller = Profiler.get();
 -        profilerFiller.push("purge");
          if (this.level.tickRateManager().runsNormally() || !tickChunks || this.level.spigotConfig.unloadFrozenChunks) { // Spigot
-             this.distanceManager.purgeStaleTickets();
+             this.ticketStorage.purgeStaleTickets();
          }
  
          this.runDistanceManagerUpdates();
 -        profilerFiller.popPush("chunks");
          if (tickChunks) {
-             ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemServerLevel)this.level).moonrise$getPlayerChunkLoader().tick(); // Paper - rewrite chunk system
              this.tickChunks();
              this.chunkMap.tick();
          }
@@ -807,29 +830,17 @@ index 6540b2d6a1062d883811ce240c49d30d1925b291..9500fc2f841819b0d40e8a6e48353bb2
          this.clearCache();
      }
  
-@@ -506,34 +495,26 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -432,22 +414,15 @@ public class ServerChunkCache extends ChunkSource {
          long l = gameTime - this.lastInhabitedUpdate;
          this.lastInhabitedUpdate = gameTime;
          if (!this.level.isDebug()) {
 -            ProfilerFiller profilerFiller = Profiler.get();
 -            profilerFiller.push("pollingChunks");
              if (this.level.tickRateManager().runsNormally()) {
-                 List<LevelChunk> list = this.tickingChunks;
- 
-                 try {
--                    profilerFiller.push("filteringTickingChunks");
-                     this.collectTickingChunks(list);
--                    profilerFiller.popPush("shuffleChunks");
-                     // Paper start - chunk tick iteration optimisation
-                     this.shuffleRandom.setSeed(this.level.random.nextLong());
-                     if (!this.level.paperConfig().entities.spawning.perPlayerMobSpawns) Util.shuffle(list, this.shuffleRandom); // Paper - Optional per player mob spawns; do not need this when per-player is enabled
-                     // Paper end - chunk tick iteration optimisation
--                    this.tickChunks(profilerFiller, l, list);
--                    profilerFiller.pop();
-+                    this.tickChunks(l, list); // Gale - Purpur - remove vanilla profiler
-                 } finally {
-                     list.clear();
-                 }
+-                profilerFiller.push("tickingChunks");
+-                this.tickChunks(profilerFiller, l);
+-                profilerFiller.pop();
++                this.tickChunks(l); // Gale - Purpur - remove vanilla profiler
              }
  
 -            this.broadcastChangedChunks(profilerFiller);
@@ -843,43 +854,51 @@ index 6540b2d6a1062d883811ce240c49d30d1925b291..9500fc2f841819b0d40e8a6e48353bb2
 -
 +    private void broadcastChangedChunks() { // Gale - Purpur - remove vanilla profiler
          for (ChunkHolder chunkHolder : this.chunkHoldersToBroadcast) {
-             LevelChunk tickingChunk = chunkHolder.getChunkToSend(); // Paper - rewrite chunk system
+             LevelChunk tickingChunk = chunkHolder.getTickingChunk();
              if (tickingChunk != null) {
-@@ -542,7 +523,6 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -456,17 +431,14 @@ public class ServerChunkCache extends ChunkSource {
          }
  
          this.chunkHoldersToBroadcast.clear();
 -        profiler.pop();
      }
  
-     private void collectTickingChunks(List<LevelChunk> output) {
-@@ -568,8 +548,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-         // Paper end - chunk tick iteration optimisation
-     }
- 
--    private void tickChunks(ProfilerFiller profiler, long timeInhabited, List<LevelChunk> chunks) {
+-    private void tickChunks(ProfilerFiller profiler, long timeInhabited) {
 -        profiler.popPush("naturalSpawnCount");
-+    private void tickChunks(long timeInhabited, List<LevelChunk> chunks) { // Gale - Purpur - remove vanilla profiler
++    private void tickChunks(long timeInhabited) { // Gale - Purpur - remove vanilla profiler
          int naturalSpawnChunkCount = this.distanceManager.getNaturalSpawnChunkCount();
-         // Paper start - Optional per player mob spawns
-         NaturalSpawner.SpawnState spawnState;
-@@ -594,7 +573,6 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-         }
-         // Paper end - Optional per player mob spawns
+         NaturalSpawner.SpawnState spawnState = NaturalSpawner.createState(
+             naturalSpawnChunkCount, this.level.getAllEntities(), this::getFullChunk, new LocalMobCapCalculator(this.chunkMap)
+         );
          this.lastSpawnState = spawnState;
 -        profiler.popPush("spawnAndTick");
          boolean _boolean = this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING) && !this.level.players().isEmpty(); // CraftBukkit
          int _int = this.level.getGameRules().getInt(GameRules.RULE_RANDOMTICKING);
          List<MobCategory> filteredSpawningCategories;
-@@ -625,7 +603,6 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-             }
+@@ -488,11 +460,8 @@ public class ServerChunkCache extends ChunkSource {
+         List<LevelChunk> list = this.spawningChunks;
+ 
+         try {
+-            profiler.push("filteringSpawningChunks");
+             this.chunkMap.collectSpawningChunks(list);
+-            profiler.popPush("shuffleSpawningChunks");
+             Util.shuffle(list, this.level.random);
+-            profiler.popPush("tickSpawningChunks");
+ 
+             for (LevelChunk levelChunk : list) {
+                 this.tickSpawningChunk(levelChunk, timeInhabited, filteredSpawningCategories, spawnState);
+@@ -501,10 +470,7 @@ public class ServerChunkCache extends ChunkSource {
+             list.clear();
          }
  
+-        profiler.popPush("tickTickingChunks");
+         this.chunkMap.forEachBlockTickingChunk(levelChunk1 -> this.level.tickChunk(levelChunk1, _int));
+-        profiler.pop();
 -        profiler.popPush("customSpawners");
          if (_boolean) {
              this.level.tickCustomSpawners(this.spawnEnemies, this.spawnFriendlies);
          }
-@@ -814,7 +791,6 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -704,7 +670,6 @@ public class ServerChunkCache extends ChunkSource {
  
          @Override
          protected void doRunTask(Runnable task) {
@@ -888,19 +907,19 @@ index 6540b2d6a1062d883811ce240c49d30d1925b291..9500fc2f841819b0d40e8a6e48353bb2
          }
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 3223cbb7b6407bdd0e574688e2e5de2947af6ec9..6f568698939b5d995da0fa2cc493b5d513634318 100644
+index b0efae01753da30354182d640d6ff72a9e6b3e6b..db5327dfcaaa4ac767466f6abeec30c50d32db73 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -77,8 +77,6 @@ import net.minecraft.util.ProgressListener;
+@@ -74,8 +74,6 @@ import net.minecraft.util.Mth;
+ import net.minecraft.util.ProgressListener;
  import net.minecraft.util.RandomSource;
- import net.minecraft.util.Unit;
  import net.minecraft.util.datafix.DataFixTypes;
 -import net.minecraft.util.profiling.Profiler;
 -import net.minecraft.util.profiling.ProfilerFiller;
  import net.minecraft.util.valueproviders.IntProvider;
  import net.minecraft.util.valueproviders.UniformInt;
  import net.minecraft.world.DifficultyInstance;
-@@ -714,16 +712,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -464,16 +462,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      }
  
      public void tick(BooleanSupplier hasTimeLeft) {
@@ -917,7 +936,7 @@ index 3223cbb7b6407bdd0e574688e2e5de2947af6ec9..6f568698939b5d995da0fa2cc493b5d5
          }
  
          int _int = this.getGameRules().getInt(GameRules.RULE_PLAYERS_SLEEPING_PERCENTAGE);
-@@ -757,41 +751,30 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -507,41 +501,30 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              this.tickTime();
          }
  
@@ -933,7 +952,7 @@ index 3223cbb7b6407bdd0e574688e2e5de2947af6ec9..6f568698939b5d995da0fa2cc493b5d5
  
 -        profilerFiller.popPush("raid");
          if (runsNormally) {
-             this.raids.tick();
+             this.raids.tick(this);
          }
  
 -        profilerFiller.popPush("chunkSource");
@@ -945,7 +964,7 @@ index 3223cbb7b6407bdd0e574688e2e5de2947af6ec9..6f568698939b5d995da0fa2cc493b5d5
  
          this.handlingTick = false;
 -        profilerFiller.pop();
-         boolean flag = !paperConfig().unsupportedSettings.disableWorldTickingWhenEmpty || !this.players.isEmpty() || !this.getForcedChunks().isEmpty(); // CraftBukkit - this prevents entity cleanup, other issues on servers with no players // Paper - restore this
+         boolean flag = !paperConfig().unsupportedSettings.disableWorldTickingWhenEmpty || !this.players.isEmpty() || !this.getForceLoadedChunks().isEmpty(); // CraftBukkit - this prevents entity cleanup, other issues on servers with no players // Paper - restore this
          if (flag) {
              this.resetEmptyTime();
          }
@@ -959,17 +978,17 @@ index 3223cbb7b6407bdd0e574688e2e5de2947af6ec9..6f568698939b5d995da0fa2cc493b5d5
              }
  
              io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
-@@ -800,9 +783,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -550,9 +533,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                      entity -> {
                          if (!entity.isRemoved()) {
                              if (!tickRateManager.isEntityFrozen(entity)) {
 -                                profilerFiller.push("checkDespawn");
                                  entity.checkDespawn();
 -                                profilerFiller.pop();
-                                 if (true) { // Paper - rewrite chunk system
+                                 if (entity instanceof ServerPlayer
+                                     || this.chunkSource.chunkMap.getDistanceManager().inEntityTickingRange(entity.chunkPosition().toLong())) {
                                      Entity vehicle = entity.getVehicle();
-                                     if (vehicle != null) {
-@@ -813,21 +794,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -564,21 +545,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                                          entity.stopRiding();
                                      }
  
@@ -986,12 +1005,12 @@ index 3223cbb7b6407bdd0e574688e2e5de2947af6ec9..6f568698939b5d995da0fa2cc493b5d5
          }
  
 -        profilerFiller.push("entityManagement");
-         // Paper - rewrite chunk system
+         this.entityManager.tick();
 -        profilerFiller.pop();
      }
  
      @Override
-@@ -842,9 +818,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -590,9 +566,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          if (this.tickTime) {
              long l = this.levelData.getGameTime() + 1L;
              this.serverLevelData.setGameTime(l);
@@ -1001,38 +1020,65 @@ index 3223cbb7b6407bdd0e574688e2e5de2947af6ec9..6f568698939b5d995da0fa2cc493b5d5
              if (this.serverLevelData.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT)) {
                  this.setDayTime(this.levelData.getDayTime() + 1L);
              }
-@@ -924,8 +898,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-         boolean isRaining = this.isRaining();
+@@ -618,8 +592,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         ChunkPos pos = chunk.getPos();
          int minBlockX = pos.getMinBlockX();
          int minBlockZ = pos.getMinBlockZ();
 -        ProfilerFiller profilerFiller = Profiler.get();
--        profilerFiller.push("thunder");
-         if (!this.paperConfig().environment.disableThunder && isRaining && this.isThundering() && this.spigotConfig.thunderChance > 0 && simpleRandom.nextInt(this.spigotConfig.thunderChance) == 0) { // Spigot // Paper - Option to disable thunder // Paper - optimise random ticking
-             BlockPos blockPos = this.findLightningTargetAround(this.getBlockRandomPos(minBlockX, 0, minBlockZ, 15));
-             if (this.isRainingAt(blockPos)) {
-@@ -952,8 +924,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-             }
-         }
+-        profilerFiller.push("iceandsnow");
  
--        profilerFiller.popPush("iceandsnow");
--
          if (!this.paperConfig().environment.disableIceAndSnow) { // Paper - Option to disable ice and snow
          for (int i = 0; i < randomTickSpeed; i++) {
-             if (simpleRandom.nextInt(48) == 0) {  // Paper - optimise random ticking
-@@ -962,12 +932,9 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -629,7 +601,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          }
          } // Paper - Option to disable ice and snow
  
 -        profilerFiller.popPush("tickBlocks");
          if (randomTickSpeed > 0) {
-             this.optimiseRandomTick(chunk, randomTickSpeed); // Paper - optimise random ticking
+             LevelChunkSection[] sections = chunk.getSections();
+ 
+@@ -641,7 +612,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+ 
+                     for (int i2 = 0; i2 < randomTickSpeed; i2++) {
+                         BlockPos blockRandomPos = this.getBlockRandomPos(minBlockX, blockPosCoord, minBlockZ, 15);
+-                        profilerFiller.push("randomTick");
+                         BlockState blockState = levelChunkSection.getBlockState(
+                             blockRandomPos.getX() - minBlockX, blockRandomPos.getY() - blockPosCoord, blockRandomPos.getZ() - minBlockZ
+                         );
+@@ -653,14 +623,10 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+                         if (fluidState.isRandomlyTicking()) {
+                             fluidState.randomTick(this, blockRandomPos, this.random);
+                         }
+-
+-                        profilerFiller.pop();
+                     }
+                 }
+             }
+         }
+-
+-        profilerFiller.pop();
+     }
+ 
+     public void tickThunder(LevelChunk chunk) {
+@@ -668,8 +634,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         boolean isRaining = this.isRaining();
+         int minBlockX = pos.getMinBlockX();
+         int minBlockZ = pos.getMinBlockZ();
+-        ProfilerFiller profilerFiller = Profiler.get();
+-        profilerFiller.push("thunder");
+         if (!this.paperConfig().environment.disableThunder && isRaining && this.isThundering() && this.spigotConfig.thunderChance > 0 && this.random.nextInt(this.spigotConfig.thunderChance) == 0) { // Spigot // Paper - Option to disable thunder
+             BlockPos blockPos = this.findLightningTargetAround(this.getBlockRandomPos(minBlockX, 0, minBlockZ, 15));
+             if (this.isRainingAt(blockPos)) {
+@@ -695,8 +659,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+                 }
+             }
          }
 -
 -        profilerFiller.pop();
      }
  
      @VisibleForTesting
-@@ -1260,17 +1227,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -978,17 +940,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
              // Paper end - log detailed entity tick information
          entity.setOldPosAndRot();
@@ -1050,7 +1096,7 @@ index 3223cbb7b6407bdd0e574688e2e5de2947af6ec9..6f568698939b5d995da0fa2cc493b5d5
  
          for (Entity entity1 : entity.getPassengers()) {
              this.tickPassenger(entity, entity1, isActive); // Paper - EAR 2
-@@ -1291,9 +1254,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1009,9 +967,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              passengerEntity.setOldPosAndRot();
              passengerEntity.tickCount++;
              passengerEntity.totalEntityAge++; // Paper - age-like counter for all entities
@@ -1060,7 +1106,7 @@ index 3223cbb7b6407bdd0e574688e2e5de2947af6ec9..6f568698939b5d995da0fa2cc493b5d5
              // Paper start - EAR 2
              if (isActive) {
              passengerEntity.rideTick();
-@@ -1305,7 +1265,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1023,7 +978,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                  ridingEntity.positionRider(passengerEntity);
              }
              // Paper end - EAR 2
@@ -1069,10 +1115,10 @@ index 3223cbb7b6407bdd0e574688e2e5de2947af6ec9..6f568698939b5d995da0fa2cc493b5d5
              for (Entity entity : passengerEntity.getPassengers()) {
                  this.tickPassenger(passengerEntity, entity, isActive); // Paper - EAR 2
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 3de65c4025be91d938a350c884975cb6edc234d3..c11150dada66888e5332ec88d153dea3eca2aa3e 100644
+index f8dc08e8b3b808fbe547d1da837f728ee4f92355..20b6cfe278f2bd87dfe2cbf7befef745d36bb845 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -96,8 +96,6 @@ import net.minecraft.tags.FluidTags;
+@@ -104,8 +104,6 @@ import net.minecraft.util.HashOps;
  import net.minecraft.util.Mth;
  import net.minecraft.util.RandomSource;
  import net.minecraft.util.Unit;
@@ -1081,7 +1127,7 @@ index 3de65c4025be91d938a350c884975cb6edc234d3..c11150dada66888e5332ec88d153dea3
  import net.minecraft.world.Container;
  import net.minecraft.world.Difficulty;
  import net.minecraft.world.InteractionHand;
-@@ -1433,14 +1431,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1336,14 +1334,10 @@ public class ServerPlayer extends Player {
                  this.unsetRemoved();
                  */
                  // CraftBukkit end
@@ -1096,7 +1142,7 @@ index 3de65c4025be91d938a350c884975cb6edc234d3..c11150dada66888e5332ec88d153dea3
                  // CraftBukkit start
                  this.isChangingDimension = true; // CraftBukkit - Set teleport invulnerability only if player changing worlds
                  LevelData worlddata = level.getLevelData();
-@@ -1457,7 +1451,6 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1360,7 +1354,6 @@ public class ServerPlayer extends Player {
                  this.connection.internalTeleport(PositionMoveRotation.of(teleportTransition), teleportTransition.relatives()); // CraftBukkit - use internal teleport without event
                  this.connection.resetPosition();
                  level.addDuringTeleport(this);
@@ -1105,7 +1151,7 @@ index 3de65c4025be91d938a350c884975cb6edc234d3..c11150dada66888e5332ec88d153dea3
                  this.stopUsingItem();
                  this.connection.send(new ClientboundPlayerAbilitiesPacket(this.getAbilities()));
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index e71c1a564e5d4ac43460f89879ff709ee685706f..2b059bff0d24b52b106a0af4b7e79818f385596e 100644
+index eb5d2c72641e604b5982da59981666bc015e5240..40c96dbcc88d796eff3d4f50d6ab17cd2d290515 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -24,7 +24,6 @@ import net.minecraft.network.protocol.cookie.ServerboundCookieResponsePacket;
@@ -1134,7 +1180,7 @@ index e71c1a564e5d4ac43460f89879ff709ee685706f..2b059bff0d24b52b106a0af4b7e79818
  
      private boolean checkIfClosed(long time) {
 diff --git a/net/minecraft/server/packs/resources/ProfiledReloadInstance.java b/net/minecraft/server/packs/resources/ProfiledReloadInstance.java
-index 71a4a0b8535a21667261fd66d41cca1216fd9933..1e9edae4708e1b2c282a13bd6a74f71ec4116895 100644
+index f0e2bca572c6f1790772980cd3ec651e9077382d..954e4103c9c359bc13c9a07bec885af90df14cb5 100644
 --- a/net/minecraft/server/packs/resources/ProfiledReloadInstance.java
 +++ b/net/minecraft/server/packs/resources/ProfiledReloadInstance.java
 @@ -9,8 +9,6 @@ import java.util.concurrent.TimeUnit;
@@ -1146,15 +1192,16 @@ index 71a4a0b8535a21667261fd66d41cca1216fd9933..1e9edae4708e1b2c282a13bd6a74f71e
  import org.slf4j.Logger;
  
  public class ProfiledReloadInstance extends SimpleReloadInstance<ProfiledReloadInstance.State> {
-@@ -51,12 +49,9 @@ public class ProfiledReloadInstance extends SimpleReloadInstance<ProfiledReloadI
+@@ -71,13 +69,10 @@ public class ProfiledReloadInstance extends SimpleReloadInstance<ProfiledReloadI
  
-     private static Executor profiledExecutor(Executor executor, AtomicLong timeTaken, String name) {
+     private static Executor profiledExecutor(Executor executor, AtomicLong timeTaken, AtomicLong timesRun, String name) {
          return runnable -> executor.execute(() -> {
 -            ProfilerFiller profilerFiller = Profiler.get();
 -            profilerFiller.push(name);
              long nanos = Util.getNanos();
              runnable.run();
              timeTaken.addAndGet(Util.getNanos() - nanos);
+             timesRun.incrementAndGet();
 -            profilerFiller.pop();
          });
      }
@@ -1223,10 +1270,10 @@ index 64b0508ef21952c65b0b967b756b2a4c64d96899..b6b03fbbd669e6331b30255df5419611
  
      protected abstract T prepare(ResourceManager resourceManager, ProfilerFiller profiler);
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f6f7d884f 100644
+index 600d0a50683f346a8f6d0cec83e15ea45e99ab03..c3c480cb21f7f952cc09b36e24c462822b663b28 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -78,8 +78,6 @@ import net.minecraft.tags.FluidTags;
+@@ -82,8 +82,6 @@ import net.minecraft.tags.FluidTags;
  import net.minecraft.tags.TagKey;
  import net.minecraft.util.Mth;
  import net.minecraft.util.RandomSource;
@@ -1235,7 +1282,7 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
  import net.minecraft.world.Nameable;
-@@ -826,8 +824,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -706,8 +704,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      // CraftBukkit end
  
      public void baseTick() {
@@ -1244,7 +1291,7 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
          if (firstTick && this instanceof net.minecraft.world.entity.NeutralMob neutralMob) neutralMob.tickInitialPersistentAnger(level); // Paper - Prevent entity loading causing async lookups
          this.inBlockState = null;
          if (this.isPassenger() && this.getVehicle().isRemoved()) {
-@@ -890,8 +886,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -764,8 +760,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (this.level() instanceof ServerLevel serverLevelx && this instanceof Leashable) {
              Leashable.tickLeash(serverLevelx, (Entity & Leashable)this);
          }
@@ -1253,7 +1300,7 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
      }
  
      public void setSharedFlagOnFire(boolean isOnFire) {
-@@ -1109,8 +1103,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -985,8 +979,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                  }
              }
  
@@ -1262,7 +1309,7 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
              if (this.stuckSpeedMultiplier.lengthSqr() > 1.0E-7) {
                  movement = movement.multiply(this.stuckSpeedMultiplier);
                  this.stuckSpeedMultiplier = Vec3.ZERO;
-@@ -1119,7 +1111,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -995,7 +987,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              // Paper start - ignore movement changes while inactive.
              if (isTemporarilyActive && !(this instanceof ItemEntity) && movement == getDeltaMovement() && type == MoverType.SELF) {
                  setDeltaMovement(Vec3.ZERO);
@@ -1270,8 +1317,8 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
                  return;
              }
              // Paper end
-@@ -1141,8 +1132,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
-                 this.setPos(this.getX() + vec3.x, this.getY() + vec3.y, this.getZ() + vec3.z);
+@@ -1030,8 +1021,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+                 this.setPos(vec31);
              }
  
 -            profilerFiller.pop();
@@ -1279,7 +1326,7 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
              boolean flag = !Mth.equal(movement.x, vec3.x);
              boolean flag1 = !Mth.equal(movement.z, vec3.z);
              this.horizontalCollision = flag || flag1;
-@@ -1165,7 +1154,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1054,7 +1043,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              }
  
              if (this.isRemoved()) {
@@ -1287,7 +1334,7 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
              } else {
                  if (this.horizontalCollision) {
                      Vec3 deltaMovement = this.getDeltaMovement();
-@@ -1210,7 +1198,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1098,7 +1086,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
                  float blockSpeedFactor = this.getBlockSpeedFactor();
                  this.setDeltaMovement(this.getDeltaMovement().multiply(blockSpeedFactor, 1.0, blockSpeedFactor));
@@ -1295,7 +1342,7 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
              }
          }
          // Paper start - detailed watchdog information
-@@ -3260,8 +3247,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2954,8 +2941,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.processPortalCooldown();
              if (this.portalProcess != null) {
                  if (this.portalProcess.processPortalTeleportation(serverLevel, this, this.canUsePortal(false))) {
@@ -1304,7 +1351,7 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
                      this.setPortalCooldown();
                      TeleportTransition portalDestination = this.portalProcess.getPortalDestination(serverLevel, this);
                      if (portalDestination != null) {
-@@ -3272,7 +3257,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2966,7 +2951,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          }
                      }
  
@@ -1312,7 +1359,7 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
                  } else if (this.portalProcess.hasExpired()) {
                      this.portalProcess = null;
                  }
-@@ -3792,15 +3776,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3521,15 +3505,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              entity.teleport(this.calculatePassengerTransition(teleportTransition, entity));
          }
  
@@ -1328,7 +1375,7 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
          return this;
      }
  
-@@ -3816,11 +3797,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3545,11 +3526,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              }
          }
  
@@ -1340,7 +1387,7 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
              return null;
          } else {
              // Paper start - Fix item duplication and teleport issues
-@@ -3843,7 +3821,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3568,7 +3546,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
              level.resetEmptyTime();
              teleportTransition.postTeleportTransition().onTransition(entityx);
@@ -1349,10 +1396,10 @@ index f6a06336fa12d26ea88d1543aed8f9d41c71b949..e4ec46fdb3b3db47476cd09be767689f
          }
      }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 4546aca8e2e144ec207653c713fc49f849908827..de2ed0f7850a35a5a204ca10122ac79d0060f741 100644
+index 9129f87af75412bfeb43f9f55aee8fe253cc6251..07df62b79a4ee9c9da77cac8615fad5463628204 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -72,8 +72,6 @@ import net.minecraft.tags.FluidTags;
+@@ -70,8 +70,6 @@ import net.minecraft.tags.FluidTags;
  import net.minecraft.tags.ItemTags;
  import net.minecraft.tags.TagKey;
  import net.minecraft.util.Mth;
@@ -1361,7 +1408,7 @@ index 4546aca8e2e144ec207653c713fc49f849908827..de2ed0f7850a35a5a204ca10122ac79d
  import net.minecraft.world.Difficulty;
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.damagesource.CombatRules;
-@@ -443,8 +441,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -415,8 +413,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
          }
  
          super.baseTick();
@@ -1370,45 +1417,46 @@ index 4546aca8e2e144ec207653c713fc49f849908827..de2ed0f7850a35a5a204ca10122ac79d
          if (this.fireImmune() || this.level().isClientSide) {
              this.clearFire();
          }
-@@ -554,7 +550,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
-         this.yHeadRotO = this.yHeadRot;
+@@ -501,7 +497,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
+         this.yBodyRotO = this.yBodyRot;
          this.yRotO = this.getYRot();
          this.xRotO = this.getXRot();
 -        profilerFiller.pop();
      }
  
      @Override
-@@ -3183,11 +3178,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3233,11 +3228,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+             f1 = this.getYRot();
          }
  
-         this.run = this.run + (f3 - this.run) * 0.3F;
 -        ProfilerFiller profilerFiller = Profiler.get();
 -        profilerFiller.push("headTurn");
-         f2 = this.tickHeadTurn(f1, f2);
+         this.tickHeadTurn(f1);
 -        profilerFiller.pop();
 -        profilerFiller.push("rangeChecks");
  
          // Paper start - stop large pitch and yaw changes from crashing the server
          this.yRotO += Math.round((this.getYRot() - this.yRotO) / 360.0F) * 360.0F;
-@@ -3198,7 +3189,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
- 
+@@ -3249,7 +3240,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
          this.yHeadRotO += Math.round((this.yHeadRot - this.yHeadRotO) / 360.0F) * 360.0F;
+         // Paper end - stop large pitch and yaw changes from crashing the server
  
 -        profilerFiller.pop();
-         this.animStep += f2;
          if (this.isFallFlying()) {
              this.fallFlyTicks++;
-@@ -3410,20 +3400,14 @@ public abstract class LivingEntity extends Entity implements Attackable {
+         } else {
+@@ -3425,21 +3415,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
          }
  
          this.setDeltaMovement(d, d1, d2);
 -        ProfilerFiller profilerFiller = Profiler.get();
 -        profilerFiller.push("ai");
+         this.applyInput();
          if (this.isImmobile()) {
              this.jumping = false;
              this.xxa = 0.0F;
              this.zza = 0.0F;
-         } else if (this.isEffectiveAi()) {
+         } else if (this.isEffectiveAi() && !this.level().isClientSide) {
 -            profilerFiller.push("newAi");
              this.serverAiStep();
 -            profilerFiller.pop();
@@ -1419,29 +1467,33 @@ index 4546aca8e2e144ec207653c713fc49f849908827..de2ed0f7850a35a5a204ca10122ac79d
          if (this.jumping && this.isAffectedByFluids()) {
              double fluidHeight;
              if (this.isInLava()) {
-@@ -3452,8 +3436,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3468,8 +3452,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
              this.noJumpDelay = 0;
          }
  
 -        profilerFiller.pop();
 -        profilerFiller.push("travel");
-         this.xxa *= 0.98F;
-         this.zza *= 0.98F;
          if (this.isFallFlying()) {
-@@ -3477,8 +3459,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
+             this.updateFallFlying();
          }
- 
-         this.calculateEntityAnimation(this instanceof FlyingAnimal);
--        profilerFiller.pop();
--        profilerFiller.push("freezing");
-         if (!this.level().isClientSide && !this.isDeadOrDying() && !this.freezeLocked) { // Paper - Freeze Tick Lock API
-             int ticksFrozen = this.getTicksFrozen();
-             if (this.isInPowderSnow && this.canFreeze()) {
-@@ -3494,15 +3474,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
-             this.hurtServer(serverLevel, this.damageSources().freeze(), 1.0F);
+@@ -3494,9 +3476,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+             this.calculateEntityAnimation(this instanceof FlyingAnimal);
          }
  
 -        profilerFiller.pop();
+         if (this.level() instanceof ServerLevel serverLevel) {
+-            profilerFiller.push("freezing");
+             if (!this.isInPowderSnow || !this.canFreeze() && !this.freezeLocked) { // Paper - Freeze Tick Lock API
+                 this.setTicksFrozen(Math.max(0, this.getTicksFrozen() - 2));
+             }
+@@ -3506,18 +3486,14 @@ public abstract class LivingEntity extends Entity implements Attackable {
+             if (this.tickCount % 40 == 0 && this.isFullyFrozen() && this.canFreeze()) {
+                 this.hurtServer(serverLevel, this.damageSources().freeze(), 1.0F);
+             }
+-
+-            profilerFiller.pop();
+         }
+ 
 -        profilerFiller.push("push");
          if (this.autoSpinAttackTicks > 0) {
              this.autoSpinAttackTicks--;
@@ -1454,19 +1506,19 @@ index 4546aca8e2e144ec207653c713fc49f849908827..de2ed0f7850a35a5a204ca10122ac79d
          if (((ServerLevel) this.level()).hasEntityMoveEvent && !(this instanceof Player)) {
              if (this.xo != this.getX() || this.yo != this.getY() || this.zo != this.getZ() || this.yRotO != this.getYRot() || this.xRotO != this.getXRot()) {
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index e330bf990e4874baed1b21cd8c9b44d66ec5b823..49f4d8d4cc36669f889d9970d1dfdf3af4a720ce 100644
+index 73ba442b9d39bc021cd5eb6c1c0f98aed94a5a02..7f5981f71e6380c09e40a0c80db6a77e74d5113d 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -33,8 +33,6 @@ import net.minecraft.sounds.SoundEvent;
+@@ -30,8 +30,6 @@ import net.minecraft.sounds.SoundEvent;
  import net.minecraft.tags.TagKey;
  import net.minecraft.util.Mth;
  import net.minecraft.util.RandomSource;
 -import net.minecraft.util.profiling.Profiler;
 -import net.minecraft.util.profiling.ProfilerFiller;
+ import net.minecraft.world.Container;
  import net.minecraft.world.Difficulty;
  import net.minecraft.world.DifficultyInstance;
- import net.minecraft.world.InteractionHand;
-@@ -329,14 +327,10 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -316,14 +314,10 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
      @Override
      public void baseTick() {
          super.baseTick();
@@ -1481,7 +1533,7 @@ index e330bf990e4874baed1b21cd8c9b44d66ec5b823..49f4d8d4cc36669f889d9970d1dfdf3a
      }
  
      @Override
-@@ -614,8 +608,6 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -489,8 +483,6 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
      @Override
      public void aiStep() {
          super.aiStep();
@@ -1490,7 +1542,7 @@ index e330bf990e4874baed1b21cd8c9b44d66ec5b823..49f4d8d4cc36669f889d9970d1dfdf3a
          if (this.level() instanceof ServerLevel serverLevel
              && this.canPickUpLoot()
              && this.isAlive()
-@@ -638,8 +630,6 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -513,8 +505,6 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
                  }
              }
          }
@@ -1499,7 +1551,7 @@ index e330bf990e4874baed1b21cd8c9b44d66ec5b823..49f4d8d4cc36669f889d9970d1dfdf3a
      }
  
      protected Vec3i getPickupReach() {
-@@ -854,42 +844,21 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -724,42 +714,21 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
              return;
          }
          // Paper end - Allow nerfed mobs to jump and float
@@ -1597,7 +1649,7 @@ index a927c2790c8ab9ccaa7161b970e10b0b44817dd8..b816b2de8eb327060ca6ea7c4afc1737
  
      public Set<WrappedGoal> getAvailableGoals() {
 diff --git a/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-index b44f2c49509d847817a78e9c4fb1499fb378054b..6c8fb611943aee8cabc471c63166f9b44ef14826 100644
+index 06389019deba08c7c0966affcdc90512c88db3d5..6bbdfc748f1ce66689c63424fadcf261b1e967b3 100644
 --- a/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 @@ -10,8 +10,6 @@ import net.minecraft.core.Vec3i;
@@ -1648,10 +1700,10 @@ index c569074403b1d8b443aaa98ba9cf9bbd0e98bd2d..b1aa7294f9479f45fcde77c5ea46db9f
                  this.seen.add(id);
              } else {
 diff --git a/net/minecraft/world/entity/animal/allay/Allay.java b/net/minecraft/world/entity/animal/allay/Allay.java
-index aafb32295d4ce239609bb62e6bdf2261739f7aa0..0c863f8b4683516916d51a0c49921c6bb5608e9f 100644
+index eaa1745d34323cd684782a7fb2e153851a736471..fc2290a62c0a01cfa3143e77384f30e17d94f039 100644
 --- a/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/net/minecraft/world/entity/animal/allay/Allay.java
-@@ -30,8 +30,6 @@ import net.minecraft.tags.GameEventTags;
+@@ -29,8 +29,6 @@ import net.minecraft.tags.GameEventTags;
  import net.minecraft.tags.ItemTags;
  import net.minecraft.tags.TagKey;
  import net.minecraft.util.Mth;
@@ -1660,7 +1712,7 @@ index aafb32295d4ce239609bb62e6bdf2261739f7aa0..0c863f8b4683516916d51a0c49921c6b
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
  import net.minecraft.world.SimpleContainer;
-@@ -245,13 +243,8 @@ public class Allay extends PathfinderMob implements InventoryCarrier, VibrationS
+@@ -241,13 +239,8 @@ public class Allay extends PathfinderMob implements InventoryCarrier, VibrationS
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -1675,10 +1727,10 @@ index aafb32295d4ce239609bb62e6bdf2261739f7aa0..0c863f8b4683516916d51a0c49921c6b
      }
  
 diff --git a/net/minecraft/world/entity/animal/armadillo/Armadillo.java b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-index dfdbcb31458095a71c187efc2774ecc4945dd11b..86e78ce740b27f9714145a690e8b182a2ccb3fb9 100644
+index b72e07ad954efa7f26f876a59f428086b40d9bb2..657f4b56699c33590a0494ef860275e952794c2a 100644
 --- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
 +++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-@@ -23,8 +23,6 @@ import net.minecraft.util.ByIdMap;
+@@ -24,8 +24,6 @@ import net.minecraft.util.ByIdMap;
  import net.minecraft.util.RandomSource;
  import net.minecraft.util.StringRepresentable;
  import net.minecraft.util.TimeUtil;
@@ -1687,7 +1739,7 @@ index dfdbcb31458095a71c187efc2774ecc4945dd11b..86e78ce740b27f9714145a690e8b182a
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
  import net.minecraft.world.damagesource.DamageSource;
-@@ -133,13 +131,8 @@ public class Armadillo extends Animal {
+@@ -134,13 +132,8 @@ public class Armadillo extends Animal {
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -1702,10 +1754,10 @@ index dfdbcb31458095a71c187efc2774ecc4945dd11b..86e78ce740b27f9714145a690e8b182a
              this.forceDrops = true; // CraftBukkit
              if (this.dropFromGiftLootTable(level, BuiltInLootTables.ARMADILLO_SHED, this::spawnAtLocation)) {
 diff --git a/net/minecraft/world/entity/animal/axolotl/Axolotl.java b/net/minecraft/world/entity/animal/axolotl/Axolotl.java
-index 9faa929734035c167e54569ce34d841291856589..c351b0808422221b5358d6e546a206ef75e8173f 100644
+index 233025bc1d4ba2590223def9b206140c68ea5f26..d3d4d8b025480f9e2202157591319df3af43f9de 100644
 --- a/net/minecraft/world/entity/animal/axolotl/Axolotl.java
 +++ b/net/minecraft/world/entity/animal/axolotl/Axolotl.java
-@@ -26,8 +26,6 @@ import net.minecraft.util.ByIdMap;
+@@ -31,8 +31,6 @@ import net.minecraft.util.ByIdMap;
  import net.minecraft.util.Mth;
  import net.minecraft.util.RandomSource;
  import net.minecraft.util.StringRepresentable;
@@ -1714,7 +1766,7 @@ index 9faa929734035c167e54569ce34d841291856589..c351b0808422221b5358d6e546a206ef
  import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
-@@ -302,13 +300,8 @@ public class Axolotl extends Animal implements VariantHolder<Axolotl.Variant>, B
+@@ -327,13 +325,8 @@ public class Axolotl extends Animal implements Bucketable {
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -1729,19 +1781,19 @@ index 9faa929734035c167e54569ce34d841291856589..c351b0808422221b5358d6e546a206ef
              Optional<Integer> memory = this.getBrain().getMemory(MemoryModuleType.PLAY_DEAD_TICKS);
              this.setPlayingDead(memory.isPresent() && memory.get() > 0);
 diff --git a/net/minecraft/world/entity/animal/camel/Camel.java b/net/minecraft/world/entity/animal/camel/Camel.java
-index 3ac169f83c5619b5c00c866354a2e066a0a738cc..1ac4b13554d2699c3e04d41946e1adfd5e854a17 100644
+index 6336fb58f4314be2fe987d7e3de258d977369417..b63b32bac1872db7be64fcb645acd0a0a4290cee 100644
 --- a/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/net/minecraft/world/entity/animal/camel/Camel.java
-@@ -17,8 +17,6 @@ import net.minecraft.sounds.SoundSource;
- import net.minecraft.tags.BlockTags;
+@@ -19,8 +19,6 @@ import net.minecraft.tags.BlockTags;
  import net.minecraft.tags.ItemTags;
  import net.minecraft.util.Mth;
+ import net.minecraft.util.RandomSource;
 -import net.minecraft.util.profiling.Profiler;
 -import net.minecraft.util.profiling.ProfilerFiller;
  import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
-@@ -145,14 +143,9 @@ public class Camel extends AbstractHorse {
+@@ -157,14 +155,9 @@ public class Camel extends AbstractHorse {
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -1757,10 +1809,10 @@ index 3ac169f83c5619b5c00c866354a2e066a0a738cc..1ac4b13554d2699c3e04d41946e1adfd
      }
  
 diff --git a/net/minecraft/world/entity/animal/frog/Frog.java b/net/minecraft/world/entity/animal/frog/Frog.java
-index 12c655b60087a2f6122ffa508b3224159d8777b0..67df4c0f47b2809c912f1dfb52124ca5e2c30b7b 100644
+index 8ffbe420528cd63f30f9b41d4fb0a6519042eadc..fdf40dc10aad108db6ca68fcfec9ecf48f76a9c1 100644
 --- a/net/minecraft/world/entity/animal/frog/Frog.java
 +++ b/net/minecraft/world/entity/animal/frog/Frog.java
-@@ -28,8 +28,6 @@ import net.minecraft.tags.ItemTags;
+@@ -29,8 +29,6 @@ import net.minecraft.tags.ItemTags;
  import net.minecraft.util.Mth;
  import net.minecraft.util.RandomSource;
  import net.minecraft.util.Unit;
@@ -1769,7 +1821,7 @@ index 12c655b60087a2f6122ffa508b3224159d8777b0..67df4c0f47b2809c912f1dfb52124ca5
  import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.damagesource.DamageSource;
  import net.minecraft.world.entity.AgeableMob;
-@@ -186,13 +184,8 @@ public class Frog extends Animal implements VariantHolder<Holder<FrogVariant>> {
+@@ -203,13 +201,8 @@ public class Frog extends Animal {
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -1784,7 +1836,7 @@ index 12c655b60087a2f6122ffa508b3224159d8777b0..67df4c0f47b2809c912f1dfb52124ca5
      }
  
 diff --git a/net/minecraft/world/entity/animal/frog/Tadpole.java b/net/minecraft/world/entity/animal/frog/Tadpole.java
-index 97adf8142cdd322c4873c420ed760e9dee34da23..a04d71967976731b4858d44ac138b7ac390ef7e7 100644
+index ebdfd3fb6c0de48982d392bb2aa415f3676c6056..faaa8197e8421c2bbdc2a8bbaae4f4d0820dbbe7 100644
 --- a/net/minecraft/world/entity/animal/frog/Tadpole.java
 +++ b/net/minecraft/world/entity/animal/frog/Tadpole.java
 @@ -12,8 +12,6 @@ import net.minecraft.server.level.ServerLevel;
@@ -1796,7 +1848,7 @@ index 97adf8142cdd322c4873c420ed760e9dee34da23..a04d71967976731b4858d44ac138b7ac
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
  import net.minecraft.world.damagesource.DamageSource;
-@@ -97,13 +95,8 @@ public class Tadpole extends AbstractFish {
+@@ -98,13 +96,8 @@ public class Tadpole extends AbstractFish {
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -1811,7 +1863,7 @@ index 97adf8142cdd322c4873c420ed760e9dee34da23..a04d71967976731b4858d44ac138b7ac
      }
  
 diff --git a/net/minecraft/world/entity/animal/goat/Goat.java b/net/minecraft/world/entity/animal/goat/Goat.java
-index c91e1f8e5fd39bcc48f9f0bf002770b2dff74404..c4c0ebb9b43018d795e02b2ab15d38bc475e4330 100644
+index b22321ead9d66cb089b67276743624b3cca52fc1..9047e75a5edf9fec2b73aec272284d8003793eaa 100644
 --- a/net/minecraft/world/entity/animal/goat/Goat.java
 +++ b/net/minecraft/world/entity/animal/goat/Goat.java
 @@ -21,8 +21,6 @@ import net.minecraft.tags.ItemTags;
@@ -1823,7 +1875,7 @@ index c91e1f8e5fd39bcc48f9f0bf002770b2dff74404..c4c0ebb9b43018d795e02b2ab15d38bc
  import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
-@@ -186,13 +184,8 @@ public class Goat extends Animal {
+@@ -189,13 +187,8 @@ public class Goat extends Animal {
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -1838,7 +1890,7 @@ index c91e1f8e5fd39bcc48f9f0bf002770b2dff74404..c4c0ebb9b43018d795e02b2ab15d38bc
      }
  
 diff --git a/net/minecraft/world/entity/animal/sniffer/Sniffer.java b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
-index 62ca7871d1e5d0fe611948ad43e44c23fdc2d3f8..5f0efcfb88bee09f1cccc53cedbef22b14c5f554 100644
+index d34dcbbdeae41d23d6fb497e0e8da038580b6d01..622c2eac70c81ed7ccf605069b8dd68508bebf76 100644
 --- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 +++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 @@ -29,8 +29,6 @@ import net.minecraft.tags.BlockTags;
@@ -1864,7 +1916,7 @@ index 62ca7871d1e5d0fe611948ad43e44c23fdc2d3f8..5f0efcfb88bee09f1cccc53cedbef22b
      }
  
 diff --git a/net/minecraft/world/entity/monster/Zoglin.java b/net/minecraft/world/entity/monster/Zoglin.java
-index 9b94e74f6317f835500225b087fe93487a7a0b22..8a7418db237553719671f3cd51f42ebed1eb7804 100644
+index 4405f465ad5b136390c4204b177967c6e47738dd..33c7081c2aee7a31c4dd143f9d1a36cadcfcb29f 100644
 --- a/net/minecraft/world/entity/monster/Zoglin.java
 +++ b/net/minecraft/world/entity/monster/Zoglin.java
 @@ -15,8 +15,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
@@ -1876,7 +1928,7 @@ index 9b94e74f6317f835500225b087fe93487a7a0b22..8a7418db237553719671f3cd51f42ebe
  import net.minecraft.util.valueproviders.UniformInt;
  import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.damagesource.DamageSource;
-@@ -248,10 +246,7 @@ public class Zoglin extends Monster implements HoglinBase {
+@@ -249,10 +247,7 @@ public class Zoglin extends Monster implements HoglinBase {
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -1888,7 +1940,7 @@ index 9b94e74f6317f835500225b087fe93487a7a0b22..8a7418db237553719671f3cd51f42ebe
      }
  
 diff --git a/net/minecraft/world/entity/monster/breeze/Breeze.java b/net/minecraft/world/entity/monster/breeze/Breeze.java
-index 23dff1d01387ce89b020aa93de99e6ef557c04e3..fb643596bd5fb12e4cd323706f51a479d78a5455 100644
+index c12653070d62c44b97a07676f24caf7ab570cd2a..d91ce14cc39b1b6ccd558f53ed605d4c6a5acae5 100644
 --- a/net/minecraft/world/entity/monster/breeze/Breeze.java
 +++ b/net/minecraft/world/entity/monster/breeze/Breeze.java
 @@ -12,8 +12,6 @@ import net.minecraft.sounds.SoundEvent;
@@ -1914,10 +1966,10 @@ index 23dff1d01387ce89b020aa93de99e6ef557c04e3..fb643596bd5fb12e4cd323706f51a479
      }
  
 diff --git a/net/minecraft/world/entity/monster/creaking/Creaking.java b/net/minecraft/world/entity/monster/creaking/Creaking.java
-index eba1e78352f956618b2796ce7cbe5d6f7e6591b6..6cd7d0f82bd97c6adb521eda3bc84c60f87c0cda 100644
+index bdefd070cfebe7f3f792c998f2f53be720cbfbcd..2183f5aaf6cf7a4df8c659f0766af40289761987 100644
 --- a/net/minecraft/world/entity/monster/creaking/Creaking.java
 +++ b/net/minecraft/world/entity/monster/creaking/Creaking.java
-@@ -18,8 +18,6 @@ import net.minecraft.server.level.ServerLevel;
+@@ -17,8 +17,6 @@ import net.minecraft.server.level.ServerLevel;
  import net.minecraft.sounds.SoundEvent;
  import net.minecraft.sounds.SoundEvents;
  import net.minecraft.tags.DamageTypeTags;
@@ -1926,7 +1978,7 @@ index eba1e78352f956618b2796ce7cbe5d6f7e6591b6..6cd7d0f82bd97c6adb521eda3bc84c60
  import net.minecraft.world.damagesource.DamageSource;
  import net.minecraft.world.entity.AnimationState;
  import net.minecraft.world.entity.Entity;
-@@ -203,10 +201,7 @@ public class Creaking extends Monster {
+@@ -204,10 +202,7 @@ public class Creaking extends Monster {
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -1938,7 +1990,7 @@ index eba1e78352f956618b2796ce7cbe5d6f7e6591b6..6cd7d0f82bd97c6adb521eda3bc84c60
      }
  
 diff --git a/net/minecraft/world/entity/monster/hoglin/Hoglin.java b/net/minecraft/world/entity/monster/hoglin/Hoglin.java
-index 0ddc0fe06a1b701f88ed8f8041ecd68f7da6c86d..fe0cd6790875631cb98a73457d53d782b369bf1d 100644
+index 0d05d21158a59dc3aa648c1d6541121c5bb547e6..2989add9a4746646f06ec3f6c386ac5df4a64726 100644
 --- a/net/minecraft/world/entity/monster/hoglin/Hoglin.java
 +++ b/net/minecraft/world/entity/monster/hoglin/Hoglin.java
 @@ -16,8 +16,6 @@ import net.minecraft.sounds.SoundEvents;
@@ -1950,7 +2002,7 @@ index 0ddc0fe06a1b701f88ed8f8041ecd68f7da6c86d..fe0cd6790875631cb98a73457d53d782
  import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
-@@ -158,10 +156,7 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
+@@ -161,10 +159,7 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -1962,7 +2014,7 @@ index 0ddc0fe06a1b701f88ed8f8041ecd68f7da6c86d..fe0cd6790875631cb98a73457d53d782
          if (this.isConverting()) {
              this.timeInOverworld++;
 diff --git a/net/minecraft/world/entity/monster/piglin/Piglin.java b/net/minecraft/world/entity/monster/piglin/Piglin.java
-index 0257eada48b35ea024520afe30596beae8a7ef1e..daef9043d0eacea948e39b1daa2618287aa40f14 100644
+index e200e974e46de6166d56e051806c00a69aefc9bb..27052ded60db7c3916de3f4c8b48227f53fd7249 100644
 --- a/net/minecraft/world/entity/monster/piglin/Piglin.java
 +++ b/net/minecraft/world/entity/monster/piglin/Piglin.java
 @@ -17,8 +17,6 @@ import net.minecraft.tags.ItemTags;
@@ -1974,7 +2026,7 @@ index 0257eada48b35ea024520afe30596beae8a7ef1e..daef9043d0eacea948e39b1daa261828
  import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
-@@ -344,10 +342,7 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
+@@ -319,10 +317,7 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -1986,7 +2038,7 @@ index 0257eada48b35ea024520afe30596beae8a7ef1e..daef9043d0eacea948e39b1daa261828
          super.customServerAiStep(level);
      }
 diff --git a/net/minecraft/world/entity/monster/piglin/PiglinBrute.java b/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
-index 0964b138e87357b7601ddfe937a2b9132afd5478..e5f91e64f61bdb7b7f7e3f101083e9bd5dbe7551 100644
+index 219978cb0341b2d691f44c1146707d875788881e..589a130f8855f464c1930a0aa8b54c0326a22e23 100644
 --- a/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
 +++ b/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
 @@ -8,8 +8,6 @@ import net.minecraft.server.level.ServerLevel;
@@ -2010,10 +2062,10 @@ index 0964b138e87357b7601ddfe937a2b9132afd5478..e5f91e64f61bdb7b7f7e3f101083e9bd
          PiglinBruteAi.maybePlayActivitySound(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/monster/warden/Warden.java b/net/minecraft/world/entity/monster/warden/Warden.java
-index 9f476e587d7df797129e49738f101cccca7e10b7..1c56355fe9c216a7cc8afbbbe94988a0079c8244 100644
+index cd28ca290c081d9f5e4498f59d7b87a566f81544..67fdcbe05e8d5f4000255f753565591825f54f67 100644
 --- a/net/minecraft/world/entity/monster/warden/Warden.java
 +++ b/net/minecraft/world/entity/monster/warden/Warden.java
-@@ -32,8 +32,6 @@ import net.minecraft.tags.TagKey;
+@@ -31,8 +31,6 @@ import net.minecraft.tags.TagKey;
  import net.minecraft.util.Mth;
  import net.minecraft.util.RandomSource;
  import net.minecraft.util.Unit;
@@ -2022,7 +2074,7 @@ index 9f476e587d7df797129e49738f101cccca7e10b7..1c56355fe9c216a7cc8afbbbe94988a0
  import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.damagesource.DamageSource;
  import net.minecraft.world.effect.MobEffectInstance;
-@@ -284,10 +282,7 @@ public class Warden extends Monster implements VibrationSystem {
+@@ -281,10 +279,7 @@ public class Warden extends Monster implements VibrationSystem {
  
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -2034,10 +2086,10 @@ index 9f476e587d7df797129e49738f101cccca7e10b7..1c56355fe9c216a7cc8afbbbe94988a0
          if ((this.tickCount + this.getId()) % 120 == 0) {
              applyDarknessAround(level, this.position(), this, 20);
 diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
-index 2b83262e4a13eae86df82913ce4f3121e3631a43..ee7b4080a9e1e51273f4b48f61caaa21ad7e59d9 100644
+index e0e0d2ea7fc60e3142c675404d152eca60263240..09d559adb603e3d34bb82b944a2a3e8c2c37b136 100644
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
-@@ -35,8 +35,6 @@ import net.minecraft.stats.Stats;
+@@ -36,8 +36,6 @@ import net.minecraft.stats.Stats;
  import net.minecraft.tags.ItemTags;
  import net.minecraft.util.Mth;
  import net.minecraft.util.SpawnUtil;
@@ -2046,7 +2098,7 @@ index 2b83262e4a13eae86df82913ce4f3121e3631a43..ee7b4080a9e1e51273f4b48f61caaa21
  import net.minecraft.world.Difficulty;
  import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.InteractionHand;
-@@ -291,10 +289,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -294,10 +292,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
      }
      protected void customServerAiStep(ServerLevel level, final boolean inactive) {
          // Paper end - EAR 2
@@ -2058,7 +2110,7 @@ index 2b83262e4a13eae86df82913ce4f3121e3631a43..ee7b4080a9e1e51273f4b48f61caaa21
              this.assignProfessionWhenSpawned = false;
          }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index e993323e4010c6c07cfeade4b16970d66890941e..052d74ff170f0f6ab7acac763a4a7c3384baadad 100644
+index 695973abeba2475ed5e163c987eb7fee3893ab02..e813588e03234e4b12b531cd77f725f7d7f9c50c 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -35,8 +35,6 @@ import net.minecraft.util.AbortableIterationConsumer;
@@ -2070,23 +2122,7 @@ index e993323e4010c6c07cfeade4b16970d66890941e..052d74ff170f0f6ab7acac763a4a7c33
  import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.TickRateManager;
  import net.minecraft.world.damagesource.DamageSource;
-@@ -228,7 +226,6 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
- 
-     @Override
-     public final <T extends Entity> List<T> getEntitiesOfClass(final Class<T> entityClass, final AABB boundingBox, final Predicate<? super T> predicate) {
--        Profiler.get().incrementCounter("getEntities");
-         final List<T> ret = new java.util.ArrayList<>();
- 
-         ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemLevel)this).moonrise$getEntityLookup().getEntities(entityClass, null, boundingBox, ret, predicate);
-@@ -238,7 +235,6 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
- 
-     @Override
-     public final List<Entity> moonrise$getHardCollidingEntities(final Entity entity, final AABB box, final Predicate<? super Entity> predicate) {
--        Profiler.get().incrementCounter("getEntities");
-         final List<Entity> ret = new java.util.ArrayList<>();
- 
-         ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemLevel)this).moonrise$getEntityLookup().getHardCollidingEntities(entity, box, ret, predicate);
-@@ -1467,8 +1463,6 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -818,8 +816,6 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
      }
  
      protected void tickBlockEntities() {
@@ -2095,7 +2131,7 @@ index e993323e4010c6c07cfeade4b16970d66890941e..052d74ff170f0f6ab7acac763a4a7c33
          this.tickingBlockEntities = true;
          if (!this.pendingBlockEntityTickers.isEmpty()) {
              this.blockEntityTickers.addAll(this.pendingBlockEntityTickers);
-@@ -1499,7 +1493,6 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -843,7 +839,6 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
          this.blockEntityTickers.removeAll(toRemove); // Paper - Fix MC-117075
  
          this.tickingBlockEntities = false;
@@ -2103,25 +2139,24 @@ index e993323e4010c6c07cfeade4b16970d66890941e..052d74ff170f0f6ab7acac763a4a7c33
          this.spigotConfig.currentPrimedTnt = 0; // Spigot
      }
  
-@@ -1758,7 +1751,6 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1094,7 +1089,6 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
  
      @Override
      public List<Entity> getEntities(@Nullable Entity entity, AABB boundingBox, Predicate<? super Entity> predicate) {
 -        Profiler.get().incrementCounter("getEntities");
          List<Entity> list = Lists.newArrayList();
- 
-         // Paper start - rewrite chunk system
-@@ -1787,8 +1779,6 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
-     public <T extends Entity> void getEntities(final EntityTypeTest<Entity, T> entityTypeTest,
-                                                final AABB boundingBox, final Predicate<? super T> predicate,
-                                                final List<? super T> into, final int maxCount) {
+         this.getEntities().get(boundingBox, entity1 -> {
+             if (entity1 != entity && predicate.test(entity1)) {
+@@ -1128,7 +1122,6 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+     public <T extends Entity> void getEntities(
+         EntityTypeTest<Entity, T> entityTypeTest, AABB bounds, Predicate<? super T> predicate, List<? super T> output, int maxResults
+     ) {
 -        Profiler.get().incrementCounter("getEntities");
--
-         if (entityTypeTest instanceof net.minecraft.world.entity.EntityType<T> byType) {
-             if (maxCount != Integer.MAX_VALUE) {
-                 ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemLevel)this).moonrise$getEntityLookup().getEntities(byType, boundingBox, into, predicate, maxCount);
+         this.getEntities().get(entityTypeTest, bounds, entity -> {
+             if (predicate.test(entity)) {
+                 output.add(entity);
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index 17ce115e887cbbb06ad02ab7ddb488e27342c0e4..4bee1ba137d078563cedfdd184a8b4603df17487 100644
+index 3a864c568cd66a680760bb4df2cb020e323e9a9d..3888e174963c2e95f1cd2258c4c1d6ec4a85d267 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
 @@ -23,8 +23,6 @@ import net.minecraft.tags.BlockTags;
@@ -2130,10 +2165,10 @@ index 17ce115e887cbbb06ad02ab7ddb488e27342c0e4..4bee1ba137d078563cedfdd184a8b460
  import net.minecraft.util.VisibleForDebug;
 -import net.minecraft.util.profiling.Profiler;
 -import net.minecraft.util.profiling.ProfilerFiller;
- import net.minecraft.util.random.WeightedRandomList;
+ import net.minecraft.util.random.WeightedList;
  import net.minecraft.world.entity.Entity;
  import net.minecraft.world.entity.EntitySpawnReason;
-@@ -158,9 +156,6 @@ public final class NaturalSpawner {
+@@ -139,16 +137,11 @@ public final class NaturalSpawner {
      }
  
      public static void spawnForChunk(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, List<MobCategory> categories) {
@@ -2141,10 +2176,8 @@ index 17ce115e887cbbb06ad02ab7ddb488e27342c0e4..4bee1ba137d078563cedfdd184a8b460
 -        profilerFiller.push("spawner");
 -
          for (MobCategory mobCategory : categories) {
-             // Paper start - Optional per player mob spawns
-             final boolean canSpawn;
-@@ -195,8 +190,6 @@ public final class NaturalSpawner {
-                 // Paper end - Optional per player mob spawns
+             if (spawnState.canSpawnForCategoryLocal(mobCategory, chunk.getPos())) {
+                 spawnCategoryForChunk(mobCategory, level, chunk, spawnState::canSpawn, spawnState::afterSpawn);
              }
          }
 -
@@ -2153,7 +2186,7 @@ index 17ce115e887cbbb06ad02ab7ddb488e27342c0e4..4bee1ba137d078563cedfdd184a8b460
  
      // Paper start - Add mobcaps commands
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index c4485f28def66264846a436cfba7bddccb66b82e..4d183fb445c43621c5ce95edc1af27b6a41f0acb 100644
+index 01083cf32b4b0bd57d1b0ac83eb4e43d9d90fa98..5b839c2a682595ecedf15ab08fecbf8861a9caa5 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
 @@ -13,8 +13,6 @@ import net.minecraft.Util;
@@ -2165,7 +2198,7 @@ index c4485f28def66264846a436cfba7bddccb66b82e..4d183fb445c43621c5ce95edc1af27b6
  import net.minecraft.world.damagesource.DamageSource;
  import net.minecraft.world.entity.Entity;
  import net.minecraft.world.entity.EntityType;
-@@ -665,10 +663,7 @@ public class ServerExplosion implements Explosion {
+@@ -364,10 +362,7 @@ public class ServerExplosion implements Explosion {
          List<BlockPos> list = this.calculateExplodedPositions();
          this.hurtEntities();
          if (this.interactsWithBlocks()) {
@@ -2177,7 +2210,7 @@ index c4485f28def66264846a436cfba7bddccb66b82e..4d183fb445c43621c5ce95edc1af27b6
  
          if (this.fire) {
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 761fdcd4a4e18f45547afd8edff44f61c6eeacb4..3a7707427691a7862499a7efa3b39ead1ef78013 100644
+index 08e2442f6965cc6eaab67bdf9340a5152c08db2a..626e87d9c1862fe0c896172ee240844e50d7902f 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -23,8 +23,6 @@ import net.minecraft.network.FriendlyByteBuf;
@@ -2189,20 +2222,20 @@ index 761fdcd4a4e18f45547afd8edff44f61c6eeacb4..3a7707427691a7862499a7efa3b39ead
  import net.minecraft.world.entity.Entity;
  import net.minecraft.world.level.ChunkPos;
  import net.minecraft.world.level.Level;
-@@ -386,12 +384,8 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -336,12 +334,8 @@ public class LevelChunk extends ChunkAccess {
                  }
  
                  if (LightEngine.hasDifferentLightProperties(blockState, state)) {
 -                    ProfilerFiller profilerFiller = Profiler.get();
 -                    profilerFiller.push("updateSkyLightSources");
-                     // Paper - rewrite chunk system
+                     this.skyLightSources.update(this, i, y, i2);
 -                    profilerFiller.popPush("queueCheckLight");
                      this.level.getChunkSource().getLightEngine().checkBlock(pos);
 -                    profilerFiller.pop();
                  }
  
-                 boolean hasBlockEntity = blockState.hasBlockEntity();
-@@ -911,8 +905,6 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+                 boolean flag = !blockState.is(block);
+@@ -840,8 +834,6 @@ public class LevelChunk extends ChunkAccess {
                  BlockPos blockPos = this.blockEntity.getBlockPos();
                  if (LevelChunk.this.isTicking(blockPos)) {
                      try {
@@ -2211,7 +2244,7 @@ index 761fdcd4a4e18f45547afd8edff44f61c6eeacb4..3a7707427691a7862499a7efa3b39ead
                          BlockState blockState = LevelChunk.this.getBlockState(blockPos);
                          if (this.blockEntity.getType().isValid(blockState)) {
                              this.ticker.tick(LevelChunk.this.level, this.blockEntity.getBlockPos(), blockState, this.blockEntity);
-@@ -926,8 +918,6 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -855,8 +847,6 @@ public class LevelChunk extends ChunkAccess {
                              }
                              // Paper end - Remove the Block Entity if it's invalid
                          }
