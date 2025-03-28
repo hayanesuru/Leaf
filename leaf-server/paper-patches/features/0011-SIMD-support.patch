@@ -13,10 +13,10 @@ As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index 59e4ea913ee34d133e74be50ad3f35606354db43..dbe3d8748c1e6fbad7ee4ccf39dfc0422b0ce50b 100644
+index 612eacf43f8b6b92354fa43479bd0ead728dd7b9..a35c0af0c53bab4c1b3623e903d3057c816e5d3b 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
-@@ -935,6 +935,46 @@ public class Metrics {
+@@ -936,6 +936,46 @@ public class Metrics {
                  metrics.addCustomChart(new Metrics.DrilldownPie("gale_semantic_version", () -> semanticVersionMap));
                  // Gale end - semantic version - include in metrics
  

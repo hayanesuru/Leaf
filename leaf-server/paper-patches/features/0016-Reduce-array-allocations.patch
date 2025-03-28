@@ -111,37 +111,20 @@ index 4b6d845423ca845cb8780499757d627773c688da..9c2864675bc0b13ba088ba699be3c569
              });
  
 diff --git a/src/main/java/io/papermc/paper/command/subcommands/VersionCommand.java b/src/main/java/io/papermc/paper/command/subcommands/VersionCommand.java
-index ae60bd96b5284d54676d8e7e4dd5d170b526ec1e..89562a86cd33ea2b55b284f77dc5d903ee21a49b 100644
+index 58ca24715eafd1ac3cc9657b1cc235049d69bb59..acb764b71bb3e8f159a758002f7d1077637d188d 100644
 --- a/src/main/java/io/papermc/paper/command/subcommands/VersionCommand.java
 +++ b/src/main/java/io/papermc/paper/command/subcommands/VersionCommand.java
 @@ -14,7 +14,7 @@ public final class VersionCommand implements PaperSubcommand {
      public boolean execute(final CommandSender sender, final String subCommand, final String[] args) {
-         final @Nullable Command ver = MinecraftServer.getServer().server.getCommandMap().getCommand("version");
-         if (ver != null) {
--            ver.execute(sender, "paper", new String[0]);
-+            ver.execute(sender, "paper", me.titaniumtown.ArrayConstants.emptyStringArray); // Gale - JettPack - reduce array allocations
+         final @Nullable Command redirect = MinecraftServer.getServer().server.getCommandMap().getCommand("version");
+         if (redirect != null) {
+-            redirect.execute(sender, "paper", new String[0]);
++            redirect.execute(sender, "paper", me.titaniumtown.ArrayConstants.emptyStringArray); // Gale - JettPack - reduce array allocations
          }
          return true;
      }
-diff --git a/src/main/java/org/bukkit/craftbukkit/CraftEquipmentSlot.java b/src/main/java/org/bukkit/craftbukkit/CraftEquipmentSlot.java
-index ae86c45c1d49c7646c721991910592091e7333f8..1368191d6f76d1b4246b1bae7d5afdda44050965 100644
---- a/src/main/java/org/bukkit/craftbukkit/CraftEquipmentSlot.java
-+++ b/src/main/java/org/bukkit/craftbukkit/CraftEquipmentSlot.java
-@@ -7,8 +7,10 @@ import org.bukkit.inventory.EquipmentSlot;
- 
- public class CraftEquipmentSlot {
- 
--    private static final net.minecraft.world.entity.EquipmentSlot[] slots = new net.minecraft.world.entity.EquipmentSlot[EquipmentSlot.values().length];
--    private static final EquipmentSlot[] enums = new EquipmentSlot[net.minecraft.world.entity.EquipmentSlot.values().length];
-+    // Gale start - JettPack - reduce array allocations
-+    private static final net.minecraft.world.entity.EquipmentSlot[] slots = net.minecraft.world.entity.EquipmentSlot.VALUES_ARRAY;
-+    private static final EquipmentSlot[] enums = new EquipmentSlot[net.minecraft.world.entity.EquipmentSlot.VALUES.size()];
-+    // Gale end - JettPack - reduce array allocations
- 
-     static {
-         set(EquipmentSlot.HAND, net.minecraft.world.entity.EquipmentSlot.MAINHAND);
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftEntityEquipment.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftEntityEquipment.java
-index fdcc414f4fa246082ad0732133c870d915ae3084..33ed515d6e79c4135f3e7bbc25fd0e3d83d08540 100644
+index 4abe58077fae4e68cceda9624fed013bca1d6f22..72aa906ccf64dd9be085728a897f323ab0822eba 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftEntityEquipment.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftEntityEquipment.java
 @@ -165,7 +165,7 @@ public class CraftEntityEquipment implements EntityEquipment {
@@ -154,10 +137,10 @@ index fdcc414f4fa246082ad0732133c870d915ae3084..33ed515d6e79c4135f3e7bbc25fd0e3d
          }
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java b/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
-index b25dc23b81687dd4d4e70b3615ffb91f8c03c68b..59ff2801592c98e7471404c70dbbdf3db1b7716b 100644
+index 306ca8db11d16a03ce73b9a5a8be7efc11ee4b57..444e57a87acb653275d1cadbd0698815f6dc049d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/WeakCollection.java
-@@ -164,7 +164,7 @@ public final class WeakCollection<T> implements Collection<T> {
+@@ -164,7 +164,7 @@ public final class WeakCollection<E> implements Collection<E> {
  
      @Override
      public Object[] toArray() {

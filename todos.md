@@ -1,6 +1,5 @@
 # Gale TODOs
 - [ ] Do a benchmark for `Remove streams and iterators from range check`, getEffectiveRange in ChunkMap
-- [ ] Do benchmark for reduce entity fluid lookup on 1.21.3
 - [ ] Check gale force load chunk option whether need or whether need to change.
 - [ ] check reduce array allocation, whether need do clone for some reference, to prevent potential issues.. or add debug command for debugging?.
 

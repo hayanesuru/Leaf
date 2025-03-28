@@ -37,10 +37,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java b/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
-index 51ae8eddadc87b143b93521a3cef374f1e3a24dc..eed2d01c4f884c3aafdef21741fc1a2e2d610199 100644
+index 0b9b29753984bebaf01e2edc6d325cd5df6c689d..a5c8701974acd4639b9475434a7ebf73cbf496d7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
 +++ b/src/main/java/org/bukkit/craftbukkit/legacy/CraftLegacy.java
-@@ -265,7 +265,7 @@ public final class CraftLegacy {
+@@ -260,7 +260,7 @@ public final class CraftLegacy {
      }
  
      static {

@@ -34,10 +34,10 @@ index 632920e04686d8a0fd0a60e87348be1fe7862a3c..ba0dd850f90564fab3a5b922bb28d244
          IO_POOL.adjustThreadCount(ioThreads);
  
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index 8f62879582195d8ae4f64bd23f752fa133b1c973..8f50cbe29b36e7b73c8c9db491f4dd21a886f45d 100644
+index 6abc57669e87f7f98f3b76af3c0e50825fea6eb1..d561202169d6f19c1e9ad8009415af9eaa707b96 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
-@@ -592,7 +592,7 @@ public class Metrics {
+@@ -593,7 +593,7 @@ public class Metrics {
              boolean logFailedRequests = config.getBoolean("logFailedRequests", false);
              // Only start Metrics, if it's enabled in the config
              if (config.getBoolean("enabled", true)) {
@@ -46,7 +46,7 @@ index 8f62879582195d8ae4f64bd23f752fa133b1c973..8f50cbe29b36e7b73c8c9db491f4dd21
  
                  metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
                      String minecraftVersion = Bukkit.getVersion();
-@@ -602,20 +602,20 @@ public class Metrics {
+@@ -603,20 +603,20 @@ public class Metrics {
  
                  metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> Bukkit.getOnlinePlayers().size()));
                  metrics.addCustomChart(new Metrics.SimplePie("online_mode", () -> Bukkit.getOnlineMode() ? "online" : "offline"));
@@ -73,7 +73,7 @@ index 8f62879582195d8ae4f64bd23f752fa133b1c973..8f50cbe29b36e7b73c8c9db491f4dd21
                      entry.put(javaVersion, 1);
  
                      // http://openjdk.java.net/jeps/223
-@@ -644,7 +644,7 @@ public class Metrics {
+@@ -645,7 +645,7 @@ public class Metrics {
                  }));
  
                  metrics.addCustomChart(new Metrics.DrilldownPie("legacy_plugins", () -> {
@@ -82,7 +82,7 @@ index 8f62879582195d8ae4f64bd23f752fa133b1c973..8f50cbe29b36e7b73c8c9db491f4dd21
  
                      // count legacy plugins
                      int legacy = 0;
-@@ -655,7 +655,7 @@ public class Metrics {
+@@ -656,7 +656,7 @@ public class Metrics {
                      }
  
                      // insert real value as lower dimension
@@ -91,7 +91,7 @@ index 8f62879582195d8ae4f64bd23f752fa133b1c973..8f50cbe29b36e7b73c8c9db491f4dd21
                      entry.put(String.valueOf(legacy), 1);
  
                      // create buckets as higher dimension
-@@ -675,6 +675,256 @@ public class Metrics {
+@@ -676,6 +676,256 @@ public class Metrics {
  
                      return map;
                  }));
