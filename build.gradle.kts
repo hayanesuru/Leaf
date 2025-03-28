@@ -65,7 +65,6 @@ subprojects {
 
 paperweight {
     upstreams.paper {
-        repo = github("Dreeam-qwq", "Paper")
         ref = providers.gradleProperty("paperCommit")
 
         patchFile {

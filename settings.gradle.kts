@@ -38,5 +38,4 @@ rootProject.name = "leaf"
 for (name in listOf("leaf-api", "leaf-server")) {
     val projName = name.lowercase(Locale.ENGLISH)
     include(projName)
-    findProject(":$projName")!!.projectDir = file(name)
 }

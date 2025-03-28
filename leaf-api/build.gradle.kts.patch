@@ -88,15 +88,15 @@
 +    // Leaf end - Bump Dependencies
  }
  
--val generatedApiPath: java.nio.file.Path = layout.projectDirectory.dir("src/generated/java").asFile.toPath()
-+val generatedApiPath: java.nio.file.Path = rootProject.layout.projectDirectory.dir("paper-api/src/generated/java").asFile.toPath() // Leaf - project setup
+-val generatedDir: java.nio.file.Path = layout.projectDirectory.dir("src/generated/java").asFile.toPath()
++val generatedDir: java.nio.file.Path = rootProject.layout.projectDirectory.dir("paper-api/src/generated/java").asFile.toPath() // Leaf - project setup
  idea {
      module {
-         generatedSourceDirs.add(generatedApiPath.toFile())
+         generatedSourceDirs.add(generatedDir.toFile())
 @@ -103,6 +_,20 @@
      main {
          java {
-             srcDir(generatedApiPath)
+             srcDir(generatedDir)
 +            // Leaf start - project setup
 +            srcDir(file("../paper-api/src/main/java"))
 +        }
@@ -192,7 +192,7 @@
  }
  
  tasks.test {
-@@ -243,6 +_,11 @@
+@@ -233,6 +_,11 @@
      jarToScan.set(tasks.jar.flatMap { it.archiveFile })
      classpath.from(configurations.compileClasspath)
  }
@@ -202,5 +202,5 @@
 +}
 +// Leaf end - Bump Dependencies
  tasks.check {
-     dependsOn(scanJarForOldGeneratedCode)
+     dependsOn(scanJarForBadCalls)
  }
