@@ -1,54 +1,40 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Taiyou06 <kaandindar21@gmail.com>
 Date: Sun, 23 Mar 2025 11:51:44 +0100
-Subject: [PATCH] AsyncBlockFinding
+Subject: [PATCH] Async Block Finding
 
 
 diff --git a/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java b/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java
-index 3f080b15543bf8c5fa0774b62d7f12e13b82511a..51a949dbb88d7fff076379962000b70acecacce3 100644
+index 3f080b15543bf8c5fa0774b62d7f12e13b82511a..2bc0f19b86067491f33f647d2e387acd83492844 100644
 --- a/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java
-@@ -1,9 +1,16 @@
- package net.minecraft.world.entity.ai.goal;
- 
- import java.util.EnumSet;
-+import java.util.ArrayList;
-+import java.util.List;
-+import java.util.concurrent.ConcurrentLinkedQueue;
-+import java.util.concurrent.ExecutorService;
-+import java.util.concurrent.Executors;
-+import com.google.common.util.concurrent.ThreadFactoryBuilder;
- import net.minecraft.core.BlockPos;
- import net.minecraft.world.entity.PathfinderMob;
- import net.minecraft.world.level.LevelReader;
-+import org.dreeam.leaf.config.modules.async.AsyncBlockFinding;
- 
- public abstract class MoveToBlockGoal extends Goal {
-     private static final int GIVE_UP_TICKS = 1200;
-@@ -20,6 +27,17 @@ public abstract class MoveToBlockGoal extends Goal {
+@@ -20,6 +20,19 @@ public abstract class MoveToBlockGoal extends Goal {
      private final int verticalSearchRange;
      protected int verticalSearchStart;
  
-+    private static final ExecutorService BLOCK_FINDER_EXECUTOR =
-+        Executors.newSingleThreadExecutor(
-+            new ThreadFactoryBuilder()
-+                .setNameFormat("block-finder-%d")
++    // Leaf start - Async Block Finding
++    private static final java.util.concurrent.ExecutorService BLOCK_FINDER_EXECUTOR =
++        java.util.concurrent.Executors.newSingleThreadExecutor(
++            new com.google.common.util.concurrent.ThreadFactoryBuilder()
++                .setNameFormat("Leaf Block Finding Thread - %d")
 +                .setDaemon(true)
 +                .build());
 +
-+    private final ConcurrentLinkedQueue<BlockPos> candidateBlocks = new ConcurrentLinkedQueue<>();
++    private final java.util.concurrent.ConcurrentLinkedQueue<BlockPos> candidateBlocks = new java.util.concurrent.ConcurrentLinkedQueue<>();
 +    private boolean asyncSearchInProgress = false;
 +    private boolean searchComplete = false;
++    // Leaf end - Async Block Finding
 +
      public MoveToBlockGoal(PathfinderMob mob, double speedModifier, int searchRange) {
          this(mob, speedModifier, searchRange, 1);
      }
-@@ -109,6 +127,92 @@ public abstract class MoveToBlockGoal extends Goal {
+@@ -109,6 +122,95 @@ public abstract class MoveToBlockGoal extends Goal {
      }
  
      protected boolean findNearestBlock() {
++        // Leaf start - Async Block Finding
 +        // Check if async is enabled, if not use the original implementation
-+        if (!AsyncBlockFinding.enabled) {
++        if (!org.dreeam.leaf.config.modules.async.AsyncBlockFinding.enabled) {
 +            return findNearestBlockSync();
 +        }
 +
@@ -59,6 +45,7 @@ index 3f080b15543bf8c5fa0774b62d7f12e13b82511a..51a949dbb88d7fff076379962000b70a
 +            candidateBlocks.clear();
 +            return false;
 +        }
++
 +        while (!candidateBlocks.isEmpty()) {
 +            BlockPos pos = candidateBlocks.poll();
 +
@@ -105,7 +92,7 @@ index 3f080b15543bf8c5fa0774b62d7f12e13b82511a..51a949dbb88d7fff076379962000b70a
 +    // Generate candidate blocks in a spiral pattern
 +    private void generateCandidateBlocks(BlockPos center, int searchRange, int verticalRange, int verticalStart) {
 +        // Pre-calculate a prioritized list of positions
-+        List<BlockPos> positions = new ArrayList<>();
++        java.util.List<BlockPos> positions = new java.util.ArrayList<>();
 +
 +        for (int i2 = verticalStart; i2 <= verticalRange; i2 = i2 > 0 ? -i2 : 1 - i2) {
 +            for (int i3 = 0; i3 < searchRange; i3++) {
@@ -133,6 +120,7 @@ index 3f080b15543bf8c5fa0774b62d7f12e13b82511a..51a949dbb88d7fff076379962000b70a
 +
 +    // The original method renamed
 +    protected boolean findNearestBlockSync() {
++        // Leaf end - Async Block Finding
          int i = this.searchRange;
          int i1 = this.verticalSearchRange;
          BlockPos blockPos = this.mob.blockPosition();

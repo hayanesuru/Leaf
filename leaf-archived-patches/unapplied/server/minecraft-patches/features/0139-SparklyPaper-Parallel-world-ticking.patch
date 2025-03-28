@@ -265,7 +265,7 @@ index 5ab2c8333178335515e619b87ae420f948c83bd1..be3b2f023897a8823560ee059cb16ec9
              }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 8744690b69be75f9dbcfe5a52bb90ed387eaffd7..f2d1025a13649c35991a662c267a7653e75d19a2 100644
+index c50a301a0c2365c2052aefc6a23fcf6fa82e1b9d..ac751d460ae0c8dbb858c4047c459a11b57ae175 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -291,6 +291,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -326,7 +326,7 @@ index 8744690b69be75f9dbcfe5a52bb90ed387eaffd7..f2d1025a13649c35991a662c267a7653
      }
  
      @Override
-@@ -1671,6 +1684,18 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1677,6 +1690,18 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          }
      }
  
@@ -345,7 +345,7 @@ index 8744690b69be75f9dbcfe5a52bb90ed387eaffd7..f2d1025a13649c35991a662c267a7653
      protected void tickChildren(BooleanSupplier hasTimeLeft) {
          this.getPlayerList().getPlayers().forEach(serverPlayer1 -> serverPlayer1.connection.suspendFlushing());
          this.server.getScheduler().mainThreadHeartbeat(); // CraftBukkit
-@@ -1737,28 +1762,50 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1743,28 +1768,50 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          }
  
          this.isIteratingOverLevels = true; // Paper - Throw exception on world create while being ticked
@@ -414,7 +414,7 @@ index 8744690b69be75f9dbcfe5a52bb90ed387eaffd7..f2d1025a13649c35991a662c267a7653
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
          this.tickConnection();
-@@ -1838,6 +1885,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1844,6 +1891,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          Map<ResourceKey<Level>, ServerLevel> oldLevels = this.levels;
          Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
          newLevels.remove(level.dimension());
