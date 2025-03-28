@@ -8,6 +8,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class AsyncPlayerDataSaving {
+
     public static final ExecutorService IO_POOL = new ThreadPoolExecutor(
         1, 1, 0, TimeUnit.MILLISECONDS,
         new LinkedBlockingQueue<>(),

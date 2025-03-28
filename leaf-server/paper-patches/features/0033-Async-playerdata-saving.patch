@@ -5,24 +5,33 @@ Subject: [PATCH] Async playerdata saving
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
-index f2d87c12dd19210ce7e2147fada5c10191008632..f64844fb39cd02d8645491a8b482b21643334500 100644
+index f2d87c12dd19210ce7e2147fada5c10191008632..0cc6b6c597ca8c955b246764de637be4c25bfb40 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+@@ -207,7 +207,7 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+     }
+ 
+     private CompoundTag getData() {
+-        return this.storage.load(this.profile.getName(), this.profile.getId().toString()).orElse(null);
++        return this.storage.load(this.profile.getName(), this.profile.getId().toString(), this.profile.getId()).orElse(null); // Leaf - Async playerdata saving
+     }
+ 
+     private CompoundTag getBukkitData() {
 @@ -813,6 +813,17 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
       * @param compoundTag
       */
      private void save(CompoundTag compoundTag) {
-+        // Leaf start
++        // Leaf start - Async playerdata saving
 +        synchronized (server.console.playerDataStorage) {
-+            while (server.console.playerDataStorage.saving.contains(getUniqueId().toString())) {
++            while (server.console.playerDataStorage.savingQueue.contains(getUniqueId())) {
 +                try {
 +                    Thread.sleep(1L);
 +                } catch (InterruptedException ignored) {
 +                }
 +            }
-+            server.console.playerDataStorage.saving.add(getUniqueId().toString());
++            server.console.playerDataStorage.savingQueue.add(getUniqueId());
 +        }
-+        // Leaf end
++        // Leaf end - Async playerdata saving
          File playerDir = server.console.playerDataStorage.getPlayerDir();
          try {
              File tempFile = File.createTempFile(this.getUniqueId()+"-", ".dat", playerDir);
@@ -30,12 +39,12 @@ index f2d87c12dd19210ce7e2147fada5c10191008632..f64844fb39cd02d8645491a8b482b216
              net.minecraft.Util.safeReplaceFile(playerDataFile.toPath(), tempFile.toPath(), playerDataFileOld.toPath());
          } catch (java.io.IOException e) {
              e.printStackTrace();
-+        // Leaf start
++        // Leaf start - Async playerdata saving
 +        } finally {
 +            synchronized (server.console.playerDataStorage) {
-+                server.console.playerDataStorage.saving.remove(getUniqueId().toString());
++                server.console.playerDataStorage.savingQueue.remove(getUniqueId());
 +            }
-+        // Leaf end
++        // Leaf end - Async playerdata saving
          }
      }
      // Purpur end - OfflinePlayer API

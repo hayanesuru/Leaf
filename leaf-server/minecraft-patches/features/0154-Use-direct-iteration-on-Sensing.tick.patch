@@ -5,25 +5,20 @@ Subject: [PATCH] Use direct iteration on Sensing.tick
 
 
 diff --git a/net/minecraft/world/entity/ai/sensing/Sensing.java b/net/minecraft/world/entity/ai/sensing/Sensing.java
-index cc25f5838aec5ed9fca2fb8b0322fafad9397a46..2ea5095a4290f5236caad7ea30a59d9b3eb32aaa 100644
+index cc25f5838aec5ed9fca2fb8b0322fafad9397a46..002d3c0d8b1107a275020d5c582c37e9a5c536ee 100644
 --- a/net/minecraft/world/entity/ai/sensing/Sensing.java
 +++ b/net/minecraft/world/entity/ai/sensing/Sensing.java
-@@ -34,12 +34,16 @@ public class Sensing {
- 
-     public void tick() {
-         if (this.expiring == null) { // Gale - Petal - reduce line of sight updates
--        this.seen.clear();
-+            this.seen.clear();
-             // Gale start - Petal - reduce line of sight updates
+@@ -39,7 +39,12 @@ public class Sensing {
          } else {
              var expiringNow = this.expiring[this.nextToExpireIndex];
  
 -            expiringNow.forEach(this.seen::remove);
-+            // Leaf - use direct iteration
++            // Leaf start - Use direct iteration on Sensing.tick
 +            var iterator = expiringNow.iterator();
 +            while (iterator.hasNext()) {
 +                this.seen.remove(iterator.nextInt());
 +            }
++            // Leaf end - Use direct iteration on Sensing.tick
              expiringNow.clear();
  
              this.currentCacheAddIndex++;

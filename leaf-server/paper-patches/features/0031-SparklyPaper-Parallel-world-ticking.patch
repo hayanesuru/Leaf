@@ -612,7 +612,7 @@ index 55572e799b5c8a74a546ac8febc14f80d5731c52..08a06c23c831a4de45b3e537228b8379
          // Paper end
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index c2552c3706831f7012b5b449fa43c7d5990056a4..2f9b7627f1801239ee6a89f334a266629b98c989 100644
+index c2552c3706831f7012b5b449fa43c7d5990056a4..4e8a1d01a6c0afef92ae56cc4909af06d63e5268 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -961,6 +961,28 @@ public class CraftEventFactory {
@@ -652,7 +652,7 @@ index c2552c3706831f7012b5b449fa43c7d5990056a4..2f9b7627f1801239ee6a89f334a26662
 +        // Leaf start - SparklyPaper parallel world ticking mod (collapse original behavior)
 +        final BlockPos sourceBlockOverrideRTSnap = getSourceBlockOverrideRT();
 +        BlockSpreadEvent event = new BlockSpreadEvent(state.getBlock(), CraftBlock.at(world, sourceBlockOverrideRTSnap != null ? sourceBlockOverrideRTSnap : source), state); // SparklyPaper - parallel world ticking
-+        // Leaf end
++        // Leaf end - SparklyPaper parallel world ticking mod (collapse original behavior)
          Bukkit.getPluginManager().callEvent(event);
  
          if (!event.isCancelled()) {
@@ -666,23 +666,26 @@ index c2552c3706831f7012b5b449fa43c7d5990056a4..2f9b7627f1801239ee6a89f334a26662
                  return itemStack;
              }
 diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftAsyncTask.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftAsyncTask.java
-index e4e2e42d0ca25df7fe9f2dd4275610e45fcb2c84..c4de7346703cbe457dbffed7716a5816314996a1 100644
+index e4e2e42d0ca25df7fe9f2dd4275610e45fcb2c84..e7c6b2ab5f2c68f3319ccd52785c8d3488a2eef7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftAsyncTask.java
 +++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftAsyncTask.java
-@@ -19,11 +19,35 @@ class CraftAsyncTask extends CraftTask {
+@@ -19,11 +19,39 @@ class CraftAsyncTask extends CraftTask {
  
      @Override
      public boolean isSync() {
++        // Leaf start - Parallel world ticking
 +        // Return true if we should run this task synchronously when parallel world ticking is enabled and runAsyncTasksSync is true
 +        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled &&
 +            org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.runAsyncTasksSync) {
 +            return true;
 +        }
++        // Leaf end - Parallel world ticking
          return false;
      }
  
      @Override
      public void run() {
++        // Leaf start - Parallel world ticking
 +        // If parallel world ticking is enabled and we're configured to run async tasks sync,
 +        // execute the task as if it were a sync task (directly on the main thread)
 +        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled &&
@@ -700,85 +703,9 @@ index e4e2e42d0ca25df7fe9f2dd4275610e45fcb2c84..c4de7346703cbe457dbffed7716a5816
 +            }
 +            return;
 +        }
++        // Leaf end - Parallel world ticking
 +
 +        // Original async implementation
          final Thread thread = Thread.currentThread();
          // Paper start - name threads according to running plugin
          final String nameBefore = thread.getName();
-@@ -52,49 +76,49 @@ class CraftAsyncTask extends CraftTask {
-                     }
-                 });
-         }
--        Throwable thrown = null;
--        try {
--            super.run();
--        } catch (final Throwable t) {
--            thrown = t;
--            this.getOwner().getLogger().log(
-+            Throwable thrown = null;
-+            try {
-+                super.run();
-+            } catch (final Throwable t) {
-+                thrown = t;
-+                this.getOwner().getLogger().log(
-                     Level.WARNING,
-                     String.format(
-                         "Plugin %s generated an exception while executing task %s",
-                         this.getOwner().getDescription().getFullName(),
-                         this.getTaskId()),
-                     thrown);
--        } finally {
--            // Cleanup is important for any async task, otherwise ghost tasks are everywhere
--            synchronized (this.workers) {
--                try {
--                    final Iterator<BukkitWorker> workers = this.workers.iterator();
--                    boolean removed = false;
--                    while (workers.hasNext()) {
--                        if (workers.next().getThread() == thread) {
--                            workers.remove();
--                            removed = true; // Don't throw exception
--                            break;
-+            } finally {
-+                // Cleanup is important for any async task, otherwise ghost tasks are everywhere
-+                synchronized (this.workers) {
-+                    try {
-+                        final Iterator<BukkitWorker> workers = this.workers.iterator();
-+                        boolean removed = false;
-+                        while (workers.hasNext()) {
-+                            if (workers.next().getThread() == thread) {
-+                                workers.remove();
-+                                removed = true; // Don't throw exception
-+                                break;
-+                            }
-                         }
--                    }
--                    if (!removed) {
--                        throw new IllegalStateException(
-+                        if (!removed) {
-+                            throw new IllegalStateException(
-                                 String.format(
-                                     "Unable to remove worker %s on task %s for %s",
-                                     thread.getName(),
-                                     this.getTaskId(),
-                                     this.getOwner().getDescription().getFullName()),
-                                 thrown); // We don't want to lose the original exception, if any
--                    }
--                } finally {
--                    if (this.getPeriod() < 0 && this.workers.isEmpty()) {
--                        // At this spot, we know we are the final async task being executed!
--                        // Because we have the lock, nothing else is running or will run because delay < 0
--                        this.runners.remove(this.getTaskId());
-+                        }
-+                    } finally {
-+                        if (this.getPeriod() < 0 && this.workers.isEmpty()) {
-+                            // At this spot, we know we are the final async task being executed!
-+                            // Because we have the lock, nothing else is running or will run because delay < 0
-+                            this.runners.remove(this.getTaskId());
-+                        }
-                     }
-                 }
-             }
--        }
-         } finally { thread.setName(nameBefore); } // Paper - name threads according to running plugin
-     }
- 

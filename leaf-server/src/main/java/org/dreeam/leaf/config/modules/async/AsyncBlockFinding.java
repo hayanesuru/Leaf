@@ -12,7 +12,6 @@ public class AsyncBlockFinding extends ConfigModules {
 
     @Experimental
     public static boolean enabled = false;
-
     public static boolean asyncBlockFindingInitialized;
 
     @Override
