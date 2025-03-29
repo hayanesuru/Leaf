@@ -1,0 +1,261 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Taiyou06 <kaandindar21@gmail.com>
+Date: Sat, 29 Mar 2025 13:40:46 +0100
+Subject: [PATCH] AsyncTargetFinding
+
+
+diff --git a/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java b/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java
+index 41ee3cdc45ecc8376a2203ed588bb544ed377294..f3677a1576d4ea7e8bb2c74fb95f51620deb39b5 100644
+--- a/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java
++++ b/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java
+@@ -1,6 +1,12 @@
+ package net.minecraft.world.entity.ai.goal.target;
+ 
+ import java.util.EnumSet;
++import java.util.List;
++import java.util.concurrent.CompletableFuture;
++import java.util.concurrent.ExecutorService;
++import java.util.concurrent.Executors;
++import java.util.concurrent.atomic.AtomicBoolean;
++import java.util.concurrent.atomic.AtomicReference;
+ import javax.annotation.Nullable;
+ import net.minecraft.server.level.ServerLevel;
+ import net.minecraft.server.level.ServerPlayer;
+@@ -10,15 +16,37 @@ import net.minecraft.world.entity.ai.goal.Goal;
+ import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+ import net.minecraft.world.entity.player.Player;
+ import net.minecraft.world.phys.AABB;
++import org.dreeam.leaf.config.modules.async.AsyncTargetFinding;
+ 
+ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetGoal {
+     private static final int DEFAULT_RANDOM_INTERVAL = 10;
+     protected final Class<T> targetType;
+     protected final int randomInterval;
+     @Nullable
+-    protected LivingEntity target;
++    protected volatile LivingEntity target;
+     protected TargetingConditions targetConditions;
+ 
++    // Thread pool for async target finding with explicit naming for easier debugging
++    private static final ExecutorService TARGET_FINDER_EXECUTOR = Executors.newFixedThreadPool(2, r -> {
++        Thread thread = new Thread(r, "Target-Finder-Thread");
++        thread.setDaemon(true);
++        thread.setPriority(Thread.MIN_PRIORITY); // Lower priority to avoid competing with main thread
++        return thread;
++    });
++
++    // Flag to track if a search is in progress
++    private final AtomicBoolean isSearching = new AtomicBoolean(false);
++
++    // Reference holder for safe entity passing between threads
++    private final AtomicReference<LivingEntity> pendingTarget = new AtomicReference<>(null);
++
++    // Static initializer for cleanup on shutdown
++    static {
++        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
++            TARGET_FINDER_EXECUTOR.shutdown();
++        }));
++    }
++
+     public NearestAttackableTargetGoal(Mob mob, Class<T> targetType, boolean mustSee) {
+         this(mob, targetType, 10, mustSee, false, null);
+     }
+@@ -46,7 +74,14 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
+         if (this.randomInterval > 0 && this.mob.getRandom().nextInt(this.randomInterval) != 0) {
+             return false;
+         } else {
+-            this.findTarget();
++            findTarget();
++
++            // Check for pending target from async operation
++            LivingEntity pending = pendingTarget.getAndSet(null);
++            if (pending != null) {
++                this.target = pending;
++            }
++
+             return this.target != null;
+         }
+     }
+@@ -55,25 +90,169 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
+         return this.mob.getBoundingBox().inflate(targetDistance, targetDistance, targetDistance);
+     }
+ 
++    // Async find target implementation with safer entity handling
+     protected void findTarget() {
+-        ServerLevel serverLevel = getServerLevel(this.mob);
+-        if (this.targetType != Player.class && this.targetType != ServerPlayer.class) {
+-            this.target = serverLevel.getNearestEntity(
+-                this.mob.level().getEntitiesOfClass(this.targetType, this.getTargetSearchArea(this.getFollowDistance()), entity -> true),
+-                this.getTargetConditions(),
+-                this.mob,
+-                this.mob.getX(),
+-                this.mob.getEyeY(),
+-                this.mob.getZ()
+-            );
+-        } else {
+-            this.target = serverLevel.getNearestPlayer(this.getTargetConditions(), this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++        // If async is disabled or we're already searching, use sync method
++        if (!AsyncTargetFinding.enabled || !isSearching.compareAndSet(false, true)) {
++            findTargetSync();
++            return;
++        }
++
++        // Capture mutable state to avoid race conditions
++        final Mob mob = this.mob;
++        final double x = mob.getX();
++        final double y = mob.getEyeY();
++        final double z = mob.getZ();
++        final double followDistance = this.getFollowDistance();
++        final TargetingConditions targetConditions = this.getTargetConditions();
++        final Class<T> targetType = this.targetType;
++
++        // Start async search with immutable captured state
++        CompletableFuture.runAsync(() -> {
++            try {
++                // Avoid deadlocks by not performing operations that might block
++                // on the main thread or require entity list synchronization
++                ServerLevel serverLevel = getServerLevel(mob);
++                if (serverLevel == null) {
++                    return;
++                }
++
++                LivingEntity result = null;
++
++                try {
++                    // Use snapshot of entity list to avoid concurrent modification
++                    if (targetType != Player.class && targetType != ServerPlayer.class) {
++                        // Capture entity list in a safe way
++                        List<T> entities = mob.level().getEntitiesOfClass(
++                            targetType,
++                            getTargetSearchArea(followDistance),
++                            entity -> true
++                        );
++
++                        // Don't directly modify any game state here
++                        if (entities != null && !entities.isEmpty()) {
++                            result = findNearestEntitySafely(entities, targetConditions, mob, x, y, z, serverLevel);
++                        }
++                    } else {
++                        // For players, use the safer helper method
++                        result = findNearestPlayerSafely(targetConditions, mob, x, y, z, serverLevel);
++                    }
++                } catch (Exception e) {
++                    // Log exception but don't crash the thread
++                    System.err.println("Error finding entities in async target finder: " + e.getMessage());
++                }
++
++                // Store result safely for main thread to pick up
++                if (result != null) {
++                    pendingTarget.set(result);
++                }
++
++            } catch (Exception e) {
++                System.err.println("Error during async target finding: " + e.getMessage());
++            } finally {
++                isSearching.set(false);
++            }
++        }, TARGET_FINDER_EXECUTOR);
++    }
++
++    // Safe helper method to find nearest entity without modifying collections
++    @Nullable
++    private LivingEntity findNearestEntitySafely(
++        List<? extends LivingEntity> entities,
++        TargetingConditions conditions,
++        Mob source,
++        double x,
++        double y,
++        double z,
++        ServerLevel level) {
++
++        if (entities == null || entities.isEmpty() || level == null) {
++            return null;
++        }
++
++        try {
++            // Manual distance calculation to avoid using potentially unsafe methods
++            double closestDistSq = -1.0;
++            LivingEntity closest = null;
++
++            for (LivingEntity entity : entities) {
++                if (entity != null && !entity.isRemoved() && conditions.test(level, source, entity)) {
++                    double dx = entity.getX() - x;
++                    double dy = entity.getY() - y;
++                    double dz = entity.getZ() - z;
++                    double distSq = dx * dx + dy * dy + dz * dz;
++
++                    if (closestDistSq == -1.0 || distSq < closestDistSq) {
++                        closestDistSq = distSq;
++                        closest = entity;
++                    }
++                }
++            }
++
++            return closest;
++        } catch (Exception e) {
++            System.err.println("Error in findNearestEntitySafely: " + e.getMessage());
++            return null;
++        }
++    }
++
++    // Safe helper method to find nearest player without modifying collections
++    @Nullable
++    private Player findNearestPlayerSafely(
++        TargetingConditions conditions,
++        Mob source,
++        double x,
++        double y,
++        double z,
++        ServerLevel level) {
++
++        if (level == null) {
++            return null;
++        }
++
++        try {
++            List<? extends Player> players = level.players();
++            return (Player) findNearestEntitySafely(players, conditions, source, x, y, z, level);
++        } catch (Exception e) {
++            System.err.println("Error in findNearestPlayerSafely: " + e.getMessage());
++            return null;
++        }
++    }
++
++    // Synchronous fallback method
++    private void findTargetSync() {
++        try {
++            ServerLevel serverLevel = getServerLevel(this.mob);
++            if (serverLevel == null) {
++                return;
++            }
++
++            if (this.targetType != Player.class && this.targetType != ServerPlayer.class) {
++                this.target = serverLevel.getNearestEntity(
++                    this.mob.level().getEntitiesOfClass(this.targetType, this.getTargetSearchArea(this.getFollowDistance()), entity -> true),
++                    this.getTargetConditions(),
++                    this.mob,
++                    this.mob.getX(),
++                    this.mob.getEyeY(),
++                    this.mob.getZ()
++                );
++            } else {
++                this.target = serverLevel.getNearestPlayer(this.getTargetConditions(), this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++            }
++        } catch (Exception e) {
++            System.err.println("Error in findTargetSync: " + e.getMessage());
++            this.target = null;
+         }
+     }
+ 
+     @Override
+     public void start() {
+-        this.mob.setTarget(this.target, this.target instanceof ServerPlayer ? org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_PLAYER : org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_ENTITY, true); // CraftBukkit - reason
++        LivingEntity targetEntity = this.target;
++        if (targetEntity != null && !targetEntity.isRemoved()) {
++            this.mob.setTarget(targetEntity, targetEntity instanceof ServerPlayer ?
++                org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_PLAYER :
++                org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_ENTITY, true);
++        }
+         super.start();
+     }
+ 
