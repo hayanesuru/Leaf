@@ -423,6 +423,109 @@ index c50a301a0c2365c2052aefc6a23fcf6fa82e1b9d..ac751d460ae0c8dbb858c4047c459a11
          this.levels = Collections.unmodifiableMap(newLevels);
      }
      // CraftBukkit end
+diff --git a/net/minecraft/server/PlayerAdvancements.java b/net/minecraft/server/PlayerAdvancements.java
+index d2159a747fe42aa95cfc6bca0e55e3f4485847bb..8b74e9abba806a311f52b82732ce3c92638d50c4 100644
+--- a/net/minecraft/server/PlayerAdvancements.java
++++ b/net/minecraft/server/PlayerAdvancements.java
+@@ -19,6 +19,7 @@ import java.nio.file.Path;
+ import java.util.HashMap;
+ import java.util.HashSet;
+ import java.util.LinkedHashMap;
++import java.util.concurrent.ConcurrentHashMap;
+ import java.util.Map;
+ import java.util.Set;
+ import java.util.Map.Entry;
+@@ -53,7 +54,8 @@ public class PlayerAdvancements {
+     private AdvancementTree tree;
+     private final Map<AdvancementHolder, AdvancementProgress> progress = new LinkedHashMap<>();
+     private final Set<AdvancementHolder> visible = new HashSet<>();
+-    private final Set<AdvancementHolder> progressChanged = new HashSet<>();
++    private final Set<AdvancementHolder> progressChanged = new HashSet<>(); // Default implementation
++    private final Set<AdvancementHolder> progressChangedConcurrent = ConcurrentHashMap.newKeySet(); // Thread-safe implementation for parallel world ticking
+     private final Set<AdvancementNode> rootsToUpdate = new HashSet<>();
+     private ServerPlayer player;
+     @Nullable
+@@ -184,7 +186,13 @@ public class PlayerAdvancements {
+             }
+             // Paper end - Add PlayerAdvancementCriterionGrantEvent
+             this.unregisterListeners(advancement);
+-            this.progressChanged.add(advancement);
++
++            if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) {
++                this.progressChangedConcurrent.add(advancement);
++            } else {
++                this.progressChanged.add(advancement);
++            }
++
+             flag = true;
+             if (!isDone && orStartProgress.isDone()) {
+                 // Paper start - Add Adventure message to PlayerAdvancementDoneEvent
+@@ -221,7 +229,11 @@ public class PlayerAdvancements {
+         boolean isDone = orStartProgress.isDone();
+         if (orStartProgress.revokeProgress(criterionKey)) {
+             this.registerListeners(advancement);
+-            this.progressChanged.add(advancement);
++            if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) {
++                this.progressChangedConcurrent.add(advancement);
++            } else {
++                this.progressChanged.add(advancement);
++            }
+             flag = true;
+         }
+ 
+@@ -271,7 +283,11 @@ public class PlayerAdvancements {
+     }
+ 
+     public void flushDirty(ServerPlayer serverPlayer) {
+-        if (this.isFirstPacket || !this.rootsToUpdate.isEmpty() || !this.progressChanged.isEmpty()) {
++        boolean hasProgressChanges = org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled
++            ? !this.progressChangedConcurrent.isEmpty()
++            : !this.progressChanged.isEmpty();
++
++        if (this.isFirstPacket || !this.rootsToUpdate.isEmpty() || hasProgressChanges) {
+             Map<ResourceLocation, AdvancementProgress> map = new HashMap<>();
+             Set<AdvancementHolder> set = new java.util.TreeSet<>(java.util.Comparator.comparing(adv -> adv.id().toString())); // Paper - Changed from HashSet to TreeSet ordered alphabetically.
+             Set<ResourceLocation> set1 = new HashSet<>();
+@@ -280,6 +296,19 @@ public class PlayerAdvancements {
+                 this.updateTreeVisibility(advancementNode, set, set1);
+             }
+ 
++            // Process advancements with changed progress
++            if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) {
++                // Using concurrent set - create a copy to avoid possible ConcurrentModificationException
++                // during visualization and packet sending
++                Set<AdvancementHolder> copy = new HashSet<>(this.progressChangedConcurrent);
++                for (AdvancementHolder advancementHolder : copy) {
++                    if (this.visible.contains(advancementHolder)) {
++                        map.put(advancementHolder.id(), this.progress.get(advancementHolder));
++                    }
++                }
++                this.progressChangedConcurrent.removeAll(copy);
++            } else {
++                // Original logic using non-concurrent set
+             this.rootsToUpdate.clear();
+ 
+             for (AdvancementHolder advancementHolder : this.progressChanged) {
+@@ -289,6 +318,7 @@ public class PlayerAdvancements {
+             }
+ 
+             this.progressChanged.clear();
++            }
+             if (!map.isEmpty() || !set.isEmpty() || !set1.isEmpty()) {
+                 serverPlayer.connection.send(new ClientboundUpdateAdvancementsPacket(this.isFirstPacket, set, set1, map));
+             }
+@@ -334,6 +364,11 @@ public class PlayerAdvancements {
+                         advancementOutput.add(advancementHolder);
+                         if (this.progress.containsKey(advancementHolder)) {
+                             this.progressChanged.add(advancementHolder);
++                            if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) {
++                                this.progressChangedConcurrent.add(advancementHolder);
++                            } else {
++                                this.progressChanged.add(advancementHolder);
++                            }
+                         }
+                     }
+                 } else if (this.visible.remove(advancementHolder)) {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
 index d4048661575ebfaf128ba25da365843774364e0e..33dd16a26edd2974f04d9a868d3e58e8e3060032 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
