@@ -13,10 +13,10 @@ As part of: Mirai (https://github.com/etil2jz/Mirai)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/advancements/Advancement.java b/net/minecraft/advancements/Advancement.java
-index d5c824eabf321a2c7600c7081b8d4f3057cfae2e..ccc9ca901fc8bec44f0e2717a51104caf759a1b4 100644
+index a1abe9a798e459798ac18d8a9b4756c66eba9721..a8872569aeb531b4ca245e98a7f7033ca24cde89 100644
 --- a/net/minecraft/advancements/Advancement.java
 +++ b/net/minecraft/advancements/Advancement.java
-@@ -60,7 +60,7 @@ public record Advancement(
+@@ -61,7 +61,7 @@ public record Advancement(
          AdvancementRequirements requirements,
          boolean sendsTelemetryEvent
      ) {

@@ -7,10 +7,10 @@ License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 Gale - https://galemc.org
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 479e6162f9e9783b9e20fac238b3d8a9fc583c44..6bb24d659e1b325337da82c649a9b4b641851b62 100644
+index fbea49d6c12ce570ef4f1850edad45d424183d63..2e8fdf640aeb2750eba40f1c9711ece2b79b0d07 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4676,6 +4676,16 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4346,6 +4346,16 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.inBlockState;
      }
  
@@ -28,10 +28,10 @@ index 479e6162f9e9783b9e20fac238b3d8a9fc583c44..6bb24d659e1b325337da82c649a9b4b6
          return this.chunkPosition;
      }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 538183d980de59b010fadacf9bf902bd4e9d1ec5..368f1c1028f92bcf6c03bdc6a7435fe25f63f288 100644
+index 6e93836570859929e4f35d23d9dbcc2ebbc8fb27..8d7150fbd296a0b957e9de987d2e49815264a4b2 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -2029,8 +2029,17 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2097,8 +2097,17 @@ public abstract class LivingEntity extends Entity implements Attackable {
  
      public boolean onClimbableCached() {
          if (!this.blockPosition().equals(this.lastClimbingPosition)) {
@@ -51,7 +51,7 @@ index 538183d980de59b010fadacf9bf902bd4e9d1ec5..368f1c1028f92bcf6c03bdc6a7435fe2
          }
  
          return this.cachedOnClimbable;
-@@ -2038,11 +2047,28 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2106,11 +2115,28 @@ public abstract class LivingEntity extends Entity implements Attackable {
      // Gale end - Airplane - cache on climbable check
  
      public boolean onClimbable() {

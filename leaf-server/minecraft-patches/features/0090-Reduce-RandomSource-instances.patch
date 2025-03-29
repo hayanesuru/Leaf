@@ -26,10 +26,10 @@ index d381800ad054be6b054dcca43fbe80d3f0c0c771..5904b9d985487ff8bd1f330667c43096
              double d1 = center.y - maxRange;
              double d2 = center.x + maxRange;
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index b44cb6db29668767d0f092ddb6382f4b2baf72b8..f51d699461f5aef81e1187a4068c78f844e83878 100644
+index f86ed0bb010459b65ac616af2cec0b09b2596521..814a7a2f0f8025dedadbfd70631354188f58b184 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -468,7 +468,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -460,7 +460,7 @@ public class ServerPlayer extends Player {
              long l1 = l * l;
              int i = l1 > 2147483647L ? Integer.MAX_VALUE : (int)l1;
              int coprime = this.getCoprime(i);
@@ -52,7 +52,7 @@ index 0b8d279a53196f3998b1f6901738ca8e02ef7311..9add567d2ec2f5e9cd5bee84423c5a44
          }
  
 diff --git a/net/minecraft/world/entity/projectile/FishingHook.java b/net/minecraft/world/entity/projectile/FishingHook.java
-index 1e012c7ef699a64ff3f1b00f897bb893ab25ecbd..800db05c1d2f2452a9e8ab7532f5ec10a924b0ce 100644
+index 9476a33ff4ec272a2c3b3cf9685cb4653138c57e..1ecfcb37a0d1c3f3810c5c8ce8043626ce8c25a9 100644
 --- a/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/net/minecraft/world/entity/projectile/FishingHook.java
 @@ -48,7 +48,7 @@ import org.slf4j.Logger;
@@ -73,39 +73,41 @@ index 1e012c7ef699a64ff3f1b00f897bb893ab25ecbd..800db05c1d2f2452a9e8ab7532f5ec10
  
      public FishingHook(EntityType<? extends FishingHook> entityType, Level level) {
 diff --git a/net/minecraft/world/entity/raid/Raid.java b/net/minecraft/world/entity/raid/Raid.java
-index 536c84362d3e74a5bf0e0494483da3c0e9b26f0b..b83fbdb3093dbd56a9e707a652074d0b6033a761 100644
+index 654101353c7995bcce5be7f80c9ed76246ef56c5..19b34cf9d23c255e16a0ee99f66f3f9a3ecb196a 100644
 --- a/net/minecraft/world/entity/raid/Raid.java
 +++ b/net/minecraft/world/entity/raid/Raid.java
-@@ -99,7 +99,7 @@ public class Raid {
+@@ -120,7 +120,7 @@ public class Raid {
      public final ServerBossEvent raidEvent = new ServerBossEvent(RAID_NAME_COMPONENT, BossEvent.BossBarColor.RED, BossEvent.BossBarOverlay.NOTCHED_10);
      private int postRaidTicks;
      private int raidCooldownTicks;
 -    private final RandomSource random = RandomSource.create();
-+    private final RandomSource random; // Gale - Patina - reduce RandomSource instances
++    //private final RandomSource random = RandomSource.create(); // Gale - Patina - reduce RandomSource instances
      public final int numGroups;
      private Raid.RaidStatus status;
      private int celebrationTicks;
-@@ -120,6 +120,7 @@ public class Raid {
-         this.center = center;
-         this.numGroups = this.getNumGroups(level.getDifficulty());
-         this.status = Raid.RaidStatus.ONGOING;
-+        this.random = level.random; // Gale - Patina - reduce RandomSource instances
-     }
+@@ -507,7 +507,7 @@ public class Raid {
+         float f = 13.0F;
+         int i = 64;
+         Collection<ServerPlayer> players = this.raidEvent.getPlayers();
+-        long randomLong = this.random.nextLong();
++        long randomLong = level.random.nextLong(); // Gale - Patina - reduce RandomSource instances
  
-     public Raid(ServerLevel level, CompoundTag compound) {
-@@ -147,6 +148,7 @@ public class Raid {
-             this.persistentDataContainer.putAll(compound.getCompound(PDC_NBT_KEY));
-         }
-         // Paper end
-+        this.random = level.random; // Gale - Patina - reduce RandomSource instances
-     }
+         for (ServerPlayer serverPlayer : level.players()) {
+             Vec3 vec3 = serverPlayer.position();
+@@ -531,7 +531,7 @@ public class Raid {
  
-     public boolean isOver() {
+         for (Raid.RaiderType raiderType : Raid.RaiderType.VALUES) {
+             int i1 = this.getDefaultNumSpawns(raiderType, i, shouldSpawnBonusGroup)
+-                + this.getPotentialBonusSpawns(raiderType, this.random, i, currentDifficultyAt, shouldSpawnBonusGroup);
++                + this.getPotentialBonusSpawns(raiderType, level.random, i, currentDifficultyAt, shouldSpawnBonusGroup); // Gale - Patina - reduce RandomSource instances
+             int i2 = 0;
+ 
+             for (int i3 = 0; i3 < i1; i3++) {
 diff --git a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-index 5bf39c542757bf97da8909b65c22786a8a30385a..9333db899f86f91a667273f23f24a1c2eca9ad64 100644
+index 8bb0926130a14351507b2b74feca42278c080381..f7884610d5a94bb1680c1ec8bd4f3ec917b8bc8a 100644
 --- a/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/TheEndGatewayBlockEntity.java
-@@ -248,7 +248,7 @@ public class TheEndGatewayBlockEntity extends TheEndPortalBlockEntity {
+@@ -246,7 +246,7 @@ public class TheEndGatewayBlockEntity extends TheEndPortalBlockEntity {
      }
  
      private static void spawnGatewayPortal(ServerLevel level, BlockPos pos, EndGatewayConfiguration config) {
@@ -115,10 +117,10 @@ index 5bf39c542757bf97da8909b65c22786a8a30385a..9333db899f86f91a667273f23f24a1c2
  
      @Override
 diff --git a/net/minecraft/world/level/dimension/end/EndDragonFight.java b/net/minecraft/world/level/dimension/end/EndDragonFight.java
-index 6e7e87c32734b3aae354bc34459e5f207da5c78f..b933038ce88cdf285c8b4a901c3493ae7605f57e 100644
+index 8ccd40c70e150bd5a8d89818c229258642f2349e..75d7ea8e6d5c8c707444c0db644d54707ca6ef29 100644
 --- a/net/minecraft/world/level/dimension/end/EndDragonFight.java
 +++ b/net/minecraft/world/level/dimension/end/EndDragonFight.java
-@@ -434,7 +434,7 @@ public class EndDragonFight {
+@@ -433,7 +433,7 @@ public class EndDragonFight {
              .registryAccess()
              .lookup(Registries.CONFIGURED_FEATURE)
              .flatMap(registry -> registry.get(EndFeatures.END_GATEWAY_DELAYED))
@@ -127,7 +129,7 @@ index 6e7e87c32734b3aae354bc34459e5f207da5c78f..b933038ce88cdf285c8b4a901c3493ae
      }
  
      public void spawnExitPortal(boolean active) {
-@@ -453,7 +453,7 @@ public class EndDragonFight {
+@@ -454,7 +454,7 @@ public class EndDragonFight {
          }
          // Paper end - Prevent "softlocked" exit portal generation
          if (endPodiumFeature.place(

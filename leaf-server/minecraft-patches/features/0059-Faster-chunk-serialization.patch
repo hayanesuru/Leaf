@@ -16,21 +16,21 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/util/BitStorage.java b/net/minecraft/util/BitStorage.java
-index 02502d50f0255f5bbcc0ecb965abb48cc1a112da..e1f4ca261d106d176298b2afc016f5168abaa06b 100644
+index 32fe9b22e1d3a422dd80c64d61156dbc7241ba20..00e56ccb9dc2b8a6c83ba9b7e44f61deb5dc24f3 100644
 --- a/net/minecraft/util/BitStorage.java
 +++ b/net/minecraft/util/BitStorage.java
-@@ -38,4 +38,6 @@ public interface BitStorage extends ca.spottedleaf.moonrise.patches.block_counti
-         return ret;
-     }
-     // Paper end - block counting
+@@ -20,4 +20,6 @@ public interface BitStorage {
+     void unpack(int[] array);
+ 
+     BitStorage copy();
 +
 +    <T> void compact(net.minecraft.world.level.chunk.Palette<T> srcPalette, net.minecraft.world.level.chunk.Palette<T> dstPalette, short[] out); // Gale - Lithium - faster chunk serialization
  }
 diff --git a/net/minecraft/util/SimpleBitStorage.java b/net/minecraft/util/SimpleBitStorage.java
-index e6306a68c8652d4c5d22d5ecb1416f5f931f76ee..8091f0c0a536047ead4966e70785962e87faad9a 100644
+index 6fb3a3f167d8cbaa78135af0c180b592661e2c1d..10db8a7bfab5a305a2a3f4ff7c3cd55066e7d1a9 100644
 --- a/net/minecraft/util/SimpleBitStorage.java
 +++ b/net/minecraft/util/SimpleBitStorage.java
-@@ -465,4 +465,45 @@ public class SimpleBitStorage implements BitStorage {
+@@ -360,4 +360,45 @@ public class SimpleBitStorage implements BitStorage {
              super(message);
          }
      }
@@ -77,29 +77,18 @@ index e6306a68c8652d4c5d22d5ecb1416f5f931f76ee..8091f0c0a536047ead4966e70785962e
 +
  }
 diff --git a/net/minecraft/util/ZeroBitStorage.java b/net/minecraft/util/ZeroBitStorage.java
-index 5c1103ef028e5ffe6ce0eadc861dd3b2c8f3ed9f..828ced8aa5665c6f5d0b121947719c4e2ba591fe 100644
+index 64945449807e49115b9115ee114cd3acad3d1ef8..41cd253abf87807167e24a537a6e5bbe52f7daee 100644
 --- a/net/minecraft/util/ZeroBitStorage.java
 +++ b/net/minecraft/util/ZeroBitStorage.java
-@@ -80,4 +80,6 @@ public class ZeroBitStorage implements BitStorage {
-         return ret;
+@@ -62,4 +62,6 @@ public class ZeroBitStorage implements BitStorage {
+     public BitStorage copy() {
+         return this;
      }
-     // Paper end - block counting
 +
 +    @Override public <T> void compact(net.minecraft.world.level.chunk.Palette<T> srcPalette, net.minecraft.world.level.chunk.Palette<T> dstPalette, short[] out) {}  // Gale - Lithium - faster chunk serialization
  }
-diff --git a/net/minecraft/world/level/chunk/PaletteResize.java b/net/minecraft/world/level/chunk/PaletteResize.java
-index c723606fa0be811e580ba47de8c9c575583cc930..08d103577ec558e79fd0e5c53fbc4b0bc5526935 100644
---- a/net/minecraft/world/level/chunk/PaletteResize.java
-+++ b/net/minecraft/world/level/chunk/PaletteResize.java
-@@ -1,5 +1,5 @@
- package net.minecraft.world.level.chunk;
- 
--interface PaletteResize<T> {
-+public interface PaletteResize<T> { // Gale - Lithium - faster chunk serialization - package -> public
-     int onResize(int bits, T objectAdded);
- }
 diff --git a/net/minecraft/world/level/chunk/PalettedContainer.java b/net/minecraft/world/level/chunk/PalettedContainer.java
-index f5da433050fd3060e0335d4002d520ebe8cd691f..82a5d45858067f8bd6d000d2eafc13fe2cb6f834 100644
+index 6781df510906f4e7e51ea852f3d2f6dcbea42b3b..8ea91b6437cdc4fe53a7c5e944109a8b6f372908 100644
 --- a/net/minecraft/world/level/chunk/PalettedContainer.java
 +++ b/net/minecraft/world/level/chunk/PalettedContainer.java
 @@ -25,6 +25,22 @@ import net.minecraft.util.ThreadingDetector;
@@ -125,7 +114,7 @@ index f5da433050fd3060e0335d4002d520ebe8cd691f..82a5d45858067f8bd6d000d2eafc13fe
      private static final int MIN_PALETTE_BITS = 0;
      private final PaletteResize<T> dummyPaletteResize = (bits, objectAdded) -> 0;
      public final IdMap<T> registry;
-@@ -344,28 +360,54 @@ public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainer
+@@ -307,28 +323,54 @@ public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainer
      public synchronized PalettedContainerRO.PackedData<T> pack(IdMap<T> registry, PalettedContainer.Strategy strategy) { // Paper - synchronize
          this.acquire();
  
@@ -195,7 +184,7 @@ index f5da433050fd3060e0335d4002d520ebe8cd691f..82a5d45858067f8bd6d000d2eafc13fe
      }
  
      private static <T> void swapPalette(int[] bits, IntUnaryOperator operator) {
-@@ -405,13 +447,33 @@ public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainer
+@@ -368,13 +410,33 @@ public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainer
  
      @Override
      public void count(PalettedContainer.CountConsumer<T> countConsumer) {

@@ -13,14 +13,14 @@ As part of: MultiPaper (https://github.com/MultiPaper/MultiPaper)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/world/level/levelgen/PhantomSpawner.java b/net/minecraft/world/level/levelgen/PhantomSpawner.java
-index 11d25e64349b27bf54dc1620e4cce444c79f581c..c792483860d31ce663e7de34e9f79ff46de75b8c 100644
+index d2e674b046bcf82a239b4706c3b89197ec6749c8..1ec7abf2c82a5371fe1dacd57d90386fdae67f56 100644
 --- a/net/minecraft/world/level/levelgen/PhantomSpawner.java
 +++ b/net/minecraft/world/level/levelgen/PhantomSpawner.java
-@@ -61,7 +61,15 @@ public class PhantomSpawner implements CustomSpawner {
-                                         BlockPos blockPos1 = blockPos.above(20 + randomSource.nextInt(15))
-                                             .east(-10 + randomSource.nextInt(21))
-                                             .south(-10 + randomSource.nextInt(21));
--                                        BlockState blockState = level.getBlockState(blockPos1);
+@@ -52,7 +52,15 @@ public class PhantomSpawner implements CustomSpawner {
+                                             BlockPos blockPos1 = blockPos.above(20 + randomSource.nextInt(15))
+                                                 .east(-10 + randomSource.nextInt(21))
+                                                 .south(-10 + randomSource.nextInt(21));
+-                                            BlockState blockState = level.getBlockState(blockPos1);
 +                                        // Gale start - MultiPaper - don't load chunks to spawn phantoms
 +                                        BlockState blockState;
 +                                        if (level.galeConfig().smallOptimizations.loadChunks.toSpawnPhantoms) {
@@ -30,6 +30,6 @@ index 11d25e64349b27bf54dc1620e4cce444c79f581c..c792483860d31ce663e7de34e9f79ff4
 +                                            if (blockState == null) continue;
 +                                        }
 +                                        // Gale end - MultiPaper - don't load chunks to spawn phantoms
-                                         FluidState fluidState = level.getFluidState(blockPos1);
-                                         if (NaturalSpawner.isValidEmptySpawnBlock(level, blockPos1, blockState, fluidState, EntityType.PHANTOM)) {
-                                             SpawnGroupData spawnGroupData = null;
+                                             FluidState fluidState = level.getFluidState(blockPos1);
+                                             if (NaturalSpawner.isValidEmptySpawnBlock(level, blockPos1, blockState, fluidState, EntityType.PHANTOM)) {
+                                                 SpawnGroupData spawnGroupData = null;

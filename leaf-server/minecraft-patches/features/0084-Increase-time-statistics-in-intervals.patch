@@ -45,18 +45,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 57b11cd0eee3c2661070cc591b4bbef2f50ef009..4a0f9626bb82ea885661b1827c99a4baf3892cf7 100644
+index 8032eae3256625e90313edb4fa132b19d52ba0a0..2aca22f978daa826bf7ac2b25f13bf30a1bd4284 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
-@@ -156,6 +156,7 @@ public abstract class Player extends LivingEntity {
+@@ -157,6 +157,7 @@ public abstract class Player extends LivingEntity {
      protected static final EntityDataAccessor<Byte> DATA_PLAYER_MAIN_HAND = SynchedEntityData.defineId(Player.class, EntityDataSerializers.BYTE);
      protected static final EntityDataAccessor<CompoundTag> DATA_SHOULDER_LEFT = SynchedEntityData.defineId(Player.class, EntityDataSerializers.COMPOUND_TAG);
      protected static final EntityDataAccessor<CompoundTag> DATA_SHOULDER_RIGHT = SynchedEntityData.defineId(Player.class, EntityDataSerializers.COMPOUND_TAG);
 +    public static int increaseTimeStatisticsInterval; // Gale - Hydrinity - increase time statistics in intervals - store as static field for fast access
      public static final int CLIENT_LOADED_TIMEOUT_TIME = 60;
-     private long timeEntitySatOnShoulder;
-     final Inventory inventory = new Inventory(this);
-@@ -307,19 +308,23 @@ public abstract class Player extends LivingEntity {
+     private static final short DEFAULT_SLEEP_TIMER = 0;
+     private static final float DEFAULT_EXPERIENCE_PROGRESS = 0.0F;
+@@ -322,19 +323,23 @@ public abstract class Player extends LivingEntity {
          this.moveCloak();
          if (this instanceof ServerPlayer serverPlayer) {
              this.foodData.tick(serverPlayer);

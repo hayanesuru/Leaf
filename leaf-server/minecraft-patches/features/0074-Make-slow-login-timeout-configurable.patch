@@ -7,10 +7,10 @@ License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 Gale - https://galemc.org
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 0fdf22af66945c1b6987e07f6c8a167110033b53..e802cecf30a2bfa4390ca70c45a9840032c8c046 100644
+index 27fa7bbfc64dd103b7cd1c1216482af3719e3dbb..dc225eaa0daf238e091a0cf63a42158a30ecb7f0 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -127,7 +127,11 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -126,7 +126,11 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
              this.finishLoginAndWaitForClient(this.authenticatedProfile);
          }
  

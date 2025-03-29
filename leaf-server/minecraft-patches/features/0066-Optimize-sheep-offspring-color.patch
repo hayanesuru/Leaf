@@ -46,10 +46,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/world/item/DyeColor.java b/net/minecraft/world/item/DyeColor.java
-index f1b9fa4b39c7e13a4cf3e7947bda96c3cf523e82..028bb51c6753d44cbae76890412aa55b070f8054 100644
+index 63751ad67d44bb20912870df5d0d2b2fee4d8cec..0416f4ef5c50f6579a6ef495e699a5c8c95d3878 100644
 --- a/net/minecraft/world/item/DyeColor.java
 +++ b/net/minecraft/world/item/DyeColor.java
-@@ -108,7 +108,97 @@ public enum DyeColor implements StringRepresentable {
+@@ -111,7 +111,97 @@ public enum DyeColor implements StringRepresentable {
          return this.name;
      }
  

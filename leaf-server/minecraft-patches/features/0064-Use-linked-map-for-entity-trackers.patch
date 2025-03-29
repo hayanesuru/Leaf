@@ -13,15 +13,15 @@ As part of: VMP (https://github.com/RelativityMC/VMP-fabric)
 Licensed under: MIT (https://opensource.org/licenses/MIT)
 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index d3d9926d504fa6b3384be5ae06b2843ebb7f807c..6a9fdb6329f177aca1274336a8e5be70ca3ce931 100644
+index bbd21c296e0b9bb000a9c47be1ec27ea553d3b40..63eaf8a4aa462a94d12535dbfabe74fe02314c5c 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -127,7 +127,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
-     public final AtomicInteger tickingGenerated = new AtomicInteger();  // Paper - public
+@@ -136,7 +136,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+     private final AtomicInteger tickingGenerated = new AtomicInteger();
      private final String storageName;
      private final PlayerMap playerMap = new PlayerMap();
 -    public final Int2ObjectMap<ChunkMap.TrackedEntity> entityMap = new Int2ObjectOpenHashMap<>();
 +    public final Int2ObjectMap<ChunkMap.TrackedEntity> entityMap = new it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap<>(); // Gale - VMP - use linked map for entity trackers - provides faster iteration
      private final Long2ByteMap chunkTypeCache = new Long2ByteOpenHashMap();
-     // Paper - rewrite chunk system
-     public int serverViewDistance;
+     private final Long2LongMap nextChunkSaveTime = new Long2LongOpenHashMap();
+     private final LongSet chunksToEagerlySave = new LongLinkedOpenHashSet();

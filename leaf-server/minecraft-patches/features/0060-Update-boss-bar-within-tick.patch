@@ -13,21 +13,21 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/raid/Raid.java b/net/minecraft/world/entity/raid/Raid.java
-index 41b0db439b425b052bd1469daa6620a435ca852b..536c84362d3e74a5bf0e0494483da3c0e9b26f0b 100644
+index eb7208b03240d647ace22c41ac665d3030407196..654101353c7995bcce5be7f80c9ed76246ef56c5 100644
 --- a/net/minecraft/world/entity/raid/Raid.java
 +++ b/net/minecraft/world/entity/raid/Raid.java
-@@ -109,6 +109,7 @@ public class Raid {
-     private static final org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry PDC_TYPE_REGISTRY = new org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry();
-     public final org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer persistentDataContainer = new org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer(PDC_TYPE_REGISTRY);
-     // Paper end
+@@ -125,6 +125,7 @@ public class Raid {
+     private Raid.RaidStatus status;
+     private int celebrationTicks;
+     private Optional<BlockPos> waveSpawnPos = Optional.empty();
 +    private boolean isBarDirty; // Gale - Lithium - update boss bar within tick
  
-     public Raid(int id, ServerLevel level, BlockPos center) {
-         this.id = id;
-@@ -263,6 +264,12 @@ public class Raid {
+     public Raid(BlockPos center, Difficulty difficulty) {
+         this.active = true;
+@@ -277,6 +278,12 @@ public class Raid {
      }
  
-     public void tick() {
+     public void tick(ServerLevel level) {
 +        // Gale start - Lithium - update boss bar within tick
 +        if (this.isBarDirty) {
 +            this.updateBossbarInternal();
@@ -37,7 +37,7 @@ index 41b0db439b425b052bd1469daa6620a435ca852b..536c84362d3e74a5bf0e0494483da3c0
          if (!this.isStopped()) {
              if (this.status == Raid.RaidStatus.ONGOING) {
                  boolean flag = this.active;
-@@ -581,6 +588,12 @@ public class Raid {
+@@ -587,6 +594,12 @@ public class Raid {
      }
  
      public void updateBossbar() {
