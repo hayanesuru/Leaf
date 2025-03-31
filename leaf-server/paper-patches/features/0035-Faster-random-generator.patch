@@ -14,7 +14,7 @@ ThreadUnsafeRandom (Moonrise): 102,265,100 ns
 SimpleThreadUnsafeRandom (Moonrise): 97,054,600 ns
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java b/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
-index c60c05b9e426f56ed3e812abb9aae9ef52bd20e8..268fd8e60630e835c750a8b67201cc63f0b5193d 100644
+index 73c51c66857f53128b737304205295b67e8444e8..348bf5ed91ded3537a86bc0708e0158ad4f9296d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
 +++ b/src/main/java/org/bukkit/craftbukkit/generator/CustomChunkGenerator.java
 @@ -97,7 +97,7 @@ public class CustomChunkGenerator extends InternalChunkGenerator {

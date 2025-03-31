@@ -11,7 +11,7 @@ Original license: GPLv3
 Original project: https://github.com/etil2jz/Mirai
 
 diff --git a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
-index 506c746980cfca170efd249d035a572361b667c4..5d8833dddc5145868fc2ac673b3387c83cbe6999 100644
+index 7cb9622b88d9ef1ae5cae00485bb9995c87e206f..aeccb214872d47e4730abb84e78100ffe98d55ff 100644
 --- a/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
 +++ b/src/main/java/io/papermc/paper/adventure/ChatProcessor.java
 @@ -317,7 +317,7 @@ public final class ChatProcessor {

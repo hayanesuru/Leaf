@@ -24,7 +24,7 @@ But it is still recommending to use those packet based, virtual entity
 based NPC plugins, e.g. ZNPC Plus, Adyeshach, Fancy NPC, etc.
 
 diff --git a/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java b/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
-index 379c2dc1853e45a96dda9b13bf28b7e08f65658a..361f4de9cdf0f7505628a2fed2a3f5366031e04b 100644
+index db031298c2090eb36032de4b52335c62186e4cfb..84905d7802f8a5c3f68e15f1b17ef08216ad1f4e 100644
 --- a/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
 +++ b/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
 @@ -42,6 +42,12 @@ class PaperEventManager {
@@ -39,35 +39,35 @@ index 379c2dc1853e45a96dda9b13bf28b7e08f65658a..361f4de9cdf0f7505628a2fed2a3f536
 +            // Leaf end - Multithreaded tracker
              throw new IllegalStateException(event.getEventName() + " may only be triggered synchronously.");
          }
-         // Leaves start - skip photographer
+ 
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index e52479f3c888268fd1febeb78e9965af834a8ae9..c2552c3706831f7012b5b449fa43c7d5990056a4 100644
+index 083cc48abea81560b34c30653e766d650a2d3850..7d22c1ee7fa98fc2d04d353fe19387ca3334f52a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -1973,6 +1973,26 @@ public class CraftEventFactory {
+@@ -1741,6 +1741,26 @@ public class CraftEventFactory {
      }
  
-     public static boolean handleBlockFormEvent(Level world, BlockPos pos, net.minecraft.world.level.block.state.BlockState block, int flag, @Nullable Entity entity) {
+     public static boolean handleBlockFormEvent(Level world, BlockPos pos, net.minecraft.world.level.block.state.BlockState state, int flags, @Nullable Entity entity, boolean checkSetResult) {
 +        // Leaf start - Multithreaded tracker
 +        if (org.dreeam.leaf.config.modules.async.MultithreadedTracker.enabled && Thread.currentThread() instanceof org.dreeam.leaf.async.tracker.MultithreadedTracker.MultithreadedTrackerThread) {
 +            java.util.concurrent.CompletableFuture<Boolean> future = new java.util.concurrent.CompletableFuture<>();
 +            net.minecraft.server.MinecraftServer.getServer().scheduleOnMain(() -> {
-+                CraftBlockState blockState = CraftBlockStates.getBlockState(world, pos, flag);
-+                blockState.setData(block);
++                boolean resultFlag = false;
++                CraftBlockState snapshot = CraftBlockStates.getBlockState(world, pos);
++                snapshot.setData(state);
 +
-+                BlockFormEvent event = (entity == null) ? new BlockFormEvent(blockState.getBlock(), blockState) : new EntityBlockFormEvent(entity.getBukkitEntity(), blockState.getBlock(), blockState);
-+                world.getCraftServer().getPluginManager().callEvent(event);
-+
-+                if (!event.isCancelled()) {
-+                    blockState.update(true);
++                BlockFormEvent event = (entity == null) ? new BlockFormEvent(snapshot.getBlock(), snapshot) : new EntityBlockFormEvent(entity.getBukkitEntity(), snapshot.getBlock(), snapshot);
++                if (event.callEvent()) {
++                    boolean result = snapshot.place(flags);
++                    resultFlag = !checkSetResult || result;
 +                }
 +
-+                future.complete(!event.isCancelled());
++                future.complete(resultFlag);
 +            });
 +
 +            return future.join();
 +        }
 +        // Leaf end - Multithreaded tracker
-         CraftBlockState blockState = CraftBlockStates.getBlockState(world, pos, flag);
-         blockState.setData(block);
+         CraftBlockState snapshot = CraftBlockStates.getBlockState(world, pos);
+         snapshot.setData(state);
  

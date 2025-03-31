@@ -7,10 +7,10 @@ Original license: MIT
 Original project: https://github.com/starlis/empirecraft
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index 5cb69d0b822e11a99a96aef4f59986d083b079f4..973b297a22c0cc53f966582c67c3688f4b2205c7 100644
+index 4a709355acab59c5ded1ffdc321be3252482bd0b..c8f0b24fd9336259e42c4746061793e156978ad3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-@@ -331,7 +331,7 @@ public class CraftBlock implements Block {
+@@ -333,7 +333,7 @@ public class CraftBlock implements Block {
  
      @Override
      public BlockState getState() {
@@ -19,16 +19,16 @@ index 5cb69d0b822e11a99a96aef4f59986d083b079f4..973b297a22c0cc53f966582c67c3688f
      }
  
      // Paper start
-diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
-index 56453454cbd4b9e9270fc833f8ab38d5fa7a3763..55572e799b5c8a74a546ac8febc14f80d5731c52 100644
---- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
-+++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
-@@ -238,7 +238,7 @@ public final class CraftBlockStates {
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java
+index 5da891112402b758ca618967c4662027efbe14dc..23d0c901c1261de30748654b34a7ce6c51ad9c24 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java
+@@ -186,7 +186,7 @@ public final class CraftBlockStates {
+     }
  
      public static BlockState getBlockState(Block block) {
-         // Paper start
 -        return CraftBlockStates.getBlockState(block, true);
 +        return CraftBlockStates.getBlockState(block, org.dreeam.leaf.config.modules.opt.TileEntitySnapshotCreation.enabled); // Leaf - EMC - Don't use snapshots for acquiring blockstate
      }
+ 
      public static BlockState getBlockState(Block block, boolean useSnapshot) {
-         // Paper end

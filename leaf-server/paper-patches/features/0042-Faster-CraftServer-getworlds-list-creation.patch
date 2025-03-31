@@ -8,10 +8,10 @@ replacing ArrayList with Fastutil ObjectArrayList
 brings about 40% performance improvement in benchmark.
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 116c842ef64835152a662476b6c33152360c1a4a..fcedf7af3fff97821cbb7ee2e0fef070659deb5a 100644
+index ffdea8befa77ec655b1df929715fcbdc60d6a966..028a30ae3c9dd411e70b1bc8ac42067c06d0335f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -993,7 +993,7 @@ public final class CraftServer implements Server {
+@@ -954,7 +954,7 @@ public final class CraftServer implements Server {
  
      @Override
      public List<World> getWorlds() {
