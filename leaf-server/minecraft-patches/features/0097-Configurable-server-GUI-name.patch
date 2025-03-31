@@ -5,33 +5,33 @@ Subject: [PATCH] Configurable server GUI name
 
 
 diff --git a/net/minecraft/server/gui/MinecraftServerGui.java b/net/minecraft/server/gui/MinecraftServerGui.java
-index 614c7d9f673c926562acc8fa3b3788623900db41..51f37d026382369ac0d53b0ce64495dafe5084af 100644
+index f262a7c5ae4e7d56f16f5c0f4f145a2e428abbe4..4c3db3e93623d6f4c6863975515de922d5c45949 100644
 --- a/net/minecraft/server/gui/MinecraftServerGui.java
 +++ b/net/minecraft/server/gui/MinecraftServerGui.java
-@@ -51,7 +51,7 @@ public class MinecraftServerGui extends JComponent {
+@@ -46,7 +46,7 @@ public class MinecraftServerGui extends JComponent {
          } catch (Exception var3) {
          }
  
--        final JFrame jFrame = new JFrame("Purpur Minecraft server"); // Purpur - Improve GUI
-+        final JFrame jFrame = new JFrame(org.dreeam.leaf.config.modules.misc.ServerBrand.serverGUIName); // Purpur - Improve GUI // Leaf - Configurable server GUI name
+-        final JFrame jFrame = new JFrame("Minecraft server");
++        final JFrame jFrame = new JFrame(org.dreeam.leaf.config.modules.misc.ServerBrand.serverGUIName); // Leaf - Configurable server GUI name
          final MinecraftServerGui minecraftServerGui = new MinecraftServerGui(server);
          jFrame.setDefaultCloseOperation(2);
          jFrame.add(minecraftServerGui);
-@@ -59,7 +59,7 @@ public class MinecraftServerGui extends JComponent {
+@@ -54,7 +54,7 @@ public class MinecraftServerGui extends JComponent {
          jFrame.setLocationRelativeTo(null);
          jFrame.setVisible(true);
          // Paper start - Improve ServerGUI
--        jFrame.setName("Purpur Minecraft server"); // Purpur - Improve GUI
-+        jFrame.setName(org.dreeam.leaf.config.modules.misc.ServerBrand.serverGUIName); // Purpur - Improve GUI // Leaf - Configurable server GUI name
+-        jFrame.setName("Minecraft server");
++        jFrame.setName(org.dreeam.leaf.config.modules.misc.ServerBrand.serverGUIName); // Leaf - Configurable server GUI name
          try {
              jFrame.setIconImage(javax.imageio.ImageIO.read(java.util.Objects.requireNonNull(MinecraftServerGui.class.getClassLoader().getResourceAsStream("logo.png"))));
          } catch (java.io.IOException ignore) {
-@@ -69,7 +69,7 @@ public class MinecraftServerGui extends JComponent {
+@@ -64,7 +64,7 @@ public class MinecraftServerGui extends JComponent {
              @Override
              public void windowClosing(WindowEvent event) {
                  if (!minecraftServerGui.isClosing.getAndSet(true)) {
--                    jFrame.setTitle("Purpur Minecraft server - shutting down!"); // Purpur - Improve GUI
-+                    jFrame.setTitle(org.dreeam.leaf.config.modules.misc.ServerBrand.serverGUIName + " - shutting down!"); // Purpur - Improve GUI // Leaf - Configurable server GUI name
+-                    jFrame.setTitle("Minecraft server - shutting down!");
++                    jFrame.setTitle(org.dreeam.leaf.config.modules.misc.ServerBrand.serverGUIName + " - shutting down!"); // Leaf - Configurable server GUI name
                      server.halt(true);
                      minecraftServerGui.runFinalizers();
                  }

@@ -5,10 +5,10 @@ Subject: [PATCH] Remove Spigot check for broken BungeeCord configurations
 
 
 diff --git a/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-index c166091d1b33c8f0ea57fb723e9d9b0c83bcedfb..cbd71a13ad64edbcb6d01fd024d53b3d8d163f5d 100644
+index e9d1c3c8cd637361e732010950e2a60cfc598c7c..b54fd53958d74e3d62740d71fe0803814d529475 100644
 --- a/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-@@ -172,7 +172,7 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
+@@ -167,7 +167,7 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
                  if (split.length == 4) {
                      this.connection.spoofedProfile = ServerHandshakePacketListenerImpl.gson.fromJson(split[3], com.mojang.authlib.properties.Property[].class);
                  }

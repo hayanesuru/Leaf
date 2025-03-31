@@ -7,10 +7,10 @@ Original license: GPL v3
 Original project: https://github.com/pufferfish-gg/Pufferfish
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 86d78bcb6ddf23d298430406cc75e4b482538773..b66e4061d5248961f385691d0db95fb8a22f888f 100644
+index 7e466022af0f023b409462ed4d4f3a8aa80c4183..92ebc61aa7f6f70292a384b56bd8ef77a15e485c 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -213,11 +213,13 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -201,11 +201,13 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
          return this.lookControl;
      }
  
