@@ -119,21 +119,5 @@ public class GaleGlobalConfiguration extends ConfigurationPart {
 
         }
         // Gale end - Purpur - do not log plugin library loads
-
-        // Gale start - EMC - softly log invalid pool element errors
-        public String invalidPoolElementErrorLogLevel = "info";
-        public transient Consumer<String> invalidPoolElementErrorStringConsumer;
-
-        @PostProcess
-        public void postProcess() {
-            this.invalidPoolElementErrorStringConsumer = switch (this.invalidPoolElementErrorLogLevel.toLowerCase(Locale.ROOT)) {
-                case "none" -> $ -> {};
-                case "info", "log" -> PoolElementStructurePiece.LOGGER::info;
-                case "warn", "warning" -> PoolElementStructurePiece.LOGGER::warn;
-                default -> PoolElementStructurePiece.LOGGER::error;
-            };
-        }
-        // Gale end - EMC - softly log invalid pool element errors
-
     }
 }
