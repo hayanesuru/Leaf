@@ -13,7 +13,7 @@ As part of: MultiPaper (https://github.com/MultiPaper/MultiPaper)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index e2e7e09ca154ca1ccf38bb97c03caadef5048541..5b210cbcc8f889ecfe8e6b9dc924876855c2feb9 100644
+index 0a84d8cbdcd3513a83487a22ba81dc9e0535fc1b..45296a3d27ecd70375ea17c1375d05c70f10f9d2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -282,6 +282,7 @@ public final class CraftServer implements Server {
@@ -24,7 +24,7 @@ index e2e7e09ca154ca1ccf38bb97c03caadef5048541..5b210cbcc8f889ecfe8e6b9dc9248768
      private YamlConfiguration configuration;
      private YamlConfiguration commandsConfiguration;
      private final Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
-@@ -1487,6 +1488,7 @@ public final class CraftServer implements Server {
+@@ -1486,6 +1487,7 @@ public final class CraftServer implements Server {
              this.getLogger().log(Level.SEVERE, null, ex);
          }
  
@@ -32,7 +32,7 @@ index e2e7e09ca154ca1ccf38bb97c03caadef5048541..5b210cbcc8f889ecfe8e6b9dc9248768
          this.worlds.remove(world.getName().toLowerCase(Locale.ROOT));
          this.console.removeLevel(handle);
          return true;
-@@ -1505,12 +1507,7 @@ public final class CraftServer implements Server {
+@@ -1504,12 +1506,7 @@ public final class CraftServer implements Server {
  
      @Override
      public World getWorld(UUID uid) {
@@ -46,7 +46,7 @@ index e2e7e09ca154ca1ccf38bb97c03caadef5048541..5b210cbcc8f889ecfe8e6b9dc9248768
      }
  
      @Override
-@@ -1526,6 +1523,7 @@ public final class CraftServer implements Server {
+@@ -1525,6 +1522,7 @@ public final class CraftServer implements Server {
              System.out.println("World " + world.getName() + " is a duplicate of another world and has been prevented from loading. Please delete the uid.dat file from " + world.getName() + "'s world directory if you want to be able to load the duplicate world.");
              return;
          }

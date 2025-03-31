@@ -31,7 +31,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index db5327dfcaaa4ac767466f6abeec30c50d32db73..679c94142eac06ec0bc6f3b819ee4f7e831c4626 100644
+index 47cd1b3b5f7a74dcff147a744420c622ec750e7a..39cf21effb3ffd1230c5874c5a95771d8e6a42c9 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -545,7 +545,19 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -56,10 +56,10 @@ index db5327dfcaaa4ac767466f6abeec30c50d32db73..679c94142eac06ec0bc6f3b819ee4f7e
                              }
                          }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index e813588e03234e4b12b531cd77f725f7d7f9c50c..b20e92a6232b96521f8d5dd7a289007e98863b9e 100644
+index 800e12ac2ca850fbd4e2a7df84295ceff758fdac..270720ac00b0dc4ccbe08b789728dd09d0a9f1e3 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -850,8 +850,9 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -849,8 +849,9 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
              final String msg = String.format("Entity threw exception at %s:%s,%s,%s", entity.level().getWorld().getName(), entity.getX(), entity.getY(), entity.getZ());
              MinecraftServer.LOGGER.error(msg, var6);
              getCraftServer().getPluginManager().callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerInternalException(msg, var6))); // Paper - ServerExceptionEvent

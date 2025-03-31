@@ -13,7 +13,7 @@ As part of: Paper (https://github.com/PaperMC/Paper)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 6a20bc3c7f141b259fd915ba4bd34948eed5bebd..5bb1b96390671fb4eb59a8d795a97e8fb061cc0d 100644
+index 7e880b68e6d071d555381af05a3e964fb68904ed..240722d96e8122269efb12c706e39bba54243872 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -299,6 +299,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -93,7 +93,7 @@ index 0c861f882d3e8f8ce417ce2ace0f3f5ca2673620..c697b3adeabd4f913e9e5e0b90c620a2
          // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
          if (this.convertOldUsers()) {
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index fe9b4484d683fe48f435a053c9c90557fdf80e7b..b0efae01753da30354182d640d6ff72a9e6b3e6b 100644
+index aed490d0e95fc6c61a4e441a5aa78d2298de23cd..3d614c00886278514197374c3e24a8f871fda321 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -343,7 +343,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -106,10 +106,10 @@ index fe9b4484d683fe48f435a053c9c90557fdf80e7b..b0efae01753da30354182d640d6ff72a
          this.levelStorageAccess = levelStorageAccess;
          this.uuid = org.bukkit.craftbukkit.util.WorldUUID.getOrCreate(levelStorageAccess.levelDirectory.path().toFile());
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 63f8b0c47e3321b74f4b6bcbc1e28cd751911198..695973abeba2475ed5e163c987eb7fee3893ab02 100644
+index 30d1c676cbbba6713a36a2b62ff2a01bd11a8bcd..dbbf6fc4ef52d179ac694b0cfff921323e0c758b 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -158,6 +158,12 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -157,6 +157,12 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
          return this.paperConfig;
      }
      // Paper end - add paper world config
@@ -122,7 +122,7 @@ index 63f8b0c47e3321b74f4b6bcbc1e28cd751911198..695973abeba2475ed5e163c987eb7fee
  
      public static @Nullable BlockPos lastPhysicsProblem; // Spigot
      private int tileTickPosition;
-@@ -203,10 +209,13 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -202,10 +208,13 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
          org.bukkit.World.Environment env, // CraftBukkit
          java.util.function.Function<org.spigotmc.SpigotWorldConfig, // Spigot - create per world config
          io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, // Paper - create paper world config
