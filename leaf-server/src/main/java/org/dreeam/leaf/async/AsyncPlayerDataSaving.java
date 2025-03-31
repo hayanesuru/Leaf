@@ -2,15 +2,13 @@ package org.dreeam.leaf.async;
 
 import org.dreeam.leaf.config.modules.async.AsyncPlayerDataSave;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
+import java.util.concurrent.*;
 
 public class AsyncPlayerDataSaving {
 
     public static final ExecutorService IO_POOL = new ThreadPoolExecutor(
-        1, 1, 0, TimeUnit.MILLISECONDS,
+        1, 1, 0L, TimeUnit.MILLISECONDS,
         new LinkedBlockingQueue<>(),
         new com.google.common.util.concurrent.ThreadFactoryBuilder()
             .setPriority(Thread.NORM_PRIORITY - 2)
@@ -23,11 +21,12 @@ public class AsyncPlayerDataSaving {
     private AsyncPlayerDataSaving() {
     }
 
-    public static void save(Runnable runnable) {
+    public static Optional<Future<?>> submit(Runnable runnable) {
         if (!AsyncPlayerDataSave.enabled) {
             runnable.run();
+            return Optional.empty();
         } else {
-            IO_POOL.execute(runnable);
+            return Optional.of(IO_POOL.submit(runnable));
         }
     }
 }
