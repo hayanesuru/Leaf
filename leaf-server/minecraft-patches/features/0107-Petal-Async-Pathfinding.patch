@@ -19,10 +19,10 @@ This patch was ported downstream from the Petal fork.
 Makes most pathfinding-related work happen asynchronously
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 14d9dceacc82cc6c085dab8f52e59a318dd8cae5..8b3dfb1385a2252a4aaead5558c0ffbd5c204971 100644
+index 92ebc61aa7f6f70292a384b56bd8ef77a15e485c..a1ecb7c5ee0e1fe1164e277d8991d6d990035f76 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -255,6 +255,7 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -242,6 +242,7 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
      @Nullable
      @Override
      public LivingEntity getTarget() {
@@ -31,13 +31,13 @@ index 14d9dceacc82cc6c085dab8f52e59a318dd8cae5..8b3dfb1385a2252a4aaead5558c0ffbd
      }
  
 diff --git a/net/minecraft/world/entity/ai/behavior/AcquirePoi.java b/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
-index 7f0975f8bd6d5f8ca28f503f93c8cb5c42557420..eb71f045d3e8698a8a9e9f51176c2884f71a034c 100644
+index 7470150b5c613ae31d94170d9f5eedac67add63d..5bcc53eef44faa1d3dccb72d1fd4be476c2f3793 100644
 --- a/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
 +++ b/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
-@@ -102,21 +102,20 @@ public class AcquirePoi {
-                                 }
-                             }
-                             // Paper end - optimise POI access
+@@ -98,21 +98,20 @@ public class AcquirePoi {
+                                 .limit(5L)
+                                 .filter(pair1 -> predicate.test(level, pair1.getSecond()))
+                                 .collect(Collectors.toSet());
 -                            Path path = findPathToPois(mob, set);
 -                            if (path != null && path.canReach()) {
 -                                BlockPos target = path.getTarget();
@@ -60,15 +60,14 @@ index 7f0975f8bd6d5f8ca28f503f93c8cb5c42557420..eb71f045d3e8698a8a9e9f51176c2884
 -                                for (Pair<Holder<PoiType>, BlockPos> pair : set) {
 -                                    map.computeIfAbsent(pair.getSecond().asLong(), l -> new AcquirePoi.JitteredLinearRetry(level.random, time));
 -                                }
--                            }
-+                                // Kaiiju end
-+                            Path path = findPathToPois(mob, set);
-+                                processPath(acquirablePois, entityEventId, (Long2ObjectMap<JitteredLinearRetry>) map, memoryAccessor, level, mob, time, poiManager, set, path);
-+                            } // Kaiiju - Async path processing
++                                Path path = findPathToPois(mob, set);
++                                processPath(acquirablePois, entityEventId, map, memoryAccessor, level, mob, time, poiManager, set, path);
+                             }
++                            // Kaiiju end - Async path processing
  
                              return true;
                          }
-@@ -128,6 +127,34 @@ public class AcquirePoi {
+@@ -124,6 +123,34 @@ public class AcquirePoi {
              : BehaviorBuilder.create(instance -> instance.group(instance.absent(existingAbsentMemory)).apply(instance, memoryAccessor -> oneShot));
      }
  
@@ -94,7 +93,7 @@ index 7f0975f8bd6d5f8ca28f503f93c8cb5c42557420..eb71f045d3e8698a8a9e9f51176c2884
 +            });
 +        } else {
 +            for (Pair<Holder<PoiType>, BlockPos> pair : set) {
-+                map.computeIfAbsent(pair.getSecond().asLong(), l -> new JitteredLinearRetry(level.random, time));
++                map.computeIfAbsent(pair.getSecond().asLong(), l -> new AcquirePoi.JitteredLinearRetry(level.random, time));
 +            }
 +        }
 +    }
@@ -402,7 +401,7 @@ index 045cfafb3afe8271d60852ae3c7cdcb039b44d4f..3f55b00e2f8924a8450df8a3f9812a4a
      }
  
 diff --git a/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-index 6c8fb611943aee8cabc471c63166f9b44ef14826..25ef9b67eee01c6df466031c5dbc728b1a754ab2 100644
+index 6bbdfc748f1ce66689c63424fadcf261b1e967b3..84e855a4a9890a4772aee2383797cbc3d9b46dc3 100644
 --- a/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 @@ -167,6 +167,10 @@ public abstract class PathNavigation {
@@ -515,15 +514,14 @@ index 2979846853898d78a2df19df2287da16dbe4ae71..1289a6e85f3fdb9187323343b6c20e17
      }
  
 diff --git a/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java b/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java
-index 1f96fd5085bacb4c584576c7cb9f51e7898e9b03..8819717c5307a90abc493cf801b4e795c13b3460 100644
+index 6e9325f0800a35637fdec5edb8a514ea03741762..7ee85d8e9035093484f67437ec80755169436a88 100644
 --- a/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java
-@@ -57,17 +57,32 @@ public class NearestBedSensor extends Sensor<Mob> {
-             java.util.List<Pair<Holder<PoiType>, BlockPos>> poiposes = new java.util.ArrayList<>();
-             // don't ask me why it's unbounded. ask mojang.
-             io.papermc.paper.util.PoiAccess.findAnyPoiPositions(poiManager, type -> type.is(PoiTypes.HOME), predicate, entity.blockPosition(), level.purpurConfig.villagerNearestBedSensorSearchRadius, PoiManager.Occupancy.ANY, false, Integer.MAX_VALUE, poiposes); // Purpur - Configurable villager search radius
--            Path path = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(poiposes));
--            // Paper end - optimise POI access
+@@ -57,16 +57,31 @@ public class NearestBedSensor extends Sensor<Mob> {
+                     holder -> holder.is(PoiTypes.HOME), predicate, entity.blockPosition(), 48, PoiManager.Occupancy.ANY
+                 )
+                 .collect(Collectors.toSet());
+-            Path path = AcquirePoi.findPathToPois(entity, set);
 -            if (path != null && path.canReach()) {
 -                BlockPos target = path.getTarget();
 -                Optional<Holder<PoiType>> type = poiManager.getType(target);
@@ -534,14 +532,13 @@ index 1f96fd5085bacb4c584576c7cb9f51e7898e9b03..8819717c5307a90abc493cf801b4e795
 -                this.batchCache.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.lastUpdate);
 +            // Kaiiju start - await on async path processing
 +            if (org.dreeam.leaf.config.modules.async.AsyncPathfinding.enabled) {
-+                Path possiblePath = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(poiposes));
++                Path possiblePath = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(set));
 +                org.dreeam.leaf.async.path.AsyncPathProcessor.awaitProcessing(possiblePath, path -> {
 +                    processPath(entity, poiManager, path);
 +                });
 +            } else {
 +                // Kaiiju end
-+                Path path = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(poiposes));
-+                // Paper end - optimise POI access
++                Path path = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(set));
 +                processPath(entity, poiManager, path);
 +            } // Kaiiju - async path processing
 +        }
@@ -562,10 +559,10 @@ index 1f96fd5085bacb4c584576c7cb9f51e7898e9b03..8819717c5307a90abc493cf801b4e795
 +    // Leaf end - Kaiiju - await on async path processing
  }
 diff --git a/net/minecraft/world/entity/animal/Bee.java b/net/minecraft/world/entity/animal/Bee.java
-index d5727999eb67ff30dbf47865d59452483338e170..6fffa2e98e54ab015762417af8507d11c164e765 100644
+index edca2fa21e600fa1e7ef91af673adaae7d4c86c4..6eb3a46ea67a30b7c88961a0c2168fc030cc14ad 100644
 --- a/net/minecraft/world/entity/animal/Bee.java
 +++ b/net/minecraft/world/entity/animal/Bee.java
-@@ -936,7 +936,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+@@ -856,7 +856,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
                          } else {
                              Bee.this.pathfindRandomlyTowards(Bee.this.hivePos);
                          }
@@ -574,7 +571,7 @@ index d5727999eb67ff30dbf47865d59452483338e170..6fffa2e98e54ab015762417af8507d11
                          boolean flag = this.pathfindDirectlyTowards(Bee.this.hivePos);
                          if (!flag) {
                              this.dropAndBlacklistHive();
-@@ -990,7 +990,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+@@ -910,7 +910,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
                  return true;
              } else {
                  Path path = Bee.this.navigation.getPath();
@@ -584,10 +581,10 @@ index d5727999eb67ff30dbf47865d59452483338e170..6fffa2e98e54ab015762417af8507d11
          }
      }
 diff --git a/net/minecraft/world/entity/animal/frog/Frog.java b/net/minecraft/world/entity/animal/frog/Frog.java
-index e5ec23c413e0d7da6f6b9c43925a7aa247946895..6e5cb137b3aa91321528d00a1433009cb9a0e656 100644
+index bd80e58179fe577693fa419a77989b0db39abb04..ba215c4ebefe3b49b77cc94ee5855debe7f60c84 100644
 --- a/net/minecraft/world/entity/animal/frog/Frog.java
 +++ b/net/minecraft/world/entity/animal/frog/Frog.java
-@@ -479,9 +479,25 @@ public class Frog extends Animal implements VariantHolder<Holder<FrogVariant>> {
+@@ -431,9 +431,25 @@ public class Frog extends Animal {
              return pathType != PathType.WATER_BORDER && super.canCutCorner(pathType);
          }
  
@@ -614,10 +611,10 @@ index e5ec23c413e0d7da6f6b9c43925a7aa247946895..6e5cb137b3aa91321528d00a1433009c
          }
      }
 diff --git a/net/minecraft/world/entity/monster/Drowned.java b/net/minecraft/world/entity/monster/Drowned.java
-index 6c73245b8d04f194e72165aa0000ca79a95db59d..f5e6673ff2bd3029585b9ffea10df5d549f1cdd6 100644
+index 4978cd2a7a84130fc0de1cc481b39d61f388c812..8b39391015f76d6fc9c740385f4ac683b85eebe1 100644
 --- a/net/minecraft/world/entity/monster/Drowned.java
 +++ b/net/minecraft/world/entity/monster/Drowned.java
-@@ -313,7 +313,7 @@ public class Drowned extends Zombie implements RangedAttackMob {
+@@ -239,7 +239,7 @@ public class Drowned extends Zombie implements RangedAttackMob {
  
      protected boolean closeToNextPos() {
          Path path = this.getNavigation().getPath();
@@ -627,10 +624,10 @@ index 6c73245b8d04f194e72165aa0000ca79a95db59d..f5e6673ff2bd3029585b9ffea10df5d5
              if (target != null) {
                  double d = this.distanceToSqr(target.getX(), target.getY(), target.getZ());
 diff --git a/net/minecraft/world/entity/monster/Strider.java b/net/minecraft/world/entity/monster/Strider.java
-index 241526239bdbd5d9276f85e7fca46a7051f46a25..ae4ee948971e931e4fdc4ec2187f5182195c626c 100644
+index afa584e2aba6bebfb2dd343215b043c983281853..ed86080491c982c81306319e3730bfbd115d06aa 100644
 --- a/net/minecraft/world/entity/monster/Strider.java
 +++ b/net/minecraft/world/entity/monster/Strider.java
-@@ -579,9 +579,25 @@ public class Strider extends Animal implements ItemSteerable, Saddleable {
+@@ -507,9 +507,25 @@ public class Strider extends Animal implements ItemSteerable {
              super(strider, level);
          }
  
@@ -657,10 +654,10 @@ index 241526239bdbd5d9276f85e7fca46a7051f46a25..ae4ee948971e931e4fdc4ec2187f5182
          }
  
 diff --git a/net/minecraft/world/entity/monster/warden/Warden.java b/net/minecraft/world/entity/monster/warden/Warden.java
-index 26f3fe1c80b0d87b96076432f35fe4f95f92ce13..3a43790fb91e778f4fc0730aecd0dde4a6d301c8 100644
+index 42ca4243d86ef4a14a9ce70da4b79f6c8eeb3a7d..ce66ded89ed851264affc075d65aa1c5abe84dc8 100644
 --- a/net/minecraft/world/entity/monster/warden/Warden.java
 +++ b/net/minecraft/world/entity/monster/warden/Warden.java
-@@ -599,6 +599,16 @@ public class Warden extends Monster implements VibrationSystem {
+@@ -555,6 +555,16 @@ public class Warden extends Monster implements VibrationSystem {
              @Override
              protected PathFinder createPathFinder(int maxVisitedNodes) {
                  this.nodeEvaluator = new WalkNodeEvaluator();
@@ -678,10 +675,10 @@ index 26f3fe1c80b0d87b96076432f35fe4f95f92ce13..3a43790fb91e778f4fc0730aecd0dde4
                      @Override
                      protected float distance(Node first, Node second) {
 diff --git a/net/minecraft/world/level/block/ShulkerBoxBlock.java b/net/minecraft/world/level/block/ShulkerBoxBlock.java
-index cdf835ff107bc1eadde706d69384e687626fce70..31066accd82da2b8b36d9a9d8676dc887af31fed 100644
+index 49bac7af90b0a7c490141be6357563447783c6ca..8aedb5497ea52ae59e477162cb8089694a17f091 100644
 --- a/net/minecraft/world/level/block/ShulkerBoxBlock.java
 +++ b/net/minecraft/world/level/block/ShulkerBoxBlock.java
-@@ -217,9 +217,16 @@ public class ShulkerBoxBlock extends BaseEntityBlock {
+@@ -166,9 +166,16 @@ public class ShulkerBoxBlock extends BaseEntityBlock {
  
      @Override
      protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {

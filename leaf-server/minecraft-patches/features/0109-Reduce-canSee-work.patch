@@ -7,10 +7,10 @@ Co-authored by: Martijn Muijsers <martijnmuijsers@live.nl>
 Co-authored by: MachineBreaker <machinebreaker>
 
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 98cb62d4b79c0918abe139f198c5be118b9133c4..b39d67ab9ed446885111a5387d3332c36b4f3cc9 100644
+index 270720ac00b0dc4ccbe08b789728dd09d0a9f1e3..c0c0c095154a8c7910df27ee4f0641ac60df637c 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1006,17 +1006,19 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -308,17 +308,19 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
          for (int i = 0, len = entities.size(); i < len; ++i) {
              Entity entity = entities.get(i);
  
@@ -19,8 +19,8 @@ index 98cb62d4b79c0918abe139f198c5be118b9133c4..b39d67ab9ed446885111a5387d3332c3
 -                continue;
 -            }
 -
-+            // Leaf - Reduce canSee work - move up
-             // !entity1.dead && entity1.i && (entity == null || !entity1.x(entity));
++            // Leaf start - Reduce canSee work - move up
+             // !entity1.isRemoved() && entity1.blocksBuilding && (entity == null || !entity1.isPassengerOfSameVehicle(entity))
              // elide the last check since vanilla calls with entity = null
              // only we care about the source for the canSee check
              if (entity.isRemoved() || !entity.blocksBuilding) {
@@ -33,5 +33,5 @@ index 98cb62d4b79c0918abe139f198c5be118b9133c4..b39d67ab9ed446885111a5387d3332c3
 +                continue;
 +            }
  
-             if (net.minecraft.world.phys.shapes.Shapes.joinIsNotEmpty(voxelshape, net.minecraft.world.phys.shapes.Shapes.create(entity.getBoundingBox()), net.minecraft.world.phys.shapes.BooleanOp.AND)) {
+             if (net.minecraft.world.phys.shapes.Shapes.joinIsNotEmpty(collisionShape, net.minecraft.world.phys.shapes.Shapes.create(entity.getBoundingBox()), net.minecraft.world.phys.shapes.BooleanOp.AND)) {
                  return false;

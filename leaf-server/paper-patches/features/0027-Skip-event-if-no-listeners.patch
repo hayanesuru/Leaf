@@ -5,10 +5,10 @@ Subject: [PATCH] Skip event if no listeners
 
 
 diff --git a/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java b/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
-index 780f3a48152fef6a06dc67bf7fbd1965b13bc4fa..379c2dc1853e45a96dda9b13bf28b7e08f65658a 100644
+index 4c003acccdd2dd17918b15316001e52e7670123e..db031298c2090eb36032de4b52335c62186e4cfb 100644
 --- a/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
 +++ b/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
-@@ -35,6 +35,10 @@ class PaperEventManager {
+@@ -35,15 +35,16 @@ class PaperEventManager {
  
      // SimplePluginManager
      public void callEvent(@NotNull Event event) {
@@ -19,9 +19,8 @@ index 780f3a48152fef6a06dc67bf7fbd1965b13bc4fa..379c2dc1853e45a96dda9b13bf28b7e0
          if (event.isAsynchronous() && this.server.isPrimaryThread()) {
              throw new IllegalStateException(event.getEventName() + " may only be triggered asynchronously.");
          } else if (!event.isAsynchronous() && !this.server.isPrimaryThread() && !this.server.isStopping()) {
-@@ -46,9 +50,6 @@ class PaperEventManager {
+             throw new IllegalStateException(event.getEventName() + " may only be triggered synchronously.");
          }
-         // Leaves end - skip photographer
  
 -        HandlerList handlers = event.getHandlers();
 -        RegisteredListener[] listeners = handlers.getRegisteredListeners();

@@ -11,7 +11,7 @@ Original project: https://github.com/Bloom-host/Petal
 2. EuclideanGameEventListenerRegistry is not used concurrently so we ban that usage for improved performance with allays
 
 diff --git a/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java b/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
-index 1638eccef431fb68775af624110f1968f0c6dabd..62038854696bd946f58e0e8d26da02415c34e4b1 100644
+index 2627583ab12d886b1fba0b1d1e599f942926b499..440d70811d96f97d3463c6aff131cbc5bd588254 100644
 --- a/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/SculkCatalystBlockEntity.java
 @@ -65,7 +65,7 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
@@ -38,10 +38,10 @@ index 1638eccef431fb68775af624110f1968f0c6dabd..62038854696bd946f58e0e8d26da0241
              if (entity.getLastHurtByMob() instanceof ServerPlayer serverPlayer) {
                  DamageSource damageSource = entity.getLastDamageSource() == null
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 95972e7d5e0357ff5884f1cb2f7596c5029f999d..290163335cf3967e2745442fd7d4d4fa16fb7bc0 100644
+index 626e87d9c1862fe0c896172ee240844e50d7902f..f5a627d900298218e8dbbf12d5950dc8a01bd39e 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -79,7 +79,19 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -80,7 +80,19 @@ public class LevelChunk extends ChunkAccess {
      private Supplier<FullChunkStatus> fullStatus;
      @Nullable
      private LevelChunk.PostLoadProcessor postLoad;
@@ -62,7 +62,7 @@ index 95972e7d5e0357ff5884f1cb2f7596c5029f999d..290163335cf3967e2745442fd7d4d4fa
      private final LevelChunkTicks<Block> blockTicks;
      private final LevelChunkTicks<Fluid> fluidTicks;
      private LevelChunk.UnsavedListener unsavedListener = chunkPos -> {};
-@@ -154,7 +166,7 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -110,7 +122,7 @@ public class LevelChunk extends ChunkAccess {
      ) {
          super(pos, data, level, net.minecraft.server.MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.BIOME), inhabitedTime, sections, blendingData); // Paper - Anti-Xray - The world isn't ready yet, use server singleton for registry
          this.level = (ServerLevel) level; // CraftBukkit - type
@@ -71,7 +71,7 @@ index 95972e7d5e0357ff5884f1cb2f7596c5029f999d..290163335cf3967e2745442fd7d4d4fa
  
          for (Heightmap.Types types : Heightmap.Types.values()) {
              if (ChunkStatus.FULL.heightmapsAfter().contains(types)) {
-@@ -266,10 +278,27 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -206,10 +218,27 @@ public class LevelChunk extends ChunkAccess {
  
      @Override
      public GameEventListenerRegistry getListenerRegistry(int sectionY) {
@@ -103,7 +103,7 @@ index 95972e7d5e0357ff5884f1cb2f7596c5029f999d..290163335cf3967e2745442fd7d4d4fa
      }
  
      // Paper start - Perf: Reduce instructions and provide final method
-@@ -609,7 +638,7 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -556,7 +585,7 @@ public class LevelChunk extends ChunkAccess {
      }
  
      private void removeGameEventListenerRegistry(int sectionY) {
@@ -173,10 +173,10 @@ index 5175fc90a1fc61c832c6697997a97ae199b195ac..fc56ef2d5ed813db51e35b635e373b6f
          return flag;
      }
 diff --git a/net/minecraft/world/level/gameevent/GameEventDispatcher.java b/net/minecraft/world/level/gameevent/GameEventDispatcher.java
-index 1e9b066ef468ae840eda3c1f6c4b68111a5e862c..1074ab996b48782a76d5afeb6fc790bdd33210ee 100644
+index b06ded98c01cd2a71d52b96070a6b23da1e40f9c..a781038d42166e1dd1bfee0fbd5c2db8ec1d08c0 100644
 --- a/net/minecraft/world/level/gameevent/GameEventDispatcher.java
 +++ b/net/minecraft/world/level/gameevent/GameEventDispatcher.java
-@@ -44,6 +44,7 @@ public class GameEventDispatcher {
+@@ -38,6 +38,7 @@ public class GameEventDispatcher {
          int sectionPosCoord5 = SectionPos.blockToSectionCoord(blockPos.getZ() + notificationRadius);
          List<GameEvent.ListenerInfo> list = new ArrayList<>();
          GameEventListenerRegistry.ListenerVisitor listenerVisitor = (listener, pos1) -> {
