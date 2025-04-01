@@ -518,7 +518,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          this.getNMS().tick(level, this.position, level.random);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockEntityState.java b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockEntityState.java
-index 7d3a4669ccd6fbfaf8716dc19c538c6ba17a5ffe..72311b765908e0f155d2b8fb7a066fe893d8ae73 100644
+index 7d3a4669ccd6fbfaf8716dc19c538c6ba17a5ffe..333b05d4ad4baecb02c548f5c48650770d61b95a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockEntityState.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockEntityState.java
 @@ -26,6 +26,27 @@ public abstract class CraftBlockEntityState<T extends BlockEntity> extends Craft
@@ -549,6 +549,17 @@ index 7d3a4669ccd6fbfaf8716dc19c538c6ba17a5ffe..72311b765908e0f155d2b8fb7a066fe8
  
      public CraftBlockEntityState(World world, T blockEntity) {
          super(world, blockEntity.getBlockPos(), blockEntity.getBlockState());
+@@ -34,8 +55,8 @@ public abstract class CraftBlockEntityState<T extends BlockEntity> extends Craft
+ 
+         try { // Paper - Show blockstate location if we failed to read it
+         // Paper start
+-        this.snapshotDisabled = DISABLE_SNAPSHOT;
+-        if (DISABLE_SNAPSHOT) {
++        this.snapshotDisabled = getDisableSnapshotTL(); // SparklyPaper - parallel world ticking // Leaf - SparklyPaper - parallel world ticking mod (collapse original behavior)
++        if (this.snapshotDisabled) { // SparklyPaper - parallel world ticking // Leaf - SparklyPaper - parallel world ticking mod (collapse original behavior)
+             this.snapshot = this.blockEntity;
+         } else {
+             this.snapshot = this.createSnapshot(blockEntity);
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockState.java b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockState.java
 index 647c1edd3338ce4f80e48ea769ed381cd158758d..07cf2e9412da5d307a7ca5edc202f8286e5ae25a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockState.java
