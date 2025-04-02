@@ -73,10 +73,10 @@ index bdbbbc5e0c06c71584e7514623d0c8be168befd7..f3ca86e09a4a076d143fb21eac529967
              }
          }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 2f0de213559ad558767335e5d7d1aa7d12221454..88a12eb570572e5449e430f75267304e8ea3f318 100644
+index 0531622d5f21bf82eef6dc7614765085388f3978..4d8666d430df8d1ca7e9591e479c68ca7fd19d1a 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -531,6 +531,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -771,6 +771,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              this.entityTickList
                  .forEach(
                      entity -> {
@@ -85,10 +85,10 @@ index 2f0de213559ad558767335e5d7d1aa7d12221454..88a12eb570572e5449e430f75267304e
                              if (!tickRateManager.isEntityFrozen(entity)) {
                                  entity.checkDespawn();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 9631ab544eb73b1d2502732a5771e2f231815589..42237b270ccb27b204ec0ad3b2157667f88b7062 100644
+index 12eb1e3ed2472ecdd783c8062c99428115d9526a..209d897fdf5a5d19990f6dd8ee11d42d74bd0e92 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -387,6 +387,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -343,6 +343,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      public boolean fixedPose = false; // Paper - Expand Pose API
      private final int despawnTime; // Paper - entity despawn time limit
      public int totalEntityAge; // Paper - age-like counter for all entities
@@ -98,7 +98,7 @@ index 9631ab544eb73b1d2502732a5771e2f231815589..42237b270ccb27b204ec0ad3b2157667
      // Paper start - EAR 2
      public final boolean defaultActivationState;
 diff --git a/net/minecraft/world/entity/EntityType.java b/net/minecraft/world/entity/EntityType.java
-index d49aad855441c2eac707b22714b06321bfefd9ee..7ff59cd74951722184211c40ca97aa004635cc5d 100644
+index ed11697d81789ee6cd48ee2de2c9fcb8ff2be0d4..a1379aa8eaf84868ceb8b3762f7ca3b87a2d7785 100644
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
 @@ -1075,6 +1075,7 @@ public class EntityType<T extends Entity> implements FeatureElement, EntityTypeT

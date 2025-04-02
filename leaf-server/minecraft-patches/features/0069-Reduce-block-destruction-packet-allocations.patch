@@ -13,10 +13,10 @@ As part of: SportPaper (https://github.com/Electroid/SportPaper)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 0d8fe6a658c1ad15f6243af5d2562505c41e3e8d..b0fa30ec3c612e50502e4a94dccc328926c83038 100644
+index 866671513a598737cb618d149a96eecce5e36184..0531622d5f21bf82eef6dc7614765085388f3978 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1242,6 +1242,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1557,6 +1557,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      @Override
      public void destroyBlockProgress(int breakerId, BlockPos pos, int progress) {
@@ -32,7 +32,7 @@ index 0d8fe6a658c1ad15f6243af5d2562505c41e3e8d..b0fa30ec3c612e50502e4a94dccc3289
          // CraftBukkit start
          Player breakerPlayer = null;
          Entity entity = this.getEntity(breakerId);
-@@ -1258,7 +1267,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1573,7 +1582,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                  .callEvent();
          }
          // Paper end - Add BlockBreakProgressUpdateEvent
@@ -41,7 +41,7 @@ index 0d8fe6a658c1ad15f6243af5d2562505c41e3e8d..b0fa30ec3c612e50502e4a94dccc3289
              if (serverPlayer != null && serverPlayer.level() == this && serverPlayer.getId() != breakerId) {
                  double d = pos.getX() - serverPlayer.getX();
                  double d1 = pos.getY() - serverPlayer.getY();
-@@ -1269,7 +1278,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1584,7 +1593,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                  }
                  // CraftBukkit end
                  if (d * d + d1 * d1 + d2 * d2 < 1024.0) {

@@ -7,10 +7,10 @@ License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 Gale - https://galemc.org
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index feefcedd5fd90d2cb2504c9ca313cf4e07a92809..6a04bc2ba65bc9a9b7c7639a2273757a8131d2bd 100644
+index 66b8cf01105df34ced97eeddd4e543adbd8a7105..12eb1e3ed2472ecdd783c8062c99428115d9526a 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1096,8 +1096,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1202,8 +1202,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                      }
                  }
  

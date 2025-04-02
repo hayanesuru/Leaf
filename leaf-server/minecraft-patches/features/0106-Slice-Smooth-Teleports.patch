@@ -9,22 +9,22 @@ Original project: https://github.com/Cryptite/Slice
 Co-authored-by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 1d7e48a8bea7356982b9c4bf1f4dd4877a8d9f44..50278223ec57f32a75bf413f57529f365267a4ee 100644
+index 9d5051a65dcbd87b7d29db4643fa2b070717845b..d32acdf38a35d569669b272560c72651240178db 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -421,6 +421,7 @@ public class ServerPlayer extends Player {
+@@ -427,6 +427,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      public @Nullable com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent playerNaturallySpawnedEvent; // Paper - PlayerNaturallySpawnCreaturesEvent
      public @Nullable String clientBrandName = null; // Paper - Brand support
      public @Nullable org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - Add API for quit reason; there are a lot of changes to do if we change all methods leading to the event
 +    public boolean smoothWorldTeleport; // Slice
  
-     public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
-         super(level, level.getSharedSpawnPos(), level.getSharedSpawnAngle(), gameProfile);
+     // Paper start - rewrite chunk system
+     private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index e62f24dcdc5f09ce9c316615f2c67778570bcc6e..2d932aa5a90cf00bbe4756f7108c7601561677d3 100644
+index 11015e8c0f2b5f8bd2eb083d8e093beb72c43cf0..8bbf8d660a68c8c74204e101ec3ec0b775883090 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -794,11 +794,11 @@ public abstract class PlayerList {
+@@ -795,11 +795,11 @@ public abstract class PlayerList {
          byte b = (byte)(keepInventory ? 1 : 0);
          ServerLevel serverLevel = serverPlayer.serverLevel();
          LevelData levelData = serverLevel.getLevelData();
@@ -38,7 +38,7 @@ index e62f24dcdc5f09ce9c316615f2c67778570bcc6e..2d932aa5a90cf00bbe4756f7108c7601
          serverPlayer.connection.send(new ClientboundSetDefaultSpawnPositionPacket(level.getSharedSpawnPos(), level.getSharedSpawnAngle()));
          serverPlayer.connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
          serverPlayer.connection
-@@ -875,6 +875,8 @@ public abstract class PlayerList {
+@@ -876,6 +876,8 @@ public abstract class PlayerList {
          return serverPlayer;
      }
  

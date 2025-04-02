@@ -37,7 +37,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 029003ccbd4820b60369894b2c3d4bd47f697d93..c522c051bddbde2484741e882b2d58a86caf93aa 100644
+index 2bfff6cc34bc94402fb349d2641efadf380c241a..d57b677cfe5282a5601e4ec8083fd476ccc16422 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -114,6 +114,7 @@ public abstract class PlayerList {
@@ -56,7 +56,7 @@ index 029003ccbd4820b60369894b2c3d4bd47f697d93..c522c051bddbde2484741e882b2d58a8
          // this.broadcastAll(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(List.of(player))); // CraftBukkit - replaced with loop below
          // Paper start - Fire PlayerJoinEvent when Player is actually ready; correctly register player BEFORE PlayerJoinEvent, so the entity is valid and doesn't require tick delay hacks
          player.supressTrackerForLogin = true;
-@@ -581,6 +583,7 @@ public abstract class PlayerList {
+@@ -582,6 +584,7 @@ public abstract class PlayerList {
          player.getAdvancements().stopListening();
          this.players.remove(player);
          this.playersByName.remove(player.getScoreboardName().toLowerCase(java.util.Locale.ROOT)); // Spigot
@@ -64,7 +64,7 @@ index 029003ccbd4820b60369894b2c3d4bd47f697d93..c522c051bddbde2484741e882b2d58a8
          this.server.getCustomBossEvents().onPlayerDisconnect(player);
          UUID uuid = player.getUUID();
          ServerPlayer serverPlayer = this.playersByUUID.get(uuid);
-@@ -723,6 +726,7 @@ public abstract class PlayerList {
+@@ -724,6 +727,7 @@ public abstract class PlayerList {
          player.stopRiding(); // CraftBukkit
          this.players.remove(player);
          this.playersByName.remove(player.getScoreboardName().toLowerCase(java.util.Locale.ROOT)); // Spigot
@@ -72,7 +72,7 @@ index 029003ccbd4820b60369894b2c3d4bd47f697d93..c522c051bddbde2484741e882b2d58a8
          player.serverLevel().removePlayerImmediately(player, reason);
          // TeleportTransition teleportTransition = player.findRespawnPositionAndUseSpawnBlock(!keepInventory, TeleportTransition.DO_NOTHING);
          // ServerLevel level = teleportTransition.newLevel();
-@@ -800,6 +804,7 @@ public abstract class PlayerList {
+@@ -801,6 +805,7 @@ public abstract class PlayerList {
              this.players.add(serverPlayer);
              this.playersByName.put(serverPlayer.getScoreboardName().toLowerCase(java.util.Locale.ROOT), serverPlayer); // Spigot
              this.playersByUUID.put(serverPlayer.getUUID(), serverPlayer);
@@ -80,7 +80,7 @@ index 029003ccbd4820b60369894b2c3d4bd47f697d93..c522c051bddbde2484741e882b2d58a8
          }
          // serverPlayer.initInventoryMenu();
          serverPlayer.setHealth(serverPlayer.getHealth());
-@@ -891,18 +896,58 @@ public abstract class PlayerList {
+@@ -892,18 +897,58 @@ public abstract class PlayerList {
      }
  
      public void tick() {

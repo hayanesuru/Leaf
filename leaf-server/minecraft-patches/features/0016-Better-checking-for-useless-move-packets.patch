@@ -31,10 +31,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index 3f83a589442a80e9c16b5e9cd0f50792defd12bc..e945564034f1f0a83dcdd39b8889c7aa61bfd199 100644
+index 257ecbcf7d463eefb951867a5426eaf24e356305..bcbc25c6dc5a2063b1ad410194a25b0d5ff7c8d8 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -172,19 +172,25 @@ public class ServerEntity {
+@@ -184,19 +184,25 @@ public class ServerEntity {
                      packet = ClientboundEntityPositionSyncPacket.of(this.entity);
                      flag3 = true;
                      flag4 = true;

@@ -13,10 +13,10 @@ As part of: EmpireCraft (https://github.com/starlis/empirecraft)
 Licensed under: MIT (https://opensource.org/licenses/MIT)
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 20b6cfe278f2bd87dfe2cbf7befef745d36bb845..4973de0813f07d657a1e7b1930af7ab583a39f65 100644
+index d6826e878efb3e5532d23f04cc8e951a937cf29f..62e49f844c477c92894d77b469c1537b05fa7677 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -416,6 +416,7 @@ public class ServerPlayer extends Player {
+@@ -422,6 +422,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      public boolean sentListPacket = false;
      public boolean supressTrackerForLogin = false; // Paper - Fire PlayerJoinEvent when Player is actually ready
      // CraftBukkit end
@@ -38,7 +38,7 @@ index df7142bbfec170966373dcf4ac50e4bbc5ba4e53..dea2a849a1d1f2dcfc1e63eb873ada99
              // CraftBukkit start
              if (sync) {
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 48eae4ea5999aee4faa5b24a72e7b0b51c598fc8..2726f72c86368fe804dce43dc6c337bfe213cc58 100644
+index 7517812d79c44358f2824dce29326d2d2d3b178e..818e7c6f5b2b06c901463fda296cb4673f6d271b 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -334,6 +334,8 @@ public abstract class PlayerList {

@@ -38,10 +38,10 @@ index 2627583ab12d886b1fba0b1d1e599f942926b499..440d70811d96f97d3463c6aff131cbc5
              if (entity.getLastHurtByMob() instanceof ServerPlayer serverPlayer) {
                  DamageSource damageSource = entity.getLastDamageSource() == null
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 626e87d9c1862fe0c896172ee240844e50d7902f..f5a627d900298218e8dbbf12d5950dc8a01bd39e 100644
+index 61fa8f2bf018b8892a11acec058f36914c5a1573..54322b76e59f749ea9bbe6a8e0bfa78bb00f063a 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -80,7 +80,19 @@ public class LevelChunk extends ChunkAccess {
+@@ -80,7 +80,19 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
      private Supplier<FullChunkStatus> fullStatus;
      @Nullable
      private LevelChunk.PostLoadProcessor postLoad;
@@ -62,7 +62,7 @@ index 626e87d9c1862fe0c896172ee240844e50d7902f..f5a627d900298218e8dbbf12d5950dc8
      private final LevelChunkTicks<Block> blockTicks;
      private final LevelChunkTicks<Fluid> fluidTicks;
      private LevelChunk.UnsavedListener unsavedListener = chunkPos -> {};
-@@ -110,7 +122,7 @@ public class LevelChunk extends ChunkAccess {
+@@ -143,7 +155,7 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
      ) {
          super(pos, data, level, net.minecraft.server.MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.BIOME), inhabitedTime, sections, blendingData); // Paper - Anti-Xray - The world isn't ready yet, use server singleton for registry
          this.level = (ServerLevel) level; // CraftBukkit - type
@@ -71,7 +71,7 @@ index 626e87d9c1862fe0c896172ee240844e50d7902f..f5a627d900298218e8dbbf12d5950dc8
  
          for (Heightmap.Types types : Heightmap.Types.values()) {
              if (ChunkStatus.FULL.heightmapsAfter().contains(types)) {
-@@ -206,10 +218,27 @@ public class LevelChunk extends ChunkAccess {
+@@ -253,10 +265,27 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
  
      @Override
      public GameEventListenerRegistry getListenerRegistry(int sectionY) {
@@ -103,7 +103,7 @@ index 626e87d9c1862fe0c896172ee240844e50d7902f..f5a627d900298218e8dbbf12d5950dc8
      }
  
      // Paper start - Perf: Reduce instructions and provide final method
-@@ -556,7 +585,7 @@ public class LevelChunk extends ChunkAccess {
+@@ -603,7 +632,7 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
      }
  
      private void removeGameEventListenerRegistry(int sectionY) {

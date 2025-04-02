@@ -105,10 +105,10 @@ index 484c2ba2752fbf3ad929e46c2f078e906f6f0637..6ced5a7e27703a7cf5a7495dc3a1a290
  
      double getLevelY();
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 9a03934dd4d96184f37b9ff5661eb7bd76150464..c7591bb0b4755f28dffc2b3e6c4600d22480bbf1 100644
+index 15d4f60942c0cc612c1468b4c0fda886867a67cb..c2c7832fbb207ecfd23c7a086ef72db9648f48f9 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -302,7 +302,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -544,7 +544,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
              return false;
          } else {
              boolean flag = hopper.isGridAligned() && blockState.isCollisionShapeFullBlock(level, blockPos) && !blockState.is(BlockTags.DOES_NOT_BLOCK_HOPPERS);
@@ -117,8 +117,8 @@ index 9a03934dd4d96184f37b9ff5661eb7bd76150464..c7591bb0b4755f28dffc2b3e6c4600d2
                  for (ItemEntity itemEntity : getItemsAtAndAbove(level, hopper)) {
                      if (addItem(hopper, itemEntity)) {
                          return true;
-@@ -565,6 +565,34 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
-         return stack1.getCount() <= stack1.getMaxStackSize() && ItemStack.isSameItemSameComponents(stack1, stack2);
+@@ -820,6 +820,34 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+         return stack1.getCount() < stack1.getMaxStackSize() && ItemStack.isSameItemSameComponents(stack1, stack2); // Paper - Perf: Optimize Hoppers; used to return true for full itemstacks?!
      }
  
 +    // Gale start - EMC - reduce hopper item checks

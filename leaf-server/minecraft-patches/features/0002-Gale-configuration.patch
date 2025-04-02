@@ -13,7 +13,7 @@ As part of: Paper (https://github.com/PaperMC/Paper)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 7e880b68e6d071d555381af05a3e964fb68904ed..240722d96e8122269efb12c706e39bba54243872 100644
+index f1373fd5fdebb9f4600ba7f32a5df6188de3a0e9..96d34149b1009b1522335784bc1858f61bb59cd1 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -299,6 +299,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -24,7 +24,7 @@ index 7e880b68e6d071d555381af05a3e964fb68904ed..240722d96e8122269efb12c706e39bba
      public boolean isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
      private final Set<String> pluginsBlockingSleep = new java.util.HashSet<>(); // Paper - API to allow/disallow tick sleeping
      public static final long SERVER_INIT = System.nanoTime(); // Paper - Lag compensation
-@@ -398,6 +399,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -469,6 +470,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
          // CraftBukkit end
          this.paperConfigurations = services.paperConfigurations(); // Paper - add paper configuration files
@@ -78,7 +78,7 @@ index 015e3ff8d856a7722def4448d8c68792cc3a32a2..e7c3d84d64cc62989c01019b71c499ae
      }
  
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 0c861f882d3e8f8ce417ce2ace0f3f5ca2673620..c697b3adeabd4f913e9e5e0b90c620a2a642f35d 100644
+index 31e02f50edd46220dac81500dbb273f1ccdbe0b9..aa44476e7d732a51d226533ccf6fb55013faf003 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -171,6 +171,10 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -93,10 +93,10 @@ index 0c861f882d3e8f8ce417ce2ace0f3f5ca2673620..c697b3adeabd4f913e9e5e0b90c620a2
          // Paper start - fix converting txt to json file; convert old users earlier after PlayerList creation but before file load/save
          if (this.convertOldUsers()) {
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index aed490d0e95fc6c61a4e441a5aa78d2298de23cd..3d614c00886278514197374c3e24a8f871fda321 100644
+index d50d2928ad9f8b34a14621b1fe5c188547e04bd1..845d03dc893df2200327e9ee2710474874750c93 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -343,7 +343,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -580,7 +580,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          org.bukkit.generator.BiomeProvider biomeProvider // CraftBukkit
      ) {
          // CraftBukkit start
@@ -106,10 +106,10 @@ index aed490d0e95fc6c61a4e441a5aa78d2298de23cd..3d614c00886278514197374c3e24a8f8
          this.levelStorageAccess = levelStorageAccess;
          this.uuid = org.bukkit.craftbukkit.util.WorldUUID.getOrCreate(levelStorageAccess.levelDirectory.path().toFile());
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 30d1c676cbbba6713a36a2b62ff2a01bd11a8bcd..dbbf6fc4ef52d179ac694b0cfff921323e0c758b 100644
+index 013ed7dbe2309f562f63e66203179a90566e8115..e2829222337ed5a5061b60a153c8224eb53de9e8 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -157,6 +157,12 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -159,6 +159,12 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
          return this.paperConfig;
      }
      // Paper end - add paper world config
@@ -122,7 +122,7 @@ index 30d1c676cbbba6713a36a2b62ff2a01bd11a8bcd..dbbf6fc4ef52d179ac694b0cfff92132
  
      public static @Nullable BlockPos lastPhysicsProblem; // Spigot
      private int tileTickPosition;
-@@ -202,10 +208,13 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -827,6 +833,8 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
          org.bukkit.World.Environment env, // CraftBukkit
          java.util.function.Function<org.spigotmc.SpigotWorldConfig, // Spigot - create per world config
          io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, // Paper - create paper world config
@@ -130,6 +130,9 @@ index 30d1c676cbbba6713a36a2b62ff2a01bd11a8bcd..dbbf6fc4ef52d179ac694b0cfff92132
 +        org.galemc.gale.configuration.GaleWorldConfiguration> galeWorldConfigCreator, // Gale - Gale configuration
          java.util.concurrent.Executor executor // Paper - Anti-Xray
      ) {
+         // Paper start - getblock optimisations - cache world height/sections
+@@ -840,6 +848,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+         // Paper end - getblock optimisations - cache world height/sections
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) levelData).getLevelName()); // Spigot
          this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config
 +        this.galeConfig = galeWorldConfigCreator.apply(this.spigotConfig); // Gale - Gale configuration

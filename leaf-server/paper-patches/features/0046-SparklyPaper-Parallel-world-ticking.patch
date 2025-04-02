@@ -263,7 +263,7 @@ index 196fddeab452e7bc89ef6758635e1d07074e7416..55a2ffa0fff6ef66b9bd5069300c09e9
          } else if (!event.isAsynchronous() && !this.server.isPrimaryThread() && !this.server.isStopping()) {
              // Leaf start - Multithreaded tracker
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 2538a0de7fd6b1026fff51e5d066c5b0811b7cda..c114dfd419177cf45f02617acde86ea4abcbdc96 100644
+index 9e09f14033818fcf9df161941e316c16d913705b..8d68b49ff0b1c4c829d97cd8ebe81be79ee856f6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -456,7 +456,12 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -349,10 +349,10 @@ index 2538a0de7fd6b1026fff51e5d066c5b0811b7cda..c114dfd419177cf45f02617acde86ea4
      }
      // Paper end
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f781efa0d 100644
+index 5f04b2dcff7c0e967647bde9dfa0f35f59e8524c..3d26df068b449aeafd882b9b93722aa9705d2fd5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-@@ -76,6 +76,11 @@ public class CraftBlock implements Block {
+@@ -75,6 +75,11 @@ public class CraftBlock implements Block {
      }
  
      public net.minecraft.world.level.block.state.BlockState getNMS() {
@@ -364,7 +364,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          return this.world.getBlockState(this.position);
      }
  
-@@ -156,6 +161,11 @@ public class CraftBlock implements Block {
+@@ -155,6 +160,11 @@ public class CraftBlock implements Block {
      }
  
      private void setData(final byte data, int flags) {
@@ -376,7 +376,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          this.world.setBlock(this.position, CraftMagicNumbers.getBlock(this.getType(), data), flags);
      }
  
-@@ -197,6 +207,11 @@ public class CraftBlock implements Block {
+@@ -196,6 +206,11 @@ public class CraftBlock implements Block {
      }
  
      public static boolean setBlockState(LevelAccessor world, BlockPos pos, net.minecraft.world.level.block.state.BlockState oldState, net.minecraft.world.level.block.state.BlockState newState, boolean applyPhysics) {
@@ -388,7 +388,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          // SPIGOT-611: need to do this to prevent glitchiness. Easier to handle this here (like /setblock) than to fix weirdness in block entity cleanup
          if (oldState.hasBlockEntity() && newState.getBlock() != oldState.getBlock()) { // SPIGOT-3725 remove old block entity if block changes
              // SPIGOT-4612: faster - just clear tile
-@@ -345,18 +360,33 @@ public class CraftBlock implements Block {
+@@ -344,18 +359,33 @@ public class CraftBlock implements Block {
  
      @Override
      public Biome getBiome() {
@@ -422,7 +422,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          this.getWorld().setBiome(this.getX(), this.getY(), this.getZ(), bio);
      }
  
-@@ -377,6 +407,11 @@ public class CraftBlock implements Block {
+@@ -376,6 +406,11 @@ public class CraftBlock implements Block {
  
      @Override
      public boolean isBlockIndirectlyPowered() {
@@ -434,7 +434,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          return this.world.getMinecraftWorld().hasNeighborSignal(this.position);
      }
  
-@@ -416,6 +451,11 @@ public class CraftBlock implements Block {
+@@ -415,6 +450,11 @@ public class CraftBlock implements Block {
  
      @Override
      public int getBlockPower(BlockFace face) {
@@ -446,7 +446,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          int power = 0;
          net.minecraft.world.level.Level world = this.world.getMinecraftWorld();
          int x = this.getX();
-@@ -484,6 +524,11 @@ public class CraftBlock implements Block {
+@@ -483,6 +523,11 @@ public class CraftBlock implements Block {
  
      @Override
      public boolean breakNaturally() {
@@ -458,7 +458,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          return this.breakNaturally(null);
      }
  
-@@ -543,6 +588,11 @@ public class CraftBlock implements Block {
+@@ -542,6 +587,11 @@ public class CraftBlock implements Block {
  
      @Override
      public boolean applyBoneMeal(BlockFace face) {
@@ -470,7 +470,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          Direction direction = CraftBlock.blockFaceToNotch(face);
          BlockFertilizeEvent event = null;
          ServerLevel world = this.getCraftWorld().getHandle();
-@@ -554,8 +604,8 @@ public class CraftBlock implements Block {
+@@ -553,8 +603,8 @@ public class CraftBlock implements Block {
          world.captureTreeGeneration = false;
  
          if (!world.capturedBlockStates.isEmpty()) {
@@ -481,7 +481,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
              List<BlockState> states = new ArrayList<>(world.capturedBlockStates.values());
              world.capturedBlockStates.clear();
              StructureGrowEvent structureEvent = null;
-@@ -645,6 +695,11 @@ public class CraftBlock implements Block {
+@@ -644,6 +694,11 @@ public class CraftBlock implements Block {
  
      @Override
      public RayTraceResult rayTrace(Location start, Vector direction, double maxDistance, FluidCollisionMode fluidCollisionMode) {
@@ -493,7 +493,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          Preconditions.checkArgument(start != null, "Location start cannot be null");
          Preconditions.checkArgument(this.getWorld().equals(start.getWorld()), "Location start cannot be a different world");
          start.checkFinite();
-@@ -686,6 +741,11 @@ public class CraftBlock implements Block {
+@@ -685,6 +740,11 @@ public class CraftBlock implements Block {
  
      @Override
      public boolean canPlace(BlockData data) {
@@ -505,7 +505,7 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          Preconditions.checkArgument(data != null, "BlockData cannot be null");
          net.minecraft.world.level.block.state.BlockState iblockdata = ((CraftBlockData) data).getState();
          net.minecraft.world.level.Level world = this.world.getMinecraftWorld();
-@@ -720,6 +780,11 @@ public class CraftBlock implements Block {
+@@ -719,6 +779,11 @@ public class CraftBlock implements Block {
  
      @Override
      public void tick() {
@@ -517,10 +517,10 @@ index c8f0b24fd9336259e42c4746061793e156978ad3..2b2d1819b0d953800c1757ad7c92de4f
          final ServerLevel level = this.world.getMinecraftWorld();
          this.getNMS().tick(level, this.position, level.random);
      }
-diff --git a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockEntityState.java b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockEntityState.java
-index 7d3a4669ccd6fbfaf8716dc19c538c6ba17a5ffe..333b05d4ad4baecb02c548f5c48650770d61b95a 100644
---- a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockEntityState.java
-+++ b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockEntityState.java
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java
+index 3422970353dcd886934b9ee906467769d39abbde..13c91223bbb4841cab0e491037a36113a33faf15 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockEntityState.java
 @@ -26,6 +26,27 @@ public abstract class CraftBlockEntityState<T extends BlockEntity> extends Craft
      private final T snapshot;
      public boolean snapshotDisabled; // Paper
@@ -560,11 +560,11 @@ index 7d3a4669ccd6fbfaf8716dc19c538c6ba17a5ffe..333b05d4ad4baecb02c548f5c4865077
              this.snapshot = this.blockEntity;
          } else {
              this.snapshot = this.createSnapshot(blockEntity);
-diff --git a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockState.java b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockState.java
-index 647c1edd3338ce4f80e48ea769ed381cd158758d..07cf2e9412da5d307a7ca5edc202f8286e5ae25a 100644
---- a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockState.java
-+++ b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockState.java
-@@ -219,6 +219,12 @@ public class CraftBlockState implements BlockState {
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockState.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockState.java
+index c0a7659776a9f0fb82bb8563acbf3286b318fe03..69fc25b20cc84a2cd89cb0927aceba05df405e2a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockState.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockState.java
+@@ -217,6 +217,12 @@ public class CraftBlockState implements BlockState {
          LevelAccessor access = this.getWorldHandle();
          CraftBlock block = this.getBlock();
  
@@ -577,7 +577,7 @@ index 647c1edd3338ce4f80e48ea769ed381cd158758d..07cf2e9412da5d307a7ca5edc202f828
          if (block.getType() != this.getType()) {
              if (!force) {
                  return false;
-@@ -367,6 +373,8 @@ public class CraftBlockState implements BlockState {
+@@ -365,6 +371,8 @@ public class CraftBlockState implements BlockState {
  
      @Override
      public java.util.Collection<org.bukkit.inventory.ItemStack> getDrops(org.bukkit.inventory.ItemStack item, org.bukkit.entity.Entity entity) {
@@ -586,11 +586,11 @@ index 647c1edd3338ce4f80e48ea769ed381cd158758d..07cf2e9412da5d307a7ca5edc202f828
          this.requirePlaced();
          net.minecraft.world.item.ItemStack nms = org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(item);
  
-diff --git a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java
-index 23d0c901c1261de30748654b34a7ce6c51ad9c24..ca5edb79379ee74cb66e6eb7f63fe725a689170a 100644
---- a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java
-+++ b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java
-@@ -196,14 +196,14 @@ public final class CraftBlockStates {
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
+index 321280d7c9c3c828cbf2eb19d2fd196a1f84d4c3..cd8f771e08cee5d00c53a8e70f0fe37cf393cd52 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
+@@ -195,14 +195,14 @@ public final class CraftBlockStates {
          BlockPos pos = craftBlock.getPosition();
          net.minecraft.world.level.block.state.BlockState state = craftBlock.getNMS();
          BlockEntity blockEntity = craftBlock.getHandle().getBlockEntity(pos);
@@ -609,7 +609,7 @@ index 23d0c901c1261de30748654b34a7ce6c51ad9c24..ca5edb79379ee74cb66e6eb7f63fe725
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 7d22c1ee7fa98fc2d04d353fe19387ca3334f52a..cfe328104a57410204504721f1d8840f4819344b 100644
+index 5a1b37a408ebede6367ca90ad5d13c29b7b1a6b3..7042d684bc345925f1755fec2b463b487db71cc5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -809,6 +809,28 @@ public class CraftEventFactory {

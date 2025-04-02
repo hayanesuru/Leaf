@@ -13,10 +13,10 @@ As part of: JettPack (https://gitlab.com/Titaniumtown/JettPack)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index c3c480cb21f7f952cc09b36e24c462822b663b28..91185d7f8f2206fea9cb1d96611b8409f82694f2 100644
+index a8be25542f63d6166cbed065e5006cbf27253d49..c51776867d87640c20cd317a33dc5c654f1e7a51 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1865,10 +1865,20 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2013,10 +2013,20 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
      @Deprecated
      public float getLightLevelDependentMagicValue() {

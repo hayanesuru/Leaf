@@ -31,10 +31,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 47cd1b3b5f7a74dcff147a744420c622ec750e7a..39cf21effb3ffd1230c5874c5a95771d8e6a42c9 100644
+index 1d53c0b96ff781765155aac29256f4493f7d7c58..eb2a6b82dc38989bcc155281aaafaced6fce78a0 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -545,7 +545,19 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -784,7 +784,19 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                                          entity.stopRiding();
                                      }
  
@@ -56,10 +56,10 @@ index 47cd1b3b5f7a74dcff147a744420c622ec750e7a..39cf21effb3ffd1230c5874c5a95771d
                              }
                          }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 800e12ac2ca850fbd4e2a7df84295ceff758fdac..270720ac00b0dc4ccbe08b789728dd09d0a9f1e3 100644
+index 78b368886648f034b7f1a97a922b97cc62b2fa02..fb213dc889abafaaf35a69b06b1c35041ac65b46 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -849,8 +849,9 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -1490,8 +1490,9 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
              final String msg = String.format("Entity threw exception at %s:%s,%s,%s", entity.level().getWorld().getName(), entity.getX(), entity.getY(), entity.getZ());
              MinecraftServer.LOGGER.error(msg, var6);
              getCraftServer().getPluginManager().callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerInternalException(msg, var6))); // Paper - ServerExceptionEvent
@@ -68,5 +68,5 @@ index 800e12ac2ca850fbd4e2a7df84295ceff758fdac..270720ac00b0dc4ccbe08b789728dd09
              // Paper end - Prevent block entity and entity crashes
 +            //this.moonrise$midTickTasks(); // Paper - rewrite chunk system // Gale - Airplane - remove lambda from ticking guard - diff on change ServerLevel#tick
          }
+         this.moonrise$midTickTasks(); // Paper - rewrite chunk system
      }
- 

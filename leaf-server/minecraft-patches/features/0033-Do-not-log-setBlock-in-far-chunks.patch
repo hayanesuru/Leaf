@@ -37,10 +37,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/server/level/WorldGenRegion.java b/net/minecraft/server/level/WorldGenRegion.java
-index b30f56fbc1fd17259a1d05dc9155fffcab292ca1..1aa26a70177e4ecf9d859fca44adc6a96b853c30 100644
+index 11fed81a4696ba18440e755c3b8a5ca39ed8a6b1..e1bc9ee6cce51a8909bf48eb8faeaf7e247c9fc9 100644
 --- a/net/minecraft/server/level/WorldGenRegion.java
 +++ b/net/minecraft/server/level/WorldGenRegion.java
-@@ -284,7 +284,7 @@ public class WorldGenRegion implements WorldGenLevel {
+@@ -314,7 +314,7 @@ public class WorldGenRegion implements WorldGenLevel {
              return true;
          } else {
              // Paper start - Buffer OOB setBlock calls

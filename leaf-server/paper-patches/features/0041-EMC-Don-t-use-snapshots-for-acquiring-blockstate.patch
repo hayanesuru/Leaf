@@ -7,10 +7,10 @@ Original license: MIT
 Original project: https://github.com/starlis/empirecraft
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index 4a709355acab59c5ded1ffdc321be3252482bd0b..c8f0b24fd9336259e42c4746061793e156978ad3 100644
+index bbaaea8e03e3eb80c53161968ff75efd39b57ba5..5f04b2dcff7c0e967647bde9dfa0f35f59e8524c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-@@ -333,7 +333,7 @@ public class CraftBlock implements Block {
+@@ -332,7 +332,7 @@ public class CraftBlock implements Block {
  
      @Override
      public BlockState getState() {
@@ -19,11 +19,11 @@ index 4a709355acab59c5ded1ffdc321be3252482bd0b..c8f0b24fd9336259e42c4746061793e1
      }
  
      // Paper start
-diff --git a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java
-index 5da891112402b758ca618967c4662027efbe14dc..23d0c901c1261de30748654b34a7ce6c51ad9c24 100644
---- a/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java
-+++ b/src/main/java/org/bukkit/craftbukkit/block/state/CraftBlockStates.java
-@@ -186,7 +186,7 @@ public final class CraftBlockStates {
+diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
+index 2338e7c115037430cefae26a571ded71f77983c4..321280d7c9c3c828cbf2eb19d2fd196a1f84d4c3 100644
+--- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
++++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
+@@ -185,7 +185,7 @@ public final class CraftBlockStates {
      }
  
      public static BlockState getBlockState(Block block) {

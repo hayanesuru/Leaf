@@ -31,13 +31,13 @@ index 92ebc61aa7f6f70292a384b56bd8ef77a15e485c..a1ecb7c5ee0e1fe1164e277d8991d6d9
      }
  
 diff --git a/net/minecraft/world/entity/ai/behavior/AcquirePoi.java b/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
-index 7470150b5c613ae31d94170d9f5eedac67add63d..5bcc53eef44faa1d3dccb72d1fd4be476c2f3793 100644
+index 751e91a922b20c96f27885c3eb085ec4ae39091b..455662f0718365f466bc52bdaa228954e42d7216 100644
 --- a/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
 +++ b/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
-@@ -98,21 +98,20 @@ public class AcquirePoi {
-                                 .limit(5L)
-                                 .filter(pair1 -> predicate.test(level, pair1.getSecond()))
-                                 .collect(Collectors.toSet());
+@@ -102,21 +102,20 @@ public class AcquirePoi {
+                                 }
+                             }
+                             // Paper end - optimise POI access
 -                            Path path = findPathToPois(mob, set);
 -                            if (path != null && path.canReach()) {
 -                                BlockPos target = path.getTarget();
@@ -54,7 +54,7 @@ index 7470150b5c613ae31d94170d9f5eedac67add63d..5bcc53eef44faa1d3dccb72d1fd4be47
 +
 +                                // wait on the path to be processed
 +                                org.dreeam.leaf.async.path.AsyncPathProcessor.awaitProcessing(possiblePath, path -> {
-+                                    processPath(acquirablePois, entityEventId, (Long2ObjectMap<JitteredLinearRetry>) map, memoryAccessor, level, mob, time, poiManager, set, path);
++                                    processPath(acquirablePois, entityEventId, map, memoryAccessor, level, mob, time, poiManager, set, path);
                                  });
                              } else {
 -                                for (Pair<Holder<PoiType>, BlockPos> pair : set) {
@@ -67,7 +67,7 @@ index 7470150b5c613ae31d94170d9f5eedac67add63d..5bcc53eef44faa1d3dccb72d1fd4be47
  
                              return true;
                          }
-@@ -124,6 +123,34 @@ public class AcquirePoi {
+@@ -128,6 +127,34 @@ public class AcquirePoi {
              : BehaviorBuilder.create(instance -> instance.group(instance.absent(existingAbsentMemory)).apply(instance, memoryAccessor -> oneShot));
      }
  
@@ -81,7 +81,7 @@ index 7470150b5c613ae31d94170d9f5eedac67add63d..5bcc53eef44faa1d3dccb72d1fd4be47
 +                                    long time,
 +                                    PoiManager poiManager,
 +                                    Set<Pair<Holder<PoiType>, BlockPos>> set,
-+                                    Path path) {
++                                    @org.jetbrains.annotations.Nullable Path path) {
 +        if (path != null && path.canReach()) {
 +            BlockPos target = path.getTarget();
 +            poiManager.getType(target).ifPresent(holder -> {
@@ -514,14 +514,15 @@ index 2979846853898d78a2df19df2287da16dbe4ae71..1289a6e85f3fdb9187323343b6c20e17
      }
  
 diff --git a/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java b/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java
-index 6e9325f0800a35637fdec5edb8a514ea03741762..7ee85d8e9035093484f67437ec80755169436a88 100644
+index 066faa704338c573472381e1ebd063e0d52aaaa4..8629b89401e4cb06dd8a658d1d3f189178c544d8 100644
 --- a/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/NearestBedSensor.java
-@@ -57,16 +57,31 @@ public class NearestBedSensor extends Sensor<Mob> {
-                     holder -> holder.is(PoiTypes.HOME), predicate, entity.blockPosition(), 48, PoiManager.Occupancy.ANY
-                 )
-                 .collect(Collectors.toSet());
--            Path path = AcquirePoi.findPathToPois(entity, set);
+@@ -57,17 +57,32 @@ public class NearestBedSensor extends Sensor<Mob> {
+             java.util.List<Pair<Holder<PoiType>, BlockPos>> poiposes = new java.util.ArrayList<>();
+             // don't ask me why it's unbounded. ask mojang.
+             io.papermc.paper.util.PoiAccess.findAnyPoiPositions(poiManager, type -> type.is(PoiTypes.HOME), predicate, entity.blockPosition(), 48, PoiManager.Occupancy.ANY, false, Integer.MAX_VALUE, poiposes);
+-            Path path = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(poiposes));
+             // Paper end - optimise POI access
 -            if (path != null && path.canReach()) {
 -                BlockPos target = path.getTarget();
 -                Optional<Holder<PoiType>> type = poiManager.getType(target);
@@ -532,13 +533,13 @@ index 6e9325f0800a35637fdec5edb8a514ea03741762..7ee85d8e9035093484f67437ec807551
 -                this.batchCache.long2LongEntrySet().removeIf(entry -> entry.getLongValue() < this.lastUpdate);
 +            // Kaiiju start - await on async path processing
 +            if (org.dreeam.leaf.config.modules.async.AsyncPathfinding.enabled) {
-+                Path possiblePath = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(set));
++                Path possiblePath = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(poiposes));
 +                org.dreeam.leaf.async.path.AsyncPathProcessor.awaitProcessing(possiblePath, path -> {
 +                    processPath(entity, poiManager, path);
 +                });
 +            } else {
 +                // Kaiiju end
-+                Path path = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(set));
++                Path path = AcquirePoi.findPathToPois(entity, new java.util.HashSet<>(poiposes));
 +                processPath(entity, poiManager, path);
 +            } // Kaiiju - async path processing
 +        }

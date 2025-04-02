@@ -80,10 +80,10 @@ index 8ef16f98996b1ec0c9c3f158248ac95f1b07328f..6780b2493d625603b74e635c4996bb83
      private static final Codec<Object> ARG_CODEC = Codec.either(PRIMITIVE_ARG_CODEC, ComponentSerialization.CODEC)
          .xmap(
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 679c94142eac06ec0bc6f3b819ee4f7e831c4626..0d8fe6a658c1ad15f6243af5d2562505c41e3e8d 100644
+index eb2a6b82dc38989bcc155281aaafaced6fce78a0..866671513a598737cb618d149a96eecce5e36184 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -937,7 +937,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1220,7 +1220,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      public static List<Entity> getCurrentlyTickingEntities() {
          Entity ticking = currentlyTickingEntity.get();
@@ -119,7 +119,7 @@ index d445e8f126f077d8419c52fa5436ea963a1a42a4..39483f7b453d6faedeccc1ab1eda7666
  
      public boolean isEmpty() {
 diff --git a/net/minecraft/util/ZeroBitStorage.java b/net/minecraft/util/ZeroBitStorage.java
-index 8cc5c0716392ba06501542ff5cbe71ee43979e5d..64945449807e49115b9115ee114cd3acad3d1ef8 100644
+index 09fd99c9cbd23b5f3c899bfb00c9b89651948ed8..5c1103ef028e5ffe6ce0eadc861dd3b2c8f3ed9f 100644
 --- a/net/minecraft/util/ZeroBitStorage.java
 +++ b/net/minecraft/util/ZeroBitStorage.java
 @@ -5,7 +5,7 @@ import java.util.function.IntConsumer;
@@ -164,10 +164,10 @@ index 381e0a1c0af7e339713ed1df1c2f21121c1bbd0f..4e847c3f9d761da5dda11dec60582d9d
          equipmentSlotGroup -> equipmentSlotGroup.id, values(), ByIdMap.OutOfBoundsStrategy.ZERO
      );
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index c206187e2e4a3600681caadd4efd6293e42a9177..3958cd983242fc60c1868ce2a3ec804047d118c0 100644
+index 77c4bf12c8344dd3699142decaec42330100f1e7..25c806ca9abebdaa6031e3f350fdf1c7deac7c4e 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -1168,7 +1168,7 @@ public final class ItemStack implements DataComponentHolder {
+@@ -1174,7 +1174,7 @@ public final class ItemStack implements DataComponentHolder {
  
      private void addAttributeTooltips(Consumer<Component> tooltipAdder, TooltipDisplay tooltipDisplay, @Nullable Player player) {
          if (tooltipDisplay.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {

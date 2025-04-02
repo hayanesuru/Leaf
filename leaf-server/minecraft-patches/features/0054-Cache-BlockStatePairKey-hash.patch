@@ -13,10 +13,10 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/level/material/FlowingFluid.java b/net/minecraft/world/level/material/FlowingFluid.java
-index ab8babd32b7d71bc14049c8778525499e715bd12..95ffd0195b9e0792c6b84115d1a1196231b39cec 100644
+index 6bac3fb751e114855b9b072a7880ab370f111218..91567d45fd809f2fee7ab9abbd27f43869b71016 100644
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
-@@ -484,7 +484,26 @@ public abstract class FlowingFluid extends Fluid {
+@@ -536,7 +536,26 @@ public abstract class FlowingFluid extends Fluid {
              : this.shapes.computeIfAbsent(state, fluidState -> Shapes.box(0.0, 0.0, 0.0, 1.0, fluidState.getHeight(level, pos), 1.0));
      }
  
@@ -44,7 +44,7 @@ index ab8babd32b7d71bc14049c8778525499e715bd12..95ffd0195b9e0792c6b84115d1a11962
          @Override
          public boolean equals(Object object) {
              return object instanceof FlowingFluid.BlockStatePairKey blockStatePairKey
-@@ -495,9 +514,7 @@ public abstract class FlowingFluid extends Fluid {
+@@ -547,9 +566,7 @@ public abstract class FlowingFluid extends Fluid {
  
          @Override
          public int hashCode() {
