@@ -13,7 +13,7 @@ As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index c71034e9077280ccd7b4d7a9986eb6ec1536472a..a86ede54cfeb416a8c0c85fe90862e65e6505b62 100644
+index 35f55d1830d7929d476a5377f0abc46fac5bfed1..1fc423f34b4731267e49326053443b90176e34d7 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -190,6 +190,13 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface

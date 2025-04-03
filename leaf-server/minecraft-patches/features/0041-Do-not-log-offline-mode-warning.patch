@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Martijn Muijsers <martijnmuijsers@live.nl>
-Date: Thu, 1 Dec 2022 16:43:50 +0100
-Subject: [PATCH] Do not log run as root warning
+Date: Thu, 1 Dec 2022 16:52:27 +0100
+Subject: [PATCH] Do not log offline mode warning
 
 License: MIT (https://opensource.org/licenses/MIT)
 Gale - https://galemc.org
@@ -14,7 +14,7 @@ Licensed under: MIT (https://opensource.org/licenses/MIT)
 
 * KeYi description *
 
-Let users decide if we should warn while running in a root user
+Let users decide if we should warn while running in offline mode
 
 * KeYi copyright *
 
@@ -41,15 +41,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index a86ede54cfeb416a8c0c85fe90862e65e6505b62..65fa22ea82076542d42d651227e5332692981cc3 100644
+index 083e0154ec373d5ebe18ecbe55c88e4407d61a81..cd266af35c7b8455af19adc9b0874cdd7572217f 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -142,7 +142,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-         }
- 
-         // Paper start - detect running as root
--        if (io.papermc.paper.util.ServerEnvironment.userIsRootOrAdmin()) {
-+        if (!"false".equalsIgnoreCase(System.getProperty("gale.log.warning.root")) && io.papermc.paper.util.ServerEnvironment.userIsRootOrAdmin()) { // Gale - KeYi - do not log run as root warning
-             LOGGER.warn("****************************");
-             LOGGER.warn("YOU ARE RUNNING THIS SERVER AS AN ADMINISTRATIVE OR ROOT USER. THIS IS NOT ADVISED.");
-             LOGGER.warn("YOU ARE OPENING YOURSELF UP TO POTENTIAL RISKS WHEN DOING THIS.");
+@@ -253,7 +253,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         String proxyFlavor = (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.velocity.enabled) ? "Velocity" : "BungeeCord";
+         String proxyLink = (io.papermc.paper.configuration.GlobalConfiguration.get().proxies.velocity.enabled) ? "https://docs.papermc.io/velocity/security" : "http://www.spigotmc.org/wiki/firewall-guide/";
+         // Paper end - Add Velocity IP Forwarding Support
+-        if (!this.usesAuthentication()) {
++        if (!"false".equalsIgnoreCase(System.getProperty("gale.log.warning.offline.mode")) && !this.usesAuthentication()) { // Gale - KeYi - do not log offline mode warning
+             LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
+             LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
+             // Spigot start

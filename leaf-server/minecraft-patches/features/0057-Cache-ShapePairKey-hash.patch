@@ -5,7 +5,7 @@ Subject: [PATCH] Cache ShapePairKey hash
 
 
 diff --git a/net/minecraft/world/level/block/Block.java b/net/minecraft/world/level/block/Block.java
-index 95bd1139401d49ddf443a64faca8cd30ca3b1a1d..b545ec55430105f74a09d6ae81d4cdc198121f17 100644
+index ae3e6e31171b1bcfba1ae51a0941b52dda270acd..064e08e28acf7497e950d4e7f6ad7bddd92418b4 100644
 --- a/net/minecraft/world/level/block/Block.java
 +++ b/net/minecraft/world/level/block/Block.java
 @@ -610,7 +610,20 @@ public class Block extends BlockBehaviour implements ItemLike {
