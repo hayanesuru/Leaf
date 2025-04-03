@@ -349,7 +349,7 @@ index 9e09f14033818fcf9df161941e316c16d913705b..8d68b49ff0b1c4c829d97cd8ebe81be7
      }
      // Paper end
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index 5f04b2dcff7c0e967647bde9dfa0f35f59e8524c..3d26df068b449aeafd882b9b93722aa9705d2fd5 100644
+index 5f04b2dcff7c0e967647bde9dfa0f35f59e8524c..8fa769f1f18d05b6f037c84175dcb56bead15b24 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 @@ -75,6 +75,11 @@ public class CraftBlock implements Block {
@@ -382,7 +382,7 @@ index 5f04b2dcff7c0e967647bde9dfa0f35f59e8524c..3d26df068b449aeafd882b9b93722aa9
      public static boolean setBlockState(LevelAccessor world, BlockPos pos, net.minecraft.world.level.block.state.BlockState oldState, net.minecraft.world.level.block.state.BlockState newState, boolean applyPhysics) {
 +        // SparklyPaper start - parallel world ticking
 +        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled && world instanceof ServerLevel serverWorld) { // Leaf - SparklyPaper - parallel world ticking mod (make configurable)
-+            ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread(serverWorld, position, "Cannot modify world asynchronously");
++            ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread(serverWorld, pos, "Cannot modify world asynchronously");
 +        }
 +        // SparklyPaper end - parallel world ticking
          // SPIGOT-611: need to do this to prevent glitchiness. Easier to handle this here (like /setblock) than to fix weirdness in block entity cleanup

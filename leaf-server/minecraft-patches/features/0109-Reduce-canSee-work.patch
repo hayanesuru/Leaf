@@ -7,10 +7,10 @@ Co-authored by: Martijn Muijsers <martijnmuijsers@live.nl>
 Co-authored by: MachineBreaker <machinebreaker>
 
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index fb213dc889abafaaf35a69b06b1c35041ac65b46..4e9a050517cdbcdd08a970d8c163e8dbcb818944 100644
+index 906cca5e27d3aae3834075a635d2f6865f0ab64f..8a9516025cf6569d57ca48693bb34dd7a96c2420 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -943,17 +943,19 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -941,17 +941,19 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
          for (int i = 0, len = entities.size(); i < len; ++i) {
              Entity entity = entities.get(i);
  
