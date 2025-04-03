@@ -15,4 +15,6 @@
 # 1.21.5
 - [ ] Reduce array allocations when paper patched all
 - [ ] Check KeYi: Add an option for spigot item merging mechanism
+- [ ] Remove stream in sparklypaper map optimization
+- [ ] Check snowball knockback patch, whether need double hurt
 - [ ] Update from Leaf 1.21.4 (curr commit: `1977a5b12c01f915d7c04a765b18957cbfbeeb24`)

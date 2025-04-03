@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: lilingfengdev <145678359+lilingfengdev@users.noreply.github.com>
+Date: Thu, 18 Jan 2024 13:30:02 +0800
+Subject: [PATCH] Polpot: Make egg and snowball can knockback player
+
+Original project: https://github.com/HaHaWTH/Polpot
+
+diff --git a/net/minecraft/world/entity/projectile/Snowball.java b/net/minecraft/world/entity/projectile/Snowball.java
+index 677b4b681f9c2c09a8ae3cfdec72102265547a7b..b5ee9ff679a8e9ec441154b698ed0196d525ae67 100644
+--- a/net/minecraft/world/entity/projectile/Snowball.java
++++ b/net/minecraft/world/entity/projectile/Snowball.java
+@@ -54,6 +54,12 @@ public class Snowball extends ThrowableItemProjectile {
+         Entity entity = result.getEntity();
+         int i = entity instanceof Blaze ? 3 : 0;
+         entity.hurt(this.damageSources().thrown(this, this.getOwner()), i);
++        // Leaf start - Polpot - Make snowball can knockback player
++        if (org.dreeam.leaf.config.modules.gameplay.Knockback.snowballCanKnockback && entity instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
++            entity.hurt(this.damageSources().thrown(this, this.getOwner()), 0.0000001F);
++            serverPlayer.knockback(0.4000000059604645D, this.getX() - entity.getX(), this.getZ() - entity.getZ());
++        }
++        // Leaf end - Polpot - Make snowball can knockback player
+     }
+ 
+     @Override
+diff --git a/net/minecraft/world/entity/projectile/ThrownEgg.java b/net/minecraft/world/entity/projectile/ThrownEgg.java
+index 73ec34b43f3fb2aa3edc3f1cb48a923d1fa32036..0e4cba55c15d17af2dff7d9e10cecaf821853475 100644
+--- a/net/minecraft/world/entity/projectile/ThrownEgg.java
++++ b/net/minecraft/world/entity/projectile/ThrownEgg.java
+@@ -54,7 +54,14 @@ public class ThrownEgg extends ThrowableItemProjectile {
+     @Override
+     protected void onHitEntity(EntityHitResult result) {
+         super.onHitEntity(result);
++        net.minecraft.world.entity.Entity entity = result.getEntity(); // Polpot - make egg can knockback player
+         result.getEntity().hurt(this.damageSources().thrown(this, this.getOwner()), 0.0F);
++        // Leaf start - Polpot - Make egg can knockback player
++        if (org.dreeam.leaf.config.modules.gameplay.Knockback.eggCanKnockback && entity instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
++            entity.hurt(this.damageSources().thrown(this, this.getOwner()), 0.0000001F);
++            serverPlayer.knockback(0.4000000059604645D, this.getX() - entity.getX(), this.getZ() - entity.getZ());
++        }
++        // Leaf end - Polpot - Make egg can knockback player
+     }
+ 
+     @Override
