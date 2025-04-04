@@ -12,6 +12,52 @@ By: Simon Gardling <titaniumtown@gmail.com>
 As part of: JettPack (https://gitlab.com/Titaniumtown/JettPack)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
+diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
+index ba20e87d2105ce53cdaf4049de2388d05fcd1b56..7b686d834e4eb36be5758b0e0a846a70d1e2294b 100644
+--- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
++++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
+@@ -378,7 +378,6 @@ public final class ChunkEntitySlices {
+ 
+     private static final class BasicEntityList<E extends Entity> {
+ 
+-        private static final Entity[] EMPTY = new Entity[0];
+         private static final int DEFAULT_CAPACITY = 4;
+ 
+         private E[] storage;
+@@ -389,7 +388,7 @@ public final class ChunkEntitySlices {
+         }
+ 
+         public BasicEntityList(final int cap) {
+-            this.storage = (E[])(cap <= 0 ? EMPTY : new Entity[cap]);
++            this.storage = (E[])(cap <= 0 ? me.titaniumtown.ArrayConstants.emptyEntityArray : new Entity[cap]);// Gale - JettPack - reduce array allocations
+         }
+ 
+         public boolean isEmpty() {
+@@ -401,7 +400,7 @@ public final class ChunkEntitySlices {
+         }
+ 
+         private void resize() {
+-            if (this.storage == EMPTY) {
++            if (this.storage == me.titaniumtown.ArrayConstants.emptyEntityArray) { // Gale - JettPack - reduce array allocations
+                 this.storage = (E[])new Entity[DEFAULT_CAPACITY];
+             } else {
+                 this.storage = Arrays.copyOf(this.storage, this.storage.length * 2);
+diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
+index 26207443b1223119c03db478d7e816d9cdf8e618..bbd1c262674b42eb9ea2830acb8bf94182f971f9 100644
+--- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
++++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
+@@ -14,10 +14,8 @@ import net.minecraft.world.level.entity.LevelCallback;
+ 
+ public final class ServerEntityLookup extends EntityLookup {
+ 
+-    private static final Entity[] EMPTY_ENTITY_ARRAY = new Entity[0];
+-
+     private final ServerLevel serverWorld;
+-    public final ReferenceList<Entity> trackerEntities = new ReferenceList<>(EMPTY_ENTITY_ARRAY); // Moonrise - entity tracker
++    public final ReferenceList<Entity> trackerEntities = new ReferenceList<>(me.titaniumtown.ArrayConstants.emptyEntityArray); // Moonrise - entity tracker // Gale - JettPack - reduce array allocations
+ 
+     public ServerEntityLookup(final ServerLevel world, final LevelCallback<Entity> worldCallback) {
+         super(world, worldCallback);
 diff --git a/net/minecraft/nbt/ByteArrayTag.java b/net/minecraft/nbt/ByteArrayTag.java
 index 6fbb131b472a3093b137d8ced9889777a133bd5b..cecfd48f57bc11b84c18b4e5a723228fd3c18e23 100644
 --- a/net/minecraft/nbt/ByteArrayTag.java
@@ -188,6 +234,28 @@ index bfda76974ea8d4397e2c2ebf5bdcb5d7e5f0bab5..cabbc93409ca99180d115e2f23419ee1
 +            return me.titaniumtown.ArrayConstants.emptyStringArray; // Gale - JettPack - reduce array allocations
          } else {
              String[] strings = new String[pattern.size() - i3 - i2];
+ 
+diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
+index 20403c3e2582caf3541cd9b051fb5ebff52eb555..96f29ce52dfbaebdaff287e4ae249f6628b22cf7 100644
+--- a/net/minecraft/world/level/Level.java
++++ b/net/minecraft/world/level/Level.java
+@@ -1832,7 +1832,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+     public org.bukkit.entity.Entity[] getChunkEntities(int chunkX, int chunkZ) {
+         ca.spottedleaf.moonrise.patches.chunk_system.level.entity.ChunkEntitySlices slices = ((ServerLevel)this).moonrise$getEntityLookup().getChunk(chunkX, chunkZ);
+         if (slices == null) {
+-            return new org.bukkit.entity.Entity[0];
++            return me.titaniumtown.ArrayConstants.emptyBukkitEntityArray; // Gale - JettPack - reduce array allocations
+         }
+ 
+         List<org.bukkit.entity.Entity> ret = new java.util.ArrayList<>();
+@@ -1843,7 +1843,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+             }
+         }
+ 
+-        return ret.toArray(new org.bukkit.entity.Entity[0]);
++        return ret.toArray(me.titaniumtown.ArrayConstants.emptyBukkitEntityArray); // Gale - JettPack - reduce array allocations
+     }
+     // Paper end - rewrite chunk system
  
 diff --git a/net/minecraft/world/level/block/ComposterBlock.java b/net/minecraft/world/level/block/ComposterBlock.java
 index a647d76d365a60b95a3eb7927ac426bf70d417f3..7977ecd013c55359f179b4b7f895099b7eb02294 100644
