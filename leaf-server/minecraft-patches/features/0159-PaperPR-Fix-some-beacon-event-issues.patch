@@ -35,10 +35,10 @@ index 66eee067b4ffdd72393ca813de995062be5b7a90..38d36a2798b9aa5298ae2936f872fc63
 +    // Paper end
  }
 diff --git a/net/minecraft/world/level/block/entity/BeaconBlockEntity.java b/net/minecraft/world/level/block/entity/BeaconBlockEntity.java
-index 80b0feac68813f11dc5cadc5faf413a59ad73e5b..2fbbd384113cf62b64c7ff4e805265a09f55ceb0 100644
+index b77cdbf3e8cf0e9d66c9e5288ebae38c79dae1fe..bdf120291f52642ffa4266ac786bb2975b40bf10 100644
 --- a/net/minecraft/world/level/block/entity/BeaconBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BeaconBlockEntity.java
-@@ -169,6 +169,8 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
+@@ -162,6 +162,8 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
          return VALID_EFFECTS.contains(effect) ? effect : null;
      }
  
@@ -47,7 +47,7 @@ index 80b0feac68813f11dc5cadc5faf413a59ad73e5b..2fbbd384113cf62b64c7ff4e805265a0
      public BeaconBlockEntity(BlockPos pos, BlockState blockState) {
          super(BlockEntityType.BEACON, pos, blockState);
      }
-@@ -234,10 +236,15 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
+@@ -225,10 +227,15 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
              }
          }
          // Paper start - beacon activation/deactivation events
@@ -65,7 +65,7 @@ index 80b0feac68813f11dc5cadc5faf413a59ad73e5b..2fbbd384113cf62b64c7ff4e805265a0
              org.bukkit.block.Block block = org.bukkit.craftbukkit.block.CraftBlock.at(level, pos);
              new io.papermc.paper.event.block.BeaconDeactivatedEvent(block).callEvent();
          }
-@@ -245,10 +252,10 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
+@@ -236,10 +243,10 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
  
          if (blockEntity.lastCheckY >= height) {
              blockEntity.lastCheckY = level.getMinY() - 1;
@@ -78,7 +78,7 @@ index 80b0feac68813f11dc5cadc5faf413a59ad73e5b..2fbbd384113cf62b64c7ff4e805265a0
                  if (!flag && flag1) {
                      playSound(level, pos, SoundEvents.BEACON_ACTIVATE);
  
-@@ -292,10 +299,6 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
+@@ -283,10 +290,6 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
  
      @Override
      public void setRemoved() {
@@ -89,11 +89,11 @@ index 80b0feac68813f11dc5cadc5faf413a59ad73e5b..2fbbd384113cf62b64c7ff4e805265a0
          // Paper start - fix MC-153086
          if (this.levels > 0 && !this.beamSections.isEmpty()) {
          playSound(this.level, this.worldPosition, SoundEvents.BEACON_DEACTIVATE);
-@@ -426,6 +429,7 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
+@@ -414,6 +417,7 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
          this.primaryPower = loadEffect(tag, "primary_effect");
          this.secondaryPower = loadEffect(tag, "secondary_effect");
-         this.levels = tag.getInt("Levels"); // CraftBukkit - SPIGOT-5053, use where available
+         this.levels = tag.getIntOr("Levels", 0); // CraftBukkit - SPIGOT-5053, use where available
 +        this.justLoadedAndPreviouslyActive = this.levels > 0; // Paper
-         if (tag.contains("CustomName", 8)) {
-             this.name = parseCustomNameSafe(tag.getString("CustomName"), registries);
-         }
+         this.name = parseCustomNameSafe(tag.get("CustomName"), registries);
+         this.lockKey = LockCode.fromTag(tag, registries);
+         this.effectRange = tag.getDoubleOr(PAPER_RANGE_TAG, -1); // Paper - Custom beacon ranges

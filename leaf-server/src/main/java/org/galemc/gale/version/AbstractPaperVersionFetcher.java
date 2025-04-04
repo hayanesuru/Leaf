@@ -101,10 +101,10 @@ public abstract class AbstractPaperVersionFetcher implements VersionFetcher {
         // Gale end - branding changes - version fetcher
 
         return switch (distance) {
-            case DISTANCE_ERROR -> text("Error obtaining version information", NamedTextColor.YELLOW);
-            case 0 -> text("You are running the latest version", NamedTextColor.GREEN);
-            case DISTANCE_UNKNOWN -> text("Unknown version", NamedTextColor.YELLOW);
-            default -> text("You are " + distance + " version(s) behind", NamedTextColor.YELLOW)
+            case DISTANCE_ERROR -> text("* Error obtaining version information", NamedTextColor.RED); // Purpur - Rebrand
+            case 0 -> text("* You are running the latest version", NamedTextColor.GREEN); // Purpur - Rebrand
+            case DISTANCE_UNKNOWN -> text("* Unknown version", NamedTextColor.YELLOW); // Purpur - Rebrand
+            default -> text("* You are " + distance + " version(s) behind", NamedTextColor.YELLOW) // Purpur - Rebrand
                 .append(Component.newline())
                 .append(text("Download the new version at: ")
                     .append(text(this.downloadPage, NamedTextColor.GOLD) // Gale - branding changes - version fetcher
@@ -149,6 +149,6 @@ public abstract class AbstractPaperVersionFetcher implements VersionFetcher {
             return null;
         }
 
-        return text("Previous version: " + oldVersion, NamedTextColor.GRAY, TextDecoration.ITALIC);
+        return text("Previous: " + oldVersion, NamedTextColor.GRAY, TextDecoration.ITALIC); // Purpur - Rebrand
     }
 }

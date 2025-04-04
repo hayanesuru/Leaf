@@ -87,6 +87,9 @@ public class GaleWorldConfiguration extends ConfigurationPart {
                             public int duration = 100;
                             public int nearbyItemMaxAge = 1200;
                             public int checkForMinecartNearItemInterval = 20;
+                            // Still recommend to turn-off `checkForMinecartNearItemWhileActive`
+                            // Since `Reduce-hopper-item-checks.patch` will cause lag under massive dropped items
+                            public boolean checkForMinecartNearItemWhileActive = false; // Leaf - Reduce active items finding hopper nearby check
                             public boolean checkForMinecartNearItemWhileInactive = true;
                             public double maxItemHorizontalDistance = 24.0;
                             public double maxItemVerticalDistance = 4.0;
@@ -132,7 +135,7 @@ public class GaleWorldConfiguration extends ConfigurationPart {
 
         }
 
-        public boolean arrowMovementResetsDespawnCounter = true; // Gale - Purpur - make arrow movement resetting despawn counter configurable
+        public boolean arrowMovementResetsDespawnCounter = false; // Gale - Purpur - make arrow movement resetting despawn counter configurable // Leaf - KeYi - Disable arrow despawn counter by default
         public boolean entitiesCanRandomStrollIntoNonTickingChunks = true; // Gale - MultiPaper - prevent entities random strolling into non-ticking chunks
         public double entityWakeUpDurationRatioStandardDeviation = 0.2; // Gale - variable entity wake-up duration
         public boolean hideFlamesOnEntitiesWithFireResistance = false; // Gale - Slice - hide flames on entities with fire resistance

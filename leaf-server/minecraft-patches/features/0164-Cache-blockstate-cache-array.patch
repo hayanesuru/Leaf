@@ -5,10 +5,10 @@ Subject: [PATCH] Cache blockstate cache array
 
 
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
-index 117c7cedb9f355b5139b9aa9b15f4459453e3675..7f46f33fa565fa1a3aedce5524f19be8ba420352 100644
+index 331474bb33c8612283a0ec478c1ae8768180b22d..84f4d772bfe06383ca718b6a00d983e97e2e35f4 100644
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -1050,6 +1050,10 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -1047,6 +1047,10 @@ public abstract class BlockBehaviour implements FeatureElement {
          static final class Cache {
              private static final Direction[] DIRECTIONS = Direction.values();
              private static final int SUPPORT_TYPE_COUNT = SupportType.values().length;
@@ -19,7 +19,7 @@ index 117c7cedb9f355b5139b9aa9b15f4459453e3675..7f46f33fa565fa1a3aedce5524f19be8
              protected final VoxelShape collisionShape;
              protected boolean largeCollisionShape;
              private final boolean[] faceSturdy;
-@@ -1068,7 +1072,7 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -1065,7 +1069,7 @@ public abstract class BlockBehaviour implements FeatureElement {
                      );
                  } else {
                      // Leaf start - Remove stream in BlockBehaviour cache blockstate
@@ -28,7 +28,7 @@ index 117c7cedb9f355b5139b9aa9b15f4459453e3675..7f46f33fa565fa1a3aedce5524f19be8
                          if (this.collisionShape.min(axis) < 0.0 || this.collisionShape.max(axis) > 1.0) {
                              this.largeCollisionShape = true;
                              break;
-@@ -1078,7 +1082,7 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -1075,7 +1079,7 @@ public abstract class BlockBehaviour implements FeatureElement {
                      this.faceSturdy = new boolean[DIRECTIONS.length * SUPPORT_TYPE_COUNT];
  
                      for (Direction direction : DIRECTIONS) {

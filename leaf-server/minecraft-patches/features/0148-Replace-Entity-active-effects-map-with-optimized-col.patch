@@ -6,7 +6,7 @@ Subject: [PATCH] Replace Entity active effects map with optimized collection
 Dreeam TODO: check this
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index d55a701d1f9a39b4734c8b02b655e1f1a53e616b..82289f1b8b3097fe20c3508461c79ab42fbef0f6 100644
+index 4fd0a728bcc3a7063cefe4d163329f07db06176f..0e1fb766570b5ff0e3c4a0f04c4ef3c589417322 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -196,6 +196,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -23,7 +23,7 @@ index d55a701d1f9a39b4734c8b02b655e1f1a53e616b..82289f1b8b3097fe20c3508461c79ab4
 @@ -977,15 +981,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
      private void updateSynchronizedMobEffectParticles() {
          // Leaf start - Remove stream in entity visible effects filter
-         List<ParticleOptions> list = new ArrayList<>();
+         List<ParticleOptions> list = new java.util.ArrayList<>();
 +        final Collection<MobEffectInstance> effectsValues = this.activeEffects.values(); // Leaf - Replace Entity active effects map with optimized collection
  
 -        for (MobEffectInstance effect : this.activeEffects.values()) {

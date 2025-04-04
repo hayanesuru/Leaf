@@ -24,10 +24,10 @@ But it is still recommending to use those packet based, virtual entity
 based NPC plugins, e.g. ZNPC Plus, Adyeshach, Fancy NPC, etc.
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
-index dd2509996bfd08e8c3f9f2be042229eac6d7692d..a35e9fae8f8da0c42f0616c4f78dc396492673aa 100644
+index 02a9ef1694c796584c29430d27f0a09047368835..32608df3da169159c070f37cb55407f4f6187744 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
-@@ -342,7 +342,7 @@ public final class RegionizedPlayerChunkLoader {
+@@ -340,7 +340,7 @@ public final class RegionizedPlayerChunkLoader {
          private boolean canGenerateChunks = true;
  
          private final ArrayDeque<ChunkHolderManager.TicketOperation<?, ?>> delayedTicketOps = new ArrayDeque<>();
@@ -37,10 +37,10 @@ index dd2509996bfd08e8c3f9f2be042229eac6d7692d..a35e9fae8f8da0c42f0616c4f78dc396
          private static final byte CHUNK_TICKET_STAGE_NONE           = 0;
          private static final byte CHUNK_TICKET_STAGE_LOADING        = 1;
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10f9faa6b2 100644
+index c60b9e4076450de2157c1a3cf4f98cc2c19e4e6a..560a857f3b61679bbf2ee93ac6da393052a1f320 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -248,6 +248,15 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -255,6 +255,15 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          }
  
          final ServerPlayer[] backingSet = inRange.getRawDataUnchecked();
@@ -56,7 +56,7 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
          for (int i = 0, len = inRange.size(); i < len; i++) {
              ++(backingSet[i].mobCounts[index]);
          }
-@@ -951,6 +960,13 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1013,6 +1022,13 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      // Paper end - optimise entity tracker
  
      protected void tick() {
@@ -70,7 +70,7 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
          // Paper start - optimise entity tracker
          if (true) {
              this.newTrackerTick();
-@@ -1073,7 +1089,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1135,7 +1151,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          final Entity entity;
          private final int range;
          SectionPos lastSectionPos;
@@ -79,7 +79,7 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
  
          // Paper start - optimise entity tracker
          private long lastChunkUpdate = -1L;
-@@ -1100,7 +1116,39 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1162,7 +1178,39 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
              this.lastTrackedChunk = chunk;
  
              final ServerPlayer[] playersRaw = players.getRawDataUnchecked();
@@ -119,7 +119,7 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
              for (int i = 0, len = players.size(); i < len; ++i) {
                  final ServerPlayer player = playersRaw[i];
                  this.updatePlayer(player);
-@@ -1115,6 +1163,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1177,6 +1225,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                      }
                  }
              }
@@ -128,7 +128,7 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
          }
  
          @Override
-@@ -1176,7 +1226,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1238,7 +1288,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          }
  
          public void broadcast(Packet<?> packet) {
@@ -137,7 +137,7 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
                  serverPlayerConnection.send(packet);
              }
          }
-@@ -1189,21 +1239,22 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1259,21 +1309,22 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          }
  
          public void broadcastRemoved() {
@@ -177,29 +177,10 @@ index f106373ef3ac4a8685c2939c9e8361688a285913..51ae390c68e7a3aa193329cc3bc47ca6
      public boolean visible = true;
  
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index d8298c7925e3bcea07ead4d438478cc51abcfa16..75670751064add901c2628d53d8028350f966c5d 100644
+index 94fa37653598014d8187c4ecfd486709e4fb9f91..8aebb5e5f42fd4ae54cdea8ab7573bda3dea1d30 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -110,8 +110,16 @@ public class ServerEntity {
-                 .forEach(
-                     removedPassenger -> {
-                         if (removedPassenger instanceof ServerPlayer serverPlayer1) {
--                            serverPlayer1.connection
--                                .teleport(serverPlayer1.getX(), serverPlayer1.getY(), serverPlayer1.getZ(), serverPlayer1.getYRot(), serverPlayer1.getXRot());
-+                            // Leaf start - Multithreaded tracker - Ensure teleport is executed on server thread
-+                            if (org.dreeam.leaf.config.modules.async.MultithreadedTracker.enabled && Thread.currentThread() instanceof org.dreeam.leaf.async.tracker.MultithreadedTracker.MultithreadedTrackerThread) {
-+                                net.minecraft.server.MinecraftServer.getServer().scheduleOnMain(() -> serverPlayer1.connection
-+                                    .teleport(serverPlayer1.getX(), serverPlayer1.getY(), serverPlayer1.getZ(), serverPlayer1.getYRot(), serverPlayer1.getXRot())
-+                                );
-+                            } else {
-+                                serverPlayer1.connection
-+                                    .teleport(serverPlayer1.getX(), serverPlayer1.getY(), serverPlayer1.getZ(), serverPlayer1.getYRot(), serverPlayer1.getXRot());
-+                            }
-+                            // Leaf end - Multithreaded tracker - Ensure teleport is executed on server thread
-                         }
-                     }
-                 );
-@@ -435,12 +443,15 @@ public class ServerEntity {
+@@ -443,12 +443,15 @@ public class ServerEntity {
          if (this.entity instanceof LivingEntity) {
              Set<AttributeInstance> attributesToSync = ((LivingEntity)this.entity).getAttributes().getAttributesToSync();
              if (!attributesToSync.isEmpty()) {
@@ -218,10 +199,10 @@ index d8298c7925e3bcea07ead4d438478cc51abcfa16..75670751064add901c2628d53d802835
  
              attributesToSync.clear();
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 0290e1f0c45677d337f77a0c8269894b32a43ca9..268c463d379528b8242f1628e97e67ea638b7ced 100644
+index 2c65987f7dda5b46a232a69e46b91090801fc246..0d73baebab6bdde6e279cc0da9c0ef8a275537ee 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -2496,7 +2496,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2407,7 +2407,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      @Override
      public LevelEntityGetter<Entity> getEntities() {
@@ -231,10 +212,10 @@ index 0290e1f0c45677d337f77a0c8269894b32a43ca9..268c463d379528b8242f1628e97e67ea
      }
  
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index c30e017e6cffa6aa828b0f6e8889885dbaaa4680..ba84b1caab62e3f04f2f9e7aed0c659c0106bc29 100644
+index 6314831d7ecefa14be1386eced3ee50510ebe769..f1cdeb9c1f8eeb69870d17d5453a311358740625 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1819,7 +1819,7 @@ public class ServerGamePacketListenerImpl
+@@ -1731,7 +1731,7 @@ public class ServerGamePacketListenerImpl
      }
  
      public void internalTeleport(PositionMoveRotation posMoveRotation, Set<Relative> relatives) {
@@ -244,10 +225,10 @@ index c30e017e6cffa6aa828b0f6e8889885dbaaa4680..ba84b1caab62e3f04f2f9e7aed0c659c
          if (this.player.isRemoved()) {
              LOGGER.info("Attempt to teleport removed player {} restricted", player.getScoreboardName());
 diff --git a/net/minecraft/world/entity/ai/attributes/AttributeInstance.java b/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
-index 8013594bb4844e7a8abf28123958e7f632d39341..ceff383d565267edd13a6d9006030b8e1f8053e3 100644
+index 3ac9f36eae87369354e992a1d9b5c5b2d87d17cb..d99bbf299af2b2d3a61761c5c3c33c4d371d1b9b 100644
 --- a/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
 +++ b/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
-@@ -24,8 +24,11 @@ public class AttributeInstance {
+@@ -26,8 +26,11 @@ public class AttributeInstance {
      private final Map<AttributeModifier.Operation, Map<ResourceLocation, AttributeModifier>> modifiersByOperation = Maps.newEnumMap(
          AttributeModifier.Operation.class
      );
@@ -262,13 +243,13 @@ index 8013594bb4844e7a8abf28123958e7f632d39341..ceff383d565267edd13a6d9006030b8e
      private boolean dirty = true;
      private double cachedValue;
 diff --git a/net/minecraft/world/entity/ai/attributes/AttributeMap.java b/net/minecraft/world/entity/ai/attributes/AttributeMap.java
-index 89f4c5b2d61e27acd48063f9f24ce9ea91898b8b..371dd51c62c9a109014851c8a1562a5cb78b18b6 100644
+index 93a079df455e371a0ca7ada253dc8b7e16b0146f..fce4fa42dbec302b5c49c954d3286deea6f81d45 100644
 --- a/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 +++ b/net/minecraft/world/entity/ai/attributes/AttributeMap.java
-@@ -19,11 +19,14 @@ import org.slf4j.Logger;
+@@ -14,11 +14,14 @@ import net.minecraft.nbt.ListTag;
+ import net.minecraft.resources.ResourceLocation;
  
  public class AttributeMap {
-     private static final Logger LOGGER = LogUtils.getLogger();
 +    // Leaf start - Multithreaded tracker
 +    private final boolean multiThreadedTrackingEnabled = org.dreeam.leaf.config.modules.async.MultithreadedTracker.enabled;
      // Gale start - Lithium - replace AI attributes with optimized collections
@@ -282,4 +263,4 @@ index 89f4c5b2d61e27acd48063f9f24ce9ea91898b8b..371dd51c62c9a109014851c8a1562a5c
 +    // Leaf end - Multithreaded tracker
      private final AttributeSupplier supplier;
      private final java.util.function.Function<Holder<Attribute>, AttributeInstance> createInstance; // Gale - Airplane - reduce entity allocations
-     private final net.minecraft.world.entity.LivingEntity entity; // Purpur - Ridables
+ 

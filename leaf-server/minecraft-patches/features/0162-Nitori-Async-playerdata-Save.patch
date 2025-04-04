@@ -7,10 +7,10 @@ Original license: GPL v3
 Original project: https://github.com/Gensokyo-Reimagined/Nitori
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 5a0d30b8ff5e377224de67c9f464bd1c694a4397..1cb60107d95296fc9e2c106d70838c057564abeb 100644
+index 301b255d43a160b462e546ab894378cc38ae18e6..b74b58f6d110100c647ca4ffb9fbc8eb5c637dd9 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1069,6 +1069,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1055,6 +1055,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          io.papermc.paper.log.CustomLogManager.forceReset(); // Paper - Reset loggers after shutdown
          this.onServerExit();
          // Paper end - Improved watchdog support - move final shutdown items here
@@ -24,10 +24,10 @@ index 5a0d30b8ff5e377224de67c9f464bd1c694a4397..1cb60107d95296fc9e2c106d70838c05
  
      public String getLocalIp() {
 diff --git a/net/minecraft/world/level/storage/LevelStorageSource.java b/net/minecraft/world/level/storage/LevelStorageSource.java
-index de43e54698125ce9f319d4889dd49f7029fe95e0..451cb8987906f0a9e753a870aa629124daba9c73 100644
+index 8104f71c30c1fa46c83acdf0b2e58483df9d89cc..aec5646db69d972e8c9119e62dad0cece4432ad1 100644
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
 +++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -520,15 +520,26 @@ public class LevelStorageSource {
+@@ -521,15 +521,26 @@ public class LevelStorageSource {
          private void saveLevelData(CompoundTag tag) {
              Path path = this.levelDirectory.path();
  
@@ -61,10 +61,10 @@ index de43e54698125ce9f319d4889dd49f7029fe95e0..451cb8987906f0a9e753a870aa629124
  
          public Optional<Path> getIconFile() {
 diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
-index c44110b123ba5912af18faf0065e9ded780da9b7..541c440d3211c6625974ac1e0055d62655256846 100644
+index ab9282c04c1996b037567d07f95e2b150bcfcd38..fa33d4b56eec6e00912e8027195c6f63c440bc59 100644
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
 +++ b/net/minecraft/world/level/storage/PlayerDataStorage.java
-@@ -25,6 +25,7 @@ public class PlayerDataStorage {
+@@ -23,6 +23,7 @@ public class PlayerDataStorage {
      private final File playerDir;
      protected final DataFixer fixerUpper;
      private static final DateTimeFormatter FORMATTER = FileNameDateFormatter.create();
@@ -72,7 +72,7 @@ index c44110b123ba5912af18faf0065e9ded780da9b7..541c440d3211c6625974ac1e0055d626
  
      public PlayerDataStorage(LevelStorageSource.LevelStorageAccess levelStorageAccess, DataFixer fixerUpper) {
          this.fixerUpper = fixerUpper;
-@@ -34,17 +35,43 @@ public class PlayerDataStorage {
+@@ -32,17 +33,43 @@ public class PlayerDataStorage {
  
      public void save(Player player) {
          if (org.spigotmc.SpigotConfig.disablePlayerDataSaving) return; // Spigot
@@ -124,7 +124,7 @@ index c44110b123ba5912af18faf0065e9ded780da9b7..541c440d3211c6625974ac1e0055d626
      }
  
      private void backup(String name, String stringUuid, String suffix) { // CraftBukkit
-@@ -60,7 +87,20 @@ public class PlayerDataStorage {
+@@ -58,7 +85,20 @@ public class PlayerDataStorage {
          }
      }
  
@@ -146,16 +146,16 @@ index c44110b123ba5912af18faf0065e9ded780da9b7..541c440d3211c6625974ac1e0055d626
          File file = new File(this.playerDir, stringUuid + suffix); // CraftBukkit
          // Spigot start
          boolean usingWrongFile = false;
-@@ -91,7 +131,7 @@ public class PlayerDataStorage {
+@@ -89,7 +129,7 @@ public class PlayerDataStorage {
  
      public Optional<CompoundTag> load(Player player) {
          // CraftBukkit start
 -        return this.load(player.getName().getString(), player.getStringUUID()).map((tag) -> {
 +        return this.load(player.getName().getString(), player.getStringUUID(), player.getUUID()).map((tag) -> { // Leaf - Async playerdata saving
-             if (player instanceof ServerPlayer serverPlayer) {
-                 CraftPlayer craftPlayer = serverPlayer.getBukkitEntity();
+             if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
+                 org.bukkit.craftbukkit.entity.CraftPlayer craftPlayer = serverPlayer.getBukkitEntity();
                  // Only update first played if it is older than the one we have
-@@ -106,20 +146,25 @@ public class PlayerDataStorage {
+@@ -104,20 +144,25 @@ public class PlayerDataStorage {
          });
      }
  
@@ -174,7 +174,7 @@ index c44110b123ba5912af18faf0065e9ded780da9b7..541c440d3211c6625974ac1e0055d626
 -        return optional.or(() -> this.load(name, uuid, ".dat_old")).map(compoundTag -> { // CraftBukkit
 +        return optional.or(() -> this.load(name, uuid, ".dat_old", playerUuid)).map(compoundTag -> { // CraftBukkit
              int dataVersion = NbtUtils.getDataVersion(compoundTag, -1);
-             compoundTag = ca.spottedleaf.dataconverter.minecraft.MCDataConverter.convertTag(ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.PLAYER, compoundTag, dataVersion, net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion()); // Paper - rewrite data conversion system
+             compoundTag = DataFixTypes.PLAYER.updateToCurrentVersion(this.fixerUpper, compoundTag, dataVersion);
              // player.load(compoundTag); // CraftBukkit - handled above
              return compoundTag;
          });

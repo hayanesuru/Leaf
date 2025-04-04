@@ -5,7 +5,7 @@ Subject: [PATCH] Remove stream in entity visible effects filter
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index e65914c2623197031d50508af5c45a4db6b98836..d55a701d1f9a39b4734c8b02b655e1f1a53e616b 100644
+index e65914c2623197031d50508af5c45a4db6b98836..4fd0a728bcc3a7063cefe4d163329f07db06176f 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -975,12 +975,15 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -19,7 +19,7 @@ index e65914c2623197031d50508af5c45a4db6b98836..d55a701d1f9a39b4734c8b02b655e1f1
 -            .map(MobEffectInstance::getParticleOptions)
 -            .toList();
 +        // Leaf start - Remove stream in entity visible effects filter
-+        List<ParticleOptions> list = new ArrayList<>();
++        List<ParticleOptions> list = new java.util.ArrayList<>();
 +
 +        for (MobEffectInstance effect : this.activeEffects.values()) {
 +            if (effect.isVisible()) {
