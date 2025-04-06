@@ -5,7 +5,7 @@ Subject: [PATCH] Configurable connection message
 
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index e8683f45823cac55e3e68ccc500f10f0632e72fd..5b686f6f5016fefca1e2547ee1ab6c6235aedb29 100644
+index e8683f45823cac55e3e68ccc500f10f0632e72fd..5c88d51920481235145bb7fd8cf148607b2dbed0 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -434,7 +434,7 @@ public abstract class PlayerList {
@@ -66,7 +66,7 @@ index e8683f45823cac55e3e68ccc500f10f0632e72fd..5b686f6f5016fefca1e2547ee1ab6c62
 +            final String quitMessage = org.dreeam.leaf.config.modules.misc.ConnectionMessage.quitMessage
 +                .replace("<player_name>", craftPlayer.getName());
 +
-+            return net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(org.dreeam.leaf.config.modules.misc.ConnectionMessage.quitMessage)
++            return net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(quitMessage)
 +                .replaceText(net.kyori.adventure.text.TextReplacementConfig.builder().matchLiteral("<player_displayname>").replacement(craftPlayer.displayName()).build());
 +        }
 +
