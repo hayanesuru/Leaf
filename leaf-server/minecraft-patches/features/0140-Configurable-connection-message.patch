@@ -5,7 +5,7 @@ Subject: [PATCH] Configurable connection message
 
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index f5cdd332292dbf3367eff99efa6c52f00267be52..4bc7e2c569223779d3c8c556a62d81c092481f70 100644
+index c18921f4ec1d4c205fa1d6efbb60eb05dcec4908..a289c3247ef6e1b7ae76fdc86c286e7b426731b4 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -336,7 +336,7 @@ public abstract class PlayerList {
@@ -26,7 +26,7 @@ index f5cdd332292dbf3367eff99efa6c52f00267be52..4bc7e2c569223779d3c8c556a62d81c0
              joinMessage = io.papermc.paper.adventure.PaperAdventure.asVanilla(jm); // Paper - Adventure
              this.server.getPlayerList().broadcastSystemMessage(joinMessage, false); // Paper - Adventure
          }
-@@ -532,7 +532,7 @@ public abstract class PlayerList {
+@@ -533,7 +533,7 @@ public abstract class PlayerList {
              player.closeContainer(org.bukkit.event.inventory.InventoryCloseEvent.Reason.DISCONNECT); // Paper - Inventory close reason
          }
  
@@ -35,7 +35,7 @@ index f5cdd332292dbf3367eff99efa6c52f00267be52..4bc7e2c569223779d3c8c556a62d81c0
          this.cserver.getPluginManager().callEvent(playerQuitEvent);
          player.getBukkitEntity().disconnect(playerQuitEvent.getQuitMessage());
  
-@@ -1526,4 +1526,34 @@ public abstract class PlayerList {
+@@ -1527,4 +1527,34 @@ public abstract class PlayerList {
      public boolean isAllowCommandsForAllPlayers() {
          return this.allowCommandsForAllPlayers;
      }

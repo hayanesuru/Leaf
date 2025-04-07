@@ -38,7 +38,7 @@ index b9bff011c0ffb0efdaccc65847be69aad1a70681..d8390cb3901a40b97e99990d9f71f12c
                  .forEach(
                      entity -> {
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 2ad0c935e16b92007475c681641770aa27f2b0c3..f9c247769e71afe7cb7ccb9680dfe34df706e7cd 100644
+index 2ec01803a6ae255bec9def42b67723caa57bb8d8..f84c34917ac2a026fdc3451236e77d81a5656d7f 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1518,6 +1518,13 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc

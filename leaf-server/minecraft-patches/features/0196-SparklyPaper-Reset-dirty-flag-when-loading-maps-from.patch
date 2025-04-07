@@ -9,14 +9,14 @@ By default, the server will start rewriting all map datas to the disk after load
 This also slows down world saving a lot if you have a lot of maps
 
 diff --git a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-index 681dec447486138088fe5f705ef4fadab531139f..07f9287ff1f1dbd1795582c74102c072ea59b29f 100644
+index 3ae69b17fec1cdb2bee2b5a795026a875f197c30..1196066585582af132f8fb773bab7466d0800461 100644
 --- a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 +++ b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-@@ -198,6 +198,7 @@ public class MapItemSavedData extends SavedData {
-             }
+@@ -160,6 +160,7 @@ public class MapItemSavedData extends SavedData {
          }
  
-+        mapItemSavedData.setDirty(false); // SparklyPaper - reset dirty flag when loading maps from the disk (context for updates: this modification is at the end of the map "load" function)
-         return mapItemSavedData;
+         this.vanillaRender.buffer = colors.array(); // Paper - Use Vanilla map renderer when possible
++        this.setDirty(false); // SparklyPaper - reset dirty flag when loading maps from the disk (context for updates: this modification is at the end of the map "load" function)
      }
  
+     public static MapItemSavedData createFresh(

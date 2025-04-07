@@ -10,10 +10,10 @@ Add Pufferfish DAB support for Camel, Sniffer
 https://github.com/pufferfish-gg/Pufferfish/issues/83
 
 diff --git a/net/minecraft/world/entity/animal/armadillo/Armadillo.java b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-index d840577023d42dc986e2b811382dfc433083ffb3..6aa8c94f6ce00cd948cd5edef80906f74c19ae25 100644
+index aea96e036846c66d411fdea55fbbf0efb60d467d..3b1a40226e903119503108ea72bd0880c164e0e0 100644
 --- a/net/minecraft/world/entity/animal/armadillo/Armadillo.java
 +++ b/net/minecraft/world/entity/animal/armadillo/Armadillo.java
-@@ -161,8 +161,10 @@ public class Armadillo extends Animal {
+@@ -162,8 +162,10 @@ public class Armadillo extends Animal {
          return ArmadilloAi.makeBrain(this.brainProvider().makeBrain(dynamic));
      }
  
@@ -25,10 +25,10 @@ index d840577023d42dc986e2b811382dfc433083ffb3..6aa8c94f6ce00cd948cd5edef80906f7
          ArmadilloAi.updateActivity(this);
          if (this.isAlive() && !this.isBaby() && --this.scuteTime <= 0) {
 diff --git a/net/minecraft/world/entity/animal/camel/Camel.java b/net/minecraft/world/entity/animal/camel/Camel.java
-index 64ff0d2923f16a567aa753cad028a1b21c20101b..a7168edb338c5a77c884e9eef1e48bcdc3623fa4 100644
+index 101931ff4474ab4445be3fa1a241a731ad3ac1da..8d2dc9b94a13c386b7e54788a9ec6baf15c09a13 100644
 --- a/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/net/minecraft/world/entity/animal/camel/Camel.java
-@@ -155,9 +155,11 @@ public class Camel extends AbstractHorse {
+@@ -167,9 +167,11 @@ public class Camel extends AbstractHorse {
          return pose == Pose.SITTING ? SITTING_DIMENSIONS.scale(this.getAgeScale()) : super.getDefaultDimensions(pose);
      }
  
@@ -41,7 +41,7 @@ index 64ff0d2923f16a567aa753cad028a1b21c20101b..a7168edb338c5a77c884e9eef1e48bcd
          CamelAi.updateActivity(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/animal/sniffer/Sniffer.java b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
-index 68751f7ed123c3e99f56259ccc23121661f89bc1..fec7ecfe6e692ee74762a6a53e51f92cf66a9177 100644
+index 0565b37dd5320b49efb11cf28f064d6a970048aa..598216a2794d2c7b325a9e479dfb553427fa0bc7 100644
 --- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 +++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 @@ -482,8 +482,10 @@ public class Sniffer extends Animal {
@@ -56,7 +56,7 @@ index 68751f7ed123c3e99f56259ccc23121661f89bc1..fec7ecfe6e692ee74762a6a53e51f92c
          SnifferAi.updateActivity(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/monster/breeze/Breeze.java b/net/minecraft/world/entity/monster/breeze/Breeze.java
-index fb643596bd5fb12e4cd323706f51a479d78a5455..542baa54c8b5fbe2d9d71e3ee5d2bd62b69baccc 100644
+index d91ce14cc39b1b6ccd558f53ed605d4c6a5acae5..52558a99c915da3c46e5f63bd8014cfcdb38505f 100644
 --- a/net/minecraft/world/entity/monster/breeze/Breeze.java
 +++ b/net/minecraft/world/entity/monster/breeze/Breeze.java
 @@ -228,8 +228,10 @@ public class Breeze extends Monster {
@@ -71,10 +71,10 @@ index fb643596bd5fb12e4cd323706f51a479d78a5455..542baa54c8b5fbe2d9d71e3ee5d2bd62
          BreezeAi.updateActivity(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/monster/creaking/Creaking.java b/net/minecraft/world/entity/monster/creaking/Creaking.java
-index 2c6833753950f1bb0941b0cbe54bebddb84b137d..07b60f61b4b676cab2072ad0cf1cf94fed9b44d6 100644
+index c9404d72de59e18dc809b8dec107f1f23d50f441..91c6956311da3694cb3cda2f7a86c7e110c0d212 100644
 --- a/net/minecraft/world/entity/monster/creaking/Creaking.java
 +++ b/net/minecraft/world/entity/monster/creaking/Creaking.java
-@@ -230,8 +230,10 @@ public class Creaking extends Monster {
+@@ -231,8 +231,10 @@ public class Creaking extends Monster {
          return (Brain<Creaking>)super.getBrain();
      }
  

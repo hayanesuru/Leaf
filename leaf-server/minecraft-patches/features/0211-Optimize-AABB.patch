@@ -6,10 +6,10 @@ Subject: [PATCH] Optimize AABB
 Pretty minor stuff but, it improves AABB.intersect by around ~5%
 
 diff --git a/net/minecraft/world/phys/AABB.java b/net/minecraft/world/phys/AABB.java
-index f64c04b32dd2d0fe143fc8bf9f498e52beb66a58..00daaff66bd26e9ca15a7eb4052ff38f9e662f7b 100644
+index 939fe337c8c1fa52bc0d95cff6d6a735e1125738..1a8432a7ee220ba19327aaad007e9897628bb6cb 100644
 --- a/net/minecraft/world/phys/AABB.java
 +++ b/net/minecraft/world/phys/AABB.java
-@@ -220,13 +220,16 @@ public class AABB {
+@@ -221,13 +221,16 @@ public class AABB {
      }
  
      public AABB intersect(AABB other) {
@@ -33,7 +33,7 @@ index f64c04b32dd2d0fe143fc8bf9f498e52beb66a58..00daaff66bd26e9ca15a7eb4052ff38f
      }
  
      public AABB minmax(AABB other) {
-@@ -258,16 +261,39 @@ public class AABB {
+@@ -259,16 +262,39 @@ public class AABB {
      }
  
      public boolean intersects(AABB other) {

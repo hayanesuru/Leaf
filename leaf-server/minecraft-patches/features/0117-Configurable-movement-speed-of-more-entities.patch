@@ -5,7 +5,7 @@ Subject: [PATCH] Configurable movement speed of more entities
 
 
 diff --git a/net/minecraft/world/entity/monster/Drowned.java b/net/minecraft/world/entity/monster/Drowned.java
-index f5e6673ff2bd3029585b9ffea10df5d549f1cdd6..d44ed0d6a672a0b1eb0a8781e3e094096a2b753d 100644
+index c22f7054e0f78dcce3e3f9765e2ee9b63ca195ff..2e04078664cd723e3e0c80565e4b6e6416b13901 100644
 --- a/net/minecraft/world/entity/monster/Drowned.java
 +++ b/net/minecraft/world/entity/monster/Drowned.java
 @@ -97,6 +97,7 @@ public class Drowned extends Zombie implements RangedAttackMob {
@@ -17,7 +17,7 @@ index f5e6673ff2bd3029585b9ffea10df5d549f1cdd6..d44ed0d6a672a0b1eb0a8781e3e09409
  
      @Override
 diff --git a/net/minecraft/world/entity/monster/Husk.java b/net/minecraft/world/entity/monster/Husk.java
-index a5bfc6f5caba1da8cfcb345524e05e8676672cb0..5fe02c322def05265445bf8876ea75d9f3732d0f 100644
+index a4ce65911a5d778f60bcedb3acd9fe59a5094c96..f4200bdf2002c13259821b27811370896adf4b3e 100644
 --- a/net/minecraft/world/entity/monster/Husk.java
 +++ b/net/minecraft/world/entity/monster/Husk.java
 @@ -43,6 +43,7 @@ public class Husk extends Zombie {
@@ -29,10 +29,10 @@ index a5bfc6f5caba1da8cfcb345524e05e8676672cb0..5fe02c322def05265445bf8876ea75d9
  
      @Override
 diff --git a/net/minecraft/world/entity/monster/Zombie.java b/net/minecraft/world/entity/monster/Zombie.java
-index 7af71c777dca26cd94b1807a2a77ea0d30e92976..e64f9308fc848c0f22d8dbd6e544b7862054be7b 100644
+index 783f8b9a05939b9f42fc77065f6347e3c6ddf8f5..447adc3dcfd31a6fb9e673555e9793a82f9e02d4 100644
 --- a/net/minecraft/world/entity/monster/Zombie.java
 +++ b/net/minecraft/world/entity/monster/Zombie.java
-@@ -123,6 +123,7 @@ public class Zombie extends Monster {
+@@ -127,6 +127,7 @@ public class Zombie extends Monster {
      public void initAttributes() {
          this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.level().purpurConfig.zombieMaxHealth);
          this.getAttribute(Attributes.SCALE).setBaseValue(this.level().purpurConfig.zombieScale);
@@ -40,7 +40,7 @@ index 7af71c777dca26cd94b1807a2a77ea0d30e92976..e64f9308fc848c0f22d8dbd6e544b786
      }
      // Purpur end - Configurable entity base attributes
  
-@@ -190,7 +191,7 @@ public class Zombie extends Monster {
+@@ -194,7 +195,7 @@ public class Zombie extends Monster {
      public static AttributeSupplier.Builder createAttributes() {
          return Monster.createMonsterAttributes()
              .add(Attributes.FOLLOW_RANGE, 35.0)
@@ -50,10 +50,10 @@ index 7af71c777dca26cd94b1807a2a77ea0d30e92976..e64f9308fc848c0f22d8dbd6e544b786
              .add(Attributes.ARMOR, 2.0)
              .add(Attributes.SPAWN_REINFORCEMENTS_CHANCE);
 diff --git a/net/minecraft/world/entity/monster/ZombieVillager.java b/net/minecraft/world/entity/monster/ZombieVillager.java
-index 1ca0514732916d325c4a76d73120aaf613c3f780..970f6bdb0d0c15f7d814926472daec689beb82f4 100644
+index ae5939c940bdd93977fa882360fc31e46479554f..ba480249c1e8813931a668a37977347a73f3a3f5 100644
 --- a/net/minecraft/world/entity/monster/ZombieVillager.java
 +++ b/net/minecraft/world/entity/monster/ZombieVillager.java
-@@ -99,6 +99,7 @@ public class ZombieVillager extends Zombie implements VillagerDataHolder {
+@@ -98,6 +98,7 @@ public class ZombieVillager extends Zombie implements VillagerDataHolder {
      @Override
      public void initAttributes() {
          this.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(this.level().purpurConfig.zombieVillagerMaxHealth);
@@ -62,7 +62,7 @@ index 1ca0514732916d325c4a76d73120aaf613c3f780..970f6bdb0d0c15f7d814926472daec68
  
      @Override
 diff --git a/net/minecraft/world/entity/monster/ZombifiedPiglin.java b/net/minecraft/world/entity/monster/ZombifiedPiglin.java
-index fddbbffafea275dad187b7908386cf4c05c86743..89a67db9bbdb31661fa4f71f1270198ba2d56c7a 100644
+index 39489c8a347031fb4f73faca46039786e35762ac..4de1d0966157b20526386becee10b9be45f7a9ba 100644
 --- a/net/minecraft/world/entity/monster/ZombifiedPiglin.java
 +++ b/net/minecraft/world/entity/monster/ZombifiedPiglin.java
 @@ -85,6 +85,7 @@ public class ZombifiedPiglin extends Zombie implements NeutralMob {
@@ -83,7 +83,7 @@ index fddbbffafea275dad187b7908386cf4c05c86743..89a67db9bbdb31661fa4f71f1270198b
      }
  
 diff --git a/org/purpurmc/purpur/PurpurWorldConfig.java b/org/purpurmc/purpur/PurpurWorldConfig.java
-index b3fca75c66b16e35f6841c3b7df9103d68f1308e..ae06918ebfa3bbd914ebdebb8107ec447643ef22 100644
+index ed5bbc49da258f8db249b1387f51ed1b22a29053..5bfb5228316441a913b506a438f7a0135582933a 100644
 --- a/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -1570,6 +1570,7 @@ public class PurpurWorldConfig {
@@ -151,14 +151,14 @@ index b3fca75c66b16e35f6841c3b7df9103d68f1308e..ae06918ebfa3bbd914ebdebb8107ec44
  
      public boolean zombifiedPiglinRidable = false;
 @@ -3400,6 +3408,7 @@ public class PurpurWorldConfig {
-     public boolean zombifiedPiglinCountAsPlayerKillWhenAngry = true;
+     public boolean zombifiedPiglinCountAsPlayerKillWhenAngry = false;
      public boolean zombifiedPiglinTakeDamageFromWater = false;
      public boolean zombifiedPiglinAlwaysDropExp = false;
 +    public double zombifiedPiglinMovementSpeed = 0.23F; // Leaf - Configurable movement speed of more entities - zombifiedPiglin
      private void zombifiedPiglinSettings() {
          zombifiedPiglinRidable = getBoolean("mobs.zombified_piglin.ridable", zombifiedPiglinRidable);
          zombifiedPiglinRidableInWater = getBoolean("mobs.zombified_piglin.ridable-in-water", zombifiedPiglinRidableInWater);
-@@ -3418,6 +3427,7 @@ public class PurpurWorldConfig {
+@@ -3421,6 +3430,7 @@ public class PurpurWorldConfig {
          zombifiedPiglinCountAsPlayerKillWhenAngry = getBoolean("mobs.zombified_piglin.count-as-player-kill-when-angry", zombifiedPiglinCountAsPlayerKillWhenAngry);
          zombifiedPiglinTakeDamageFromWater = getBoolean("mobs.zombified_piglin.takes-damage-from-water", zombifiedPiglinTakeDamageFromWater);
          zombifiedPiglinAlwaysDropExp = getBoolean("mobs.zombified_piglin.always-drop-exp", zombifiedPiglinAlwaysDropExp);

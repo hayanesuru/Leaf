@@ -138,10 +138,10 @@ index ea7710c17bfc9fcfe736c3a2e83898b7ad6a7869..29adf7f0881cb4b73610ca526e6cccfe
          if (packet == null || this.processedDisconnect) { // Spigot
              return;
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 82117c8619b184017bb4448bf2e30f817abd368a..f5cdd332292dbf3367eff99efa6c52f00267be52 100644
+index bbdb8e00ac0fdcc4f1b94faf8e2cd13597e4e2a0..c18921f4ec1d4c205fa1d6efbb60eb05dcec4908 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -1374,7 +1374,7 @@ public abstract class PlayerList {
+@@ -1375,7 +1375,7 @@ public abstract class PlayerList {
      public void broadcastChatMessage(PlayerChatMessage message, Predicate<ServerPlayer> shouldFilterMessageTo, @Nullable ServerPlayer sender, ChatType.Bound boundChatType, @Nullable Function<net.kyori.adventure.audience.Audience, Component> unsignedFunction) {
          // Paper end
          boolean flag = this.verifyChatTrusted(message);
@@ -150,7 +150,7 @@ index 82117c8619b184017bb4448bf2e30f817abd368a..f5cdd332292dbf3367eff99efa6c52f0
          OutgoingChatMessage outgoingChatMessage = OutgoingChatMessage.create(message);
          boolean flag1 = false;
  
-@@ -1399,6 +1399,7 @@ public abstract class PlayerList {
+@@ -1400,6 +1400,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(PlayerChatMessage message) {

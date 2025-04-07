@@ -8,10 +8,10 @@ For size 16: ~5% improvement (735.589 ns vs 697.095 ns)
 For size 4096: ~10% improvement (1563.115 ns vs 1396.803 ns)
 
 diff --git a/net/minecraft/util/SortedArraySet.java b/net/minecraft/util/SortedArraySet.java
-index 339b19e88567be382e550ed54477fabd58d51faa..3de282a68bd125ad17fee47bebef3835a860c170 100644
+index 62c643febe5d642f5741ac2dcec1606a844593be..e8bad6e1c0aeb67005661db6ed42f745554fa652 100644
 --- a/net/minecraft/util/SortedArraySet.java
 +++ b/net/minecraft/util/SortedArraySet.java
-@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
+@@ -12,6 +12,7 @@ import net.minecraft.Util;
  public class SortedArraySet<T> extends AbstractSet<T> implements ca.spottedleaf.moonrise.patches.chunk_system.util.ChunkSystemSortedArraySet<T> { // Paper - rewrite chunk system
      private static final int DEFAULT_INITIAL_CAPACITY = 10;
      private final Comparator<T> comparator;

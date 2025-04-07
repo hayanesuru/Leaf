@@ -9,7 +9,7 @@ happen but the visual "refresh" of a world change is hidden. Depending on the de
 this can act as a "smooth teleport" to a world if the new world is very similar looking to the old one.
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 291d1ca6df397bba0c85480ab678c481fa59914d..2ad0c935e16b92007475c681641770aa27f2b0c3 100644
+index e2b8bd2ba3ef82bb64f5649ae59641b0f273ea43..2ec01803a6ae255bec9def42b67723caa57bb8d8 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1418,6 +1418,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -30,10 +30,10 @@ index 291d1ca6df397bba0c85480ab678c481fa59914d..2ad0c935e16b92007475c681641770aa
                  level.addDuringTeleport(this);
                  this.triggerDimensionChangeTriggers(serverLevel);
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 4bc7e2c569223779d3c8c556a62d81c092481f70..b98b0f7983548b45493fce128d886ac826ebdeaf 100644
+index 7f12288fc361f780171026beb52c07b20ae17324..214fcd61a62b2e3fa2aa61c06f95f2cb29e23c81 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -797,11 +797,11 @@ public abstract class PlayerList {
+@@ -805,11 +805,11 @@ public abstract class PlayerList {
          byte b = (byte)(keepInventory ? 1 : 0);
          ServerLevel serverLevel = serverPlayer.serverLevel();
          LevelData levelData = serverLevel.getLevelData();

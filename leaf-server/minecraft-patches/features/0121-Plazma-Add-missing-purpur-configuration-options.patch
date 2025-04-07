@@ -9,10 +9,10 @@ Original project: https://github.com/PlazmaMC/PlazmaBukkit
 Add more Purpur configurable options for entities
 
 diff --git a/net/minecraft/world/entity/animal/allay/Allay.java b/net/minecraft/world/entity/animal/allay/Allay.java
-index a642533eddd1aca96ad57c2a219f00870a615f71..77e40bbfb567c2853d491343c203095bf5a81e0c 100644
+index 18107d9be4d9ba816852ee4595a5349867834bef..ffa224d6cff03ad903ed38636eb3857f5919912f 100644
 --- a/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/net/minecraft/world/entity/animal/allay/Allay.java
-@@ -179,6 +179,18 @@ public class Allay extends PathfinderMob implements InventoryCarrier, VibrationS
+@@ -177,6 +177,18 @@ public class Allay extends PathfinderMob implements InventoryCarrier, VibrationS
      }
      // Purpur end - Configurable entity base attributes
  
@@ -32,10 +32,10 @@ index a642533eddd1aca96ad57c2a219f00870a615f71..77e40bbfb567c2853d491343c203095b
      protected Brain.Provider<Allay> brainProvider() {
          return Brain.provider(MEMORY_TYPES, SENSOR_TYPES);
 diff --git a/net/minecraft/world/entity/animal/camel/Camel.java b/net/minecraft/world/entity/animal/camel/Camel.java
-index a7168edb338c5a77c884e9eef1e48bcdc3623fa4..e5f24eaa18045f6a33248c6f907ebcd9003c245e 100644
+index 8d2dc9b94a13c386b7e54788a9ec6baf15c09a13..29c264b70eb5ce15e8c24d444d3fd50c5cab6a1c 100644
 --- a/net/minecraft/world/entity/animal/camel/Camel.java
 +++ b/net/minecraft/world/entity/animal/camel/Camel.java
-@@ -95,6 +95,18 @@ public class Camel extends AbstractHorse {
+@@ -101,6 +101,18 @@ public class Camel extends AbstractHorse {
      }
      // Purpur end - Make entity breeding times configurable
  
@@ -54,7 +54,7 @@ index a7168edb338c5a77c884e9eef1e48bcdc3623fa4..e5f24eaa18045f6a33248c6f907ebcd9
      @Override
      public void addAdditionalSaveData(CompoundTag compound) {
          super.addAdditionalSaveData(compound);
-@@ -159,7 +171,7 @@ public class Camel extends AbstractHorse {
+@@ -171,7 +183,7 @@ public class Camel extends AbstractHorse {
      @Override
      protected void customServerAiStep(ServerLevel level) {
          Brain<?> brain = this.getBrain();
@@ -64,10 +64,10 @@ index a7168edb338c5a77c884e9eef1e48bcdc3623fa4..e5f24eaa18045f6a33248c6f907ebcd9
          CamelAi.updateActivity(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/animal/frog/Frog.java b/net/minecraft/world/entity/animal/frog/Frog.java
-index 6e5cb137b3aa91321528d00a1433009cb9a0e656..fca179b8c30083eab1f4a3057d24f0f9100d490d 100644
+index 50f9a11f8cb53fd1fa34017598ff3fe828b3ca25..9f9abbd3272cba17f79dc4da6cf2cd4d3ab2cc8b 100644
 --- a/net/minecraft/world/entity/animal/frog/Frog.java
 +++ b/net/minecraft/world/entity/animal/frog/Frog.java
-@@ -170,6 +170,23 @@ public class Frog extends Animal implements VariantHolder<Holder<FrogVariant>> {
+@@ -169,6 +169,23 @@ public class Frog extends Animal {
      }
      // Purpur end - Make entity breeding times configurable
  
@@ -92,10 +92,10 @@ index 6e5cb137b3aa91321528d00a1433009cb9a0e656..fca179b8c30083eab1f4a3057d24f0f9
      protected Brain.Provider<Frog> brainProvider() {
          return Brain.provider(MEMORY_TYPES, SENSOR_TYPES);
 diff --git a/net/minecraft/world/entity/animal/frog/Tadpole.java b/net/minecraft/world/entity/animal/frog/Tadpole.java
-index 0fdda6b24aee95170e54079e53125b4aed19ac0b..b295b4f2f4e13dd7fd577d126cd0ae72b47126a0 100644
+index 7a3bfa91ffc5c7c6b04eef7b1b1d3c04c5a6d856..649d0fd34fc807ee0c87577490c77b71d5d76ecf 100644
 --- a/net/minecraft/world/entity/animal/frog/Tadpole.java
 +++ b/net/minecraft/world/entity/animal/frog/Tadpole.java
-@@ -105,6 +105,23 @@ public class Tadpole extends AbstractFish {
+@@ -106,6 +106,23 @@ public class Tadpole extends AbstractFish {
      }
      // Purpur end - Ridables
  
@@ -120,7 +120,7 @@ index 0fdda6b24aee95170e54079e53125b4aed19ac0b..b295b4f2f4e13dd7fd577d126cd0ae72
      protected PathNavigation createNavigation(Level level) {
          return new WaterBoundPathNavigation(this, level);
 diff --git a/net/minecraft/world/entity/animal/sniffer/Sniffer.java b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
-index fec7ecfe6e692ee74762a6a53e51f92cf66a9177..20ce6607ed1c1c00dea5c0e95a4327845d1fb3d5 100644
+index 598216a2794d2c7b325a9e479dfb553427fa0bc7..fca5464de3fe07c74e26c9c608efaa3c150c11a1 100644
 --- a/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 +++ b/net/minecraft/world/entity/animal/sniffer/Sniffer.java
 @@ -118,6 +118,18 @@ public class Sniffer extends Animal {
@@ -152,7 +152,7 @@ index fec7ecfe6e692ee74762a6a53e51f92cf66a9177..20ce6607ed1c1c00dea5c0e95a432784
          SnifferAi.updateActivity(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/monster/creaking/Creaking.java b/net/minecraft/world/entity/monster/creaking/Creaking.java
-index 07b60f61b4b676cab2072ad0cf1cf94fed9b44d6..bd2248ed7da175dbf71f99cc3be978bc5e790096 100644
+index 91c6956311da3694cb3cda2f7a86c7e110c0d212..d4adacff205f6c6d94f2c7376485ac259aa94d61 100644
 --- a/net/minecraft/world/entity/monster/creaking/Creaking.java
 +++ b/net/minecraft/world/entity/monster/creaking/Creaking.java
 @@ -131,6 +131,18 @@ public class Creaking extends Monster {
@@ -174,7 +174,7 @@ index 07b60f61b4b676cab2072ad0cf1cf94fed9b44d6..bd2248ed7da175dbf71f99cc3be978bc
      @Override
      protected BodyRotationControl createBodyControl() {
          return new Creaking.CreakingBodyRotationControl(this);
-@@ -233,7 +245,7 @@ public class Creaking extends Monster {
+@@ -234,7 +246,7 @@ public class Creaking extends Monster {
      private int behaviorTick; // Leaf - Plazma - Add missing Pufferfish configurations
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -184,10 +184,10 @@ index 07b60f61b4b676cab2072ad0cf1cf94fed9b44d6..bd2248ed7da175dbf71f99cc3be978bc
          CreakingAi.updateActivity(this);
      }
 diff --git a/net/minecraft/world/entity/monster/warden/Warden.java b/net/minecraft/world/entity/monster/warden/Warden.java
-index 3a43790fb91e778f4fc0730aecd0dde4a6d301c8..fddd6a91b0fa9d4e9472d53f5056b7dae76b7cbd 100644
+index e5193d7320ea17e86b776c705ec45010019493d6..ed221514a407f1c07986d138a17c588a523d76b8 100644
 --- a/net/minecraft/world/entity/monster/warden/Warden.java
 +++ b/net/minecraft/world/entity/monster/warden/Warden.java
-@@ -153,6 +153,23 @@ public class Warden extends Monster implements VibrationSystem {
+@@ -150,6 +150,23 @@ public class Warden extends Monster implements VibrationSystem {
      }
      // Purpur end - Ridables
  
@@ -211,7 +211,7 @@ index 3a43790fb91e778f4fc0730aecd0dde4a6d301c8..fddd6a91b0fa9d4e9472d53f5056b7da
      @Override
      public Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
          return new ClientboundAddEntityPacket(this, entity, this.hasPose(Pose.EMERGING) ? 1 : 0);
-@@ -307,7 +324,7 @@ public class Warden extends Monster implements VibrationSystem {
+@@ -304,7 +321,7 @@ public class Warden extends Monster implements VibrationSystem {
      private int behaviorTick = 0; // Pufferfish
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -221,7 +221,7 @@ index 3a43790fb91e778f4fc0730aecd0dde4a6d301c8..fddd6a91b0fa9d4e9472d53f5056b7da
          super.customServerAiStep(level);
          if ((this.tickCount + this.getId()) % 120 == 0) {
 diff --git a/net/minecraft/world/entity/vehicle/AbstractChestBoat.java b/net/minecraft/world/entity/vehicle/AbstractChestBoat.java
-index b230955ae880d84fde40b4feffa5caf3c4449eb7..c8bdfaaf41e2309e4865806b42677064f3f7bfcb 100644
+index 900c2fdd58da1ba6441f74175b6967b608248315..bf7f1338584d67ed93bd73f5de83a9811d08558f 100644
 --- a/net/minecraft/world/entity/vehicle/AbstractChestBoat.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractChestBoat.java
 @@ -27,7 +27,7 @@ import net.minecraft.world.level.storage.loot.LootTable;
@@ -233,7 +233,7 @@ index b230955ae880d84fde40b4feffa5caf3c4449eb7..c8bdfaaf41e2309e4865806b42677064
      @Nullable
      private ResourceKey<LootTable> lootTable;
      private long lootTableSeed;
-@@ -118,7 +118,7 @@ public abstract class AbstractChestBoat extends AbstractBoat implements HasCusto
+@@ -111,7 +111,7 @@ public abstract class AbstractChestBoat extends AbstractBoat implements HasCusto
  
      @Override
      public int getContainerSize() {
@@ -243,7 +243,7 @@ index b230955ae880d84fde40b4feffa5caf3c4449eb7..c8bdfaaf41e2309e4865806b42677064
  
      @Override
 diff --git a/org/purpurmc/purpur/PurpurConfig.java b/org/purpurmc/purpur/PurpurConfig.java
-index bbfd05509dfc2ee453f847d299b3d261324b6fa9..b8c8806789bd0060cd3faee5815bbf25c8715a9b 100644
+index c03f80f20761384f08ab2c07d9999297c3c96a3b..bacfceada7d5d3d643c740af38ff8bdfb57b21f7 100644
 --- a/org/purpurmc/purpur/PurpurConfig.java
 +++ b/org/purpurmc/purpur/PurpurConfig.java
 @@ -322,6 +322,7 @@ public class PurpurConfig {
@@ -263,7 +263,7 @@ index bbfd05509dfc2ee453f847d299b3d261324b6fa9..b8c8806789bd0060cd3faee5815bbf25
          org.bukkit.event.inventory.InventoryType.ENDER_CHEST.setDefaultSize(enderChestSixRows ? 54 : 27);
          enderChestPermissionRows = getBoolean("settings.blocks.ender_chest.use-permissions-for-rows", enderChestPermissionRows);
 diff --git a/org/purpurmc/purpur/PurpurWorldConfig.java b/org/purpurmc/purpur/PurpurWorldConfig.java
-index ae06918ebfa3bbd914ebdebb8107ec447643ef22..793d2fd30edcf4c21445eabdab8d6813e460e469 100644
+index 5bfb5228316441a913b506a438f7a0135582933a..0bcc19dbd8f3107ea5f99e3ad81c3b8cd9ee5783 100644
 --- a/org/purpurmc/purpur/PurpurWorldConfig.java
 +++ b/org/purpurmc/purpur/PurpurWorldConfig.java
 @@ -1139,12 +1139,20 @@ public class PurpurWorldConfig {

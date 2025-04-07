@@ -5,10 +5,10 @@ Subject: [PATCH] Spawner Configurations
 
 
 diff --git a/net/minecraft/world/level/BaseSpawner.java b/net/minecraft/world/level/BaseSpawner.java
-index 8c6f8cb08b247dcf497822ae991aa3afbcb784f1..9df9f4308c717db523d3c58e4d8dab7437984d02 100644
+index 9fa9d84033c28071120e8a1c796ace4f9a45d4c5..9914e347838f55b4658a0ab8998bc0eeade0f4f8 100644
 --- a/net/minecraft/world/level/BaseSpawner.java
 +++ b/net/minecraft/world/level/BaseSpawner.java
-@@ -53,6 +53,12 @@ public abstract class BaseSpawner {
+@@ -55,6 +55,12 @@ public abstract class BaseSpawner {
  
      public boolean isNearPlayer(Level level, BlockPos pos) {
          if (level.purpurConfig.spawnerDeactivateByRedstone && level.hasNeighborSignal(pos)) return false; // Purpur - Redstone deactivates spawners
@@ -21,7 +21,7 @@ index 8c6f8cb08b247dcf497822ae991aa3afbcb784f1..9df9f4308c717db523d3c58e4d8dab74
          return level.hasNearbyAlivePlayerThatAffectsSpawningForSpawner(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, this.requiredPlayerRange); // Paper - Affects Spawning API // Leaf - Optimize nearby alive players for spawning
      }
  
-@@ -75,6 +81,20 @@ public abstract class BaseSpawner {
+@@ -77,6 +83,20 @@ public abstract class BaseSpawner {
          }
      }
  
@@ -42,7 +42,7 @@ index 8c6f8cb08b247dcf497822ae991aa3afbcb784f1..9df9f4308c717db523d3c58e4d8dab74
      public void serverTick(ServerLevel serverLevel, BlockPos pos) {
          if (spawnCount <= 0 || maxNearbyEntities <= 0) return; // Paper - Ignore impossible spawn tick
          // Paper start - Configurable mob spawner tick rate
-@@ -82,6 +102,15 @@ public abstract class BaseSpawner {
+@@ -84,6 +104,15 @@ public abstract class BaseSpawner {
          tickDelay = serverLevel.paperConfig().tickRates.mobSpawner;
          if (tickDelay == -1) { return; } // If disabled
          // Paper end - Configurable mob spawner tick rate
@@ -58,19 +58,17 @@ index 8c6f8cb08b247dcf497822ae991aa3afbcb784f1..9df9f4308c717db523d3c58e4d8dab74
          if (this.isNearPlayer(serverLevel, pos)) {
              if (this.spawnDelay < -tickDelay) { // Paper - Configurable mob spawner tick rate
                  this.delay(serverLevel, pos);
-@@ -107,18 +136,43 @@ public abstract class BaseSpawner {
-                     double d = size >= 1 ? list.getDouble(0) : pos.getX() + (random.nextDouble() - random.nextDouble()) * this.spawnRange + 0.5;
-                     double d1 = size >= 2 ? list.getDouble(1) : pos.getY() + random.nextInt(3) - 1;
-                     double d2 = size >= 3 ? list.getDouble(2) : pos.getZ() + (random.nextDouble() - random.nextDouble()) * this.spawnRange + 0.5;
--                    if (serverLevel.noCollision(optional.get().getSpawnAABB(d, d1, d2))) {
-+
-+                    // Leaf start - Spawner Configurations
+@@ -112,18 +141,41 @@ public abstract class BaseSpawner {
+                                 pos.getZ() + (random.nextDouble() - random.nextDouble()) * this.spawnRange + 0.5
+                             )
+                         );
+-                    if (serverLevel.noCollision(optional.get().getSpawnAABB(vec3.x, vec3.y, vec3.z))) {
++                        // Leaf start - Spawner Configurations
 +                    // Skip collision check if block checks are disabled
 +                    boolean skipBlockChecks = org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.enabled &&
 +                        !org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.spawnerBlockChecks;
-+                    if (skipBlockChecks || serverLevel.noCollision(optional.get().getSpawnAABB(d, d1, d2))) {
-                         BlockPos blockPos = BlockPos.containing(d, d1, d2);
-+
++                    if (skipBlockChecks || serverLevel.noCollision(optional.get().getSpawnAABB(vec3.x, vec3.y, vec3.z))) {
+                         BlockPos blockPos = BlockPos.containing(vec3);
 +                        // Add light level check if enabled
 +                        if (org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.enabled &&
 +                            org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.lightLevelCheck) {
@@ -105,22 +103,22 @@ index 8c6f8cb08b247dcf497822ae991aa3afbcb784f1..9df9f4308c717db523d3c58e4d8dab74
                              continue;
                          }
  
-@@ -146,6 +200,7 @@ public abstract class BaseSpawner {
+@@ -151,6 +203,7 @@ public abstract class BaseSpawner {
                              return;
                          }
  
 +                        if (!org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.enabled || org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.spawnerMaxNearbyCheck) { // Leaf - Spawner Configurations - Skip max nearby entity check if disabled
-                         int size1 = serverLevel.getEntities(
+                         int size = serverLevel.getEntities(
                                  EntityTypeTest.forExactClass(entity.getClass()),
                                  new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1).inflate(this.spawnRange),
-@@ -156,12 +211,16 @@ public abstract class BaseSpawner {
+@@ -161,12 +214,16 @@ public abstract class BaseSpawner {
                              this.delay(serverLevel, pos);
                              return;
                          }
 +                        } // Leaf - Spawner Configurations
  
                          entity.preserveMotion = true; // Paper - Fix Entity Teleportation and cancel velocity if teleported; preserve entity motion from tag
-                         entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), random.nextFloat() * 360.0F, 0.0F);
+                         entity.snapTo(entity.getX(), entity.getY(), entity.getZ(), random.nextFloat() * 360.0F, 0.0F);
                          if (entity instanceof Mob mob) {
 -                            if (nextSpawnData.getCustomSpawnRules().isEmpty() && !mob.checkSpawnRules(serverLevel, EntitySpawnReason.SPAWNER)
 -                                || !mob.checkSpawnObstruction(serverLevel)) {
@@ -132,17 +130,20 @@ index 8c6f8cb08b247dcf497822ae991aa3afbcb784f1..9df9f4308c717db523d3c58e4d8dab74
                                  continue;
                              }
  
-@@ -249,6 +308,13 @@ public abstract class BaseSpawner {
-             this.spawnPotentials = SimpleWeightedRandomList.single(this.nextSpawnData != null ? this.nextSpawnData : new SpawnData());
-         }
- 
+@@ -231,10 +288,16 @@ public abstract class BaseSpawner {
+         tag.read("SpawnData", SpawnData.CODEC).ifPresent(spawnData -> this.setNextSpawnData(level, pos, spawnData));
+         this.spawnPotentials = tag.read("SpawnPotentials", SpawnData.LIST_CODEC)
+                 .orElseGet(() -> WeightedList.of(this.nextSpawnData != null ? this.nextSpawnData : new SpawnData()));
 +        // Leaf start - Spawner Configurations
 +        if (org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.enabled) {
 +            this.minSpawnDelay = org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.minSpawnDelay;
 +            this.maxSpawnDelay = org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.maxSpawnDelay;
-+            this.spawnCount = tag.getShort("SpawnCount");
-+        } else
-+        // Leaf end - Spawner Configurations
-         // Paper start - use ints if set
-         if (tag.contains("Paper.MinSpawnDelay", net.minecraft.nbt.Tag.TAG_ANY_NUMERIC)) {
-             this.minSpawnDelay = tag.getInt("Paper.MinSpawnDelay");
++        } else {
+         // Paper start - use int if set
+         this.minSpawnDelay = tag.getIntOr("Paper.MinSpawnDelay", tag.getIntOr("MinSpawnDelay", 200));
+         this.maxSpawnDelay = tag.getIntOr("Paper.MaxSpawnDelay", tag.getIntOr("MaxSpawnDelay", 800));
+         // Paper end - use int if set
++        } // Leaf end - Spawner Configurations
+         this.spawnCount = tag.getIntOr("SpawnCount", 4);
+         this.maxNearbyEntities = tag.getIntOr("MaxNearbyEntities", 6);
+         this.requiredPlayerRange = tag.getIntOr("RequiredPlayerRange", 16);

@@ -20,10 +20,10 @@ index 0c1953754220ff72e18f0396134507d93ba7b1b8..51813495cd745c3011534fb75f337305
      // Paper end - Affects Spawning API
  
 diff --git a/net/minecraft/world/entity/monster/Zombie.java b/net/minecraft/world/entity/monster/Zombie.java
-index 1f32b1549cf9ab84fc338a86ee9eb1f0c014f879..4c78db1ab0a588b57c31f23bcba01775e5008d1e 100644
+index 08cf959a0b96ec765f3405a0b0956932ee0a7d26..2fbd167126e6eb5aaf27de77f32e274c8a51df16 100644
 --- a/net/minecraft/world/entity/monster/Zombie.java
 +++ b/net/minecraft/world/entity/monster/Zombie.java
-@@ -410,7 +410,7 @@ public class Zombie extends Monster {
+@@ -411,7 +411,7 @@ public class Zombie extends Monster {
                      if (SpawnPlacements.isSpawnPositionOk(type, level, blockPos)
                          && SpawnPlacements.checkSpawnRules(type, level, EntitySpawnReason.REINFORCEMENT, blockPos, level.random)) {
                          zombie.setPos(i1, i2, i3);

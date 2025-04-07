@@ -5,10 +5,10 @@ Subject: [PATCH] Async chunk sending
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
-index a35e9fae8f8da0c42f0616c4f78dc396492673aa..af49117695c0785033b984ff91550e2fccbbc5e6 100644
+index 32608df3da169159c070f37cb55407f4f6187744..67275e803e0287306b163f4eec17388b9c701a8c 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
-@@ -411,19 +411,91 @@ public final class RegionizedPlayerChunkLoader {
+@@ -409,19 +409,91 @@ public final class RegionizedPlayerChunkLoader {
              this.delayedTicketOps.addLast(op);
          }
  
