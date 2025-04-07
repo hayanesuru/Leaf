@@ -7,7 +7,7 @@ Original license: GPL v3
 Original project: https://github.com/Gensokyo-Reimagined/Nitori
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 18a0150536a847f9617a736245086d590bf80b74..10084fa3c0b8e1e6eaefc4fd733fc74ff295d588 100644
+index 17d3a8a2cc3c86ed6aae9c20ed9f281dc9715cf5..354823def23167feb1e7b35cd9db5ef1584e7e8c 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1067,6 +1067,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

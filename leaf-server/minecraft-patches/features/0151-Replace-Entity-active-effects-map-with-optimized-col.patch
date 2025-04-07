@@ -6,7 +6,7 @@ Subject: [PATCH] Replace Entity active effects map with optimized collection
 Dreeam TODO: check this
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 19c1dca135ada485e5aab78a0c0622ee9856e1e9..534dd27d27395f9c98c62ea7014bb3a8df8caa2e 100644
+index 916a964263a9b71d20007c29302341dd50c94b85..fe201ffb28df1171bc22f7ed40cd729b9f3f1017 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -196,6 +196,10 @@ public abstract class LivingEntity extends Entity implements Attackable {

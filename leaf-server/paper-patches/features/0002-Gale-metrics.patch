@@ -34,7 +34,7 @@ index 632920e04686d8a0fd0a60e87348be1fe7862a3c..ba0dd850f90564fab3a5b922bb28d244
          IO_POOL.adjustThreadCount(ioThreads);
  
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index 6abc57669e87f7f98f3b76af3c0e50825fea6eb1..d561202169d6f19c1e9ad8009415af9eaa707b96 100644
+index 6abc57669e87f7f98f3b76af3c0e50825fea6eb1..aa9dd6b75e8d3cfa1c527ef28e195b06772e5ade 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
 @@ -593,7 +593,7 @@ public class Metrics {
@@ -42,7 +42,7 @@ index 6abc57669e87f7f98f3b76af3c0e50825fea6eb1..d561202169d6f19c1e9ad8009415af9e
              // Only start Metrics, if it's enabled in the config
              if (config.getBoolean("enabled", true)) {
 -                Metrics metrics = new Metrics("Paper", serverUUID, logFailedRequests, Bukkit.getLogger());
-+                Metrics metrics = new Metrics("Gale", serverUUID, logFailedRequests, Bukkit.getLogger()); // Gale - branding changes - metrics
++                Metrics metrics = new Metrics("Leaf", serverUUID, logFailedRequests, Bukkit.getLogger()); // Gale - branding changes - metrics // Leaf - metrics
  
                  metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
                      String minecraftVersion = Bukkit.getVersion();
@@ -51,18 +51,18 @@ index 6abc57669e87f7f98f3b76af3c0e50825fea6eb1..d561202169d6f19c1e9ad8009415af9e
                  metrics.addCustomChart(new Metrics.SingleLineChart("players", () -> Bukkit.getOnlinePlayers().size()));
                  metrics.addCustomChart(new Metrics.SimplePie("online_mode", () -> Bukkit.getOnlineMode() ? "online" : "offline"));
 -                final String paperVersion;
-+                final String galeVersion; // Gale - branding changes - metrics
++                final String leafVersion; // Gale - branding changes - metrics // Leaf - metrics
                  final String implVersion = org.bukkit.craftbukkit.Main.class.getPackage().getImplementationVersion();
                  if (implVersion != null) {
                      final String buildOrHash = implVersion.substring(implVersion.lastIndexOf('-') + 1);
 -                    paperVersion = "git-Paper-%s-%s".formatted(Bukkit.getServer().getMinecraftVersion(), buildOrHash);
-+                    galeVersion = "git-Gale-%s-%s".formatted(Bukkit.getServer().getMinecraftVersion(), buildOrHash); // Gale - branding changes - metrics
++                    leafVersion = "git-Leaf-%s-%s".formatted(Bukkit.getServer().getMinecraftVersion(), buildOrHash); // Gale - branding changes - metrics // Leaf - metrics
                  } else {
 -                    paperVersion = "unknown";
-+                    galeVersion = "unknown"; // Gale - branding changes - metrics
++                    leafVersion = "unknown"; // Gale - branding changes - metrics // Leaf - metrics
                  }
 -                metrics.addCustomChart(new Metrics.SimplePie("paper_version", () -> paperVersion));
-+                metrics.addCustomChart(new Metrics.SimplePie("gale_version", () -> galeVersion)); // Gale - branding changes - metrics
++                metrics.addCustomChart(new Metrics.SimplePie("leaf_version", () -> leafVersion)); // Gale - branding changes - metrics // Leaf - metrics
  
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
 -                    Map<String, Map<String, Integer>> map = new HashMap<>();

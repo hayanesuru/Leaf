@@ -19,7 +19,7 @@ This patch was ported downstream from the Petal fork.
 Makes most pathfinding-related work happen asynchronously
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index ba2f9ab55e52e25788b38c81e1070ae953b66371..86d07d8f7c171a8930990ab02360e79066cad7d5 100644
+index 33c99f3b24596fbbf3283b455ea8bf340203e01b..e9ebf23b0b1af85e3738a70acc0eaa3e8980261f 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -243,6 +243,7 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
@@ -582,10 +582,10 @@ index e9dfff7e3726cd2229f89bb39fa1ca4815d99a6d..654ecd20ef4a43f7ffc447c15434ce46
          }
      }
 diff --git a/net/minecraft/world/entity/animal/frog/Frog.java b/net/minecraft/world/entity/animal/frog/Frog.java
-index 89fa6a785ff73b30effd58dde4fbcbf99fdad168..5e0f34a929ddad69807db2edcf473a6c00392926 100644
+index 71bae5f5ed284fed30262872771f85de97383d6d..50f9a11f8cb53fd1fa34017598ff3fe828b3ca25 100644
 --- a/net/minecraft/world/entity/animal/frog/Frog.java
 +++ b/net/minecraft/world/entity/animal/frog/Frog.java
-@@ -489,9 +489,25 @@ public class Frog extends Animal {
+@@ -488,9 +488,25 @@ public class Frog extends Animal {
              return pathType != PathType.WATER_BORDER && super.canCutCorner(pathType);
          }
  

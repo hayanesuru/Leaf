@@ -13,7 +13,7 @@ As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index 612eacf43f8b6b92354fa43479bd0ead728dd7b9..a35c0af0c53bab4c1b3623e903d3057c816e5d3b 100644
+index c9c7590a5635d966a0ca262ed5985714d9e66598..119d26ada18ad1451b893657a1c9fa3bc2be6be4 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
 @@ -936,6 +936,46 @@ public class Metrics {

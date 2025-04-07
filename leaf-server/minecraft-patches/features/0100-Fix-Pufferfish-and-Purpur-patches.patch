@@ -5,10 +5,10 @@ Subject: [PATCH] Fix Pufferfish and Purpur patches
 
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 5fb7a76faf72f7d91122e5bf01c51853164a73c0..011b1a8c13d41c6f1d54d9247b7e61a548f43382 100644
+index 91fa7f0bac5681413cd8d66fe1ebf2029713408f..3a970b1f751726e4eec2832e94295c242cc7c997 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -277,7 +277,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -276,7 +276,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      public static final int TICK_TIME = 1000000000 / MinecraftServer.TPS;
      private static final int SAMPLE_INTERVAL = 20; // Paper - improve server tick loop
      @Deprecated(forRemoval = true) // Paper
@@ -17,16 +17,16 @@ index 5fb7a76faf72f7d91122e5bf01c51853164a73c0..011b1a8c13d41c6f1d54d9247b7e61a5
      // Spigot end
      public volatile boolean hasFullyShutdown; // Paper - Improved watchdog support
      public volatile boolean abnormalExit; // Paper - Improved watchdog support
-@@ -289,7 +289,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-     public boolean lagging = false; // Purpur - Lagging threshold
+@@ -286,7 +286,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     public boolean isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
+     private final Set<String> pluginsBlockingSleep = new java.util.HashSet<>(); // Paper - API to allow/disallow tick sleeping
      public static final long SERVER_INIT = System.nanoTime(); // Paper - Lag compensation
-     protected boolean upnp = false; // Purpur - UPnP Port Forwarding
 -    public gg.pufferfish.pufferfish.util.AsyncExecutor mobSpawnExecutor = new gg.pufferfish.pufferfish.util.AsyncExecutor("MobSpawning"); // Pufferfish - optimize mob spawning
 +    public gg.pufferfish.pufferfish.util.AsyncExecutor mobSpawnExecutor = new gg.pufferfish.pufferfish.util.AsyncExecutor("Leaf Async Mob Spawn Thread"); // Pufferfish - optimize mob spawning // Leaf - Fix Pufferfish and Purpur patches - Unify thread name
+     public boolean lagging = false; // Purpur - Lagging threshold
+     protected boolean upnp = false; // Purpur - UPnP Port Forwarding
  
-     public static <S extends MinecraftServer> S spin(Function<Thread, S> threadFunction) {
-         ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.init(); // Paper - rewrite data converter system
-@@ -1250,9 +1250,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1248,9 +1248,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                      tps15.add(currentTps, diff);
  
                      // Backwards compat with bad plugins
@@ -42,7 +42,7 @@ index 5fb7a76faf72f7d91122e5bf01c51853164a73c0..011b1a8c13d41c6f1d54d9247b7e61a5
                      lagging = recentTps[0] < org.purpurmc.purpur.PurpurConfig.laggingThreshold; // Purpur - Lagging threshold
                      tickSection = currentTime;
                  }
-@@ -1280,7 +1283,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1278,7 +1281,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                      this.mayHaveDelayedTasks = true;
                      this.delayedTasksMaxNextTickTimeNanos = Math.max(Util.getNanos() + l, this.nextTickTimeNanos);
                      // Purpur start - Configurable TPS Catchup
@@ -64,24 +64,11 @@ index 35fd539eb2bfe60ad17ab1e558a01273666acc54..445bbdc8da7f1fdbddfc4d8787d78fea
          // Paper end - Improve ServerGUI
          this.values[this.vp++ & 0xFF] = (int)(l * 100L / Runtime.getRuntime().maxMemory());
          this.repaint();
-diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 55f708438e5d71cf14f4e632fc20a65b4bfb7d25..54895ed9ad9b9b2c4c12cfcce89af453c430e3e6 100644
---- a/net/minecraft/server/level/ServerChunkCache.java
-+++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -638,7 +638,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-         //this.lastSpawnState = spawnState; // Pufferfish - this is managed asynchronously
-             // Gale start - MultiPaper - skip unnecessary mob spawning computations
-         } else {
--            spawnState = null;
-+            lastSpawnState = null; // Leaf - Fix Pufferfish and Purpur patches - Optimize mob spawning
-         }
-         // Gale end - MultiPaper - skip unnecessary mob spawning computations
-         int _int = this.level.getGameRules().getInt(GameRules.RULE_RANDOMTICKING);
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 1ba275fd76970774922bcd91bea6bf779bab32b7..a96f4f45d465b6f0e5b061877bd11f3caeeb1625 100644
+index 4b59db324e71846d233e43bafcdae658bcc70328..413fac2acf8cc467d328ccb1fe01399722d02941 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1235,7 +1235,7 @@ public class ServerGamePacketListenerImpl
+@@ -1255,7 +1255,7 @@ public class ServerGamePacketListenerImpl
              }
  
              if (byteTotal > byteAllowed) {
@@ -91,10 +78,10 @@ index 1ba275fd76970774922bcd91bea6bf779bab32b7..a96f4f45d465b6f0e5b061877bd11f3c
                  this.disconnectAsync(Component.literal("Book too large!"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION); // Paper - kick event cause // Paper - add proper async disconnect
                  return;
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a5a8bdecddadac3de1b5a0c1a9849ce1cd52a530..f500f4e32e676712fcd0c877498acc2722baae98 100644
+index 1539e039d4d5fd539cfc552a4d420ae5a6fb8b56..109ec179bd7e960cb09a98e1ec6179a60b2cba57 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -533,23 +533,37 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -522,23 +522,36 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
      // Purpur end - Add canSaveToDisk to Entity
  
@@ -103,13 +90,12 @@ index a5a8bdecddadac3de1b5a0c1a9849ce1cd52a530..f500f4e32e676712fcd0c877498acc27
 +    private BlockPos cached_eye_blockpos;
 +    private net.minecraft.world.phys.Vec3 cached_position;
 +    // Gale end - JettPack - optimize sun burn tick - cache eye blockpos
-+
      // Purpur start - copied from Mob - API for any mob to burn daylight
      public boolean isSunBurnTick() {
-         if (this.level().isDay() && !this.level().isClientSide) {
+         if (this.level().isBrightOutside() && !this.level().isClientSide) {
 -            float lightLevelDependentMagicValue = this.getLightLevelDependentMagicValue();
 -            BlockPos blockPos = BlockPos.containing(this.getX(), this.getEyeY(), this.getZ());
--            boolean flag = this.isInWaterRainOrBubble() || this.isInPowderSnow || this.wasInPowderSnow;
+-            boolean flag = this.isInWaterOrRain() || this.isInPowderSnow || this.wasInPowderSnow;
 -            if (lightLevelDependentMagicValue > 0.5F
 -                && this.random.nextFloat() * 30.0F < (lightLevelDependentMagicValue - 0.4F) * 2.0F
 -                && !flag
@@ -128,7 +114,7 @@ index a5a8bdecddadac3de1b5a0c1a9849ce1cd52a530..f500f4e32e676712fcd0c877498acc27
 +            if (this.random.nextFloat() * 30.0F >= (lightLevelDependentMagicValue - 0.4F) * 2.0F) return false;
 +            // Gale end - JettPack - optimize sun burn tick - optimizations and cache eye blockpos
 +
-+            boolean flag = this.isInWaterRainOrBubble() || this.isInPowderSnow || this.wasInPowderSnow;
++            boolean flag = this.isInWaterOrRain() || this.isInPowderSnow || this.wasInPowderSnow;
 +
 +            return !flag && this.level().canSeeSky(this.cached_eye_blockpos); // Gale - JettPack - optimize sun burn tick - optimizations and cache eye blockpos
          }
@@ -142,7 +128,7 @@ index a5a8bdecddadac3de1b5a0c1a9849ce1cd52a530..f500f4e32e676712fcd0c877498acc27
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index ac006d8738592bc5cb77033adc8c442ce302a476..ce2a9b6c4b903e5285e77f7ee64defd8e81029ae 100644
+index dfca015796b87059b19db55b4911bd0de2580798..40ab67a6930242553ed7acc9d6cc474a36e23888 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -1024,13 +1024,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -164,10 +150,10 @@ index ac006d8738592bc5cb77033adc8c442ce302a476..ce2a9b6c4b903e5285e77f7ee64defd8
              }
              // Purpur end - Mob head visibility percent
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index fbcb803fb575cb1f81afa9d03d5fddbf6352155d..b326c87c1c958bb18fc961010768f7d9f0e414cf 100644
+index ba2f9ab55e52e25788b38c81e1070ae953b66371..33c99f3b24596fbbf3283b455ea8bf340203e01b 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -1632,11 +1632,6 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -1505,10 +1505,6 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
      protected void playAttackSound() {
      }
  
@@ -175,15 +161,14 @@ index fbcb803fb575cb1f81afa9d03d5fddbf6352155d..b326c87c1c958bb18fc961010768f7d9
 -    private BlockPos cached_eye_blockpos;
 -    private net.minecraft.world.phys.Vec3 cached_position;
 -    // Gale end - JettPack - optimize sun burn tick - cache eye blockpos
--
      public boolean isSunBurnTick() {
          // Purpur - implemented in Entity - API for any mob to burn daylight
          return super.isSunBurnTick();
 diff --git a/net/minecraft/world/entity/ai/sensing/SecondaryPoiSensor.java b/net/minecraft/world/entity/ai/sensing/SecondaryPoiSensor.java
-index 135e19e921c9592cec83f6f940f2abe47757fbb8..9fa0c2f09ddfa17a778d4ea8d1ec9314f11a6efd 100644
+index 60ec389615cfcad388ed37b8d3ee04e87db36755..34fe1d3bd6603225f84ab18794bbb1189d4b4f49 100644
 --- a/net/minecraft/world/entity/ai/sensing/SecondaryPoiSensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/SecondaryPoiSensor.java
-@@ -22,21 +22,17 @@ public class SecondaryPoiSensor extends Sensor<Villager> {
+@@ -22,20 +22,17 @@ public class SecondaryPoiSensor extends Sensor<Villager> {
  
      @Override
      protected void doTick(ServerLevel level, Villager entity) {
@@ -191,8 +176,7 @@ index 135e19e921c9592cec83f6f940f2abe47757fbb8..9fa0c2f09ddfa17a778d4ea8d1ec9314
 +        // Leaf start - Fix Pufferfish and Purpur patches
 +        // Purpur: Option for Villager Clerics to farm Nether Wart - make sure clerics don't wander to soul sand when the option is off
 +        // Gale: Lithium - skip secondary POI sensor if absent
-         var secondaryPoi = entity.getVillagerData().getProfession().secondaryPoi();
--
+         var secondaryPoi = entity.getVillagerData().profession().value().secondaryPoi();
 -        if (secondaryPoi.isEmpty()) {
 -            entity.getBrain().eraseMemory(MemoryModuleType.SECONDARY_JOB_SITE);
 -            return;
@@ -200,22 +184,21 @@ index 135e19e921c9592cec83f6f940f2abe47757fbb8..9fa0c2f09ddfa17a778d4ea8d1ec9314
 -        // Gale end - Lithium - skip secondary POI sensor if absent
 -        // Purpur start - Option for Villager Clerics to farm Nether Wart - make sure clerics don't wander to soul sand when the option is off
          Brain<?> brain = entity.getBrain();
--        if (!level.purpurConfig.villagerClericsFarmWarts && entity.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.CLERIC) {
-+
-+        if (secondaryPoi.isEmpty() || (!level.purpurConfig.villagerClericsFarmWarts && entity.getVillagerData().getProfession() == net.minecraft.world.entity.npc.VillagerProfession.CLERIC)) {
+-        if (!level.purpurConfig.villagerClericsFarmWarts && entity.getVillagerData().profession().is(net.minecraft.world.entity.npc.VillagerProfession.CLERIC)) {
++        if (secondaryPoi.isEmpty() || !level.purpurConfig.villagerClericsFarmWarts && entity.getVillagerData().profession().is(net.minecraft.world.entity.npc.VillagerProfession.CLERIC)) {
              brain.eraseMemory(MemoryModuleType.SECONDARY_JOB_SITE);
              return;
          }
--        // Purpur end - Option for Villager Clerics to farm Nether Wart
+         // Purpur end - Option for Villager Clerics to farm Nether Wart
 +        // Leaf end - Fix Pufferfish and Purpur patches
          ResourceKey<Level> resourceKey = level.dimension();
          BlockPos blockPos = entity.blockPosition();
          List<GlobalPos> list = Lists.newArrayList();
 diff --git a/net/minecraft/world/entity/animal/allay/Allay.java b/net/minecraft/world/entity/animal/allay/Allay.java
-index 10d2a1138d814b83ce4233205a7f0ab2ed1f399d..a642533eddd1aca96ad57c2a219f00870a615f71 100644
+index 441287e74243a413c97a98b7898bab7833ac6458..18107d9be4d9ba816852ee4595a5349867834bef 100644
 --- a/net/minecraft/world/entity/animal/allay/Allay.java
 +++ b/net/minecraft/world/entity/animal/allay/Allay.java
-@@ -287,8 +287,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier, VibrationS
+@@ -283,8 +283,7 @@ public class Allay extends PathfinderMob implements InventoryCarrier, VibrationS
      private int behaviorTick = 0; // Pufferfish
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -226,10 +209,10 @@ index 10d2a1138d814b83ce4233205a7f0ab2ed1f399d..a642533eddd1aca96ad57c2a219f0087
          AllayAi.updateActivity(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/animal/axolotl/Axolotl.java b/net/minecraft/world/entity/animal/axolotl/Axolotl.java
-index 1323cedcacd3072cdf5f1eac644688cd098b53db..ad19bbd6989bfb98966872b304f6ece0e869f7a4 100644
+index de207d747026453fabe2e6e725d2aa8504fbc9a1..524a7c31708a03f7a9dae75731caa8a450a6488d 100644
 --- a/net/minecraft/world/entity/animal/axolotl/Axolotl.java
 +++ b/net/minecraft/world/entity/animal/axolotl/Axolotl.java
-@@ -347,8 +347,7 @@ public class Axolotl extends Animal implements VariantHolder<Axolotl.Variant>, B
+@@ -372,8 +372,7 @@ public class Axolotl extends Animal implements Bucketable {
      private int behaviorTick = 0; // Pufferfish
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -240,10 +223,10 @@ index 1323cedcacd3072cdf5f1eac644688cd098b53db..ad19bbd6989bfb98966872b304f6ece0
          AxolotlAi.updateActivity(this);
          if (!this.isNoAi()) {
 diff --git a/net/minecraft/world/entity/animal/frog/Frog.java b/net/minecraft/world/entity/animal/frog/Frog.java
-index aca0877319d507c3a672589bd4de5268d7a4c3dc..e5ec23c413e0d7da6f6b9c43925a7aa247946895 100644
+index 89fa6a785ff73b30effd58dde4fbcbf99fdad168..71bae5f5ed284fed30262872771f85de97383d6d 100644
 --- a/net/minecraft/world/entity/animal/frog/Frog.java
 +++ b/net/minecraft/world/entity/animal/frog/Frog.java
-@@ -242,8 +242,7 @@ public class Frog extends Animal implements VariantHolder<Holder<FrogVariant>> {
+@@ -259,8 +259,7 @@ public class Frog extends Animal {
      private int behaviorTick = 0; // Pufferfish
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -254,10 +237,10 @@ index aca0877319d507c3a672589bd4de5268d7a4c3dc..e5ec23c413e0d7da6f6b9c43925a7aa2
          FrogAi.updateActivity(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/animal/frog/Tadpole.java b/net/minecraft/world/entity/animal/frog/Tadpole.java
-index 0ca35514a920dddf230d749bc1a5fe15f1c7940a..ec9db1c12426db80dbf02d704e6c7ec867d59f6f 100644
+index a445bbe84d919ffadd8f3f0006b12140cd8060fd..7a3bfa91ffc5c7c6b04eef7b1b1d3c04c5a6d856 100644
 --- a/net/minecraft/world/entity/animal/frog/Tadpole.java
 +++ b/net/minecraft/world/entity/animal/frog/Tadpole.java
-@@ -133,8 +133,7 @@ public class Tadpole extends AbstractFish {
+@@ -134,8 +134,7 @@ public class Tadpole extends AbstractFish {
      private int behaviorTick = 0; // Pufferfish
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -268,10 +251,10 @@ index 0ca35514a920dddf230d749bc1a5fe15f1c7940a..ec9db1c12426db80dbf02d704e6c7ec8
          TadpoleAi.updateActivity(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/animal/goat/Goat.java b/net/minecraft/world/entity/animal/goat/Goat.java
-index 35d1b99b873d9f8c9aa2a1178a449a8625b18406..9b3ff19b3ce1a4780cab01bae6561d45e60fdddc 100644
+index 40ba2e6dc6b1efbd17dba582561c133f6b41df25..39d4da47dcd7bbb33ad907b428dc0f65eaa23a82 100644
 --- a/net/minecraft/world/entity/animal/goat/Goat.java
 +++ b/net/minecraft/world/entity/animal/goat/Goat.java
-@@ -223,8 +223,7 @@ public class Goat extends Animal {
+@@ -226,8 +226,7 @@ public class Goat extends Animal {
      private int behaviorTick = 0; // Pufferfish
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -282,10 +265,10 @@ index 35d1b99b873d9f8c9aa2a1178a449a8625b18406..9b3ff19b3ce1a4780cab01bae6561d45
          GoatAi.updateActivity(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/monster/hoglin/Hoglin.java b/net/minecraft/world/entity/monster/hoglin/Hoglin.java
-index 7c119b089259add643cd112efac55f92024d0275..f20ae21f38b621b0e3bab887c40bbb8237b87e34 100644
+index 584955d151e95727406bc68d6a6f15a33c0f920c..865a83fc73d79893e9bdedad37a6e3986d15fc2b 100644
 --- a/net/minecraft/world/entity/monster/hoglin/Hoglin.java
 +++ b/net/minecraft/world/entity/monster/hoglin/Hoglin.java
-@@ -203,8 +203,7 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
+@@ -206,8 +206,7 @@ public class Hoglin extends Animal implements Enemy, HoglinBase {
      private int behaviorTick; // Pufferfish
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -296,10 +279,10 @@ index 7c119b089259add643cd112efac55f92024d0275..f20ae21f38b621b0e3bab887c40bbb82
          HoglinAi.updateActivity(this);
          if (this.isConverting()) {
 diff --git a/net/minecraft/world/entity/monster/piglin/Piglin.java b/net/minecraft/world/entity/monster/piglin/Piglin.java
-index 242b2545b6082f567d0bb7900ef06ded3c0fdcdd..fe6eb99ea3d2deda317efe90ecb0987bb367313f 100644
+index bac328ebdf9f94d156211e03d3913157e2b80374..bf1b33b7bb71ec8387d95d9089f199627a041945 100644
 --- a/net/minecraft/world/entity/monster/piglin/Piglin.java
 +++ b/net/minecraft/world/entity/monster/piglin/Piglin.java
-@@ -382,8 +382,7 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
+@@ -357,8 +357,7 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
      private int behaviorTick; // Pufferfish
      @Override
      protected void customServerAiStep(ServerLevel level) {
@@ -310,10 +293,10 @@ index 242b2545b6082f567d0bb7900ef06ded3c0fdcdd..fe6eb99ea3d2deda317efe90ecb0987b
          PiglinAi.updateActivity(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/projectile/Projectile.java b/net/minecraft/world/entity/projectile/Projectile.java
-index a33641dd6e0839fd1b557d8583fe8bb929fcc1cb..d5ef2ec5e15b6d250aafb0b8282b350c03f8ef2c 100644
+index bde9370798c037c494a9c73f328cb251e68c21b1..3a6be0122d49b20f78be6cc8f1c7acb5c2e45f39 100644
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
-@@ -81,7 +81,7 @@ public abstract class Projectile extends Entity implements TraceableEntity {
+@@ -85,7 +85,7 @@ public abstract class Projectile extends Entity implements TraceableEntity {
  
                  if (maxChunkLoadsPerProjectile >= 0 && this.chunksLoadedByProjectile >= maxChunkLoadsPerProjectile) {
                      if (maxProjectileChunkLoadsConfig.perProjectile.removeFromWorldAfterReachLimit) {
