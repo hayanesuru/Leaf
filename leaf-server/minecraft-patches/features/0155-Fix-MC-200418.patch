@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
+Date: Sun, 7 Jul 2024 01:29:57 +0800
+Subject: [PATCH] Fix MC-200418
+
+Related MC issue: https://bugs.mojang.com/browse/MC/issues/MC-200418
+
+diff --git a/net/minecraft/world/entity/monster/ZombieVillager.java b/net/minecraft/world/entity/monster/ZombieVillager.java
+index ae5939c940bdd93977fa882360fc31e46479554f..48042c85676ca8a8ff074f5b23f0857a0a96af0e 100644
+--- a/net/minecraft/world/entity/monster/ZombieVillager.java
++++ b/net/minecraft/world/entity/monster/ZombieVillager.java
+@@ -293,6 +293,11 @@ public class ZombieVillager extends Zombie implements VillagerDataHolder {
+                 if (!this.isSilent()) {
+                     level.levelEvent(null, 1027, this.blockPosition(), 0);
+                 }
++                // Leaf start - Fix MC-200418
++                if (villager.isPassenger() && villager.getVehicle() instanceof net.minecraft.world.entity.animal.Chicken && villager.isBaby()) {
++                    villager.removeVehicle();
++                }
++                // Leaf end - Fix MC-200418
+                 // CraftBukkit start
+             }, org.bukkit.event.entity.EntityTransformEvent.TransformReason.CURED, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CURED // CraftBukkit
+         );
