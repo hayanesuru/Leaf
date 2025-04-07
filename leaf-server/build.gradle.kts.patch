@@ -1,6 +1,6 @@
 --- a/paper-server/build.gradle.kts
 +++ b/paper-server/build.gradle.kts
-@@ -13,10 +_,11 @@
+@@ -13,10 +_,12 @@
  }
  
  val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
@@ -9,7 +9,8 @@
  dependencies {
      mache("io.papermc:mache:1.21.5+build.1")
 -    paperclip("io.papermc:paperclip:3.0.3")
-+    paperclip("cn.dreeam:quantumleaper:1.0.0-SNAPSHOT") // Leaf - project setup - Use own paperclip fork
++    paperclip("io.papermc:paperclip:3.0.3") // Temp fix until maven repo renew the SSL
++    //paperclip("cn.dreeam:quantumleaper:1.0.0-SNAPSHOT") // Leaf - project setup - Use own paperclip fork
      testRuntimeOnly("org.junit.platform:junit-platform-launcher")
  }
  
