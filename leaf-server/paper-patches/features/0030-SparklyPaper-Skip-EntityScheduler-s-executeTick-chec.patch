@@ -88,7 +88,7 @@ index c03608fec96b51e1867f43d8f42e5aefb1520e46..56268cf8d184e0b6cd46de8c2e893ad3
 +    // Leaf end - SparklyPaper - skip EntityScheduler's executeTick checks if there isn't any tasks to be run
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 5aa8eab78e99408b0beb64d7ed07ff1bc61541db..0809ed41274be3dd18eb89aa96c442bc3995f1b7 100644
+index 83a23a82335eac087d36fd27ca6c6417960b881f..5a707acb7cda4097f822e3dcb17bdf26ca5c9f59 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -80,7 +80,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
@@ -107,4 +107,4 @@ index 5aa8eab78e99408b0beb64d7ed07ff1bc61541db..0809ed41274be3dd18eb89aa96c442bc
 +        this.taskScheduler = new io.papermc.paper.threadedregions.EntityScheduler(this.entity.getServer(), this); // SparklyPaper - skip EntityScheduler's executeTick checks if there isn't any tasks to be run
      }
  
-     public static <T extends Entity> CraftEntity getEntity(CraftServer server, T entity) {
+     // Purpur start - Fire Immunity API

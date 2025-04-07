@@ -9,7 +9,7 @@ Added some asynchronous structure locate methods in World,
 requires async-locator to be enabled in Leaf config, or else it will fall back to sync methods.
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index a76797c08cb5912d0525fa21217d45b61b110259..2538a0de7fd6b1026fff51e5d066c5b0811b7cda 100644
+index a4a0b07c9e3e716d77bc6e11dca096e142a5190e..6bcece7ceb5be047371faf7ab85b3688ed3e045b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -2272,6 +2272,45 @@ public class CraftWorld extends CraftRegionAccessor implements World {

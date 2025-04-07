@@ -5,10 +5,10 @@ Subject: [PATCH] Async playerdata saving
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
-index f2d87c12dd19210ce7e2147fada5c10191008632..0cc6b6c597ca8c955b246764de637be4c25bfb40 100644
+index 1456f2d1a92c8315177fb03d0c7ec943d5f5b097..e70692272aae39ea01fb6860ec4cb703ea531781 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
-@@ -207,7 +207,7 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+@@ -199,7 +199,7 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
      }
  
      private CompoundTag getData() {
@@ -17,7 +17,7 @@ index f2d87c12dd19210ce7e2147fada5c10191008632..0cc6b6c597ca8c955b246764de637be4
      }
  
      private CompoundTag getBukkitData() {
-@@ -813,6 +813,17 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+@@ -744,6 +744,17 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
       * @param compoundTag
       */
      private void save(CompoundTag compoundTag) {
@@ -35,7 +35,7 @@ index f2d87c12dd19210ce7e2147fada5c10191008632..0cc6b6c597ca8c955b246764de637be4
          File playerDir = server.console.playerDataStorage.getPlayerDir();
          try {
              File tempFile = File.createTempFile(this.getUniqueId()+"-", ".dat", playerDir);
-@@ -822,6 +833,12 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+@@ -753,6 +764,12 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
              net.minecraft.Util.safeReplaceFile(playerDataFile.toPath(), tempFile.toPath(), playerDataFileOld.toPath());
          } catch (java.io.IOException e) {
              e.printStackTrace();

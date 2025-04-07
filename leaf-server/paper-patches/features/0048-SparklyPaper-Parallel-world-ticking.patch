@@ -263,7 +263,7 @@ index 196fddeab452e7bc89ef6758635e1d07074e7416..55a2ffa0fff6ef66b9bd5069300c09e9
          } else if (!event.isAsynchronous() && !this.server.isPrimaryThread() && !this.server.isStopping()) {
              // Leaf start - Multithreaded tracker
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 9e09f14033818fcf9df161941e316c16d913705b..8d68b49ff0b1c4c829d97cd8ebe81be79ee856f6 100644
+index 6bcece7ceb5be047371faf7ab85b3688ed3e045b..96faa72abe918e7ab3f1dec44072a5fee27b6476 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -456,7 +456,12 @@ public class CraftWorld extends CraftRegionAccessor implements World {
@@ -609,10 +609,10 @@ index 321280d7c9c3c828cbf2eb19d2fd196a1f84d4c3..cd8f771e08cee5d00c53a8e70f0fe37c
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 5a1b37a408ebede6367ca90ad5d13c29b7b1a6b3..7042d684bc345925f1755fec2b463b487db71cc5 100644
+index ebb07b9b9f6bef9195978c8ecdd5f4ef3ee198bc..3848011363056d700110564c6af8e4c3bd54ac6c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -809,6 +809,28 @@ public class CraftEventFactory {
+@@ -818,6 +818,28 @@ public class CraftEventFactory {
      }
  
      public static BlockPos sourceBlockOverride = null; // SPIGOT-7068: Add source block override, not the most elegant way but better than passing down a BlockPos up to five methods deep.
@@ -641,7 +641,7 @@ index 5a1b37a408ebede6367ca90ad5d13c29b7b1a6b3..7042d684bc345925f1755fec2b463b48
  
      public static boolean handleBlockSpreadEvent(LevelAccessor world, BlockPos source, BlockPos target, net.minecraft.world.level.block.state.BlockState state, int flags) {
          return handleBlockSpreadEvent(world, source, target, state, flags, false);
-@@ -824,7 +846,10 @@ public class CraftEventFactory {
+@@ -833,7 +855,10 @@ public class CraftEventFactory {
          CraftBlockState snapshot = CraftBlockStates.getBlockState(world, target);
          snapshot.setData(state);
  
