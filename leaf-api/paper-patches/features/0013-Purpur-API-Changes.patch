@@ -1,12 +1,12 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Github Actions <no-reply@github.com>
-Date: Thu, 16 Jan 2025 11:21:11 +0000
+Date: Sun, 6 Apr 2025 06:33:23 +0000
 Subject: [PATCH] Purpur API Changes
 
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: b34d675fef91bae2df723705f2568c7afd552d2d
+Commit: 54283ad076012dd5308b92f2469c842ad054a782
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "co/aikar/timings/TimedEventExecutor.java.patch"
@@ -21,7 +21,7 @@ Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "org/spigotmc/CustomTimingsHandler.java.patch"
 
 diff --git a/src/generated/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java b/src/generated/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java
-index f15a7b4471cd31a487467ec7ecf7a186fa887a51..f09fefe6821d8b2b8c8f055985bacc2e042ca569 100644
+index 12207256ae0fa5f2f822116cd22f1a1250e6ee1c..07a9ccf572e514047a5af7071b9270d2ed9c1c72 100644
 --- a/src/generated/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java
 +++ b/src/generated/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java
 @@ -441,6 +441,26 @@ public interface VanillaGoal<T extends Mob> extends Goal<T> {
@@ -52,12 +52,12 @@ index f15a7b4471cd31a487467ec7ecf7a186fa887a51..f09fefe6821d8b2b8c8f055985bacc2e
          return GoalKey.of(type, NamespacedKey.minecraft(key));
      }
 diff --git a/src/main/java/io/papermc/paper/ServerBuildInfo.java b/src/main/java/io/papermc/paper/ServerBuildInfo.java
-index 6b2f6ab137ae37ff0db4827886614436b7ed5dcb..66a9fc729182476c4f601cdb32bcb10970a9498c 100644
+index f738bbcefe288474c5f591dda03d713850633854..5c10ab3deb359bd0045ba5999bcbce19a7949eaa 100644
 --- a/src/main/java/io/papermc/paper/ServerBuildInfo.java
 +++ b/src/main/java/io/papermc/paper/ServerBuildInfo.java
-@@ -26,6 +26,13 @@ public interface ServerBuildInfo {
-     Key BRAND_GALE_ID = Key.key("galemc", "gale");
-     // Gale end - branding changes
+@@ -19,6 +19,12 @@ public interface ServerBuildInfo {
+      */
+     Key BRAND_PAPER_ID = Key.key("papermc", "paper");
  
 +    // Purpur start
 +    /**
@@ -65,15 +65,14 @@ index 6b2f6ab137ae37ff0db4827886614436b7ed5dcb..66a9fc729182476c4f601cdb32bcb109
 +     */
 +    Key BRAND_PURPUR_ID = Key.key("purpurmc", "purpur");
 +    // Purpur end
-+
      // Leaf start - Rebrand
      /**
-      * The brand id for Pufferfish.
+      * The brand id for Gale.
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 4328764f428824078136dc761bd234d01d4bec1e..f4e1c330b6e23ac9edde5c5644a0a41bdfde81f9 100644
+index 10662089e8a08bae6c6077b72c30b14bb94cc2c7..6a599344d3cf2df5219f7afac3b3bc3722e9f26a 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -3062,4 +3062,133 @@ public final class Bukkit {
+@@ -3063,4 +3063,133 @@ public final class Bukkit {
      public static void restart() {
          server.restart();
      }
@@ -290,10 +289,10 @@ index 918a045165cdcde264bc24082b7afebb407271de..f283bcabff7fe6eede6cf4344537e430
 +    // Purpur end - ChatColor conveniences
  }
 diff --git a/src/main/java/org/bukkit/Material.java b/src/main/java/org/bukkit/Material.java
-index d43ce5dbf725d4d9b1a9b61e23e1dbad1798c627..0c1b15033bcbd09ba24520aeb24ee4ee4e355024 100644
+index 5a1b9f81830dee052bafd743f4a1bf0c39288c7a..cf8fd9a981c7fbaa304988df17233ccf40d6829e 100644
 --- a/src/main/java/org/bukkit/Material.java
 +++ b/src/main/java/org/bukkit/Material.java
-@@ -5812,4 +5812,40 @@ public enum Material implements Keyed, Translatable, net.kyori.adventure.transla
+@@ -3616,4 +3616,40 @@ public enum Material implements Keyed, Translatable, net.kyori.adventure.transla
          return this.asItemType().getDefaultDataTypes();
      }
      // Paper end - data component API
@@ -335,10 +334,10 @@ index d43ce5dbf725d4d9b1a9b61e23e1dbad1798c627..0c1b15033bcbd09ba24520aeb24ee4ee
 +    // Purpur end - ItemStack convenience methods
  }
 diff --git a/src/main/java/org/bukkit/OfflinePlayer.java b/src/main/java/org/bukkit/OfflinePlayer.java
-index ed8e11001c8d3c475dc851aedf6e6812a872dc54..c597c298795fb9893447bc822d941c1748dcb9c5 100644
+index c749a898e94d7d0ed70e6f3b42104d61803e819e..96a96ad2ffc6105074b6c20d4109496e9a619982 100644
 --- a/src/main/java/org/bukkit/OfflinePlayer.java
 +++ b/src/main/java/org/bukkit/OfflinePlayer.java
-@@ -567,4 +567,104 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+@@ -570,4 +570,104 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
      @Override
      io.papermc.paper.persistence.PersistentDataContainerView getPersistentDataContainer();
      // Paper end - add pdc to offline player
@@ -444,10 +443,10 @@ index ed8e11001c8d3c475dc851aedf6e6812a872dc54..c597c298795fb9893447bc822d941c17
 +    // Purpur end - OfflinePlayer API
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61f645e491 100644
+index 925b4c8903bb6f44a56af4ecc2c0a01c46f14107..e405dde21778ff7fe3579411276a0419a1a7b9e0 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2414,6 +2414,18 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2421,6 +2421,18 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
  
          // Paper end
  
@@ -466,7 +465,7 @@ index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61
          // Leaf start - Leaf config - API
          @NotNull
          public org.bukkit.configuration.file.YamlConfiguration getLeafConfig()
-@@ -2783,4 +2795,111 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2790,4 +2802,121 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
       */
      long getLastTickOversleepTime();
      // Gale end - YAPFA - last tick time - API
@@ -474,6 +473,7 @@ index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61
 +    // Purpur start - Bring back server name
 +    /**
 +     * Get the name of this server
++     *
 +     * @return the name of the server
 +     */
 +    @NotNull
@@ -481,6 +481,7 @@ index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61
 +    // Purpur end - Bring back server name
 +
 +    // Purpur start - Lagging threshold
++
 +    /**
 +     * Check if server is lagging according to laggy threshold setting
 +     *
@@ -490,6 +491,7 @@ index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61
 +    // Purpur end - Lagging threshold
 +
 +    // Purpur start - Added the ability to add combustible items
++
 +    /**
 +     * Add an Item as fuel for furnaces
 +     *
@@ -507,10 +509,12 @@ index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61
 +    // Purpur end - Added the ability to add combustible items
 +
 +    // Purpur start - Debug Marker API
++
 +    /**
 +     * Creates debug block highlight on specified block location and show it to all players on the server.
 +     * <p>
 +     * Clients may be inconsistent in displaying it.
++     *
 +     * @param location Location to highlight
 +     * @param duration Duration for highlight to show in milliseconds
 +     */
@@ -520,9 +524,10 @@ index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61
 +     * Creates debug block highlight on specified block location and show it to all players on the server.
 +     * <p>
 +     * Clients may be inconsistent in displaying it.
++     *
 +     * @param location Location to highlight
 +     * @param duration Duration for highlight to show in milliseconds
-+     * @param argb Color of the highlight. ARGB int. Will be ignored on some versions of vanilla client
++     * @param argb     Color of the highlight. ARGB int. Will be ignored on some versions of vanilla client
 +     */
 +    void sendBlockHighlight(@NotNull Location location, int duration, int argb);
 +
@@ -530,9 +535,10 @@ index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61
 +     * Creates debug block highlight on specified block location and show it to all players on the server.
 +     * <p>
 +     * Clients may be inconsistent in displaying it.
++     *
 +     * @param location Location to highlight
 +     * @param duration Duration for highlight to show in milliseconds
-+     * @param text Text to show above the highlight
++     * @param text     Text to show above the highlight
 +     */
 +    void sendBlockHighlight(@NotNull Location location, int duration, @NotNull String text);
 +
@@ -540,10 +546,11 @@ index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61
 +     * Creates debug block highlight on specified block location and show it to all players on the server.
 +     * <p>
 +     * Clients may be inconsistent in displaying it.
++     *
 +     * @param location Location to highlight
 +     * @param duration Duration for highlight to show in milliseconds
-+     * @param text Text to show above the highlight
-+     * @param argb Color of the highlight. ARGB int. Will be ignored on some versions of vanilla client
++     * @param text     Text to show above the highlight
++     * @param argb     Color of the highlight. ARGB int. Will be ignored on some versions of vanilla client
 +     */
 +    void sendBlockHighlight(@NotNull Location location, int duration, @NotNull String text, int argb);
 +
@@ -551,9 +558,10 @@ index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61
 +     * Creates debug block highlight on specified block location and show it to all players on the server.
 +     * <p>
 +     * Clients may be inconsistent in displaying it.
-+     * @param location Location to highlight
-+     * @param duration Duration for highlight to show in milliseconds
-+     * @param color Color of the highlight. Will be ignored on some versions of vanilla client
++     *
++     * @param location     Location to highlight
++     * @param duration     Duration for highlight to show in milliseconds
++     * @param color        Color of the highlight. Will be ignored on some versions of vanilla client
 +     * @param transparency Transparency of the highlight
 +     * @throws IllegalArgumentException If transparency is outside 0-255 range
 +     */
@@ -563,10 +571,11 @@ index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61
 +     * Creates debug block highlight on specified block location and show it to all players on the server.
 +     * <p>
 +     * Clients may be inconsistent in displaying it.
-+     * @param location Location to highlight
-+     * @param duration Duration for highlight to show in milliseconds
-+     * @param text Text to show above the highlight
-+     * @param color Color of the highlight. Will be ignored on some versions of vanilla client
++     *
++     * @param location     Location to highlight
++     * @param duration     Duration for highlight to show in milliseconds
++     * @param text         Text to show above the highlight
++     * @param color        Color of the highlight. Will be ignored on some versions of vanilla client
 +     * @param transparency Transparency of the highlight
 +     * @throws IllegalArgumentException If transparency is outside 0-255 range
 +     */
@@ -579,7 +588,7 @@ index 7edf19de268b061a5bf69b69043fddd820cbb591..50984d397d9ff98e82d02efc166aba61
 +    // Purpur end - Debug Marker API
  }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index bff01411f4b2d3ecd9e6d807c3f450d72c108323..bc95f529bc7e443a9ec4e8a4a255a32a6c27f355 100644
+index 50f9f84081573706ebd6f0ebc2cbf6c0596c9691..dd8e6e32c82e46f5ce8e3d33c8c41fc1fede6b68 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -4283,6 +4283,86 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
@@ -733,10 +742,10 @@ index 5df19bd701c67506689fc7f49d91f99ebfbc83f0..32c81559507a8e5085c91d466cda69d0
          } catch (CommandException ex) {
              server.getPluginManager().callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerCommandException(ex, target, sender, args))); // Paper
 diff --git a/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java b/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java
-index fc71bc0867f8db8f52aeddf036d6d8df5ae3b020..8f0b60cd8b3b199185d3e40d8b67549eb6773b53 100644
+index 4b66de5614afed3feb2838771f8a2c3c539b0a9e..0c9680732fb92030ac0dd3099509cd6e46c67578 100644
 --- a/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java
 +++ b/src/main/java/org/bukkit/enchantments/EnchantmentTarget.java
-@@ -227,6 +227,30 @@ public enum EnchantmentTarget {
+@@ -230,6 +230,30 @@ public enum EnchantmentTarget {
          public boolean includes(@NotNull Material item) {
              return BREAKABLE.includes(item) || (WEARABLE.includes(item) && !item.equals(Material.ELYTRA)) || item.equals(Material.COMPASS);
          }
@@ -802,10 +811,10 @@ index 332c55fd6b4b3a8c0cad920a6e765ecc40e684e4..10a8d64ad2da0be2c14f34c3e7d1957c
      // Paper start
      /**
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 1dac39dec5ad636799984574caeb328818a3c5c9..be56f0f42d4ec23397f9974e158b49fcc7ed44f3 100644
+index 50094f04c5a09b87bb24a37ead0a9a574a3fae83..97ba2c698da6820eae7d254008579bb64052f474 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -1196,4 +1196,59 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
+@@ -1214,4 +1214,59 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
       */
      void broadcastHurtAnimation(@NotNull java.util.Collection<Player> players);
      // Paper end - broadcast hurt animation
@@ -958,10 +967,10 @@ index bcc6ba95bd21c7972865838c636a03f50b6c1f1a..c3fcd8dd7dbb1e1a18e17c014c1e6411
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index 5c1a368194d9e560784391205268641938ad06f1..a04b6603a64cd6bf1049fd684407dcf9d9d7b5e9 100644
+index 61794d69b70832925e111f258ae1b4575b31123a..cfbd9344e1055f9fbb955721f7a3be71c2e412da 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
-@@ -1476,4 +1476,20 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+@@ -1452,4 +1452,20 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       */
      boolean canUseEquipmentSlot(org.bukkit.inventory.@NotNull EquipmentSlot slot);
      // Paper end - Expose canUseSlot
@@ -1008,10 +1017,10 @@ index bc84b892cae5fe7019a3ad481e9da79956efa1fe..48eb5b00c460cccde29d327cef1d63fc
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 3ae88a105eb8b062c7a6f3dbf2b0bfed9774afd2..c806e63b5fc44e9e75035346591cbcea9fc12ca2 100644
+index cb8da28d86d44b3633cf47f75141c9a093c63dab..3e2d6105d8d00305076c0c2677a4acd5cc402214 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -3928,4 +3928,123 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -3904,4 +3904,123 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @param score New death screen score of player
       */
      void setDeathScreenScore(int score);
@@ -1161,16 +1170,15 @@ index 7fbfdb07585c7b28acea1f0c1f58ada0cc744441..21fcca092e2e31baa5ece0de9e44e3fa
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Villager.java b/src/main/java/org/bukkit/entity/Villager.java
-index 1db3742024e9cd1b70af2d52b4b756a544c019df..9c722a762c88a88bb5ef18c3b9eab8b371360dac 100644
+index 02b86d9615f8150b13ff0beefd5ca502c0494f99..dcf836b6db1a9b17e5e7aa945318e4b60012112b 100644
 --- a/src/main/java/org/bukkit/entity/Villager.java
 +++ b/src/main/java/org/bukkit/entity/Villager.java
-@@ -367,4 +367,14 @@ public interface Villager extends AbstractVillager {
+@@ -391,4 +391,13 @@ public interface Villager extends AbstractVillager {
+      * reputation regardless of its impact and the player associated.
       */
      public void clearReputations();
-     // Paper end
 +
 +    // Purpur start
-+
 +    /**
 +     * Check if villager is currently lobotomized
 +     *
@@ -1180,13 +1188,13 @@ index 1db3742024e9cd1b70af2d52b4b756a544c019df..9c722a762c88a88bb5ef18c3b9eab8b3
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Wither.java b/src/main/java/org/bukkit/entity/Wither.java
-index 14543c2238b45c526dd9aebea2aa5c22f5df54dc..5312daf33405704c74e2c9e109754285ea6cf734 100644
+index 11ae1b3ad8c215f9245945d223c52f4a62ac47d9..7f23eb5a60ff08fb31e8ba3731a43bd75690214a 100644
 --- a/src/main/java/org/bukkit/entity/Wither.java
 +++ b/src/main/java/org/bukkit/entity/Wither.java
-@@ -107,4 +107,20 @@ public interface Wither extends Monster, Boss, com.destroystokyo.paper.entity.Ra
+@@ -105,4 +105,20 @@ public interface Wither extends Monster, Boss, com.destroystokyo.paper.entity.Ra
+      * This is called in vanilla directly after spawning the wither.
       */
      void enterInvulnerabilityPhase();
-     // Paper end
 +
 +    // Purpur start
 +    /**
@@ -1205,11 +1213,11 @@ index 14543c2238b45c526dd9aebea2aa5c22f5df54dc..5312daf33405704c74e2c9e109754285
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Wolf.java b/src/main/java/org/bukkit/entity/Wolf.java
-index 346fdddd2ed8f0b8b66860c969f5e80c51c6d622..6f62277c3461d436a656cbd80bc59e70cb1a6f3a 100644
+index a1c7b6ba655f40e0b48202a511267f606114bca5..af4f8ba59d00eadb26dbbc3b92492088e6bf5fac 100644
 --- a/src/main/java/org/bukkit/entity/Wolf.java
 +++ b/src/main/java/org/bukkit/entity/Wolf.java
-@@ -110,4 +110,20 @@ public interface Wolf extends Tameable, Sittable, io.papermc.paper.entity.Collar
-             return RegistryAccess.registryAccess().getRegistry(RegistryKey.WOLF_VARIANT).getOrThrow(NamespacedKey.minecraft(key));
+@@ -164,4 +164,20 @@ public interface Wolf extends Tameable, Sittable, io.papermc.paper.entity.Collar
+             return RegistryAccess.registryAccess().getRegistry(RegistryKey.WOLF_SOUND_VARIANT).getOrThrow(NamespacedKey.minecraft(key));
          }
      }
 +
@@ -1219,21 +1227,21 @@ index 346fdddd2ed8f0b8b66860c969f5e80c51c6d622..6f62277c3461d436a656cbd80bc59e70
 +     *
 +     * @return whether the wolf is rabid
 +     */
-+    public boolean isRabid();
++    boolean isRabid();
 +
 +    /**
 +     * Sets this wolf to be rabid or not
 +     *
 +     * @param rabid whether the wolf should be rabid
 +     */
-+    public void setRabid(boolean rabid);
++    void setRabid(boolean rabid);
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
-index d1a5424ff3b289f1c82449ef6d88eb52665df41b..f23b0c250f88926c147af0314b5c4d23c5f8dbae 100644
+index 6d5ae34b39d6001effc2faadd6c30e3a8ab109fa..e8c7aebcab1649e55ab9e947036c9fab839cd675 100644
 --- a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
-@@ -308,7 +308,8 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+@@ -310,7 +310,8 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
          WORLD_BORDER,
          /**
           * Damage caused when an entity contacts a block such as a Cactus,
@@ -1244,10 +1252,10 @@ index d1a5424ff3b289f1c82449ef6d88eb52665df41b..f23b0c250f88926c147af0314b5c4d23
           * Damage: variable
           */
 diff --git a/src/main/java/org/bukkit/event/entity/EntityPotionEffectEvent.java b/src/main/java/org/bukkit/event/entity/EntityPotionEffectEvent.java
-index f6218d317af4f4d83292a10abdf583fb01824232..71b059fd21e2d1bdaf2fbc61e1d54772fc049874 100644
+index 22e14ba522510d659c191d72536cde895458d9ed..d45d781975a6026022712a217c154e316ff48f9f 100644
 --- a/src/main/java/org/bukkit/event/entity/EntityPotionEffectEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/EntityPotionEffectEvent.java
-@@ -216,6 +216,12 @@ public class EntityPotionEffectEvent extends EntityEvent implements Cancellable
+@@ -218,6 +218,12 @@ public class EntityPotionEffectEvent extends EntityEvent implements Cancellable
           * When all effects are removed due to a bucket of milk.
           */
          MILK,
@@ -1321,7 +1329,7 @@ index f1f97a85ec713c05c882d7588f4a3e4a017f4795..813f6cd253322538bdf96eb323dd23a7
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
-index aad9b078a2ea2b79b97074366b1ee07198c4311c..715a2dc5435ac229a996e225ca4d90837f86b87a 100644
+index 70a52a26de6e37154ac322ab28af211d5fdd93ff..f1d00fbad3a41800c2607facfe7a287d300c3f7f 100644
 --- a/src/main/java/org/bukkit/inventory/ItemStack.java
 +++ b/src/main/java/org/bukkit/inventory/ItemStack.java
 @@ -22,6 +22,13 @@ import org.bukkit.material.MaterialData;

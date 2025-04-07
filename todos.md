@@ -13,4 +13,5 @@
 - [ ] Use different state to separate different configs reload
 
 # 1.21.5
+- [ ] Check beacon issues fix
 - [ ] Update from Leaf 1.21.4 (curr commit: `1977a5b12c01f915d7c04a765b18957cbfbeeb24`)

@@ -2910,7 +2910,7 @@ index abe256e1e45ce28036da4aa1586715bc8a1a3414..9eab8024e0675865f17669847759a26d
          return i >= j && i <= k;
      }
 diff --git a/src/main/java/org/bukkit/command/SimpleCommandMap.java b/src/main/java/org/bukkit/command/SimpleCommandMap.java
-index 5df19bd701c67506689fc7f49d91f99ebfbc83f0..cfbf141dc47740822efdbb054208fccea917da66 100644
+index 32c81559507a8e5085c91d466cda69d0dc11327e..7e9f1237f197094318fc41df2e2fa58fbc81e528 100644
 --- a/src/main/java/org/bukkit/command/SimpleCommandMap.java
 +++ b/src/main/java/org/bukkit/command/SimpleCommandMap.java
 @@ -39,7 +39,6 @@ public class SimpleCommandMap implements CommandMap {
@@ -2929,9 +2929,9 @@ index 5df19bd701c67506689fc7f49d91f99ebfbc83f0..cfbf141dc47740822efdbb054208fcce
          label = label.toLowerCase(Locale.ROOT).trim();
          fallbackPrefix = fallbackPrefix.toLowerCase(Locale.ROOT).trim();
          boolean registered = register(label, command, false, fallbackPrefix);
-@@ -153,23 +151,13 @@ public class SimpleCommandMap implements CommandMap {
-             return false;
-         }
+@@ -166,23 +164,13 @@ public class SimpleCommandMap implements CommandMap {
+         parsedArgs = event.getArgs();
+         // Purpur end - ExecuteCommandEvent
  
 -        // Paper start - Plugins do weird things to workaround normal registration
 -        if (target.timings == null) {
@@ -2942,7 +2942,7 @@ index 5df19bd701c67506689fc7f49d91f99ebfbc83f0..cfbf141dc47740822efdbb054208fcce
          try {
 -            try (co.aikar.timings.Timing ignored = target.timings.startTiming()) { // Paper - use try with resources
              // Note: we don't return the result of target.execute as thats success / failure, we return handled (true) or not handled (false)
-             target.execute(sender, sentCommandLabel, Arrays.copyOfRange(args, 1, args.length));
+             target.execute(sender, sentCommandLabel, parsedArgs); // Purpur - ExecuteCommandEvent
 -            } // target.timings.stopTiming(); // Spigot // Paper
          } catch (CommandException ex) {
              server.getPluginManager().callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerCommandException(ex, target, sender, args))); // Paper
