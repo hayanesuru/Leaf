@@ -32,10 +32,10 @@ index 55ce935a2fab7e32904d9ff599867269035d703f..6e2b2d258e47dcca30a5ad9f4f492598
  
      public int getMiddleBlockX() {
 diff --git a/net/minecraft/world/level/levelgen/Beardifier.java b/net/minecraft/world/level/levelgen/Beardifier.java
-index 131923282c9ecbcb1d7f45a826da907c02bd2716..47b6519f40ed978c05d93023a0cdc1c9e13f033f 100644
+index 74d8202b5c9bb2a3ee832be70f95c0b5cbecb460..9ea92c7beee917e47f02e24982bb97ff7eee7c7d 100644
 --- a/net/minecraft/world/level/levelgen/Beardifier.java
 +++ b/net/minecraft/world/level/levelgen/Beardifier.java
-@@ -132,8 +132,15 @@ public class Beardifier implements DensityFunctions.BeardifierOrMarker {
+@@ -131,8 +131,15 @@ public class Beardifier implements DensityFunctions.BeardifierOrMarker {
      }
  
      private static double getBuryContribution(double x, double y, double z) {

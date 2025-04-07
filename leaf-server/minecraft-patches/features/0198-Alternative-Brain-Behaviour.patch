@@ -7,7 +7,7 @@ In the test, this can give ~54.87% improvement (~25712ms -> ~11604ms),
 under 1024 villagers situation.
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index e27284f9897923f67985e3d60c3438bd00cc4a51..0ff7564e0e848bd38e82f9089bfd7249fa649dc5 100644
+index e78cef4c0ee6cff7ec2f27ced12c96be67dc7a0e..e3d0186e681168840836690acd402b774bc464b5 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
 @@ -268,23 +268,52 @@ public class Brain<E extends LivingEntity> {

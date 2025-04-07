@@ -5,10 +5,10 @@ Subject: [PATCH] Replace brain activity maps with optimized collection
 
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index ea6c8e85ccff67b1c24109732f74f1e8199cad07..e27284f9897923f67985e3d60c3438bd00cc4a51 100644
+index b2e17d387558875f45a8458cf874a5b056820432..e78cef4c0ee6cff7ec2f27ced12c96be67dc7a0e 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
-@@ -390,8 +390,8 @@ public class Brain<E extends LivingEntity> {
+@@ -399,8 +399,8 @@ public class Brain<E extends LivingEntity> {
  
          for (Pair<Integer, ? extends BehaviorControl<? super E>> pair : tasks) {
              this.availableBehaviorsByPriority

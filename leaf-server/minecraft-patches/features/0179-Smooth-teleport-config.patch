@@ -9,10 +9,10 @@ happen but the visual "refresh" of a world change is hidden. Depending on the de
 this can act as a "smooth teleport" to a world if the new world is very similar looking to the old one.
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 2a3c38cd8e31f73eca2508ad94e46ace980de50c..336215befa7eb4b20fc86f224a019080cea70113 100644
+index 291d1ca6df397bba0c85480ab678c481fa59914d..2ad0c935e16b92007475c681641770aa27f2b0c3 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1475,6 +1475,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1418,6 +1418,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  LevelData worlddata = level.getLevelData();
  
                  this.connection.send(new ClientboundRespawnPacket(this.createCommonSpawnInfo(level), (byte) 3));
@@ -20,9 +20,9 @@ index 2a3c38cd8e31f73eca2508ad94e46ace980de50c..336215befa7eb4b20fc86f224a019080
                  this.connection.send(new ClientboundChangeDifficultyPacket(worlddata.getDifficulty(), worlddata.isDifficultyLocked()));
                  PlayerList playerList = this.server.getPlayerList();
  
-@@ -1484,7 +1485,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1427,7 +1428,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  // CraftBukkit end
-                 this.portalPos = io.papermc.paper.util.MCUtil.toBlockPosition(exit); // Purpur - Fix stuck in portals
+                 this.portalPos = org.bukkit.craftbukkit.util.CraftLocation.toBlockPosition(exit); // Purpur - Fix stuck in portals
                  this.setServerLevel(level);
 -                this.connection.internalTeleport(PositionMoveRotation.of(teleportTransition), teleportTransition.relatives()); // CraftBukkit - use internal teleport without event
 +                if (!org.dreeam.leaf.config.modules.gameplay.SmoothTeleport.enabled || !PlayerList.isSameLogicalHeight(serverLevel, level)) this.connection.internalTeleport(PositionMoveRotation.of(teleportTransition), teleportTransition.relatives()); // CraftBukkit - use internal teleport without event // Leaf - Smooth teleport
@@ -30,10 +30,10 @@ index 2a3c38cd8e31f73eca2508ad94e46ace980de50c..336215befa7eb4b20fc86f224a019080
                  level.addDuringTeleport(this);
                  this.triggerDimensionChangeTriggers(serverLevel);
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index bda8e9e23f63a6eb27f71fc795ad6495e62f00f2..f59662da0bbfe0e768c4ac5c7491d13263ac5cac 100644
+index 4bc7e2c569223779d3c8c556a62d81c092481f70..b98b0f7983548b45493fce128d886ac826ebdeaf 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -955,11 +955,11 @@ public abstract class PlayerList {
+@@ -797,11 +797,11 @@ public abstract class PlayerList {
          byte b = (byte)(keepInventory ? 1 : 0);
          ServerLevel serverLevel = serverPlayer.serverLevel();
          LevelData levelData = serverLevel.getLevelData();

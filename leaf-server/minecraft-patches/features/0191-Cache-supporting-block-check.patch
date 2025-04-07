@@ -5,10 +5,10 @@ Subject: [PATCH] Cache supporting block check
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 4544dd876d3cbcdb9b774b4a1f0c4737f3124bc5..6ca446fd9ab38329ba505526a56f8e4f64a9a639 100644
+index a2e9306d9a5eef738f8225e98fb1cc1f4bbca504..cb17aaad72940ac94317a50cbe85b22c00e02a10 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1083,12 +1083,36 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1078,12 +1078,36 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.mainSupportingBlockPos.isPresent() && this.mainSupportingBlockPos.get().equals(pos);
      }
  
@@ -45,7 +45,7 @@ index 4544dd876d3cbcdb9b774b4a1f0c4737f3124bc5..6ca446fd9ab38329ba505526a56f8e4f
                  this.mainSupportingBlockPos = optional;
              } else if (movement != null) {
                  AABB aabb1 = aabb.move(-movement.x, 0.0, -movement.z);
-@@ -1105,6 +1129,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1100,6 +1124,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
      }
  

@@ -108,10 +108,10 @@ index e111adec2116f922fe67ee434635e50c60dad15c..72f64d5812411be0f0bc5456caff87d6
 +    // Leaf end - Use faster and thread-safe ban list date format parsing
  }
 diff --git a/net/minecraft/server/players/OldUsersConverter.java b/net/minecraft/server/players/OldUsersConverter.java
-index 7dbcd9d96f052bb10127ad2b061154c23cc9ffd4..0a3b159a8629fad1a240b9be3e6025bfa1183a00 100644
+index 194082763f41a58dc8ee0241a2eeb6dd39dff88d..b39eeaf1515792ccd36d090045f958e2616f65c2 100644
 --- a/net/minecraft/server/players/OldUsersConverter.java
 +++ b/net/minecraft/server/players/OldUsersConverter.java
-@@ -469,8 +469,10 @@ public class OldUsersConverter {
+@@ -466,8 +466,10 @@ public class OldUsersConverter {
      static Date parseDate(String input, Date defaultValue) {
          Date date;
          try {

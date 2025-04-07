@@ -5,20 +5,19 @@ Subject: [PATCH] Use ensureCapacity to pre-populate the size of ticking chunks
  list output
 
 
-diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 6735f9e23c8972b7cf1438a2f3b49d780c1ff78c..c80464d333bd37a9b8bc7cea2291c8c72e6f9bd6 100644
---- a/net/minecraft/server/level/ServerChunkCache.java
-+++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -585,7 +585,11 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-         final ServerChunkCache.ChunkAndHolder[] raw = tickingChunks.getRawDataUnchecked();
+diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
+index a50fb16dc2e6230d346eea8ee76820ec56906446..4a2ef88cb75f4a10565ed819570b2885942b525c 100644
+--- a/net/minecraft/server/level/ChunkMap.java
++++ b/net/minecraft/server/level/ChunkMap.java
+@@ -733,6 +733,11 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          final int size = tickingChunks.size();
  
--        final ChunkMap chunkMap = this.chunkMap;
+         Objects.checkFromToIndex(0, size, raw.length);
 +        // Leaf start - Use ensureCapacity to pre-populate the size of ticking chunks list output
 +        if (output instanceof ArrayList<LevelChunk> arrayList) {
 +            arrayList.ensureCapacity(size);
 +        }
 +        // Leaf end - Use ensureCapacity to pre-populate the size of ticking chunks list output
- 
          for (int i = 0; i < size; ++i) {
-             final ServerChunkCache.ChunkAndHolder chunkAndHolder = raw[i];
+             final LevelChunk levelChunk = raw[i];
+ 

@@ -6,10 +6,10 @@ Subject: [PATCH] Cache tile entity position
 Dreeam TODO: Check if there is a way to cache isRemoved without problem
 
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 290163335cf3967e2745442fd7d4d4fa16fb7bc0..238e015d4ff5fabb99e569118f253366d545d269 100644
+index 800fc055024c176d1830e1d2686f5d96131c8712..5325989f46bd288c5a6f1362ec17d3354d55abfd 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -936,10 +936,12 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -940,10 +940,12 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
          private final T blockEntity;
          private final BlockEntityTicker<T> ticker;
          private boolean loggedInvalidBlockState;
@@ -22,7 +22,7 @@ index 290163335cf3967e2745442fd7d4d4fa16fb7bc0..238e015d4ff5fabb99e569118f253366
          }
  
          @Override
-@@ -980,7 +982,7 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -984,7 +986,7 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
  
          @Override
          public BlockPos getPos() {
@@ -31,7 +31,7 @@ index 290163335cf3967e2745442fd7d4d4fa16fb7bc0..238e015d4ff5fabb99e569118f253366
          }
  
          @Override
-@@ -1007,13 +1009,16 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -1011,13 +1013,16 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
  
      static class RebindableTickingBlockEntityWrapper implements TickingBlockEntity {
          private TickingBlockEntity ticker;
@@ -48,7 +48,7 @@ index 290163335cf3967e2745442fd7d4d4fa16fb7bc0..238e015d4ff5fabb99e569118f253366
          }
  
          @Override
-@@ -1028,7 +1033,7 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -1032,7 +1037,7 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
  
          @Override
          public BlockPos getPos() {

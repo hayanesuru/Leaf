@@ -5,10 +5,10 @@ Subject: [PATCH] Cache eligible players for despawn checks
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 20ded514a74652685b2f785c7fe5fda19e36b2a5..5da07e22ef9dac7baca9d8450b7eae3f6fa141b1 100644
+index b9bff011c0ffb0efdaccc65847be69aad1a70681..d8390cb3901a40b97e99990d9f71f12c74f96607 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -735,6 +735,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -723,6 +723,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          return this.structureManager;
      }
  
@@ -17,7 +17,7 @@ index 20ded514a74652685b2f785c7fe5fda19e36b2a5..5da07e22ef9dac7baca9d8450b7eae3f
      public void tick(BooleanSupplier hasTimeLeft) {
          this.handlingTick = true;
          TickRateManager tickRateManager = this.tickRateManager();
-@@ -802,6 +804,19 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -790,6 +792,19 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
  
              io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
@@ -38,10 +38,10 @@ index 20ded514a74652685b2f785c7fe5fda19e36b2a5..5da07e22ef9dac7baca9d8450b7eae3f
                  .forEach(
                      entity -> {
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 336215befa7eb4b20fc86f224a019080cea70113..e2b15968e89a532ec21c786f41b7f9322fd65a04 100644
+index 2ad0c935e16b92007475c681641770aa27f2b0c3..f9c247769e71afe7cb7ccb9680dfe34df706e7cd 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1576,6 +1576,13 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1518,6 +1518,13 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.containerMenu.broadcastChanges();
      }
  
@@ -56,10 +56,10 @@ index 336215befa7eb4b20fc86f224a019080cea70113..e2b15968e89a532ec21c786f41b7f932
      private Either<Player.BedSleepingProblem, Unit> getBedResult(BlockPos at, Direction direction) {
          if (this.isSleeping() || !this.isAlive()) {
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 54eeb0b112112bc5d3f4165c0ea43cf67931a739..05d5cde42b7011091ef4ee874c0d9d5586ae3f10 100644
+index d473c09e98eb5d3ef7b3e096197c7bf9a6219c56..77075bf43e7e2301e58aa6d9f8bfe934cce42f55 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -854,7 +854,24 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -705,7 +705,24 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
          if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
              this.discard(EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
          } else if (!this.isPersistenceRequired() && !this.requiresCustomPersistence()) {
