@@ -1,7 +1,7 @@
 name: Build Leaf 1.21.5
 on:
   push:
-    branches: [ "ver/1.21.5" ] # no build until update finished
+    branches: [ "dev/1.21.5" ]
   workflow_dispatch:
 
 jobs:

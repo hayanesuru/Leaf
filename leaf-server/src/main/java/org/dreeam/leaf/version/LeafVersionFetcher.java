@@ -6,7 +6,7 @@ public class LeafVersionFetcher extends AbstractPaperVersionFetcher {
 
     public LeafVersionFetcher() {
         super(
-            "ver/1.21.3",
+            "ver/1.21.5",
             "https://github.com/Winds-Studio/Leaf",
             "Winds-Studio",
             "Leaf",

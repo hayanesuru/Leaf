@@ -9,7 +9,7 @@ Leaf: ~48ms (-36%)
 This should help drastically on the farms that use actively changing fluids.
 
 diff --git a/net/minecraft/world/level/material/FlowingFluid.java b/net/minecraft/world/level/material/FlowingFluid.java
-index 4c2c2efd5380ff1fa5ad7553b51babae20f516ae..618a8af8fe30c39bb8c93dcc324f4ae1c48e704e 100644
+index 4625bd55e1cb01dfb9921dcd033f05b4a8f9ad74..8646ccf77f738d7b66efd0a7ecf2519d8a8d6bdf 100644
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
 @@ -8,6 +8,8 @@ import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
@@ -21,8 +21,8 @@ index 4c2c2efd5380ff1fa5ad7553b51babae20f516ae..618a8af8fe30c39bb8c93dcc324f4ae1
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
  import net.minecraft.server.level.ServerLevel;
-@@ -341,31 +343,72 @@ public abstract class FlowingFluid extends Fluid {
-     protected void beforeDestroyingBlock(LevelAccessor level, BlockPos pos, BlockState state, BlockPos source) { beforeDestroyingBlock(level, pos, state); } // Paper - Add BlockBreakBlockEvent
+@@ -342,31 +344,72 @@ public abstract class FlowingFluid extends Fluid {
+ 
      protected abstract void beforeDestroyingBlock(LevelAccessor level, BlockPos pos, BlockState state);
  
 -    protected int getSlopeDistance(LevelReader level, BlockPos pos, int depth, Direction direction, BlockState state, FlowingFluid.SpreadContext spreadContext) {
@@ -53,7 +53,6 @@ index 4c2c2efd5380ff1fa5ad7553b51babae20f516ae..618a8af8fe30c39bb8c93dcc324f4ae1
 +            BlockPos neighborPos = startPos.relative(dir);
 +            BlockState neighborState = spreadContext.getBlockStateIfLoaded(neighborPos);
 +            if (neighborState == null) continue;
-+
 +            long visitKey = encodeSlopeNode(neighborPos, dir.getOpposite());
 +            if (visited.add(visitKey)) {
 +                queue.add(new FlowingFluid.SlopeDistanceNode(neighborPos, initialDepth + 1, dir.getOpposite(), neighborState));
@@ -96,7 +95,8 @@ index 4c2c2efd5380ff1fa5ad7553b51babae20f516ae..618a8af8fe30c39bb8c93dcc324f4ae1
 +    }
 +
 +    private static long encodeSlopeNode(BlockPos pos, Direction excludedDir) {
-+        return ((long) pos.getX() & 0xFFFFFFFFL) << 32 | ((long) pos.getZ() & 0xFFFFFFFFL) << 4 | (excludedDir.ordinal() & 0x0F);}
++        return ((long) pos.getX() & 0xFFFFFFFFL) << 32 | ((long) pos.getZ() & 0xFFFFFFFFL) << 4 | (excludedDir.ordinal() & 0x0F);
++    }
 +
 +    private static class SlopeDistanceNode {
 +        final BlockPos pos;

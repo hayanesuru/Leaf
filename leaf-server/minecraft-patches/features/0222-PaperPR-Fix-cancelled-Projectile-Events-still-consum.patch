@@ -27,19 +27,19 @@ index b3e003694ce0da357e91ab3ce2b1380f9ab0a32a..4d5347a6a2fc8b10d11f89220f537c81
  
                      level.playSound(
 diff --git a/net/minecraft/world/item/CrossbowItem.java b/net/minecraft/world/item/CrossbowItem.java
-index 318316d3aa14f1e9e863d435515c182619a81b3e..b13f03ae35e21088c2b4b388e2b12cf3fe3ef8c6 100644
+index ff4294b9bcb6e2bb0f9d51dee6dcc889e45df95c..0a8041741b8367478ec2cb658071fa4f29513040 100644
 --- a/net/minecraft/world/item/CrossbowItem.java
 +++ b/net/minecraft/world/item/CrossbowItem.java
-@@ -124,7 +124,7 @@ public class CrossbowItem extends ProjectileWeaponItem {
-         return CrossbowItem.tryLoadProjectiles(shooter, crossbowStack, true);
+@@ -95,7 +95,7 @@ public class CrossbowItem extends ProjectileWeaponItem {
      }
+ 
      private static boolean tryLoadProjectiles(LivingEntity shooter, ItemStack crossbowStack, boolean consume) {
 -        List<ItemStack> list = draw(crossbowStack, shooter.getProjectile(crossbowStack), shooter, consume);
 +        List<ItemStack> list = draw(crossbowStack, shooter.getProjectile(crossbowStack), shooter, consume ? ProjectileDrawingItemConsumption.IMMEDIATELY : ProjectileDrawingItemConsumption.NEVER); // Paper - prevent item consumption for cancelled events
          // Paper end - Add EntityLoadCrossbowEvent
          if (!list.isEmpty()) {
              crossbowStack.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.of(list));
-@@ -158,8 +158,10 @@ public class CrossbowItem extends ProjectileWeaponItem {
+@@ -129,8 +129,10 @@ public class CrossbowItem extends ProjectileWeaponItem {
          }
  
          projectile.shoot(projectileShotVector.x(), projectileShotVector.y(), projectileShotVector.z(), velocity, inaccuracy);
@@ -52,7 +52,7 @@ index 318316d3aa14f1e9e863d435515c182619a81b3e..b13f03ae35e21088c2b4b388e2b12cf3
      }
  
      private static Vector3f getProjectileShotVector(LivingEntity shooter, Vec3 distance, float angle) {
-@@ -201,9 +203,9 @@ public class CrossbowItem extends ProjectileWeaponItem {
+@@ -172,9 +174,9 @@ public class CrossbowItem extends ProjectileWeaponItem {
          Level level, LivingEntity shooter, InteractionHand hand, ItemStack weapon, float velocity, float inaccuracy, @Nullable LivingEntity target
      ) {
          if (level instanceof ServerLevel serverLevel) {
@@ -65,7 +65,7 @@ index 318316d3aa14f1e9e863d435515c182619a81b3e..b13f03ae35e21088c2b4b388e2b12cf3
                      CriteriaTriggers.SHOT_CROSSBOW.trigger(serverPlayer, weapon);
                      serverPlayer.awardStat(Stats.ITEM_USED.get(weapon.getItem()));
 diff --git a/net/minecraft/world/item/ProjectileWeaponItem.java b/net/minecraft/world/item/ProjectileWeaponItem.java
-index f20c38c1ff978d00dc0c9810c050506deed44ebd..e58a40623c3a259c80d0f96686797445f54f3a6f 100644
+index 662e286f40e042823fa7cdd9e27b44e4bfad9cb9..ebaf3422437b6815c8ab1d5f91c7e1de22dcc722 100644
 --- a/net/minecraft/world/item/ProjectileWeaponItem.java
 +++ b/net/minecraft/world/item/ProjectileWeaponItem.java
 @@ -40,7 +40,20 @@ public abstract class ProjectileWeaponItem extends Item {
@@ -132,7 +132,7 @@ index f20c38c1ff978d00dc0c9810c050506deed44ebd..e58a40623c3a259c80d0f96686797445
                      if (Projectile.spawnProjectile(
 @@ -81,7 +113,25 @@ public abstract class ProjectileWeaponItem extends Item {
                          if (shooter instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
-                             serverPlayer.getBukkitEntity().updateInventory();
+                             serverPlayer.containerMenu.sendAllDataToRemote();
                          }
 -                        return;
 +                        // Paper start - prevent item consumption for cancelled events
@@ -229,14 +229,14 @@ index f20c38c1ff978d00dc0c9810c050506deed44ebd..e58a40623c3a259c80d0f96686797445
                  player.getInventory().removeItem(ammo);
              }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 4821ab14c6a7d5738f0fc93523aede5ea904aa84..e0d9d7075b2c10f686c8c144c9869fa574cd19d3 100644
+index 817cc2e4f311a626681d94b748a01ae2e3048445..e47e4d11e7dcd8cb4ab6ef965d8b16e6396d2856 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -182,6 +182,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
-     private int tileTickPosition;
-     public final Map<ServerExplosion.CacheKey, Float> explosionDensityCache = new HashMap<>(); // Paper - Optimize explosions
+@@ -170,6 +170,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+     public final Map<ServerExplosion.CacheKey, Float> explosionDensityCache = new java.util.HashMap<>(); // Paper - Optimize explosions
      public java.util.ArrayDeque<net.minecraft.world.level.block.RedstoneTorchBlock.Toggle> redstoneUpdateInfos; // Paper - Faster redstone torch rapid clock removal; Move from Map in BlockRedstoneTorch to here
+     public final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = org.dreeam.leaf.config.modules.opt.FastRNG.enabled ? new org.dreeam.leaf.util.math.random.FasterRandomSource(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed()) : new ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed()); // Gale - Pufferfish - move random tick random // Leaf - Faster random generator
 +    public boolean shouldConsumeArrow = true; // Paper - prevent item consumption for cancelled shot events
  
-     public final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = org.dreeam.leaf.config.modules.opt.FastRNG.enabled ? new org.dreeam.leaf.util.math.random.FasterRandomSource(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed()) : new ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed()); // Gale - Pufferfish - move random tick random // Leaf - Faster random generator
- 
+     // Purpur start - Add adjustable breeding cooldown to config
+     private com.google.common.cache.Cache<BreedingCooldownPair, Object> playerBreedingCooldowns;
