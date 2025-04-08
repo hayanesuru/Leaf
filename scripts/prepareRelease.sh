@@ -3,6 +3,7 @@ set -e
 
 IS_EOL=false
 IS_UNSUPPORTED=false
+IS_DEV=true
 
 RELEASE_NOTES="release_notes.md"
 
@@ -81,6 +82,16 @@ if [ "$IS_UNSUPPORTED" = true ]; then
     echo "> [!CAUTION]"
     echo "> This version of Leaf is unsupported and will not receive any bugfixes."
     echo "> Use at your own risk!"
+  } >> $RELEASE_NOTES
+fi
+
+# Dev build warning
+if [ "$IS_DEV" = true ]; then
+  {
+    echo ""
+    echo "> [!WARNING]"
+    echo "> This is the early dev build, only for testing usage."
+    echo "> Do not use in the production environment!"
   } >> $RELEASE_NOTES
 fi
 
