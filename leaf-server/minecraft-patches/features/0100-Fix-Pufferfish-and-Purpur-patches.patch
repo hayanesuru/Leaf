@@ -65,10 +65,10 @@ index 35fd539eb2bfe60ad17ab1e558a01273666acc54..445bbdc8da7f1fdbddfc4d8787d78fea
          this.values[this.vp++ & 0xFF] = (int)(l * 100L / Runtime.getRuntime().maxMemory());
          this.repaint();
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 4b59db324e71846d233e43bafcdae658bcc70328..413fac2acf8cc467d328ccb1fe01399722d02941 100644
+index 90d0c59c66c2e18d601838886ff55bb428547779..62586fc315b473761579daa863f89df150fb9576 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1255,7 +1255,7 @@ public class ServerGamePacketListenerImpl
+@@ -1287,7 +1287,7 @@ public class ServerGamePacketListenerImpl
              }
  
              if (byteTotal > byteAllowed) {

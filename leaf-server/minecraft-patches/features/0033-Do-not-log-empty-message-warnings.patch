@@ -7,10 +7,10 @@ License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 Gale - https://galemc.org
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index dea2a849a1d1f2dcfc1e63eb873ada999780bf66..804afc38f2be37258ee68d601674a2832b61bfc6 100644
+index f961d38cde80187673d27f9c6fa1239dd505fef5..1f1df6616e416389fc5f84878469f0fed3254de7 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2416,7 +2416,7 @@ public class ServerGamePacketListenerImpl
+@@ -2486,7 +2486,7 @@ public class ServerGamePacketListenerImpl
          // CraftBukkit start
          String rawMessage = message.signedContent();
          if (rawMessage.isEmpty()) {

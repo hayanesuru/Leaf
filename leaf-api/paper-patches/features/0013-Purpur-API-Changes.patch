@@ -811,10 +811,10 @@ index 332c55fd6b4b3a8c0cad920a6e765ecc40e684e4..10a8d64ad2da0be2c14f34c3e7d1957c
      // Paper start
      /**
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 50094f04c5a09b87bb24a37ead0a9a574a3fae83..97ba2c698da6820eae7d254008579bb64052f474 100644
+index 5a3a538c56892a1f3dd5bd437f77b1659da9bd99..5031e3b170af96c4aab85c0aea07f679d9711575 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -1214,4 +1214,59 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
+@@ -1215,4 +1215,59 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
       */
      void broadcastHurtAnimation(@NotNull java.util.Collection<Player> players);
      // Paper end - broadcast hurt animation
@@ -1329,10 +1329,10 @@ index f1f97a85ec713c05c882d7588f4a3e4a017f4795..813f6cd253322538bdf96eb323dd23a7
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
-index 70a52a26de6e37154ac322ab28af211d5fdd93ff..f1d00fbad3a41800c2607facfe7a287d300c3f7f 100644
+index 41d000b81a793277e330fb62c848ab4c8c56d657..1f524abf07666e325a877c90414d6838f485ca71 100644
 --- a/src/main/java/org/bukkit/inventory/ItemStack.java
 +++ b/src/main/java/org/bukkit/inventory/ItemStack.java
-@@ -22,6 +22,13 @@ import org.bukkit.material.MaterialData;
+@@ -23,6 +23,13 @@ import org.bukkit.material.MaterialData;
  import org.bukkit.persistence.PersistentDataContainer;
  import org.jetbrains.annotations.NotNull;
  import org.jetbrains.annotations.Nullable;
@@ -1346,7 +1346,7 @@ index 70a52a26de6e37154ac322ab28af211d5fdd93ff..f1d00fbad3a41800c2607facfe7a287d
  
  /**
   * Represents a stack of items.
-@@ -1371,4 +1378,482 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, Translat
+@@ -1372,4 +1379,482 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, Translat
          return this.craftDelegate.matchesWithoutData(item, excludeTypes, ignoreCount);
      }
      // Paper end - data component API

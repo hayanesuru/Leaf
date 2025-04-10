@@ -5,10 +5,10 @@ Subject: [PATCH] Some Optimizations on SerializableChunkData
 
 
 diff --git a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-index cbb6d1f6e715316e170936d29b816c0e6b02478d..0ed7534dad28e93cd0d1af8616f6d882c47dccf4 100644
+index 749096358fccbd5d1d13801092255c51096eb001..62a40e88fc03b7f383bd750d72c42747ddd591b4 100644
 --- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
 +++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-@@ -470,14 +470,16 @@ public record SerializableChunkData(
+@@ -469,14 +469,16 @@ public record SerializableChunkData(
              throw new IllegalArgumentException("Chunk can't be serialized: " + chunk);
          } else {
              ChunkPos pos = chunk.getPos();
@@ -28,7 +28,7 @@ index cbb6d1f6e715316e170936d29b816c0e6b02478d..0ed7534dad28e93cd0d1af8616f6d882
  
              final LevelChunkSection[] chunkSections = chunk.getSections();
              final ca.spottedleaf.moonrise.patches.starlight.light.SWMRNibbleArray[] blockNibbles = ((ca.spottedleaf.moonrise.patches.starlight.chunk.StarlightChunk)chunk).starlight$getBlockNibbles();
-@@ -509,10 +511,11 @@ public record SerializableChunkData(
+@@ -508,10 +510,11 @@ public record SerializableChunkData(
                      ((ca.spottedleaf.moonrise.patches.starlight.storage.StarlightSectionData)(Object)sectionData).starlight$setSkyLightState(skyNibble.state);
                  }
  
@@ -41,7 +41,7 @@ index cbb6d1f6e715316e170936d29b816c0e6b02478d..0ed7534dad28e93cd0d1af8616f6d882
              List<CompoundTag> list1 = new ArrayList<>(chunk.getBlockEntitiesPos().size());
  
              for (BlockPos blockPos : chunk.getBlockEntitiesPos()) {
-@@ -522,7 +525,16 @@ public record SerializableChunkData(
+@@ -521,7 +524,16 @@ public record SerializableChunkData(
                  }
              }
  
@@ -59,7 +59,7 @@ index cbb6d1f6e715316e170936d29b816c0e6b02478d..0ed7534dad28e93cd0d1af8616f6d882
              long[] longs = null;
              if (chunk.getPersistedStatus().getChunkType() == ChunkType.PROTOCHUNK) {
                  ProtoChunk protoChunk = (ProtoChunk)chunk;
-@@ -538,14 +550,18 @@ public record SerializableChunkData(
+@@ -537,14 +549,18 @@ public record SerializableChunkData(
              for (Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
                  if (chunk.getPersistedStatus().heightmapsAfter().contains(entry.getKey())) {
                      long[] rawData = entry.getValue().getRawData();

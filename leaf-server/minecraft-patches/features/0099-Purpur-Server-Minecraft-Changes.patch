@@ -1275,7 +1275,7 @@ index 8c3255661221f8afbccb661bec3afb47e4059403..ea7710c17bfc9fcfe736c3a2e83898b7
                  this.player.clientBrandName = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.wrappedBuffer(data)).readUtf(256);
              }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658bcc70328 100644
+index 7e00e8b0eb9a7aaffc37ef4d98b9205d58e9c5b2..90d0c59c66c2e18d601838886ff55bb428547779 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -321,6 +321,20 @@ public class ServerGamePacketListenerImpl
@@ -1312,7 +1312,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
              this.player.resetLastActionTime(); // CraftBukkit - SPIGOT-854
              this.disconnect(Component.translatable("multiplayer.disconnect.idling"), org.bukkit.event.player.PlayerKickEvent.Cause.IDLING); // Paper - kick event cause
          }
-@@ -615,6 +635,8 @@ public class ServerGamePacketListenerImpl
+@@ -624,6 +644,8 @@ public class ServerGamePacketListenerImpl
                      this.lastYaw = to.getYaw();
                      this.lastPitch = to.getPitch();
  
@@ -1321,7 +1321,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
                      Location oldTo = to.clone();
                      PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
                      this.cserver.getPluginManager().callEvent(event);
-@@ -671,6 +693,7 @@ public class ServerGamePacketListenerImpl
+@@ -703,6 +725,7 @@ public class ServerGamePacketListenerImpl
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.serverLevel());
          if (packet.getId() == this.awaitingTeleport) {
              if (this.awaitingPositionFromClient == null) {
@@ -1329,7 +1329,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
                  this.disconnect(Component.translatable("multiplayer.disconnect.invalid_player_movement"), org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT); // Paper - kick event cause
                  return;
              }
-@@ -1204,6 +1227,10 @@ public class ServerGamePacketListenerImpl
+@@ -1236,6 +1259,10 @@ public class ServerGamePacketListenerImpl
              final int maxBookPageSize = pageMax.intValue();
              final double multiplier = Math.clamp(io.papermc.paper.configuration.GlobalConfiguration.get().itemValidation.bookSize.totalMultiplier, 0.3D, 1D);
              long byteAllowed = maxBookPageSize;
@@ -1340,7 +1340,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
              for (final String page : pageList) {
                  final int byteLength = page.getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
                  byteTotal += byteLength;
-@@ -1228,7 +1255,8 @@ public class ServerGamePacketListenerImpl
+@@ -1260,7 +1287,8 @@ public class ServerGamePacketListenerImpl
              }
  
              if (byteTotal > byteAllowed) {
@@ -1350,7 +1350,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
                  this.disconnectAsync(Component.literal("Book too large!"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION); // Paper - kick event cause // Paper - add proper async disconnect
                  return;
              }
-@@ -1247,31 +1275,45 @@ public class ServerGamePacketListenerImpl
+@@ -1279,31 +1307,45 @@ public class ServerGamePacketListenerImpl
              Optional<String> optional = packet.title();
              optional.ifPresent(list::add);
              list.addAll(packet.pages());
@@ -1400,7 +1400,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
              itemStack.set(
                  DataComponents.WRITTEN_BOOK_CONTENT,
                  new WrittenBookContent(this.filterableFromOutgoing(title), this.player.getName().getString(), 0, list, true)
-@@ -1285,6 +1327,16 @@ public class ServerGamePacketListenerImpl
+@@ -1317,6 +1359,16 @@ public class ServerGamePacketListenerImpl
          return this.player.isTextFilteringEnabled() ? Filterable.passThrough(filteredText.filteredOrEmpty()) : Filterable.from(filteredText);
      }
  
@@ -1417,7 +1417,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
      @Override
      public void handleEntityTagQuery(ServerboundEntityTagQueryPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.serverLevel());
-@@ -1320,7 +1372,15 @@ public class ServerGamePacketListenerImpl
+@@ -1352,7 +1404,15 @@ public class ServerGamePacketListenerImpl
      @Override
      public void handleMovePlayer(ServerboundMovePlayerPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.serverLevel());
@@ -1434,7 +1434,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
              this.disconnect(Component.translatable("multiplayer.disconnect.invalid_player_movement"), org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT); // Paper - kick event cause
          } else {
              ServerLevel serverLevel = this.player.serverLevel();
-@@ -1501,7 +1561,7 @@ public class ServerGamePacketListenerImpl
+@@ -1534,7 +1594,7 @@ public class ServerGamePacketListenerImpl
                                          movedWrongly = true;
                                          if (event.getLogWarning())
                                       // Paper end
@@ -1443,7 +1443,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
                                      } // Paper
                                  }
  
-@@ -1557,6 +1617,8 @@ public class ServerGamePacketListenerImpl
+@@ -1600,6 +1660,8 @@ public class ServerGamePacketListenerImpl
                                          this.lastYaw = to.getYaw();
                                          this.lastPitch = to.getPitch();
  
@@ -1452,7 +1452,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
                                          Location oldTo = to.clone();
                                          PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
                                          this.cserver.getPluginManager().callEvent(event);
-@@ -1612,6 +1674,13 @@ public class ServerGamePacketListenerImpl
+@@ -1655,6 +1717,13 @@ public class ServerGamePacketListenerImpl
                                          this.player.tryResetCurrentImpulseContext();
                                      }
  
@@ -1466,7 +1466,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
                                      this.player.checkMovementStatistics(this.player.getX() - x, this.player.getY() - y, this.player.getZ() - z);
                                      this.lastGoodX = this.player.getX();
                                      this.lastGoodY = this.player.getY();
-@@ -1629,6 +1698,17 @@ public class ServerGamePacketListenerImpl
+@@ -1672,6 +1741,17 @@ public class ServerGamePacketListenerImpl
          }
      }
  
@@ -1484,7 +1484,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
      private boolean shouldCheckPlayerMovement(boolean isElytraMovement) {
          if (this.isSingleplayerOwner()) {
              return false;
-@@ -2005,6 +2085,7 @@ public class ServerGamePacketListenerImpl
+@@ -2075,6 +2155,7 @@ public class ServerGamePacketListenerImpl
  
                  boolean cancelled;
                  if (hitResult == null || hitResult.getType() != HitResult.Type.BLOCK) {
@@ -1492,7 +1492,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
                      org.bukkit.event.player.PlayerInteractEvent event = CraftEventFactory.callPlayerInteractEvent(this.player, Action.RIGHT_CLICK_AIR, itemInHand, hand);
                      cancelled = event.useItemInHand() == Event.Result.DENY;
                  } else {
-@@ -2677,6 +2758,7 @@ public class ServerGamePacketListenerImpl
+@@ -2747,6 +2828,7 @@ public class ServerGamePacketListenerImpl
  
                  AABB boundingBox = target.getBoundingBox();
                  if (this.player.canInteractWithEntity(boundingBox, io.papermc.paper.configuration.GlobalConfiguration.get().misc.clientInteractionLeniencyDistance.or(3.0))) { // Paper - configurable lenience value for interact range
@@ -1500,7 +1500,7 @@ index 7142de40a5ff9d1009bb06e73172877e8bf80962..4b59db324e71846d233e43bafcdae658
                      packet.dispatch(
                          new ServerboundInteractPacket.Handler() {
                              private void performInteraction(InteractionHand hand, ServerGamePacketListenerImpl.EntityInteraction entityInteraction, PlayerInteractEntityEvent event) { // CraftBukkit
-@@ -2689,6 +2771,8 @@ public class ServerGamePacketListenerImpl
+@@ -2759,6 +2841,8 @@ public class ServerGamePacketListenerImpl
  
                                      ServerGamePacketListenerImpl.this.cserver.getPluginManager().callEvent(event);
  
