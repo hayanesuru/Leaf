@@ -5,7 +5,7 @@ Subject: [PATCH] Make removeIf slightly faster
 
 
 diff --git a/net/minecraft/util/SortedArraySet.java b/net/minecraft/util/SortedArraySet.java
-index e8bad6e1c0aeb67005661db6ed42f745554fa652..d9c6f1dc5b9783bd9b63feda2d27dae11f2eeff8 100644
+index e8bad6e1c0aeb67005661db6ed42f745554fa652..c2d64cdc5241d54379da2b843b6f28db8a8e39a9 100644
 --- a/net/minecraft/util/SortedArraySet.java
 +++ b/net/minecraft/util/SortedArraySet.java
 @@ -19,36 +19,26 @@ public class SortedArraySet<T> extends AbstractSet<T> implements ca.spottedleaf.
@@ -28,7 +28,7 @@ index e8bad6e1c0aeb67005661db6ed42f745554fa652..d9c6f1dc5b9783bd9b63feda2d27dae1
 -            break;
 -        }
 +        // Find first element to remove
-+        while (i < len && !filter.test(backingArray[i++]));
++        while (i < len && !filter.test(backingArray[i])) i++;
 +        if (i == len) return false;
  
 -        // we only want to write back to backingArray if we really need to
@@ -41,7 +41,7 @@ index e8bad6e1c0aeb67005661db6ed42f745554fa652..d9c6f1dc5b9783bd9b63feda2d27dae1
 -                backingArray[lastIndex++] = curr;
 -            }
 +        // Shift elements in-place
-+        int lastIndex = i - 1;
++        int lastIndex = i;
 +        for (i++; i < len; i++) {
 +            T curr = backingArray[i];
 +            if (!filter.test(curr)) backingArray[lastIndex++] = curr;
