@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Minecraft Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: b34d675fef91bae2df723705f2568c7afd552d2d
+Commit: 96f0ee1ea36729daa5cf6265c9cbae2849bcfd3b
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "net/minecraft/CrashReport.java.patch"
@@ -15451,7 +15451,7 @@ index 1fdede769b67cb5d2f9159c779f19e3639bb6ff5..2ff5457300d66378dbbea492deff0136
      }
  
 diff --git a/net/minecraft/world/level/block/GrowingPlantHeadBlock.java b/net/minecraft/world/level/block/GrowingPlantHeadBlock.java
-index 0994f7265322d1f33365a1df0faaffd9df05fcc0..5dc1883ecd6e52666f553f30c150843c99fbef08 100644
+index 0994f7265322d1f33365a1df0faaffd9df05fcc0..b81c7cabb4c9f81de6d4c6b8ffde70e8a07d8fd1 100644
 --- a/net/minecraft/world/level/block/GrowingPlantHeadBlock.java
 +++ b/net/minecraft/world/level/block/GrowingPlantHeadBlock.java
 @@ -34,12 +34,12 @@ public abstract class GrowingPlantHeadBlock extends GrowingPlantBlock implements
@@ -15459,7 +15459,7 @@ index 0994f7265322d1f33365a1df0faaffd9df05fcc0..5dc1883ecd6e52666f553f30c150843c
      @Override
      public BlockState getStateForPlacement(RandomSource random) {
 -        return this.defaultBlockState().setValue(AGE, Integer.valueOf(random.nextInt(25)));
-+        return this.defaultBlockState().setValue(AGE, Integer.valueOf(random.nextInt(getMaxGrowthAge()))); // Purpur - kelp, cave, weeping, and twisting configurable max growth age
++        return this.defaultBlockState().setValue(AGE, Integer.valueOf(getMaxGrowthAge() == 0 ? 0 : random.nextInt(getMaxGrowthAge()))); // Purpur - kelp, cave, weeping, and twisting configurable max growth age
      }
  
      @Override
