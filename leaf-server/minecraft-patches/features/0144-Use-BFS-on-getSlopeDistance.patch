@@ -9,7 +9,7 @@ Leaf: ~48ms (-36%)
 This should help drastically on the farms that use actively changing fluids.
 
 diff --git a/net/minecraft/world/level/material/FlowingFluid.java b/net/minecraft/world/level/material/FlowingFluid.java
-index 4c2c2efd5380ff1fa5ad7553b51babae20f516ae..618a8af8fe30c39bb8c93dcc324f4ae1c48e704e 100644
+index 4c2c2efd5380ff1fa5ad7553b51babae20f516ae..33e5c19362de8b4002c23959661535b835eb0ce5 100644
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
 @@ -8,6 +8,8 @@ import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
@@ -21,15 +21,15 @@ index 4c2c2efd5380ff1fa5ad7553b51babae20f516ae..618a8af8fe30c39bb8c93dcc324f4ae1
  import net.minecraft.core.BlockPos;
  import net.minecraft.core.Direction;
  import net.minecraft.server.level.ServerLevel;
-@@ -341,31 +343,72 @@ public abstract class FlowingFluid extends Fluid {
+@@ -341,31 +343,76 @@ public abstract class FlowingFluid extends Fluid {
      protected void beforeDestroyingBlock(LevelAccessor level, BlockPos pos, BlockState state, BlockPos source) { beforeDestroyingBlock(level, pos, state); } // Paper - Add BlockBreakBlockEvent
      protected abstract void beforeDestroyingBlock(LevelAccessor level, BlockPos pos, BlockState state);
  
 -    protected int getSlopeDistance(LevelReader level, BlockPos pos, int depth, Direction direction, BlockState state, FlowingFluid.SpreadContext spreadContext) {
 -        int i = 1000;
 +    protected int getSlopeDistance(LevelReader level, BlockPos startPos, int initialDepth, Direction excludedDirection, BlockState startState, FlowingFluid.SpreadContext spreadContext) {
-+        it.unimi.dsi.fastutil.longs.LongSet visited = new it.unimi.dsi.fastutil.longs.LongOpenHashSet(512); // Pre-allocate capacity
-+        java.util.Queue<FlowingFluid.SlopeDistanceNode> queue = new java.util.ArrayDeque<>(64); // Optimized initial capacity
++        it.unimi.dsi.fastutil.longs.LongSet visited = new it.unimi.dsi.fastutil.longs.LongOpenHashSet(512);
++        java.util.Queue<FlowingFluid.SlopeDistanceNode> queue = new java.util.ArrayDeque<>(256);
  
 -        for (Direction direction1 : Direction.Plane.HORIZONTAL) {
 -            if (direction1 != direction) {
@@ -54,9 +54,14 @@ index 4c2c2efd5380ff1fa5ad7553b51babae20f516ae..618a8af8fe30c39bb8c93dcc324f4ae1
 +            BlockState neighborState = spreadContext.getBlockStateIfLoaded(neighborPos);
 +            if (neighborState == null) continue;
 +
++            // Check if the fluid can actually pass through to this first neighbor before adding
++            FluidState neighborFluidState = neighborState.getFluidState();
++            if (!this.canPassThrough(level, this.getFlowing(), startPos, startState, dir, neighborPos, neighborState, neighborFluidState)) {
++                continue;
++            }
 +            long visitKey = encodeSlopeNode(neighborPos, dir.getOpposite());
 +            if (visited.add(visitKey)) {
-+                queue.add(new FlowingFluid.SlopeDistanceNode(neighborPos, initialDepth + 1, dir.getOpposite(), neighborState));
++                queue.add(new FlowingFluid.SlopeDistanceNode(neighborPos, initialDepth, dir.getOpposite(), neighborState));
 +            }
 +        }
 +
@@ -66,12 +71,11 @@ index 4c2c2efd5380ff1fa5ad7553b51babae20f516ae..618a8af8fe30c39bb8c93dcc324f4ae1
 +        // Process the queue
 +        while (!queue.isEmpty()) {
 +            FlowingFluid.SlopeDistanceNode current = queue.poll();
-+            if (current.depth >= slopeFindDistance) continue;
-+
 +            if (spreadContext.isHole(current.pos)) {
 +                return current.depth;
 +            }
 +
++            if (current.depth >= slopeFindDistance) continue;
 +            for (Direction dir : Direction.Plane.HORIZONTAL) {
 +                if (dir == current.excludedDir) continue;
 +
@@ -92,7 +96,7 @@ index 4c2c2efd5380ff1fa5ad7553b51babae20f516ae..618a8af8fe30c39bb8c93dcc324f4ae1
          }
  
 -        return i;
-+        return minDistance; // Return fallback value
++        return minDistance;
 +    }
 +
 +    private static long encodeSlopeNode(BlockPos pos, Direction excludedDir) {
