@@ -10,32 +10,22 @@ import java.util.function.Function;
 
 public class StringCanonizingOpenHashMap<T> extends Object2ObjectOpenHashMap<String, T> {
 
-    private static final Interner<String> KEY_INTERNER = Interners.newWeakInterner();
-    private final float loadFactor;
+    private static final Interner<String> KEY_INTERNER = Interners.newBuilder().weak().concurrencyLevel(16).<String>build();
 
     private static String intern(String key) {
-        if (key == null) return null;
-        String jvmInterned = key.intern();
-        if (jvmInterned == key) {
-            return key;
-        }
-
-        return KEY_INTERNER.intern(key);
+        return key != null ? KEY_INTERNER.intern(key) : null;
     }
 
     public StringCanonizingOpenHashMap() {
         super();
-        this.loadFactor = 0.8f;
     }
 
     public StringCanonizingOpenHashMap(int expectedSize) {
         super(expectedSize);
-        this.loadFactor = 0.8f;
     }
 
     public StringCanonizingOpenHashMap(int expectedSize, float loadFactor) {
         super(expectedSize, loadFactor);
-        this.loadFactor = loadFactor;
     }
 
     @Override
@@ -46,15 +36,9 @@ public class StringCanonizingOpenHashMap<T> extends Object2ObjectOpenHashMap<Str
     @Override
     public void putAll(Map<? extends String, ? extends T> m) {
         if (m.isEmpty()) return;
-
-        // Fast path for maps that already have interned keys
-        if (m instanceof StringCanonizingOpenHashMap) {
-            super.putAll(m);
-            return;
-        }
-        // Process each entry directly rather than creating a temporary map
+        ensureCapacity(size() + m.size());
         for (Map.Entry<? extends String, ? extends T> entry : m.entrySet()) {
-            put(entry.getKey(), entry.getValue());
+            super.put(intern(entry.getKey()), entry.getValue());
         }
     }
 
@@ -63,17 +47,11 @@ public class StringCanonizingOpenHashMap<T> extends Object2ObjectOpenHashMap<Str
     }
 
     public static <T> StringCanonizingOpenHashMap<T> deepCopy(StringCanonizingOpenHashMap<T> incomingMap, Function<T, T> deepCopier) {
-        int size = incomingMap.size();
-        if (size == 0) {
-            return new StringCanonizingOpenHashMap<>(0, incomingMap.loadFactor);
-        }
-        // Pre-allocate
-        StringCanonizingOpenHashMap<T> newMap = new StringCanonizingOpenHashMap<>(size, incomingMap.loadFactor);
+        StringCanonizingOpenHashMap<T> newMap = new StringCanonizingOpenHashMap<>(incomingMap.size(), incomingMap.f);
         ObjectIterator<Entry<String, T>> iterator = incomingMap.object2ObjectEntrySet().fastIterator();
 
         while (iterator.hasNext()) {
-            Entry<String, T> entry = iterator.next();
-            // Keys are already interned, so we can add them directly
+            Map.Entry<String, T> entry = iterator.next();
             newMap.putWithoutInterning(entry.getKey(), deepCopier.apply(entry.getValue()));
         }
 
