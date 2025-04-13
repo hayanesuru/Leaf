@@ -591,7 +591,7 @@ index d4048661575ebfaf128ba25da365843774364e0e..33dd16a26edd2974f04d9a868d3e58e8
  
          // Gale start - Pufferfish - SIMD support
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 5da07e22ef9dac7baca9d8450b7eae3f6fa141b1..4ecb9a4125233f91379fd2792112aca6bbb3e33f 100644
+index ae5d3de44fb710b48fdabf04f5e706df1f9889b7..31abf2da10bc9b4b7825ed4b3d4e9da52feb2e39 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -182,7 +182,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -619,7 +619,7 @@ index 5da07e22ef9dac7baca9d8450b7eae3f6fa141b1..4ecb9a4125233f91379fd2792112aca6
      }
  
      // Paper start
-@@ -1287,9 +1289,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1313,9 +1315,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              fluidState.tick(this, pos, blockState);
          }
          // Paper start - rewrite chunk system
@@ -634,7 +634,7 @@ index 5da07e22ef9dac7baca9d8450b7eae3f6fa141b1..4ecb9a4125233f91379fd2792112aca6
          // Paper end - rewrite chunk system
  
      }
-@@ -1300,9 +1305,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1326,9 +1331,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              blockState.tick(this, pos, this.random);
          }
          // Paper start - rewrite chunk system
@@ -649,7 +649,7 @@ index 5da07e22ef9dac7baca9d8450b7eae3f6fa141b1..4ecb9a4125233f91379fd2792112aca6
          // Paper end - rewrite chunk system
  
      }
-@@ -1553,6 +1561,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1579,6 +1587,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      }
  
      private void addPlayer(ServerPlayer player) {
@@ -658,7 +658,7 @@ index 5da07e22ef9dac7baca9d8450b7eae3f6fa141b1..4ecb9a4125233f91379fd2792112aca6
          Entity entity = this.getEntities().get(player.getUUID());
          if (entity != null) {
              LOGGER.warn("Force-added player with duplicate UUID {}", player.getUUID());
-@@ -1565,7 +1575,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1591,7 +1601,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      // CraftBukkit start
      private boolean addEntity(Entity entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason) {
@@ -727,7 +727,7 @@ index e2b15968e89a532ec21c786f41b7f9322fd65a04..915498dcb08a678256e6cc1659642d61
          // Paper end - Inventory close reason
          this.connection.send(new ClientboundContainerClosePacket(this.containerMenu.containerId));
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index f59662da0bbfe0e768c4ac5c7491d13263ac5cac..bc412a62184757547140860617b8845263905710 100644
+index b17c8a2f5294ac28cc05fb05c84a041b2c6c8721..0b8b4658dbbad1bacc13e97b4fc0cdcea7e36a06 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -252,6 +252,8 @@ public abstract class PlayerList {
