@@ -1,7 +1,6 @@
 # Gale TODOs
 - [ ] Do a benchmark for `Remove streams and iterators from range check`, getEffectiveRange in ChunkMap
 - [ ] Check gale force load chunk option whether need or whether need to change.
-- [ ] check reduce array allocation, whether need do clone for some reference, to prevent potential issues.. or add debug command for debugging?.
 
 # Leaf TODOs
 - [ ] refactor leaves protocol manager opt and pr it.
@@ -15,4 +14,5 @@
 # 1.21.5
 - [ ] Check beacon issues fix
 - [ ] Update README.md
+- [ ] Remove stream in Inventory and check new changes
 - [ ] Update from Leaf 1.21.4 (curr commit: `1977a5b12c01f915d7c04a765b18957cbfbeeb24`)

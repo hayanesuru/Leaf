@@ -97,7 +97,7 @@ index fd3d0f6cb53bc8b6186f0d86575f21007b2c20ed..cddeeab73e7b981701a42c5aad6b4777
          // Paper end - rewrite chunk system
      }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 889b7e8752129dd3b5ba196c4b29449615499515..b9bff011c0ffb0efdaccc65847be69aad1a70681 100644
+index fc1430cb711a86281cfc7b7c94221e7ef867da9e..d9a9a60e63e652ca83c26dba5d7bfa3a3834af35 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -503,7 +503,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -109,7 +109,7 @@ index 889b7e8752129dd3b5ba196c4b29449615499515..b9bff011c0ffb0efdaccc65847be69aa
              return;
          }
  
-@@ -2543,7 +2543,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2569,7 +2569,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      public boolean areEntitiesActuallyLoadedAndTicking(ChunkPos chunkPos) {
          // Paper start - rewrite chunk system
@@ -118,7 +118,7 @@ index 889b7e8752129dd3b5ba196c4b29449615499515..b9bff011c0ffb0efdaccc65847be69aa
          return chunkHolder != null && chunkHolder.isEntityTickingReady();
          // Paper end - rewrite chunk system
      }
-@@ -2558,7 +2558,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2584,7 +2584,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      public boolean canSpawnEntitiesInChunk(ChunkPos chunkPos) {
          // Paper start - rewrite chunk system

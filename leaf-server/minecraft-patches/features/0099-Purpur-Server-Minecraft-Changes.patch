@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Minecraft Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: 54283ad076012dd5308b92f2469c842ad054a782
+Commit: f8450874da4e2d29863b544b70cc7b962a04aa70
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "net/minecraft/CrashReport.java.patch"
@@ -721,7 +721,7 @@ index f262a7c5ae4e7d56f16f5c0f4f145a2e428abbe4..614c7d9f673c926562acc8fa3b378862
      private JComponent buildOnboardingPanel() {
          String onboardingLink = "https://docs.papermc.io/paper/next-steps";
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index cce8c151e46873c2de9be77d832bf695ee44ee24..0f09a2b0cbc17f1d64638f677f2518617f906576 100644
+index cce8c151e46873c2de9be77d832bf695ee44ee24..66b64b243ebcde8fe551baf54aa868c4221d2e00 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -201,6 +201,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -798,7 +798,7 @@ index cce8c151e46873c2de9be77d832bf695ee44ee24..0f09a2b0cbc17f1d64638f677f251861
                  this.setDayTime(this.levelData.getDayTime() + 1L);
              }
          }
-@@ -829,8 +857,22 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -829,7 +857,21 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      public void setDayTime(long time) {
          this.serverLevelData.setDayTime(time);
@@ -810,17 +810,16 @@ index cce8c151e46873c2de9be77d832bf695ee44ee24..0f09a2b0cbc17f1d64638f677f251861
 +        this.serverLevelData.setDayTime((long) i);
 +        this.forceTime = true;
 +        // Purpur end - Configurable daylight cycle
-     }
- 
++    }
++
 +    // Purpur start - Configurable daylight cycle
 +    public boolean isForceTime() {
 +        return this.forceTime;
-+    }
+     }
 +    // Purpur end - Configurable daylight cycle
-+
+ 
      public void tickCustomSpawners(boolean spawnEnemies, boolean spawnFriendlies) {
          for (CustomSpawner customSpawner : this.customSpawners) {
-             customSpawner.tick(this, spawnEnemies, spawnFriendlies);
 @@ -926,9 +968,17 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                      && this.random.nextDouble() < currentDifficultyAt.getEffectiveDifficulty() * this.paperConfig().entities.spawning.skeletonHorseThunderSpawnChance.or(0.01) // Paper - Configurable spawn chances for skeleton horses
                      && !this.getBlockState(blockPos.below()).is(Blocks.LIGHTNING_ROD);
@@ -841,7 +840,43 @@ index cce8c151e46873c2de9be77d832bf695ee44ee24..0f09a2b0cbc17f1d64638f677f251861
                          skeletonHorse.setAge(0);
                          skeletonHorse.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                          this.addFreshEntity(skeletonHorse, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.LIGHTNING); // CraftBukkit
-@@ -984,7 +1034,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -961,9 +1011,35 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+                 if (blockState.is(Blocks.SNOW)) {
+                     int layersValue = blockState.getValue(SnowLayerBlock.LAYERS);
+                     if (layersValue < Math.min(_int, 8)) {
++                        // Purpur start - Smooth snow accumulation
++                        boolean canSnow = true;
++                        // Ensure snow doesn't get more than N layers taller than its neighbors
++                        // We only need to check blocks that are taller than the minimum step height
++                        if (org.purpurmc.purpur.PurpurConfig.smoothSnowAccumulationStep > 0 && layersValue >= org.purpurmc.purpur.PurpurConfig.smoothSnowAccumulationStep) {
++                            int layersValueMin = layersValue - org.purpurmc.purpur.PurpurConfig.smoothSnowAccumulationStep;
++                            for (Direction direction : Direction.Plane.HORIZONTAL) {
++                                BlockPos blockPosNeighbor = heightmapPos.relative(direction);
++                                BlockState blockStateNeighbor = this.getBlockState(blockPosNeighbor);
++                                if (blockStateNeighbor.is(Blocks.SNOW)) {
++                                    // Special check for snow layers, if neighbors are too short, don't accumulate
++                                    int layersValueNeighbor = blockStateNeighbor.getValue(SnowLayerBlock.LAYERS);
++                                    if (layersValueNeighbor <= layersValueMin) {
++                                        canSnow = false;
++                                        break;
++                                    }
++                                } else if (!Block.isFaceFull(blockStateNeighbor.getCollisionShape(this, blockPosNeighbor), direction.getOpposite())) {
++                                    // Since our layer is tall enough already, if we have a non-full neighbor block, don't accumulate
++                                    canSnow = false;
++                                    break;
++                                }
++                            }
++                        }
++                        if (canSnow) {
++                            // Purpur end - Smooth snow accumulation
+                         BlockState blockState1 = blockState.setValue(SnowLayerBlock.LAYERS, layersValue + 1);
+                         Block.pushEntitiesUp(blockState, blockState1, this, heightmapPos);
+                         org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(this, heightmapPos, blockState1, 3, null); // CraftBukkit
++                        } // Purpur - Smooth snow accumulation
+                     }
+                 } else {
+                     org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(this, heightmapPos, Blocks.SNOW.defaultBlockState(), 3, null); // CraftBukkit
+@@ -984,7 +1060,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                  pointOfInterestType -> pointOfInterestType.is(PoiTypes.LIGHTNING_ROD),
                  blockPos -> blockPos.getY() == this.getHeight(Heightmap.Types.WORLD_SURFACE, blockPos.getX(), blockPos.getZ()) - 1,
                  pos,
@@ -850,7 +885,7 @@ index cce8c151e46873c2de9be77d832bf695ee44ee24..0f09a2b0cbc17f1d64638f677f251861
                  PoiManager.Occupancy.ANY
              );
          return optional.map(blockPos -> blockPos.above(1));
-@@ -1033,8 +1083,26 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1033,8 +1109,26 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                  int _int = this.getGameRules().getInt(GameRules.RULE_PLAYERS_SLEEPING_PERCENTAGE);
                  Component component;
                  if (this.sleepStatus.areEnoughSleeping(_int)) {
@@ -877,7 +912,7 @@ index cce8c151e46873c2de9be77d832bf695ee44ee24..0f09a2b0cbc17f1d64638f677f251861
                      component = Component.translatable("sleep.players_sleeping", this.sleepStatus.amountSleeping(), this.sleepStatus.sleepersNeeded(_int));
                  }
  
-@@ -1167,6 +1235,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1167,6 +1261,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      @VisibleForTesting
      public void resetWeatherCycle() {
          // CraftBukkit start
@@ -885,7 +920,7 @@ index cce8c151e46873c2de9be77d832bf695ee44ee24..0f09a2b0cbc17f1d64638f677f251861
          this.serverLevelData.setRaining(false, org.bukkit.event.weather.WeatherChangeEvent.Cause.SLEEP); // Paper - Add cause to Weather/ThunderChangeEvents
          // If we stop due to everyone sleeping we should reset the weather duration to some other random value.
          // Not that everyone ever manages to get the whole server to sleep at the same time....
-@@ -1174,6 +1243,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1174,6 +1269,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              this.serverLevelData.setRainTime(0);
          }
          // CraftBukkit end
@@ -893,7 +928,7 @@ index cce8c151e46873c2de9be77d832bf695ee44ee24..0f09a2b0cbc17f1d64638f677f251861
          this.serverLevelData.setThundering(false, org.bukkit.event.weather.ThunderChangeEvent.Cause.SLEEP); // Paper - Add cause to Weather/ThunderChangeEvents
          // CraftBukkit start
          // If we stop due to everyone sleeping we should reset the weather duration to some other random value.
-@@ -2652,7 +2722,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2652,7 +2748,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              // Spigot start
              if (entity.getBukkitEntity() instanceof org.bukkit.inventory.InventoryHolder && (!(entity instanceof ServerPlayer) || entity.getRemovalReason() != Entity.RemovalReason.KILLED)) { // SPIGOT-6876: closeInventory clears death message
                  // Paper start - Fix merchant inventory not closing on entity removal
@@ -2295,7 +2330,7 @@ index 3f351fdb3cb76612d88bde713a2639d4319a7c6d..745f73e1f80d9c433630e31769b404ee
      protected ParticleOptions getInkParticle() {
          return ParticleTypes.GLOW_SQUID_INK;
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 08c2021a43f626ae142d38d0d0492bffeb1b346b..dfca015796b87059b19db55b4911bd0de2580798 100644
+index befed81ecf698d27971d18fe2743562742e4e1d3..eb17ef1e0c350e97149452dbdc79398d71370fb1 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -224,9 +224,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -15414,7 +15449,7 @@ index a31ac95237515b874f59941ec24c74e2c357b3d8..c816bd47577cbc898b10d0cfd9c40404
      }
  
 diff --git a/net/minecraft/world/level/block/GrowingPlantHeadBlock.java b/net/minecraft/world/level/block/GrowingPlantHeadBlock.java
-index fe11f3ec82ebdbdf3d024d7273fb16b6823b1ece..05a25847d0f32e3bb9679263b3090458cadd5756 100644
+index fe11f3ec82ebdbdf3d024d7273fb16b6823b1ece..daaf0ddee9192fa24a70954ce52b381560fcbc1f 100644
 --- a/net/minecraft/world/level/block/GrowingPlantHeadBlock.java
 +++ b/net/minecraft/world/level/block/GrowingPlantHeadBlock.java
 @@ -34,12 +34,12 @@ public abstract class GrowingPlantHeadBlock extends GrowingPlantBlock implements
@@ -15422,7 +15457,7 @@ index fe11f3ec82ebdbdf3d024d7273fb16b6823b1ece..05a25847d0f32e3bb9679263b3090458
      @Override
      public BlockState getStateForPlacement(RandomSource random) {
 -        return this.defaultBlockState().setValue(AGE, random.nextInt(25));
-+        return this.defaultBlockState().setValue(AGE, random.nextInt(getMaxGrowthAge())); // Purpur - kelp, cave, weeping, and twisting configurable max growth age
++        return this.defaultBlockState().setValue(AGE, getMaxGrowthAge() == 0 ? 0 : random.nextInt(getMaxGrowthAge())); // Purpur - kelp, cave, weeping, and twisting configurable max growth age
      }
  
      @Override
@@ -15804,10 +15839,10 @@ index 9131098e3ae4e6ffdf1491eb62537e385f75b6b2..ddedc08a96e500a390421d39be36590f
              && (
                  blockState.is(BlockTags.SNOW_LAYER_CAN_SURVIVE_ON)
 diff --git a/net/minecraft/world/level/block/SpawnerBlock.java b/net/minecraft/world/level/block/SpawnerBlock.java
-index e8d7b6adbcb84e8d89067b54318e0feb3c3276a6..2c7881028e68179f4cdb5d4dcca0b92589b5af5b 100644
+index e8d7b6adbcb84e8d89067b54318e0feb3c3276a6..2076474168410f376beebc072af4959e5d08c101 100644
 --- a/net/minecraft/world/level/block/SpawnerBlock.java
 +++ b/net/minecraft/world/level/block/SpawnerBlock.java
-@@ -38,6 +38,57 @@ public class SpawnerBlock extends BaseEntityBlock {
+@@ -38,6 +38,59 @@ public class SpawnerBlock extends BaseEntityBlock {
          );
      }
  
@@ -15821,7 +15856,9 @@ index e8d7b6adbcb84e8d89067b54318e0feb3c3276a6..2c7881028e68179f4cdb5d4dcca0b925
 +            java.util.Optional<net.minecraft.world.entity.EntityType<?>> type = java.util.Optional.empty();
 +            if (nextSpawnData != null) {
 +                type = net.minecraft.world.entity.EntityType.by(nextSpawnData.getEntityToSpawn());
-+                net.minecraft.world.level.SpawnData.CODEC.encodeStart(net.minecraft.nbt.NbtOps.INSTANCE, nextSpawnData).result().ifPresent(tag -> item.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.EMPTY.update(compoundTag -> compoundTag.put("Purpur.SpawnData", tag))));
++                net.minecraft.nbt.CompoundTag spawnDataTag = new net.minecraft.nbt.CompoundTag();
++                spawnDataTag.storeNullable("SpawnData", net.minecraft.world.level.SpawnData.CODEC, nextSpawnData);
++                item.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.EMPTY.update(compoundTag -> compoundTag.put("Purpur.SpawnData", spawnDataTag)));
 +            }
 +
 +            if (type.isPresent()) {
@@ -15865,7 +15902,7 @@ index e8d7b6adbcb84e8d89067b54318e0feb3c3276a6..2c7881028e68179f4cdb5d4dcca0b925
      @Override
      protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack, boolean dropExperience) {
          super.spawnAfterBreak(state, level, pos, stack, dropExperience);
-@@ -46,6 +97,7 @@ public class SpawnerBlock extends BaseEntityBlock {
+@@ -46,6 +99,7 @@ public class SpawnerBlock extends BaseEntityBlock {
  
      @Override
      public int getExpDrop(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack, boolean dropExperience) {
@@ -16461,7 +16498,7 @@ index 4b2462ece4eb5abb76ea9259b3e6a77f8a8e4e07..d35d04823e5d0de4487310caadd013f7
 +    // Purpur end - Enchantment Table Persists Lapis
  }
 diff --git a/net/minecraft/world/level/block/entity/SignBlockEntity.java b/net/minecraft/world/level/block/entity/SignBlockEntity.java
-index 8f87248a77c2083541105cfd1da1bc87bd122ba4..c5184985867b40daf2d86ed8b354f8d0fc960329 100644
+index 8f87248a77c2083541105cfd1da1bc87bd122ba4..4c5de8783b2fc87a442e194e0069ce9cd5b5fd6c 100644
 --- a/net/minecraft/world/level/block/entity/SignBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/SignBlockEntity.java
 @@ -151,16 +151,32 @@ public class SignBlockEntity extends BlockEntity {
@@ -16499,7 +16536,7 @@ index 8f87248a77c2083541105cfd1da1bc87bd122ba4..c5184985867b40daf2d86ed8b354f8d0
                  );
              }
          }
-@@ -298,6 +314,26 @@ public class SignBlockEntity extends BlockEntity {
+@@ -298,6 +314,24 @@ public class SignBlockEntity extends BlockEntity {
          return new CommandSourceStack(commandSource, Vec3.atCenterOf(pos), Vec2.ZERO, (ServerLevel)level, 2, string, component, level.getServer(), player); // Paper - Fix commands from signs not firing command events
      }
  
@@ -16512,11 +16549,9 @@ index 8f87248a77c2083541105cfd1da1bc87bd122ba4..c5184985867b40daf2d86ed8b354f8d0
 +        for (int i = 0; i < 4; i++) {
 +            final var component = io.papermc.paper.adventure.PaperAdventure.asAdventure(lines[i]);
 +            final String line = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().serialize(component);
-+            final var text = net.kyori.adventure.text.Component.text(line);
-+            final String json = net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().serialize(text);
 +            final CompoundTag sideNbt = nbt.getCompoundOrEmpty(side);
 +            final net.minecraft.nbt.ListTag messagesNbt = sideNbt.getListOrEmpty("messages");
-+            messagesNbt.set(i, net.minecraft.nbt.StringTag.valueOf(json));
++            messagesNbt.set(i, net.minecraft.nbt.StringTag.valueOf(line));
 +        }
 +        nbt.putString("PurpurEditor", "true");
 +        return ClientboundBlockEntityDataPacket.create(this, (blockEntity, registryAccess) -> nbt);
@@ -16750,10 +16785,10 @@ index c22acc8889fbb3c9ee698624189c195ee4b5eefb..5767fbfd7f33c5276fb4335ce473b2e1
  }
 diff --git a/org/purpurmc/purpur/PurpurConfig.java b/org/purpurmc/purpur/PurpurConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c03f80f20761384f08ab2c07d9999297c3c96a3b
+index 0000000000000000000000000000000000000000..f71afc2b7f32dfe2c10ba2c14713778208cd6de3
 --- /dev/null
 +++ b/org/purpurmc/purpur/PurpurConfig.java
-@@ -0,0 +1,581 @@
+@@ -0,0 +1,592 @@
 +package org.purpurmc.purpur;
 +
 +import com.google.common.base.Throwables;
@@ -17083,6 +17118,7 @@ index 0000000000000000000000000000000000000000..c03f80f20761384f08ab2c07d9999297
 +    public static boolean cryingObsidianValidForPortalFrame = false;
 +    public static int beeInsideBeeHive = 3;
 +    public static boolean anvilCumulativeCost = true;
++    public static int smoothSnowAccumulationStep = 0;
 +    public static int lightningRodRange = 128;
 +    public static Set<Enchantment> grindstoneIgnoredEnchants = new HashSet<>();
 +    public static boolean grindstoneRemoveAttributes = false;
@@ -17126,6 +17162,16 @@ index 0000000000000000000000000000000000000000..c03f80f20761384f08ab2c07d9999297
 +        cryingObsidianValidForPortalFrame = getBoolean("settings.blocks.crying_obsidian.valid-for-portal-frame", cryingObsidianValidForPortalFrame);
 +        beeInsideBeeHive = getInt("settings.blocks.beehive.max-bees-inside", beeInsideBeeHive);
 +        anvilCumulativeCost = getBoolean("settings.blocks.anvil.cumulative-cost", anvilCumulativeCost);
++        smoothSnowAccumulationStep = getInt("settings.blocks.snow.smooth-accumulation-step", smoothSnowAccumulationStep);
++        if (smoothSnowAccumulationStep > 7) {
++            smoothSnowAccumulationStep = 7;
++            log(Level.WARNING, "blocks.snow.smooth-accumulation-step is set to above maximum allowed value of 7");
++            log(Level.WARNING, "Using value of 7 to prevent issues");
++        } else if (smoothSnowAccumulationStep < 0) {
++            smoothSnowAccumulationStep = 0;
++            log(Level.WARNING, "blocks.snow.smooth-accumulation-step is set to below minimum allowed value of 0");
++            log(Level.WARNING, "Using value of 0 to prevent issues");
++        }
 +        lightningRodRange = getInt("settings.blocks.lightning_rod.range", lightningRodRange);
 +        ArrayList<String> defaultCurses = new ArrayList<>(){{
 +            add("minecraft:binding_curse");
@@ -22338,10 +22384,10 @@ index 0000000000000000000000000000000000000000..b257f35caa13b660854cf17f41fd8fba
 +}
 diff --git a/org/purpurmc/purpur/item/SpawnerItem.java b/org/purpurmc/purpur/item/SpawnerItem.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f7de0c7d50382fb1a46534bfab91d70e309fa57d
+index 0000000000000000000000000000000000000000..cfa02aa027a049af982a05a69ce7f682580e6153
 --- /dev/null
 +++ b/org/purpurmc/purpur/item/SpawnerItem.java
-@@ -0,0 +1,41 @@
+@@ -0,0 +1,43 @@
 +package org.purpurmc.purpur.item;
 +
 +import java.util.Optional;
@@ -22376,7 +22422,9 @@ index 0000000000000000000000000000000000000000..f7de0c7d50382fb1a46534bfab91d70e
 +                if (mobTypeStringOptional.isPresent()) {
 +                    EntityType.byString(mobTypeStringOptional.get()).ifPresent(type -> spawner.getSpawner().setEntityId(type, level, level.random, pos));
 +                } else if (customData.contains("Purpur.SpawnData")) {
-+                    customData.read("SpawnData", net.minecraft.world.level.SpawnData.CODEC).ifPresent(spawnData -> spawner.getSpawner().nextSpawnData = spawnData);
++                    customData.getCompound("Purpur.SpawnData")
++                        .flatMap(spawnerData -> spawnerData.read("SpawnData", net.minecraft.world.level.SpawnData.CODEC))
++                        .ifPresent(spawnData -> spawner.getSpawner().nextSpawnData = spawnData);
 +                }
 +            }
 +        }
