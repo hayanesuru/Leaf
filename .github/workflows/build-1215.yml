@@ -81,14 +81,11 @@ jobs:
       - name: Create MojmapPaperclipJar
         run: ./gradlew createMojmapPaperclipJar --stacktrace --parallel --no-daemon --no-configuration-cache
 
-      - name: Start API Publishing
-        id: publish-api
+      - name: Publish API
+        continue-on-error: true
         run: |
-          (
-            ./gradlew publish --parallel --max-workers=4 > publish_api_log.txt 2>&1
-            echo "API_PUBLISH_DONE=true" >> $GITHUB_ENV
-          ) &
-          echo "PUBLISH_PID=$!" >> $GITHUB_ENV
+          ./gradlew :leaf-api:publish
+          ./gradlew publishDevBundlePublicationToLeafRepository -PpublishDevBundle=true
         env:
           REPO_USER: ${{ secrets.REPO_USER }}
           REPO_PASSWORD: ${{ secrets.REPO_PASSWORD }}
@@ -111,13 +108,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPO: ${{ github.repository }}
           BUILD_NUMBER: ${{ env.BUILD_NUMBER }}
-
-      - name: Wait for API Publishing
-        run: |
-          if ps -p ${{ env.PUBLISH_PID }} > /dev/null; then
-            wait ${{ env.PUBLISH_PID }} || true
-          fi
-          grep -i "error" publish_api_log.txt && echo "Found errors in log" || echo "No errors found"
 
       - name: Release Leaf
         uses: softprops/action-gh-release@master

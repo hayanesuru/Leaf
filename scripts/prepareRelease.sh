@@ -88,7 +88,7 @@ if [ $IS_UNSUPPORTED = true ]; then
 fi
 
 # Dev build warning
-if [ "$IS_DEV" = true ]; then
+if [ $IS_DEV = true ]; then
   {
     echo ""
     echo "> [!WARNING]"
