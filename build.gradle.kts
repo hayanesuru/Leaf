@@ -50,7 +50,9 @@ subprojects {
             events(TestLogEvent.STANDARD_OUT)
         }
     }
+}
 
+allprojects {
     extensions.configure<PublishingExtension> {
         repositories {
             maven(leafMavenPublicUrl) {
