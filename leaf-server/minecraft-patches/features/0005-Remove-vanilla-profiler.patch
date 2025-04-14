@@ -1360,7 +1360,7 @@ index 9a0334134d8020e9d52e542859f29b5c6efad643..a8be25542f63d6166cbed065e5006cbf
          }
      }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 9129f87af75412bfeb43f9f55aee8fe253cc6251..07df62b79a4ee9c9da77cac8615fad5463628204 100644
+index ef92dc4384f698cc6b5c4e67fe052a3d4af98f4c..79f499fea47a9c675da1aed718c713290bc008d0 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -70,8 +70,6 @@ import net.minecraft.tags.FluidTags;
@@ -1447,7 +1447,7 @@ index 9129f87af75412bfeb43f9f55aee8fe253cc6251..07df62b79a4ee9c9da77cac8615fad54
 -        profilerFiller.pop();
          if (this.level() instanceof ServerLevel serverLevel) {
 -            profilerFiller.push("freezing");
-             if (!this.isInPowderSnow || !this.canFreeze() && !this.freezeLocked) { // Paper - Freeze Tick Lock API
+             if ((!this.isInPowderSnow || !this.canFreeze()) && !this.freezeLocked) { // Paper - Freeze Tick Lock API
                  this.setTicksFrozen(Math.max(0, this.getTicksFrozen() - 2));
              }
 @@ -3506,18 +3486,14 @@ public abstract class LivingEntity extends Entity implements Attackable {

@@ -5,10 +5,10 @@ Subject: [PATCH] Remove iterators from Inventory
 
 
 diff --git a/net/minecraft/world/entity/player/Inventory.java b/net/minecraft/world/entity/player/Inventory.java
-index dd406c5becacbc2d05b062726a8af88a1d6faba9..4b46bc712e20bd5f841d2d7caaad52068969bdc1 100644
+index d9cb4f0ed0c4f63362c837aeef3c4194911455c9..a31b6b8b56ecced421ead0119a4423b0229ae188 100644
 --- a/net/minecraft/world/entity/player/Inventory.java
 +++ b/net/minecraft/world/entity/player/Inventory.java
-@@ -435,13 +435,16 @@ public class Inventory implements Container, Nameable {
+@@ -439,13 +439,16 @@ public class Inventory implements Container, Nameable {
              }
          }
  
@@ -26,7 +26,7 @@ index dd406c5becacbc2d05b062726a8af88a1d6faba9..4b46bc712e20bd5f841d2d7caaad5206
      }
  
      @Override
-@@ -500,17 +503,21 @@ public class Inventory implements Container, Nameable {
+@@ -504,17 +507,21 @@ public class Inventory implements Container, Nameable {
  
      @Override
      public boolean isEmpty() {
@@ -50,7 +50,7 @@ index dd406c5becacbc2d05b062726a8af88a1d6faba9..4b46bc712e20bd5f841d2d7caaad5206
  
          return true;
      }
-@@ -557,31 +564,61 @@ public class Inventory implements Container, Nameable {
+@@ -561,31 +568,61 @@ public class Inventory implements Container, Nameable {
      }
  
      public boolean contains(ItemStack stack) {
@@ -115,7 +115,7 @@ index dd406c5becacbc2d05b062726a8af88a1d6faba9..4b46bc712e20bd5f841d2d7caaad5206
  
          return false;
      }
-@@ -601,9 +638,12 @@ public class Inventory implements Container, Nameable {
+@@ -605,9 +642,12 @@ public class Inventory implements Container, Nameable {
      }
  
      public void fillStackedContents(StackedItemContents contents) {

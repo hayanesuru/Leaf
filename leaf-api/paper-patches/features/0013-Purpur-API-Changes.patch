@@ -811,10 +811,10 @@ index 332c55fd6b4b3a8c0cad920a6e765ecc40e684e4..10a8d64ad2da0be2c14f34c3e7d1957c
      // Paper start
      /**
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 5a3a538c56892a1f3dd5bd437f77b1659da9bd99..5031e3b170af96c4aab85c0aea07f679d9711575 100644
+index bb6c6b3477c1d30a228ecb35ef7c4f6e54c083e5..bee034fd48b567a64a152196a0b80f2f1a9661e4 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -1215,4 +1215,59 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
+@@ -1224,4 +1224,59 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
       */
      void broadcastHurtAnimation(@NotNull java.util.Collection<Player> players);
      // Paper end - broadcast hurt animation
@@ -1329,7 +1329,7 @@ index f1f97a85ec713c05c882d7588f4a3e4a017f4795..813f6cd253322538bdf96eb323dd23a7
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
-index 41d000b81a793277e330fb62c848ab4c8c56d657..1f524abf07666e325a877c90414d6838f485ca71 100644
+index 3179607e892b609160e9673df5745279a722ae95..1cc6f1a988715224d0168c97ae418037573e2204 100644
 --- a/src/main/java/org/bukkit/inventory/ItemStack.java
 +++ b/src/main/java/org/bukkit/inventory/ItemStack.java
 @@ -23,6 +23,13 @@ import org.bukkit.material.MaterialData;
@@ -1346,7 +1346,7 @@ index 41d000b81a793277e330fb62c848ab4c8c56d657..1f524abf07666e325a877c90414d6838
  
  /**
   * Represents a stack of items.
-@@ -1372,4 +1379,482 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, Translat
+@@ -1363,4 +1370,482 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, Translat
          return this.craftDelegate.matchesWithoutData(item, excludeTypes, ignoreCount);
      }
      // Paper end - data component API

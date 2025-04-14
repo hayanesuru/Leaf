@@ -893,7 +893,7 @@ index 4d5958405e1c86c289d24500705686e7da02c3f6..86541e322fcacb6c525af39ba2675b71
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 9e271f0e587be1ab9258937774121763b34e9e0f..8f9af0c5396abf25534eaee17b81982024eb9fcd 100644
+index c8caeba7737c2386f7194207a5ea11b74c6179e4..8feb78c4d7fa793f01991756b618fc49de023db6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -98,6 +98,25 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
@@ -930,7 +930,7 @@ index 9e271f0e587be1ab9258937774121763b34e9e0f..8f9af0c5396abf25534eaee17b819820
              return false;
          }
  
-@@ -1281,4 +1301,26 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -1293,4 +1313,26 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          return this.entity.get(io.papermc.paper.datacomponent.PaperDataComponentType.bukkitToMinecraft(type)) != null;
      }
  
@@ -1080,10 +1080,10 @@ index bd39ecac806a008583eaf041c75e1bb95a3912b7..5b74ca7c52fb0437726a2a0048313488
 +    // Purpur end - API for any mob to burn daylight
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLlama.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLlama.java
-index 845a0941fbaf6e1235526d93cacc5a7fcd858dce..cd78e48b8853fad1a31a56ef5ab6ffc5c222294b 100644
+index 9aaaf2fc6a7bc49d1c3d0be68854e7fb2524fd25..a8e045af6b3b20027877d958d58dc09ca078aaf1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLlama.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLlama.java
-@@ -89,4 +89,17 @@ public class CraftLlama extends CraftChestedHorse implements Llama, com.destroys
+@@ -92,4 +92,17 @@ public class CraftLlama extends CraftChestedHorse implements Llama, com.destroys
      public Llama getCaravanTail() {
          return this.getHandle().caravanTail == null ? null : (Llama) this.getHandle().caravanTail.getBukkitEntity();
      }
