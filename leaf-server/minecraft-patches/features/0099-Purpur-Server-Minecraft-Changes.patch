@@ -938,7 +938,7 @@ index cce8c151e46873c2de9be77d832bf695ee44ee24..66b64b243ebcde8fe551baf54aa868c4
                  }
                  // Paper end - Fix merchant inventory not closing on entity removal
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 9d5051a65dcbd87b7d29db4643fa2b070717845b..57d301a9528a16c0fcdb9e45ae957629c2363457 100644
+index ab819a0b2a4dab797febf8e342a3ee678bcd0eaa..2146aa9d2bbcc4a96a9e7c8018ee50d77dea5aa9 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -427,6 +427,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -1016,7 +1016,7 @@ index 9d5051a65dcbd87b7d29db4643fa2b070717845b..57d301a9528a16c0fcdb9e45ae957629
              Entity entity = damageSource.getEntity();
              if (!( // Paper - split the if statement. If below statement is false, hurtServer would not have been evaluated. Return false.
               !(entity instanceof Player player && !this.canHarmPlayer(player))
-@@ -1391,6 +1424,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1392,6 +1425,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  serverLevel.removePlayerImmediately(this, Entity.RemovalReason.CHANGED_DIMENSION);
                  this.unsetRemoved();
                  // CraftBukkit end
@@ -1024,7 +1024,7 @@ index 9d5051a65dcbd87b7d29db4643fa2b070717845b..57d301a9528a16c0fcdb9e45ae957629
                  this.setServerLevel(level);
                  this.connection.internalTeleport(PositionMoveRotation.of(teleportTransition), teleportTransition.relatives()); // CraftBukkit - use internal teleport without event
                  this.connection.resetPosition();
-@@ -1507,7 +1541,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1508,7 +1542,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                              new AABB(vec3.x() - 8.0, vec3.y() - 5.0, vec3.z() - 8.0, vec3.x() + 8.0, vec3.y() + 5.0, vec3.z() + 8.0),
                              monster -> monster.isPreventingPlayerRest(this.serverLevel(), this)
                          );
@@ -1033,7 +1033,7 @@ index 9d5051a65dcbd87b7d29db4643fa2b070717845b..57d301a9528a16c0fcdb9e45ae957629
                          return Either.left(Player.BedSleepingProblem.NOT_SAFE);
                      }
                  }
-@@ -1544,7 +1578,19 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1545,7 +1579,19 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      CriteriaTriggers.SLEPT_IN_BED.trigger(this);
                  });
                  if (!this.serverLevel().canSleepThroughNights()) {
@@ -1054,7 +1054,7 @@ index 9d5051a65dcbd87b7d29db4643fa2b070717845b..57d301a9528a16c0fcdb9e45ae957629
                  }
  
                  ((ServerLevel)this.level()).updateSleepingPlayerList();
-@@ -1636,6 +1682,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1637,6 +1683,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
      @Override
      public void openTextEdit(SignBlockEntity signEntity, boolean isFrontText) {
@@ -1062,7 +1062,7 @@ index 9d5051a65dcbd87b7d29db4643fa2b070717845b..57d301a9528a16c0fcdb9e45ae957629
          this.connection.send(new ClientboundBlockUpdatePacket(this.level(), signEntity.getBlockPos()));
          this.connection.send(new ClientboundOpenSignEditorPacket(signEntity.getBlockPos(), isFrontText));
      }
-@@ -1938,6 +1985,26 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1939,6 +1986,26 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.lastSentExp = -1; // CraftBukkit - Added to reset
      }
  
@@ -1089,7 +1089,7 @@ index 9d5051a65dcbd87b7d29db4643fa2b070717845b..57d301a9528a16c0fcdb9e45ae957629
      @Override
      public void displayClientMessage(Component chatComponent, boolean actionBar) {
          this.sendSystemMessage(chatComponent, actionBar);
-@@ -2161,6 +2228,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2162,6 +2229,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          );
      }
  
@@ -1110,7 +1110,7 @@ index 9d5051a65dcbd87b7d29db4643fa2b070717845b..57d301a9528a16c0fcdb9e45ae957629
      public void sendSystemMessage(Component mesage) {
          this.sendSystemMessage(mesage, false);
      }
-@@ -2299,8 +2380,68 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2300,8 +2381,68 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
      public void resetLastActionTime() {
          this.lastActionTime = Util.getMillis();
@@ -1179,7 +1179,7 @@ index 9d5051a65dcbd87b7d29db4643fa2b070717845b..57d301a9528a16c0fcdb9e45ae957629
      public ServerStatsCounter getStats() {
          return this.stats;
      }
-@@ -2927,4 +3068,56 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2928,4 +3069,56 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          return (org.bukkit.craftbukkit.entity.CraftPlayer) super.getBukkitEntity();
      }
      // CraftBukkit end

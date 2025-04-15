@@ -9,10 +9,10 @@ Added some asynchronous structure locate methods in World,
 requires async-locator to be enabled in Leaf config, or else it will fall back to sync methods.
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index a4a0b07c9e3e716d77bc6e11dca096e142a5190e..6bcece7ceb5be047371faf7ab85b3688ed3e045b 100644
+index 28ece1167907558c21d292cb36960a026d0c0897..7d0874e3a4da1bfce80a83635c904c7d257c276b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -2272,6 +2272,45 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -2277,6 +2277,45 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          return new CraftStructureSearchResult(CraftStructure.minecraftToBukkit(found.getSecond().value()), CraftLocation.toBukkit(found.getFirst(), this));
      }
  

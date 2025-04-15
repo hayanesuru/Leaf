@@ -520,7 +520,7 @@ index 79e226da354d15ba9687d3f09c9b4f318cf40e8d..1456f2d1a92c8315177fb03d0c7ec943
 +    // Purpur end - OfflinePlayer API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 10560d5caa5a53410eb759cc43dde9d470a3de45..3c237f2002e6463efe6bd8ffa2235ce6a6a3e5ec 100644
+index 72bc64514079fa0b9588a7a7fdbc211c3e5f2769..fb6ec51678c8d8a02a29bdbfae8839e58ce7414c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -423,6 +423,20 @@ public final class CraftServer implements Server {
@@ -668,10 +668,10 @@ index 10560d5caa5a53410eb759cc43dde9d470a3de45..3c237f2002e6463efe6bd8ffa2235ce6
 +    // Purpur end - Lagging threshold
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 285d94b422583d468958e93ac6955776f8efcfa3..a4a0b07c9e3e716d77bc6e11dca096e142a5190e 100644
+index 4a405744061b2689a207aa085bec9a6a223342f2..28ece1167907558c21d292cb36960a026d0c0897 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -2347,6 +2347,50 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -2352,6 +2352,50 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          return (this.getHandle().getDragonFight() == null) ? null : new CraftDragonBattle(this.getHandle().getDragonFight());
      }
  
@@ -958,10 +958,10 @@ index c8caeba7737c2386f7194207a5ea11b74c6179e4..8feb78c4d7fa793f01991756b618fc49
 +    // Purpur end - Ridables
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index fc432152ae619b0b3d1aab83f6f5b623376c025e..e4d12547bc46389a8476589ffc777aed117d0827 100644
+index e0e6a5087a8da7926d1e731e28a1800036acb9f4..5b7c8516d8a6ae993d4c556e3e742deb57bf4096 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-@@ -276,6 +276,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+@@ -277,6 +277,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
      @Override
      public void recalculatePermissions() {
          this.perm.recalculatePermissions();

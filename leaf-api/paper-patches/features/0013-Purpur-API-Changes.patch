@@ -588,10 +588,10 @@ index 925b4c8903bb6f44a56af4ecc2c0a01c46f14107..e405dde21778ff7fe3579411276a0419
 +    // Purpur end - Debug Marker API
  }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 50f9f84081573706ebd6f0ebc2cbf6c0596c9691..dd8e6e32c82e46f5ce8e3d33c8c41fc1fede6b68 100644
+index a8b64f78bf3c453094074b4b4d3c8fd07b9eb273..d0c2ff65893c1fd3903633ebc24aae879dc91f10 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
-@@ -4283,6 +4283,86 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
+@@ -4290,6 +4290,86 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
      @Nullable
      public DragonBattle getEnderDragonBattle();
  

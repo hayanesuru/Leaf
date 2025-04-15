@@ -9,10 +9,10 @@ happen but the visual "refresh" of a world change is hidden. Depending on the de
 this can act as a "smooth teleport" to a world if the new world is very similar looking to the old one.
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index e2b8bd2ba3ef82bb64f5649ae59641b0f273ea43..2ec01803a6ae255bec9def42b67723caa57bb8d8 100644
+index 4c53ca9b3f7b49d5edd0ba87fa8f308b5c992492..410faf366a50f6fb2093bcfd10aa9851c2bbd273 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1418,6 +1418,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1419,6 +1419,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  LevelData worlddata = level.getLevelData();
  
                  this.connection.send(new ClientboundRespawnPacket(this.createCommonSpawnInfo(level), (byte) 3));
@@ -20,7 +20,7 @@ index e2b8bd2ba3ef82bb64f5649ae59641b0f273ea43..2ec01803a6ae255bec9def42b67723ca
                  this.connection.send(new ClientboundChangeDifficultyPacket(worlddata.getDifficulty(), worlddata.isDifficultyLocked()));
                  PlayerList playerList = this.server.getPlayerList();
  
-@@ -1427,7 +1428,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1428,7 +1429,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  // CraftBukkit end
                  this.portalPos = org.bukkit.craftbukkit.util.CraftLocation.toBlockPosition(exit); // Purpur - Fix stuck in portals
                  this.setServerLevel(level);

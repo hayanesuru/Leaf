@@ -19,10 +19,10 @@ index bcecf48b43eef377354e32695d4258ea8020f73d..aba02a7e3139030050c3c61aabf7708c
              org.purpurmc.purpur.command.DemoCommand.register(this.dispatcher); // Purpur - Add demo command
              org.purpurmc.purpur.command.PingCommand.register(this.dispatcher); // Purpur - Add ping command
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index fe2710ee9b8a4452ff339a0b15ccf357a7c25336..f0e9dac266ef24f8e07460a1b08a244dc92f13cd 100644
+index 7746550258a1c13c042b946bdfe6c1410dcee4ad..2801bf484ea1d06dd8924b920e5b7e3640d0b528 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -2386,6 +2386,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2387,6 +2387,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
      // Purpur start - AFK API
      private boolean isAfk = false;
@@ -33,7 +33,7 @@ index fe2710ee9b8a4452ff339a0b15ccf357a7c25336..f0e9dac266ef24f8e07460a1b08a244d
  
      @Override
      public void setAfk(boolean afk) {
-@@ -2423,6 +2427,18 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2424,6 +2428,18 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              String prefix = (split.length > 0 ? split[0] : "").replace(org.purpurmc.purpur.PurpurConfig.afkTabListPrefix, "");
              String suffix = (split.length > 1 ? split[1] : "").replace(org.purpurmc.purpur.PurpurConfig.afkTabListSuffix, "");
              if (afk) {
@@ -164,7 +164,7 @@ index 82117c8619b184017bb4448bf2e30f817abd368a..bbdb8e00ac0fdcc4f1b94faf8e2cd135
          player.awardStat(Stats.LEAVE_GAME);
          // CraftBukkit start - Quitting must be before we do final save of data, in case plugins need to modify it
 diff --git a/org/purpurmc/purpur/PurpurConfig.java b/org/purpurmc/purpur/PurpurConfig.java
-index bacfceada7d5d3d643c740af38ff8bdfb57b21f7..fe503e2a3d4ed3a244d5816ded744c43398c7e5f 100644
+index 23e959e348a1875d63b5862411dae162625a1aac..78e90d4e173c52c0dadc6c8e00326829a7c57575 100644
 --- a/org/purpurmc/purpur/PurpurConfig.java
 +++ b/org/purpurmc/purpur/PurpurConfig.java
 @@ -175,6 +175,11 @@ public class PurpurConfig {

@@ -5,7 +5,7 @@ Subject: [PATCH] Cache eligible players for despawn checks
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index b9bff011c0ffb0efdaccc65847be69aad1a70681..d8390cb3901a40b97e99990d9f71f12c74f96607 100644
+index d9a9a60e63e652ca83c26dba5d7bfa3a3834af35..8daa10d2e2f6276fa4c4071928d7ee5aac2054c2 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -723,6 +723,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -38,10 +38,10 @@ index b9bff011c0ffb0efdaccc65847be69aad1a70681..d8390cb3901a40b97e99990d9f71f12c
                  .forEach(
                      entity -> {
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 2ec01803a6ae255bec9def42b67723caa57bb8d8..f84c34917ac2a026fdc3451236e77d81a5656d7f 100644
+index 410faf366a50f6fb2093bcfd10aa9851c2bbd273..08e6b0b52802327215bec7989a2c4245cec6f1da 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1518,6 +1518,13 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1519,6 +1519,13 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.containerMenu.broadcastChanges();
      }
  
