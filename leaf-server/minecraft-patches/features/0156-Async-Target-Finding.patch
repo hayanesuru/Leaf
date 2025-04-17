@@ -1,44 +1,24 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Taiyou06 <kaandindar21@gmail.com>
 Date: Sat, 29 Mar 2025 13:40:46 +0100
-Subject: [PATCH] AsyncTargetFinding
+Subject: [PATCH] Async Target Finding
 
 
 diff --git a/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java b/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java
-index 41ee3cdc45ecc8376a2203ed588bb544ed377294..7fe2b75e8c2718851d68429380ac71203d31a58f 100644
+index 41ee3cdc45ecc8376a2203ed588bb544ed377294..ed731177585051abbf129a48dfe4766265cf5617 100644
 --- a/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java
-@@ -1,6 +1,13 @@
- package net.minecraft.world.entity.ai.goal.target;
- 
- import java.util.EnumSet;
-+import java.util.List;
-+import java.util.concurrent.CompletableFuture;
-+import java.util.concurrent.ExecutorService;
-+import java.util.concurrent.Executors;
-+import java.util.concurrent.TimeUnit;
-+import java.util.concurrent.atomic.AtomicBoolean;
-+import java.util.concurrent.atomic.AtomicReference;
- import javax.annotation.Nullable;
- import net.minecraft.server.level.ServerLevel;
- import net.minecraft.server.level.ServerPlayer;
-@@ -10,15 +17,42 @@ import net.minecraft.world.entity.ai.goal.Goal;
- import net.minecraft.world.entity.ai.targeting.TargetingConditions;
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.phys.AABB;
-+import org.dreeam.leaf.config.modules.async.AsyncTargetFinding;
- 
- public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetGoal {
-     private static final int DEFAULT_RANDOM_INTERVAL = 10;
+@@ -16,9 +16,37 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
      protected final Class<T> targetType;
      protected final int randomInterval;
      @Nullable
 -    protected LivingEntity target;
-+    protected volatile LivingEntity target;
++    protected volatile LivingEntity target; // Leaf - Async Target Finding
      protected TargetingConditions targetConditions;
  
++    // Leaf start - Async Target Finding
 +    // Single thread executor to prevent overwhelming the server
-+    private static final ExecutorService TARGET_FINDER_EXECUTOR = Executors.newSingleThreadExecutor(r -> {
++    private static final java.util.concurrent.ExecutorService TARGET_FINDER_EXECUTOR = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
 +        Thread thread = new Thread(r, "Leaf - Target-Finder-Thread");
 +        thread.setDaemon(true);
 +        thread.setPriority(Thread.MIN_PRIORITY); // Lower priority to avoid competing with main thread
@@ -46,13 +26,13 @@ index 41ee3cdc45ecc8376a2203ed588bb544ed377294..7fe2b75e8c2718851d68429380ac7120
 +    });
 +
 +    // Flag to track if a search is in progress
-+    private final AtomicBoolean isSearching = new AtomicBoolean(false);
-+    private final AtomicReference<LivingEntity> pendingTarget = new AtomicReference<>(null);
++    private final java.util.concurrent.atomic.AtomicBoolean isSearching = new java.util.concurrent.atomic.AtomicBoolean(false);
++    private final java.util.concurrent.atomic.AtomicReference<LivingEntity> pendingTarget = new java.util.concurrent.atomic.AtomicReference<>(null);
 +    static {
 +        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 +            try {
 +                TARGET_FINDER_EXECUTOR.shutdown();
-+                TARGET_FINDER_EXECUTOR.awaitTermination(2, TimeUnit.SECONDS);
++                TARGET_FINDER_EXECUTOR.awaitTermination(2, java.util.concurrent.TimeUnit.SECONDS);
 +            } catch (InterruptedException e) {
 +                Thread.currentThread().interrupt();
 +            } finally {
@@ -62,29 +42,33 @@ index 41ee3cdc45ecc8376a2203ed588bb544ed377294..7fe2b75e8c2718851d68429380ac7120
 +            }
 +        }));
 +    }
++    // Leaf end - Async Target Finding
 +
      public NearestAttackableTargetGoal(Mob mob, Class<T> targetType, boolean mustSee) {
          this(mob, targetType, 10, mustSee, false, null);
      }
-@@ -46,8 +80,12 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
+@@ -46,8 +74,14 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
          if (this.randomInterval > 0 && this.mob.getRandom().nextInt(this.randomInterval) != 0) {
              return false;
          } else {
 -            this.findTarget();
 -            return this.target != null;
++            // Leaf start - Async Target Finding
 +            findTarget();
 +            LivingEntity pending = pendingTarget.getAndSet(null);
 +            if (pending != null && !pending.isRemoved() && pending.isAlive()) {
 +                this.target = pending;
 +            }
 +            return this.target != null && this.target.isAlive() && !this.target.isRemoved();
++            // Leaf end - Async Target Finding
          }
      }
  
-@@ -55,25 +93,235 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
+@@ -55,25 +89,239 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
          return this.mob.getBoundingBox().inflate(targetDistance, targetDistance, targetDistance);
      }
  
++    // Leaf start - Async Target Finding
 +    // Async find target implementation with safer entity handling
      protected void findTarget() {
 -        ServerLevel serverLevel = getServerLevel(this.mob);
@@ -100,10 +84,10 @@ index 41ee3cdc45ecc8376a2203ed588bb544ed377294..7fe2b75e8c2718851d68429380ac7120
 -        } else {
 -            this.target = serverLevel.getNearestPlayer(this.getTargetConditions(), this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 +        // If async is disabled or we're already searching, use sync method
-+        if (!AsyncTargetFinding.enabled || !isSearching.compareAndSet(false, true)) {
++        if (!org.dreeam.leaf.config.modules.async.AsyncTargetFinding.enabled || !isSearching.compareAndSet(false, true)) {
 +            findTargetSync();
 +            return;
-+        }
+         }
 +
 +        // Capture mutable state to avoid race conditions
 +        final Mob mob = this.mob;
@@ -122,7 +106,7 @@ index 41ee3cdc45ecc8376a2203ed588bb544ed377294..7fe2b75e8c2718851d68429380ac7120
 +        final Class<T> targetType = this.targetType;
 +
 +        // Start async search with immutable captured state - using submit instead of runAsync
-+        CompletableFuture.supplyAsync(() -> {
++        java.util.concurrent.CompletableFuture.supplyAsync(() -> {
 +            try {
 +                ServerLevel serverLevel = getServerLevel(mob);
 +                if (serverLevel == null) {
@@ -139,7 +123,7 @@ index 41ee3cdc45ecc8376a2203ed588bb544ed377294..7fe2b75e8c2718851d68429380ac7120
 +                            x + followDistance, y + followDistance, z + followDistance
 +                        );
 +
-+                        List<T> entities = null;
++                        java.util.List<T> entities = null;
 +                        try {
 +                            entities = mob.level().getEntitiesOfClass(targetType, searchArea, entity -> true);
 +                        } catch (Exception e) {
@@ -169,11 +153,11 @@ index 41ee3cdc45ecc8376a2203ed588bb544ed377294..7fe2b75e8c2718851d68429380ac7120
 +                pendingTarget.set(result);
 +            }
 +        });
-+    }
-+
+     }
+ 
 +    @Nullable
 +    private LivingEntity findNearestEntitySafely(
-+        List<? extends LivingEntity> entities,
++        java.util.List<? extends LivingEntity> entities,
 +        TargetingConditions conditions,
 +        Mob source,
 +        double x,
@@ -236,7 +220,7 @@ index 41ee3cdc45ecc8376a2203ed588bb544ed377294..7fe2b75e8c2718851d68429380ac7120
 +        }
 +
 +        try {
-+            List<? extends Player> players = level.players();
++            java.util.List<? extends Player> players = level.players();
 +            if (players == null || players.isEmpty()) {
 +                return null;
 +            }
@@ -310,12 +294,14 @@ index 41ee3cdc45ecc8376a2203ed588bb544ed377294..7fe2b75e8c2718851d68429380ac7120
 +        } catch (Exception e) {
 +            System.err.println("Error in findTargetSync: " + e.getMessage());
 +            this.target = null;
-         }
-     }
- 
++        }
++    }
++    // Leaf end - Async Target Finding
++
      @Override
      public void start() {
 -        this.mob.setTarget(this.target, this.target instanceof ServerPlayer ? org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_PLAYER : org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_ENTITY, true); // CraftBukkit - reason
++        // Leaf start - Async Target Finding
 +        LivingEntity targetEntity = this.target;
 +        if (targetEntity != null && !targetEntity.isRemoved() && targetEntity.isAlive()) {
 +            try {
@@ -327,6 +313,7 @@ index 41ee3cdc45ecc8376a2203ed588bb544ed377294..7fe2b75e8c2718851d68429380ac7120
 +                this.target = null;
 +            }
 +        }
++        // Leaf end - Async Target Finding
          super.start();
      }
  
