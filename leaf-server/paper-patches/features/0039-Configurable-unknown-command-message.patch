@@ -5,10 +5,10 @@ Subject: [PATCH] Configurable unknown command message
 
 
 diff --git a/src/main/java/org/spigotmc/SpigotConfig.java b/src/main/java/org/spigotmc/SpigotConfig.java
-index 7c585b71d06f438f414227c2625f27b6c323045e..de271fc2a9866d60ec760b9589faef260de1cb67 100644
+index c935d75b83338ce41507e9be11153dd1c4052cb6..ea79dc59fd1964900f193e22881dab006f90f2bf 100644
 --- a/src/main/java/org/spigotmc/SpigotConfig.java
 +++ b/src/main/java/org/spigotmc/SpigotConfig.java
-@@ -151,7 +151,6 @@ public class SpigotConfig {
+@@ -152,7 +152,6 @@ public class SpigotConfig {
      }
  
      public static String whitelistMessage;
@@ -16,7 +16,7 @@ index 7c585b71d06f438f414227c2625f27b6c323045e..de271fc2a9866d60ec760b9589faef26
      public static String serverFullMessage;
      public static String outdatedClientMessage = "Outdated client! Please use {0}";
      public static String outdatedServerMessage = "Outdated server! I'm still on {0}";
-@@ -167,7 +166,6 @@ public class SpigotConfig {
+@@ -168,7 +167,6 @@ public class SpigotConfig {
          }
  
          SpigotConfig.whitelistMessage = SpigotConfig.transform(SpigotConfig.getString("messages.whitelist", "You are not whitelisted on this server!"));
