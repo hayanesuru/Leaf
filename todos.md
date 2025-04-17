@@ -15,4 +15,4 @@
 - [ ] Check beacon issues fix
 - [ ] Update README.md
 - [ ] Remove stream in Inventory and check new changes
-- [ ] Update from Leaf 1.21.4 (curr commit: `1977a5b12c01f915d7c04a765b18957cbfbeeb24`)
+- [ ] Update from Leaf 1.21.4 (curr commit: `dd22d9cafffece7d469a7d702f63952abea441d2`)

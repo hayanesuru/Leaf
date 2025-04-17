@@ -5,7 +5,7 @@ Subject: [PATCH] Micro optimizations for random tick
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index d8390cb3901a40b97e99990d9f71f12c74f96607..4d7cf866452db7388ab90f9be284e859b39d8e61 100644
+index 7ca4fd418599cdb1bb1de44f4c3c57f1770a4038..461b620b703c9fca2691f724a9b865ad54aa90a4 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -903,7 +903,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

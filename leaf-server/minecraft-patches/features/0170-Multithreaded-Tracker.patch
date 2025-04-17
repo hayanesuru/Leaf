@@ -199,7 +199,7 @@ index 209a2b6a30d334fc4f6d0b1c02682db7f0b5e435..1489ecc2754901c6f30ec1b5ff0f324b
  
              attributesToSync.clear();
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 66177932ec65b7c4c2df0c021eeefbdb51f71eea..fc1430cb711a86281cfc7b7c94221e7ef867da9e 100644
+index 5943b18f172fb1d77ef1fe768daa8e8f43c3c8c1..7b85a9ebdbe3e8bee0a8fc100ede8a3f07eee5ce 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -2503,7 +2503,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -211,6 +211,15 @@ index 66177932ec65b7c4c2df0c021eeefbdb51f71eea..fc1430cb711a86281cfc7b7c94221e7e
          return this.moonrise$getEntityLookup(); // Paper - rewrite chunk system
      }
  
+@@ -2739,7 +2739,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+                         }
+ 
+                         map.carriedByPlayers.remove(player);
+-                        if (map.carriedBy.removeIf(holdingPlayer -> holdingPlayer.player == player)) {
++                        if (map.carriedBy.removeIf(holdingPlayer -> holdingPlayer != null && holdingPlayer.player == player)) { // Leaf - Multithreaded tracker
+                             map.decorations.remove(player.getName().getString());
+                         }
+                     }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 index 27ca0be25253b35ebfe54b725f9ba28a120f4ea0..94dd2887398cbebb60200e9a5c61c01b2fda0a7f 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
@@ -264,3 +273,15 @@ index 701025715e0aca3c1f920a66f9b3d03ec08eaf02..2b8b335cf5779d1b6eb639935d1b92d8
      private final AttributeSupplier supplier;
      private final java.util.function.Function<Holder<Attribute>, AttributeInstance> createInstance; // Gale - Airplane - reduce entity allocations
      private final net.minecraft.world.entity.LivingEntity entity; // Purpur - Ridables
+diff --git a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
+index 3ae69b17fec1cdb2bee2b5a795026a875f197c30..df471cd42f4084facb895b229c261b685054c3ae 100644
+--- a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
++++ b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
+@@ -211,6 +211,7 @@ public class MapItemSavedData extends SavedData {
+ 
+         for (int i = 0; i < this.carriedBy.size(); i++) {
+             MapItemSavedData.HoldingPlayer holdingPlayer1 = this.carriedBy.get(i);
++            if (holdingPlayer1 == null) continue; // Leaf - Multithreaded tracker
+             Player player1 = holdingPlayer1.player;
+             String string = player1.getName().getString();
+             if (!player1.isRemoved() && (player1.getInventory().contains(predicate) || mapStack.isFramed())) {

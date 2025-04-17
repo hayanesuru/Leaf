@@ -5,7 +5,7 @@ Subject: [PATCH] Configurable connection message
 
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index c18921f4ec1d4c205fa1d6efbb60eb05dcec4908..a289c3247ef6e1b7ae76fdc86c286e7b426731b4 100644
+index c18921f4ec1d4c205fa1d6efbb60eb05dcec4908..2d626735c75caa3ff6d5435882c4303aa204bd1e 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -336,7 +336,7 @@ public abstract class PlayerList {
@@ -35,7 +35,7 @@ index c18921f4ec1d4c205fa1d6efbb60eb05dcec4908..a289c3247ef6e1b7ae76fdc86c286e7b
          this.cserver.getPluginManager().callEvent(playerQuitEvent);
          player.getBukkitEntity().disconnect(playerQuitEvent.getQuitMessage());
  
-@@ -1527,4 +1527,34 @@ public abstract class PlayerList {
+@@ -1527,4 +1527,40 @@ public abstract class PlayerList {
      public boolean isAllowCommandsForAllPlayers() {
          return this.allowCommandsForAllPlayers;
      }
@@ -47,7 +47,10 @@ index c18921f4ec1d4c205fa1d6efbb60eb05dcec4908..a289c3247ef6e1b7ae76fdc86c286e7b
 +                return io.papermc.paper.adventure.PaperAdventure.asAdventure(defaultJoinMsg);
 +            }
 +
-+            return net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(org.dreeam.leaf.config.modules.misc.ConnectionMessage.joinMessage)
++            final String joinMessage = org.dreeam.leaf.config.modules.misc.ConnectionMessage.joinMessage
++                .replace("<player_name>", craftPlayer.getName());
++
++            return net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(joinMessage)
 +                .replaceText(net.kyori.adventure.text.TextReplacementConfig.builder().matchLiteral("<player_name>").replacement(craftPlayer.getName()).build())
 +                .replaceText(net.kyori.adventure.text.TextReplacementConfig.builder().matchLiteral("<player_displayname>").replacement(craftPlayer.displayName()).build());
 +        }
@@ -61,7 +64,10 @@ index c18921f4ec1d4c205fa1d6efbb60eb05dcec4908..a289c3247ef6e1b7ae76fdc86c286e7b
 +                return defaultJoinMsg;
 +            }
 +
-+            return net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(org.dreeam.leaf.config.modules.misc.ConnectionMessage.quitMessage)
++            final String quitMessage = org.dreeam.leaf.config.modules.misc.ConnectionMessage.quitMessage
++                .replace("<player_name>", craftPlayer.getName());
++
++            return net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(quitMessage)
 +                .replaceText(net.kyori.adventure.text.TextReplacementConfig.builder().matchLiteral("<player_name>").replacement(craftPlayer.getName()).build())
 +                .replaceText(net.kyori.adventure.text.TextReplacementConfig.builder().matchLiteral("<player_displayname>").replacement(craftPlayer.displayName()).build());
 +        }
