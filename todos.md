@@ -15,4 +15,5 @@
 - [ ] Check beacon issues fix
 - [ ] Update README.md
 - [ ] Remove stream in Inventory and check new changes
+- [ ] Check potential upstream changes (not Paper) then release 1st exp build
 - [ ] Update from Leaf 1.21.4 (curr commit: `dd22d9cafffece7d469a7d702f63952abea441d2`)
