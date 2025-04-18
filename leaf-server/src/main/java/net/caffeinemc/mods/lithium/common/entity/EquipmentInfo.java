@@ -2,9 +2,9 @@ package net.caffeinemc.mods.lithium.common.entity;
 
 public interface EquipmentInfo {
 
-    boolean shouldTickEnchantments();
+    boolean lithium$shouldTickEnchantments();
 
-    boolean hasUnsentEquipmentChanges();
+    boolean lithium$hasUnsentEquipmentChanges();
 
-    void onEquipmentChangesSent();
+    void lithium$onEquipmentChangesSent();
 }

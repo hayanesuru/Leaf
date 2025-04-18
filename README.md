@@ -6,21 +6,20 @@
 [![Discord](https://img.shields.io/discord/1145991395388162119?label=discord&style=for-the-badge&colorA=19201a&colorB=298046)](https://discord.gg/gfgAwdSEuM)
 [![Docs](https://img.shields.io/badge/Docs-docs.leafmc.one-blue?label=docs&style=for-the-badge&colorA=19201a&colorB=298046)](https://docs.leafmc.one)
 
-**Leaf** is a [Paper](https://papermc.io/) fork designed to customized and high-performance, built on top of [Gale](https://github.com/Dreeam-qwq/Gale) with optimizations and fixes from other forks.
+**Leaf** is a [Paper](https://papermc.io/) fork designed to be customized and high-performance.
 </div>
 
 > [!WARNING]  
 > Leaf is a performance-oriented fork. Make sure to take backups **before** switching to it. Everyone is welcome to contribute by optimizing or reporting issues.
 
 ## 🍃 Features
- - **Based on [Gale](https://github.com/Dreeam-qwq/Gale)** for better performance
+ - **Based on [Paper](https://papermc.io/)** for generic performance and flexible API
  - **Async** pathfinding, mob spawning and entity tracker
- - **Various optimizations** blending from [other forks](https://github.com/Winds-Studio/Leaf#-credits)
+ - **Various optimizations** blending from [other forks](https://github.com/Winds-Studio/Leaf#-credits) and our own
  - **Fully compatible** with Bukkit, Spigot and Paper plugins 
  - **Latest dependencies**, keeping all dependencies in the newest version
  - **Allows all characters in usernames**, including Chinese and other characters
  - **Fixes** some Minecraft bugs
- - **Configurable UseItem distance** for anarchy servers
  - **Mod Protocols** support
  - **More customized** relying on features of [Purpur](https://github.com/PurpurMC/Purpur)
  - Support for **Linear region file format**
@@ -43,7 +42,7 @@ You can find the latest successful build in [GitHub Action](https://github.com/W
 **Please note Java >= 21 is required.**
 
 ## 📄 Documentation
-Documentation on how to use/configure Leaf: [docs.leafmc.one](https://docs.leafmc.one)
+Documentation on how to use/configure Leaf: [www.leafmc.one/docs](https://www.leafmc.one/docs/)
 
 ## 📦 Building
 Building a Paperclip JAR for distribution:

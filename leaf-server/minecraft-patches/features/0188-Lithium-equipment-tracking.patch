@@ -21,7 +21,7 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/core/component/PatchedDataComponentMap.java b/net/minecraft/core/component/PatchedDataComponentMap.java
-index 3af6c1e2549ba3aeb60aa9d498a976be3680c0ee..a8ec32ec1a8c5ebbbf64639f97acf8153e1dbdb4 100644
+index 3af6c1e2549ba3aeb60aa9d498a976be3680c0ee..57e0fc928cf97bac8d6ed3f2b746c2677a90c1b5 100644
 --- a/net/minecraft/core/component/PatchedDataComponentMap.java
 +++ b/net/minecraft/core/component/PatchedDataComponentMap.java
 @@ -14,10 +14,11 @@ import java.util.Map.Entry;
@@ -43,7 +43,7 @@ index 3af6c1e2549ba3aeb60aa9d498a976be3680c0ee..a8ec32ec1a8c5ebbbf64639f97acf815
      private void ensureMapOwnership() {
 +        // Leaf start - Lithium - equipment tracking
 +        if (this.subscriber != null) {
-+            this.subscriber.notify(this, 0);
++            this.subscriber.lithium$notify(this, 0);
 +        }
 +        // Leaf end - Lithium - equipment tracking
          if (this.copyOnWrite) {
@@ -55,7 +55,7 @@ index 3af6c1e2549ba3aeb60aa9d498a976be3680c0ee..a8ec32ec1a8c5ebbbf64639f97acf815
  
 +    // Leaf start - Lithium - equipment tracking
 +    @Override
-+    public void subscribe(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<PatchedDataComponentMap> subscriber, int subscriberData) {
++    public void lithium$subscribe(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<PatchedDataComponentMap> subscriber, int subscriberData) {
 +        if (subscriberData != 0) {
 +            throw new UnsupportedOperationException("ComponentMapImpl does not support subscriber data");
 +        }
@@ -63,7 +63,7 @@ index 3af6c1e2549ba3aeb60aa9d498a976be3680c0ee..a8ec32ec1a8c5ebbbf64639f97acf815
 +    }
 +
 +    @Override
-+    public int unsubscribe(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<PatchedDataComponentMap> subscriber) {
++    public int lithium$unsubscribe(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<PatchedDataComponentMap> subscriber) {
 +        this.subscriber = net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber.without(this.subscriber, subscriber);
 +        return 0;
 +    }
@@ -73,7 +73,7 @@ index 3af6c1e2549ba3aeb60aa9d498a976be3680c0ee..a8ec32ec1a8c5ebbbf64639f97acf815
      public boolean equals(Object other) {
          return this == other
 diff --git a/net/minecraft/world/entity/EntityEquipment.java b/net/minecraft/world/entity/EntityEquipment.java
-index 90814ad07a2686c5a274860395f5aca29cc3bf13..d10b64f8a3ca1fda83612a8765a59538bbd69313 100644
+index 90814ad07a2686c5a274860395f5aca29cc3bf13..369f0176a636def905fb2a2df1a0e2cadd1eb3b2 100644
 --- a/net/minecraft/world/entity/EntityEquipment.java
 +++ b/net/minecraft/world/entity/EntityEquipment.java
 @@ -7,7 +7,7 @@ import java.util.Objects;
@@ -124,7 +124,7 @@ index 90814ad07a2686c5a274860395f5aca29cc3bf13..d10b64f8a3ca1fda83612a8765a59538
 +                    this.shouldTickEnchantments = stackHasTickableEnchantment(newStack);
 +                }
 +                if (!newStack.isEmpty()) {
-+                    newStack.subscribe(this, 0);
++                    newStack.lithium$subscribe(this, 0);
 +                }
 +            }
 +        }
@@ -146,18 +146,18 @@ index 90814ad07a2686c5a274860395f5aca29cc3bf13..d10b64f8a3ca1fda83612a8765a59538
      // Paper end - EntityDeathEvent
 +
 +    @Override
-+    public boolean shouldTickEnchantments() {
++    public boolean lithium$shouldTickEnchantments() {
 +        this.processScheduledEnchantmentCheck(null);
 +        return this.shouldTickEnchantments;
 +    }
 +
 +    @Override
-+    public boolean hasUnsentEquipmentChanges() {
++    public boolean lithium$hasUnsentEquipmentChanges() {
 +        return this.hasUnsentEquipmentChanges;
 +    }
 +
 +    @Override
-+    public void onEquipmentChangesSent() {
++    public void lithium$onEquipmentChangesSent() {
 +        this.hasUnsentEquipmentChanges = false;
 +    }
 +
@@ -168,7 +168,7 @@ index 90814ad07a2686c5a274860395f5aca29cc3bf13..d10b64f8a3ca1fda83612a8765a59538
 +
 +        for (ItemStack oldStack : this.items.values()) {
 +            if (!oldStack.isEmpty()) {
-+                oldStack.unsubscribeWithData(this, 0);
++                oldStack.lithium$unsubscribeWithData(this, 0);
 +            }
 +        }
 +    }
@@ -184,10 +184,10 @@ index 90814ad07a2686c5a274860395f5aca29cc3bf13..d10b64f8a3ca1fda83612a8765a59538
 +        this.hasUnsentEquipmentChanges = true;
 +
 +        if (!oldStack.isEmpty()) {
-+            oldStack.unsubscribeWithData(this, 0);
++            oldStack.lithium$unsubscribeWithData(this, 0);
 +        }
 +        if (!newStack.isEmpty()) {
-+            newStack.subscribe(this, 0);
++            newStack.lithium$subscribe(this, 0);
 +        }
 +    }
 +
@@ -206,7 +206,7 @@ index 90814ad07a2686c5a274860395f5aca29cc3bf13..d10b64f8a3ca1fda83612a8765a59538
 +    }
 +
 +    @Override
-+    public void notify(@org.jetbrains.annotations.Nullable ItemStack publisher, int zero) {
++    public void lithium$notify(@org.jetbrains.annotations.Nullable ItemStack publisher, int zero) {
 +        this.hasUnsentEquipmentChanges = true;
 +
 +        if (!this.shouldTickEnchantments) {
@@ -227,38 +227,29 @@ index 90814ad07a2686c5a274860395f5aca29cc3bf13..d10b64f8a3ca1fda83612a8765a59538
 +    }
 +
 +    @Override
-+    public void notifyCount(ItemStack publisher, int zero, int newCount) {
++    public void lithium$notifyCount(ItemStack publisher, int zero, int newCount) {
 +        if (newCount == 0) {
-+            publisher.unsubscribeWithData(this, zero);
++            publisher.lithium$unsubscribeWithData(this, zero);
 +        }
 +
 +        this.onEquipmentReplaced(publisher, ItemStack.EMPTY);
 +    }
 +
 +    @Override
-+    public void forceUnsubscribe(ItemStack publisher, int zero) {
++    public void lithium$forceUnsubscribe(ItemStack publisher, int zero) {
 +        throw new UnsupportedOperationException();
 +    }
  }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 7e9ace691bb2662afd2c0fc504007a6d22a8aec0..4a6880c044c016e9e5b0ec88afbfe169eef8e1d3 100644
+index 7e9ace691bb2662afd2c0fc504007a6d22a8aec0..dabd49c7b9e689be4b476c16b28cbb8edcd3306b 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -144,7 +144,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
- import org.bukkit.event.entity.EntityResurrectEvent;
- // CraftBukkit end
- 
--public abstract class LivingEntity extends Entity implements Attackable {
-+public abstract class LivingEntity extends Entity implements Attackable, net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber.CountChangeSubscriber<ItemStack> { // Leaf - Lithium - equipment tracking
-     private static final Logger LOGGER = LogUtils.getLogger();
-     private static final String TAG_ACTIVE_EFFECTS = "active_effects";
-     private static final ResourceLocation SPEED_MODIFIER_POWDER_SNOW_ID = ResourceLocation.withDefaultNamespace("powder_snow");
 @@ -417,7 +417,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
              this.getSleepingPos().ifPresent(this::setPosToBed);
          }
  
 -        if (this.level() instanceof ServerLevel serverLevel) {
-+        if ((this instanceof Player || this.equipment.shouldTickEnchantments()) && this.level() instanceof ServerLevel serverLevel) { // Leaf - Lithium - equipment tracking
++        if ((this instanceof Player || this.equipment.lithium$shouldTickEnchantments()) && this.level() instanceof ServerLevel serverLevel) { // Leaf - Lithium - equipment tracking
              EnchantmentHelper.tickEffects(serverLevel, this);
          }
  
@@ -266,7 +257,7 @@ index 7e9ace691bb2662afd2c0fc504007a6d22a8aec0..4a6880c044c016e9e5b0ec88afbfe169
      public void detectEquipmentUpdates() {
          Map<EquipmentSlot, ItemStack> map = this.collectEquipmentChanges();
          if (map != null) {
-+            if (!(this instanceof net.minecraft.world.entity.player.Player)) this.equipment.onEquipmentChangesSent();; // Leaf - Lithium - equipment tracking
++            if (!(this instanceof net.minecraft.world.entity.player.Player)) this.equipment.lithium$onEquipmentChangesSent();; // Leaf - Lithium - equipment tracking
              this.handleHandSwap(map);
              if (!map.isEmpty()) {
                  this.handleEquipmentChanges(map);
@@ -276,13 +267,13 @@ index 7e9ace691bb2662afd2c0fc504007a6d22a8aec0..4a6880c044c016e9e5b0ec88afbfe169
      private Map<EquipmentSlot, ItemStack> collectEquipmentChanges() {
 +        // Leaf start - Lithium - equipment tracking
 +        final boolean isArmorStandUpdateNoTick = this instanceof net.minecraft.world.entity.decoration.ArmorStand stand && !stand.canTick && stand.noTickEquipmentDirty;
-+        if (!isArmorStandUpdateNoTick && !this.equipment.hasUnsentEquipmentChanges()) return null;
++        if (!isArmorStandUpdateNoTick && !this.equipment.lithium$hasUnsentEquipmentChanges()) return null;
 +        // Leaf end - Lithium - equipment tracking
          Map<EquipmentSlot, ItemStack> map = null;
          // Paper start - EntityEquipmentChangedEvent
          record EquipmentChangeImpl(org.bukkit.inventory.ItemStack oldItem, org.bukkit.inventory.ItemStack newItem) implements io.papermc.paper.event.entity.EntityEquipmentChangedEvent.EquipmentChange {
 diff --git a/net/minecraft/world/entity/decoration/ArmorStand.java b/net/minecraft/world/entity/decoration/ArmorStand.java
-index 49500127eb3a471c41dc3ff32372ad6f20c6d69a..c4ef7ce572a1dc05a9ff2b4aa115ef07fd04902d 100644
+index 49500127eb3a471c41dc3ff32372ad6f20c6d69a..a5a6e4cd74a5444ce06828404036de1728a1a5ce 100644
 --- a/net/minecraft/world/entity/decoration/ArmorStand.java
 +++ b/net/minecraft/world/entity/decoration/ArmorStand.java
 @@ -551,8 +551,8 @@ public class ArmorStand extends LivingEntity {
@@ -295,19 +286,8 @@ index 49500127eb3a471c41dc3ff32372ad6f20c6d69a..c4ef7ce572a1dc05a9ff2b4aa115ef07
              }
  
              return;
-@@ -886,4 +886,10 @@ public class ArmorStand extends LivingEntity {
-         if (this.canMovementTick && this.canMove) super.aiStep();
-     }
-     // Purpur end - Movement options for armor stands
-+
-+    // Leaf start - Lithium - equipment tracking
-+    private void trackEquipChange(ItemStack prevStack, ItemStack currStack) {
-+        this.onEquipmentReplaced(prevStack, currStack);
-+    }
-+    // Leaf end - Lithium - equipment tracking
- }
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index d2d9619f8156985ba38c0ef8c0f155adc8d40f34..cf5755a313b021c42a194364641cf5cad1ccfba7 100644
+index d2d9619f8156985ba38c0ef8c0f155adc8d40f34..9224613bb6a0653407f220f44d839cdeb4e4f7ea 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
 @@ -97,7 +97,7 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
@@ -338,12 +318,12 @@ index d2d9619f8156985ba38c0ef8c0f155adc8d40f34..cf5755a313b021c42a194364641cf5ca
 +        // Leaf start - Lithium - equipment tracking
 +        if (count != this.count) {
 +            if (this.subscriber instanceof net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber.CountChangeSubscriber<ItemStack> countChangeSubscriber) {
-+                countChangeSubscriber.notifyCount(this, this.subscriberData, count);
++                countChangeSubscriber.lithium$notifyCount(this, this.subscriberData, count);
 +            }
 +            if (count == 0) {
-+                this.components.unsubscribe(this);
++                this.components.lithium$unsubscribe(this);
 +                if (this.subscriber != null) {
-+                    this.subscriber.forceUnsubscribe(this, this.subscriberData);
++                    this.subscriber.lithium$forceUnsubscribe(this, this.subscriberData);
 +                    this.subscriber = null;
 +                    this.subscriberData = 0;
 +                }
@@ -360,7 +340,7 @@ index d2d9619f8156985ba38c0ef8c0f155adc8d40f34..cf5755a313b021c42a194364641cf5ca
 +
 +    // Leaf start - Lithium - equipment tracking
 +    @Override
-+    public void subscribe(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<ItemStack> subscriber, int subscriberData) {
++    public void lithium$subscribe(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<ItemStack> subscriber, int subscriberData) {
 +        if (this.isEmpty()) {
 +            throw new IllegalStateException("Cannot subscribe to an empty ItemStack!");
 +        }
@@ -377,7 +357,7 @@ index d2d9619f8156985ba38c0ef8c0f155adc8d40f34..cf5755a313b021c42a194364641cf5ca
 +    }
 +
 +    @Override
-+    public int unsubscribe(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<ItemStack> subscriber) {
++    public int lithium$unsubscribe(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<ItemStack> subscriber) {
 +        if (this.isEmpty()) {
 +            throw new IllegalStateException("Cannot unsubscribe from an empty ItemStack!");
 +        }
@@ -387,13 +367,13 @@ index d2d9619f8156985ba38c0ef8c0f155adc8d40f34..cf5755a313b021c42a194364641cf5ca
 +        this.subscriber = net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber.without(this.subscriber, subscriber);
 +
 +        if (this.subscriber == null) {
-+            this.components.unsubscribe(this);
++            this.components.lithium$unsubscribe(this);
 +        }
 +        return retval;
 +    }
 +
 +    @Override
-+    public void unsubscribeWithData(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<ItemStack> subscriber, int subscriberData) {
++    public void lithium$unsubscribeWithData(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<ItemStack> subscriber, int subscriberData) {
 +        if (this.isEmpty()) {
 +            throw new IllegalStateException("Cannot unsubscribe from an empty ItemStack!");
 +        }
@@ -402,12 +382,12 @@ index d2d9619f8156985ba38c0ef8c0f155adc8d40f34..cf5755a313b021c42a194364641cf5ca
 +        this.subscriber = net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber.without(this.subscriber, subscriber, subscriberData, true);
 +
 +        if (this.subscriber == null) {
-+            this.components.unsubscribe(this);
++            this.components.lithium$unsubscribe(this);
 +        }
 +    }
 +
 +    @Override
-+    public boolean isSubscribedWithData(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<ItemStack> subscriber, int subscriberData) {
++    public boolean lithium$isSubscribedWithData(net.caffeinemc.mods.lithium.common.util.change_tracking.ChangeSubscriber<ItemStack> subscriber, int subscriberData) {
 +        if (this.isEmpty()) {
 +            throw new IllegalStateException("Cannot be subscribed to an empty ItemStack!");
 +        }
@@ -416,28 +396,28 @@ index d2d9619f8156985ba38c0ef8c0f155adc8d40f34..cf5755a313b021c42a194364641cf5ca
 +    }
 +
 +    @Override
-+    public void forceUnsubscribe(PatchedDataComponentMap publisher, int subscriberData) {
++    public void lithium$forceUnsubscribe(PatchedDataComponentMap publisher, int subscriberData) {
 +        if (publisher != this.components) {
 +            throw new IllegalStateException("Invalid publisher, expected " + this.components + " but got " + publisher);
 +        }
-+        this.subscriber.forceUnsubscribe(this, this.subscriberData);
++        this.subscriber.lithium$forceUnsubscribe(this, this.subscriberData);
 +        this.subscriber = null;
 +        this.subscriberData = 0;
 +    }
 +
 +    @Override
-+    public void notify(PatchedDataComponentMap publisher, int subscriberData) {
++    public void lithium$notify(PatchedDataComponentMap publisher, int subscriberData) {
 +        if (publisher != this.components) {
 +            throw new IllegalStateException("Invalid publisher, expected " + this.components + " but got " + publisher);
 +        }
 +
 +        if (this.subscriber != null) {
-+            this.subscriber.notify(this, this.subscriberData);
++            this.subscriber.lithium$notify(this, this.subscriberData);
 +        }
 +    }
 +
 +    private void startTrackingChanges() {
-+        this.components.subscribe(this, 0);
++        this.components.lithium$subscribe(this, 0);
 +    }
 +    // Leaf end - Lithium - equipment tracking
  }
