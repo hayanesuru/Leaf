@@ -6,10 +6,10 @@ Subject: [PATCH] Only player pushable
 Useful for extreme cases like massive entities collide together in a small area
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index eb40f810d4eb8d6a8cc130719b637a473f19cc82..9d6d8ba96acd688d07bfecc29ff9de95abcd839c 100644
+index 4a6880c044c016e9e5b0ec88afbfe169eef8e1d3..2d246bfccb8538391592dec4a0a0e47aa6ff355d 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -3630,7 +3630,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3635,7 +3635,7 @@ public abstract class LivingEntity extends Entity implements Attackable, net.caf
              this.checkAutoSpinAttack(boundingBox, this.getBoundingBox());
          }
  
@@ -18,7 +18,7 @@ index eb40f810d4eb8d6a8cc130719b637a473f19cc82..9d6d8ba96acd688d07bfecc29ff9de95
          // Paper start - Add EntityMoveEvent
          // Purpur start - Ridables
          if (this.xo != this.getX() || this.yo != this.getY() || this.zo != this.getZ() || this.yRotO != this.getYRot() || this.xRotO != this.getXRot()) {
-@@ -3773,7 +3773,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3778,7 +3778,12 @@ public abstract class LivingEntity extends Entity implements Attackable, net.caf
              return;
          }
          // Paper end - don't run getEntities if we're not going to use its result
@@ -32,7 +32,7 @@ index eb40f810d4eb8d6a8cc130719b637a473f19cc82..9d6d8ba96acd688d07bfecc29ff9de95
          if (!pushableEntities.isEmpty()) {
              if (this.level() instanceof ServerLevel serverLevel) {
                  // Paper - don't run getEntities if we're not going to use its result; moved up
-@@ -3807,6 +3812,44 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3812,6 +3817,44 @@ public abstract class LivingEntity extends Entity implements Attackable, net.caf
          }
      }
  
@@ -78,7 +78,7 @@ index eb40f810d4eb8d6a8cc130719b637a473f19cc82..9d6d8ba96acd688d07bfecc29ff9de95
          AABB aabb = boundingBoxBeforeSpin.minmax(boundingBoxAfterSpin);
          List<Entity> entities = this.level().getEntities(this, aabb);
 diff --git a/net/minecraft/world/entity/decoration/ArmorStand.java b/net/minecraft/world/entity/decoration/ArmorStand.java
-index 49500127eb3a471c41dc3ff32372ad6f20c6d69a..aee9711b76c76e64056b73f8581cce0ba40b0811 100644
+index c4ef7ce572a1dc05a9ff2b4aa115ef07fd04902d..9b1b99c557b06b8b1e7b791e07637333797cc07f 100644
 --- a/net/minecraft/world/entity/decoration/ArmorStand.java
 +++ b/net/minecraft/world/entity/decoration/ArmorStand.java
 @@ -247,7 +247,7 @@ public class ArmorStand extends LivingEntity {

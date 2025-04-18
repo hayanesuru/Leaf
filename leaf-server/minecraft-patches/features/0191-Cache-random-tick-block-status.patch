@@ -5,7 +5,7 @@ Subject: [PATCH] Cache random tick block status
 
 
 diff --git a/net/minecraft/world/level/chunk/LevelChunkSection.java b/net/minecraft/world/level/chunk/LevelChunkSection.java
-index 03edf6dc751cc59ae1f16c23340e41668350b32a..963c51d14f87d2557a3d686fb8fe3ec9cba367b3 100644
+index df717c545472006b99532280c38c1fbef12bcf82..36c033b0ee63dfc273d721fb4b614733e8fdef19 100644
 --- a/net/minecraft/world/level/chunk/LevelChunkSection.java
 +++ b/net/minecraft/world/level/chunk/LevelChunkSection.java
 @@ -21,6 +21,7 @@ public class LevelChunkSection implements ca.spottedleaf.moonrise.patches.block_

@@ -5,7 +5,7 @@ Subject: [PATCH] Cache eligible players for despawn checks
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index d9a9a60e63e652ca83c26dba5d7bfa3a3834af35..8daa10d2e2f6276fa4c4071928d7ee5aac2054c2 100644
+index c8c99323b6397c3e595e7a9007e5d801ee2ac14a..7ca4fd418599cdb1bb1de44f4c3c57f1770a4038 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -723,6 +723,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

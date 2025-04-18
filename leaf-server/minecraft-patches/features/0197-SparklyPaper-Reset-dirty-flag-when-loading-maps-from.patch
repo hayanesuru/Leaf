@@ -9,7 +9,7 @@ By default, the server will start rewriting all map datas to the disk after load
 This also slows down world saving a lot if you have a lot of maps
 
 diff --git a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-index 3ae69b17fec1cdb2bee2b5a795026a875f197c30..1196066585582af132f8fb773bab7466d0800461 100644
+index df471cd42f4084facb895b229c261b685054c3ae..3e84cb0fe6efa95ccede9ead29cafbf1afb717d9 100644
 --- a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 +++ b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 @@ -160,6 +160,7 @@ public class MapItemSavedData extends SavedData {
