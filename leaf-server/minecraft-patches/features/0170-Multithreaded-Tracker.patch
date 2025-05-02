@@ -177,10 +177,10 @@ index f106373ef3ac4a8685c2939c9e8361688a285913..51ae390c68e7a3aa193329cc3bc47ca6
      public boolean visible = true;
  
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index 209a2b6a30d334fc4f6d0b1c02682db7f0b5e435..1489ecc2754901c6f30ec1b5ff0f324b2c2f0a48 100644
+index 44d87997e1ce9b846ebed541634a4478334c920c..6b421f84e2d4e286ad4b7624670c90a76e86c8fe 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -455,12 +455,15 @@ public class ServerEntity {
+@@ -460,12 +460,15 @@ public class ServerEntity {
          if (this.entity instanceof LivingEntity) {
              Set<AttributeInstance> attributesToSync = ((LivingEntity)this.entity).getAttributes().getAttributesToSync();
              if (!attributesToSync.isEmpty()) {
@@ -221,7 +221,7 @@ index 5943b18f172fb1d77ef1fe768daa8e8f43c3c8c1..7b85a9ebdbe3e8bee0a8fc100ede8a3f
                          }
                      }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 27ca0be25253b35ebfe54b725f9ba28a120f4ea0..94dd2887398cbebb60200e9a5c61c01b2fda0a7f 100644
+index c34cf83f79314198b0f7a747e4ae68b88d09d2cd..c8590517efe4124c2b1db2b927d131b804736400 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1876,7 +1876,7 @@ public class ServerGamePacketListenerImpl
@@ -274,7 +274,7 @@ index 701025715e0aca3c1f920a66f9b3d03ec08eaf02..2b8b335cf5779d1b6eb639935d1b92d8
      private final java.util.function.Function<Holder<Attribute>, AttributeInstance> createInstance; // Gale - Airplane - reduce entity allocations
      private final net.minecraft.world.entity.LivingEntity entity; // Purpur - Ridables
 diff --git a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
-index 3ae69b17fec1cdb2bee2b5a795026a875f197c30..df471cd42f4084facb895b229c261b685054c3ae 100644
+index 7bbeed6c998c91e68376d3f17a510d68e3cd0b27..d62ff9ebd4b55e1a9a0b51e84be868d844e5a954 100644
 --- a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 +++ b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 @@ -211,6 +211,7 @@ public class MapItemSavedData extends SavedData {

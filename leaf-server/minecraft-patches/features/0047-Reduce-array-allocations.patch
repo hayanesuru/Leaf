@@ -126,7 +126,7 @@ index 8ef16f98996b1ec0c9c3f158248ac95f1b07328f..6780b2493d625603b74e635c4996bb83
      private static final Codec<Object> ARG_CODEC = Codec.either(PRIMITIVE_ARG_CODEC, ComponentSerialization.CODEC)
          .xmap(
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 3cb0407c022c0b3e8627fc1d9736d3eee0609039..609b3020e5c044c51d80680bb0e9f3caae5b8285 100644
+index b127f444b79ef9430121045f328dd77b6b8182b2..3d476a93ecf3b12012db92ef07c0a899aac93388 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1220,7 +1220,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -139,10 +139,10 @@ index 3cb0407c022c0b3e8627fc1d9736d3eee0609039..609b3020e5c044c51d80680bb0e9f3ca
          return ret;
      }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 1f1df6616e416389fc5f84878469f0fed3254de7..7e00e8b0eb9a7aaffc37ef4d98b9205d58e9c5b2 100644
+index d8e66642bb33dc00d2e410c2739c0291777c88bc..096354ff2e65321b46bffefc91c0c47d2b114526 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2776,7 +2776,7 @@ public class ServerGamePacketListenerImpl
+@@ -2769,7 +2769,7 @@ public class ServerGamePacketListenerImpl
                                          // SPIGOT-7136 - Allays
                                          if (target instanceof net.minecraft.world.entity.animal.allay.Allay || target instanceof net.minecraft.world.entity.animal.horse.AbstractHorse) { // Paper - Fix horse armor desync
                                              ServerGamePacketListenerImpl.this.send(new net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket(
@@ -210,10 +210,10 @@ index 381e0a1c0af7e339713ed1df1c2f21121c1bbd0f..4e847c3f9d761da5dda11dec60582d9d
          equipmentSlotGroup -> equipmentSlotGroup.id, values(), ByIdMap.OutOfBoundsStrategy.ZERO
      );
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index 77c4bf12c8344dd3699142decaec42330100f1e7..25c806ca9abebdaa6031e3f350fdf1c7deac7c4e 100644
+index 24ecca78dc1140b6fc47d59f2acefca6bc2b0220..18bddc3db6f0e06f1811f2c409f207db2f462f63 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -1174,7 +1174,7 @@ public final class ItemStack implements DataComponentHolder {
+@@ -1173,7 +1173,7 @@ public final class ItemStack implements DataComponentHolder {
  
      private void addAttributeTooltips(Consumer<Component> tooltipAdder, TooltipDisplay tooltipDisplay, @Nullable Player player) {
          if (tooltipDisplay.shows(DataComponents.ATTRIBUTE_MODIFIERS)) {

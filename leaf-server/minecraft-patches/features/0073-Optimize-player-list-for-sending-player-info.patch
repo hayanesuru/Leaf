@@ -37,10 +37,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index d57b677cfe5282a5601e4ec8083fd476ccc16422..0c80d22ac19e8507a54e3ea0b3df5fa5ee853f89 100644
+index 1ea70e63db1d5f05cdbace8be48160b26a480fee..4a3f06a4677348c1277669514f9acef7a4334f1d 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -901,10 +901,19 @@ public abstract class PlayerList {
+@@ -913,10 +913,19 @@ public abstract class PlayerList {
          ServerPlayer[] sendAllPlayerInfoBucket = this.sendAllPlayerInfoBuckets[this.sendAllPlayerInfoIn];
  
          if (sendAllPlayerInfoBucket != null) {

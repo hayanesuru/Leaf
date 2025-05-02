@@ -37,10 +37,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 7b9324d121d39ef75dc4d709831472598c1c50a0..cb8da28d86d44b3633cf47f75141c9a093c63dab 100644
+index ac341838b6a2d2600eec8ae26791346f65ac93ae..28a3224c32e1890c95d540080fc5c04bc930a1e9 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -2113,6 +2113,16 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2129,6 +2129,16 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      boolean listPlayer(Player other);
      // Paper end
  

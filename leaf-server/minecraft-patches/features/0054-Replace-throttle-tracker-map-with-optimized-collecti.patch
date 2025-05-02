@@ -33,24 +33,24 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRA
 IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 diff --git a/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-index 5677a1d1ca2fc5d179034e2747f334a708a7cc79..e9d1c3c8cd637361e732010950e2a60cfc598c7c 100644
+index 0ae31252b2e2d82bfa883abc8fb78d550ecf4849..97731d0db450badeced8a9ff475f71000fe98c87 100644
 --- a/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 @@ -20,7 +20,7 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
      static final java.util.regex.Pattern PROP_PATTERN = java.util.regex.Pattern.compile("\\w{0,16}");
      // Spigot end
-     // CraftBukkit start - add fields
--    private static final java.util.HashMap<java.net.InetAddress, Long> throttleTracker = new java.util.HashMap<>();
+     // Paper start - Connection throttle
+-    private static final java.util.Map<java.net.InetAddress, Long> throttleTracker = new java.util.HashMap<>();
 +    private static final it.unimi.dsi.fastutil.objects.Object2LongMap<java.net.InetAddress> throttleTracker = new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>(); // Gale - Dionysus - replace throttle tracker map with optimized collection
      private static int throttleCounter = 0;
-     // CraftBukkit end
+     // Paper end - Connection throttle
      private static final boolean BYPASS_HOSTCHECK = Boolean.getBoolean("Paper.bypassHostCheck"); // Paper
-@@ -79,7 +79,7 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
-                 java.net.InetAddress address = ((java.net.InetSocketAddress) this.connection.getRemoteAddress()).getAddress();
+@@ -80,7 +80,7 @@ public class ServerHandshakePacketListenerImpl implements ServerHandshakePacketL
+                 java.net.InetAddress address = socketAddress.getAddress();
  
                  synchronized (ServerHandshakePacketListenerImpl.throttleTracker) {
--                    if (ServerHandshakePacketListenerImpl.throttleTracker.containsKey(address) && !"127.0.0.1".equals(address.getHostAddress()) && currentTime - ServerHandshakePacketListenerImpl.throttleTracker.get(address) < connectionThrottle) {
-+                    if (ServerHandshakePacketListenerImpl.throttleTracker.containsKey(address) && !"127.0.0.1".equals(address.getHostAddress()) && currentTime - ServerHandshakePacketListenerImpl.throttleTracker.getLong(address) < connectionThrottle) { // Gale - Dionysus - replace throttle tracker map with optimized collection
+-                    if (ServerHandshakePacketListenerImpl.throttleTracker.containsKey(address) && currentTime - ServerHandshakePacketListenerImpl.throttleTracker.get(address) < connectionThrottle) {
++                    if (ServerHandshakePacketListenerImpl.throttleTracker.containsKey(address) && currentTime - ServerHandshakePacketListenerImpl.throttleTracker.getLong(address) < connectionThrottle) { // Gale - Dionysus - replace throttle tracker map with optimized collection
                          ServerHandshakePacketListenerImpl.throttleTracker.put(address, currentTime);
-                         Component chatmessage = io.papermc.paper.adventure.PaperAdventure.asVanilla(io.papermc.paper.configuration.GlobalConfiguration.get().messages.kick.connectionThrottle); // Paper - Configurable connection throttle kick message
+                         Component chatmessage = io.papermc.paper.adventure.PaperAdventure.asVanilla(io.papermc.paper.configuration.GlobalConfiguration.get().messages.kick.connectionThrottle);
                          this.connection.send(new ClientboundLoginDisconnectPacket(chatmessage));

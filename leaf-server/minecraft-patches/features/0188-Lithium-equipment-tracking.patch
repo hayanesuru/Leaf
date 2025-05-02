@@ -287,7 +287,7 @@ index 49500127eb3a471c41dc3ff32372ad6f20c6d69a..a5a6e4cd74a5444ce06828404036de17
  
              return;
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index d2d9619f8156985ba38c0ef8c0f155adc8d40f34..9224613bb6a0653407f220f44d839cdeb4e4f7ea 100644
+index 07f1b27116baf2a06e6cd4eeaa8639e166fb362d..d1c8b4a2a32d49d90f2f2aa460915d319a781535 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
 @@ -97,7 +97,7 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
@@ -311,7 +311,7 @@ index d2d9619f8156985ba38c0ef8c0f155adc8d40f34..9224613bb6a0653407f220f44d839cde
  
      public static DataResult<ItemStack> validateStrict(ItemStack stack) {
          DataResult<Unit> dataResult = validateComponents(stack.getComponents());
-@@ -1403,6 +1408,21 @@ public final class ItemStack implements DataComponentHolder {
+@@ -1402,6 +1407,21 @@ public final class ItemStack implements DataComponentHolder {
      }
  
      public void setCount(int count) {
@@ -333,7 +333,7 @@ index d2d9619f8156985ba38c0ef8c0f155adc8d40f34..9224613bb6a0653407f220f44d839cde
          this.count = count;
      }
  
-@@ -1458,4 +1478,87 @@ public final class ItemStack implements DataComponentHolder {
+@@ -1457,4 +1477,87 @@ public final class ItemStack implements DataComponentHolder {
      public boolean canDestroyBlock(BlockState state, Level level, BlockPos pos, Player player) {
          return this.getItem().canDestroyBlock(this, state, level, pos, player);
      }

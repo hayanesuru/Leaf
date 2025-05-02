@@ -9,7 +9,7 @@ Original project: https://github.com/Cryptite/Slice
 Co-authored-by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 57d301a9528a16c0fcdb9e45ae957629c2363457..fe2710ee9b8a4452ff339a0b15ccf357a7c25336 100644
+index 5e9c02f66f6606fd2eaa8298eddbdff2889cffed..f3ccabaf4ff9bd0265415193831fd22b1868c00e 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -431,6 +431,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -21,10 +21,10 @@ index 57d301a9528a16c0fcdb9e45ae957629c2363457..fe2710ee9b8a4452ff339a0b15ccf357
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 800f773ca2cee6310a86d3f8043d57bd078a2dfd..51c1dfe30fddaae0c71b4b809b33c650394b878b 100644
+index bfcc40c09f80b5405cc414969693c195769bcb98..d7d68dbdd39ff6e61531d2edeafdd923f0573c89 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -797,11 +797,11 @@ public abstract class PlayerList {
+@@ -798,11 +798,11 @@ public abstract class PlayerList {
          byte b = (byte)(keepInventory ? 1 : 0);
          ServerLevel serverLevel = serverPlayer.serverLevel();
          LevelData levelData = serverLevel.getLevelData();
@@ -38,7 +38,7 @@ index 800f773ca2cee6310a86d3f8043d57bd078a2dfd..51c1dfe30fddaae0c71b4b809b33c650
          serverPlayer.connection.send(new ClientboundSetDefaultSpawnPositionPacket(level.getSharedSpawnPos(), level.getSharedSpawnAngle()));
          serverPlayer.connection.send(new ClientboundChangeDifficultyPacket(levelData.getDifficulty(), levelData.isDifficultyLocked()));
          serverPlayer.connection
-@@ -878,6 +878,8 @@ public abstract class PlayerList {
+@@ -890,6 +890,8 @@ public abstract class PlayerList {
          return serverPlayer;
      }
  

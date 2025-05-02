@@ -5,7 +5,7 @@ Subject: [PATCH] Configurable connection message
 
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index c18921f4ec1d4c205fa1d6efbb60eb05dcec4908..2d626735c75caa3ff6d5435882c4303aa204bd1e 100644
+index a3fdc328399c5d4806c6f361ba83515cf2094336..9f2dcbbd82c5f077f058b64a61cc31d76b34b471 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -336,7 +336,7 @@ public abstract class PlayerList {
@@ -35,7 +35,7 @@ index c18921f4ec1d4c205fa1d6efbb60eb05dcec4908..2d626735c75caa3ff6d5435882c4303a
          this.cserver.getPluginManager().callEvent(playerQuitEvent);
          player.getBukkitEntity().disconnect(playerQuitEvent.getQuitMessage());
  
-@@ -1527,4 +1527,40 @@ public abstract class PlayerList {
+@@ -1538,4 +1538,40 @@ public abstract class PlayerList {
      public boolean isAllowCommandsForAllPlayers() {
          return this.allowCommandsForAllPlayers;
      }

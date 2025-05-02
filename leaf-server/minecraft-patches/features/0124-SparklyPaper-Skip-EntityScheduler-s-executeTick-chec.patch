@@ -13,7 +13,7 @@ To avoid the hefty ArrayDeque's size() call, we check if we *really* need to exe
 Most entities won't have any scheduled tasks, so this is a nice performance bonus. These optimizations, however, wouldn't work in a Folia environment, but because in SparklyPaper executeTick is always executed on the main thread, it ain't an issue for us (yay).
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 3f8c4d048e813bb4af53a17e0e231927b2694889..6f150603d9083c7e4b673e127b6d43aa33242f02 100644
+index 3190ed2171b0de32aeb8761aa3e510c968c45448..b8b1bcac05917fa985210bcd5c6e226ed188b0ff 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -289,6 +289,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -24,7 +24,7 @@ index 3f8c4d048e813bb4af53a17e0e231927b2694889..6f150603d9083c7e4b673e127b6d43aa
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> threadFunction) {
          AtomicReference<S> atomicReference = new AtomicReference<>();
-@@ -1672,6 +1673,22 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1662,6 +1663,22 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          this.server.getScheduler().mainThreadHeartbeat(); // CraftBukkit
          // Paper start - Folia scheduler API
          ((io.papermc.paper.threadedregions.scheduler.FoliaGlobalRegionScheduler) org.bukkit.Bukkit.getGlobalRegionScheduler()).tick();
@@ -47,7 +47,7 @@ index 3f8c4d048e813bb4af53a17e0e231927b2694889..6f150603d9083c7e4b673e127b6d43aa
          getAllLevels().forEach(level -> {
              for (final net.minecraft.world.entity.Entity entity : level.getEntities().getAll()) {
                  if (entity.isRemoved()) {
-@@ -1683,6 +1700,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1673,6 +1690,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  }
              }
          });

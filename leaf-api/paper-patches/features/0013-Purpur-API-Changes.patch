@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur API Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: f8450874da4e2d29863b544b70cc7b962a04aa70
+Commit: 8c77678e81c813e57dda10c646599b0ab3144218
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "co/aikar/timings/TimedEventExecutor.java.patch"
@@ -334,10 +334,10 @@ index 5a1b9f81830dee052bafd743f4a1bf0c39288c7a..cf8fd9a981c7fbaa304988df17233ccf
 +    // Purpur end - ItemStack convenience methods
  }
 diff --git a/src/main/java/org/bukkit/OfflinePlayer.java b/src/main/java/org/bukkit/OfflinePlayer.java
-index c749a898e94d7d0ed70e6f3b42104d61803e819e..96a96ad2ffc6105074b6c20d4109496e9a619982 100644
+index 6f83097b1097d0ffa81a95e6f0300cb410dfee2b..c1f19d5c1b819873fce1185b4fbf4c72eda26309 100644
 --- a/src/main/java/org/bukkit/OfflinePlayer.java
 +++ b/src/main/java/org/bukkit/OfflinePlayer.java
-@@ -570,4 +570,104 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+@@ -585,4 +585,104 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
      @Override
      io.papermc.paper.persistence.PersistentDataContainerView getPersistentDataContainer();
      // Paper end - add pdc to offline player
@@ -443,10 +443,10 @@ index c749a898e94d7d0ed70e6f3b42104d61803e819e..96a96ad2ffc6105074b6c20d4109496e
 +    // Purpur end - OfflinePlayer API
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 925b4c8903bb6f44a56af4ecc2c0a01c46f14107..e405dde21778ff7fe3579411276a0419a1a7b9e0 100644
+index ea27c7ba247e7726ca623e6a22110f94f70f81c9..e5684bffdcc68ede5952c6ce28e3e16752c49b37 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2421,6 +2421,18 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2420,6 +2420,18 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
  
          // Paper end
  
@@ -465,7 +465,7 @@ index 925b4c8903bb6f44a56af4ecc2c0a01c46f14107..e405dde21778ff7fe3579411276a0419
          // Leaf start - Leaf config - API
          @NotNull
          public org.bukkit.configuration.file.YamlConfiguration getLeafConfig()
-@@ -2790,4 +2802,121 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2789,4 +2801,121 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
       */
      long getLastTickOversleepTime();
      // Gale end - YAPFA - last tick time - API
@@ -811,7 +811,7 @@ index 332c55fd6b4b3a8c0cad920a6e765ecc40e684e4..10a8d64ad2da0be2c14f34c3e7d1957c
      // Paper start
      /**
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index bb6c6b3477c1d30a228ecb35ef7c4f6e54c083e5..bee034fd48b567a64a152196a0b80f2f1a9661e4 100644
+index dc91a3cf3bd706ab9b2b02967adf18c07f186c5b..3a3c6ab87a164df706f59f6b59bfe977492658d7 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -1224,4 +1224,59 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Persistent
@@ -967,13 +967,13 @@ index bcc6ba95bd21c7972865838c636a03f50b6c1f1a..c3fcd8dd7dbb1e1a18e17c014c1e6411
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index 61794d69b70832925e111f258ae1b4575b31123a..cfbd9344e1055f9fbb955721f7a3be71c2e412da 100644
+index 7f2892dd93a17136e1aaea14db401710bc1becfb..8c0659efa5c84191f3faa1ada52e57eb2a4f9f90 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
-@@ -1452,4 +1452,20 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
+@@ -1463,4 +1463,20 @@ public interface LivingEntity extends Attributable, Damageable, ProjectileSource
       */
-     boolean canUseEquipmentSlot(org.bukkit.inventory.@NotNull EquipmentSlot slot);
-     // Paper end - Expose canUseSlot
+     @ApiStatus.Experimental
+     @NotNull CombatTracker getCombatTracker();
 +
 +    // Purpur start - API for any mob to burn daylight
 +    /**
@@ -1017,10 +1017,10 @@ index bc84b892cae5fe7019a3ad481e9da79956efa1fe..48eb5b00c460cccde29d327cef1d63fc
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index cb8da28d86d44b3633cf47f75141c9a093c63dab..3e2d6105d8d00305076c0c2677a4acd5cc402214 100644
+index 28a3224c32e1890c95d540080fc5c04bc930a1e9..953ee95c692d91e1bd222f9224ea990f9d4feca0 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -3904,4 +3904,123 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -3920,4 +3920,123 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       * @param score New death screen score of player
       */
      void setDeathScreenScore(int score);
@@ -1329,10 +1329,10 @@ index f1f97a85ec713c05c882d7588f4a3e4a017f4795..813f6cd253322538bdf96eb323dd23a7
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
-index 3179607e892b609160e9673df5745279a722ae95..1cc6f1a988715224d0168c97ae418037573e2204 100644
+index 8a5a58408490110dfeb1a720aad6676883880db5..5ee730161c7f11ab7744c80563716e30921a6b5b 100644
 --- a/src/main/java/org/bukkit/inventory/ItemStack.java
 +++ b/src/main/java/org/bukkit/inventory/ItemStack.java
-@@ -23,6 +23,13 @@ import org.bukkit.material.MaterialData;
+@@ -24,6 +24,13 @@ import org.bukkit.material.MaterialData;
  import org.bukkit.persistence.PersistentDataContainer;
  import org.jetbrains.annotations.NotNull;
  import org.jetbrains.annotations.Nullable;
@@ -1346,7 +1346,7 @@ index 3179607e892b609160e9673df5745279a722ae95..1cc6f1a988715224d0168c97ae418037
  
  /**
   * Represents a stack of items.
-@@ -1363,4 +1370,482 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, Translat
+@@ -1373,4 +1380,482 @@ public class ItemStack implements Cloneable, ConfigurationSerializable, Translat
          return this.craftDelegate.matchesWithoutData(item, excludeTypes, ignoreCount);
      }
      // Paper end - data component API

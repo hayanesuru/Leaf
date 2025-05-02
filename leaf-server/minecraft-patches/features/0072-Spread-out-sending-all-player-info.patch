@@ -37,7 +37,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 2bfff6cc34bc94402fb349d2641efadf380c241a..d57b677cfe5282a5601e4ec8083fd476ccc16422 100644
+index be324f5085c1cceb3d4c37bc73d0ee5ac761a99c..1ea70e63db1d5f05cdbace8be48160b26a480fee 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -114,6 +114,7 @@ public abstract class PlayerList {
@@ -72,7 +72,7 @@ index 2bfff6cc34bc94402fb349d2641efadf380c241a..d57b677cfe5282a5601e4ec8083fd476
          player.serverLevel().removePlayerImmediately(player, reason);
          // TeleportTransition teleportTransition = player.findRespawnPositionAndUseSpawnBlock(!keepInventory, TeleportTransition.DO_NOTHING);
          // ServerLevel level = teleportTransition.newLevel();
-@@ -801,6 +805,7 @@ public abstract class PlayerList {
+@@ -802,6 +806,7 @@ public abstract class PlayerList {
              this.players.add(serverPlayer);
              this.playersByName.put(serverPlayer.getScoreboardName().toLowerCase(java.util.Locale.ROOT), serverPlayer); // Spigot
              this.playersByUUID.put(serverPlayer.getUUID(), serverPlayer);
@@ -80,7 +80,7 @@ index 2bfff6cc34bc94402fb349d2641efadf380c241a..d57b677cfe5282a5601e4ec8083fd476
          }
          // serverPlayer.initInventoryMenu();
          serverPlayer.setHealth(serverPlayer.getHealth());
-@@ -892,18 +897,58 @@ public abstract class PlayerList {
+@@ -904,18 +909,58 @@ public abstract class PlayerList {
      }
  
      public void tick() {
@@ -143,7 +143,7 @@ index 2bfff6cc34bc94402fb349d2641efadf380c241a..d57b677cfe5282a5601e4ec8083fd476
 +
      // CraftBukkit start - add a world/entity limited version
      public void broadcastAll(Packet packet, net.minecraft.world.entity.player.Player entityhuman) {
-         for (int i = 0; i < this.players.size(); ++i) {
+         for (ServerPlayer entityplayer : this.players) { // Paper - replace for i with for each for thread safety
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
 index 248ee263a853d1d3148746a63ba422115853f6a1..8032eae3256625e90313edb4fa132b19d52ba0a0 100644
 --- a/net/minecraft/world/entity/player/Player.java

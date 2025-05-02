@@ -47,10 +47,10 @@ index ee791bf6299d654fb56300fbda1f6ea50620a3e2..da63ffc2deedc0f431ed84bce2f87501
       * Get a sample of the servers last tick times (in nanos)
       *
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 0e1e19b60d8e790bdb3329c4582d80528825bf30..58cbf87e2f47da3ecad5e9d48f2eb4ff0206a7d6 100644
+index 99dd957604e0408b91b5459e28d9c04dbb161793..078edd89f599d7309feb4740d1a905ad2442803a 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2119,6 +2119,29 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2118,6 +2118,29 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
       */
      public double @NotNull [] getTPS();
  

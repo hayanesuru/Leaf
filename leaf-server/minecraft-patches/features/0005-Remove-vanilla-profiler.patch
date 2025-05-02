@@ -889,7 +889,7 @@ index 59e8a5e1b35c81883c9b1ca00c6e55d77584d8cc..4167b46148fc370f20b35c2a261e38c0
          }
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 845d03dc893df2200327e9ee2710474874750c93..1d53c0b96ff781765155aac29256f4493f7d7c58 100644
+index 3a53ea9a02cb04781502d7525c95f47701013f8b..90d77499350b67d738d0fad8f2eb056607acb0cc 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -74,8 +74,6 @@ import net.minecraft.util.Mth;
@@ -1079,7 +1079,7 @@ index 845d03dc893df2200327e9ee2710474874750c93..1d53c0b96ff781765155aac29256f449
              for (Entity entity : passengerEntity.getPassengers()) {
                  this.tickPassenger(passengerEntity, entity, isActive); // Paper - EAR 2
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 568b6e60482c61363b6052c73fbc26a2ba19d5df..14c91a12be5f586c3a3060c1fe645ab01cacd30c 100644
+index ee6ad1474510b15eaa9a67d29ab8267ff43e0410..16b390f527cf18a000ebed2950a35bcfb15c6c21 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -104,8 +104,6 @@ import net.minecraft.util.HashOps;
@@ -1091,7 +1091,7 @@ index 568b6e60482c61363b6052c73fbc26a2ba19d5df..14c91a12be5f586c3a3060c1fe645ab0
  import net.minecraft.world.Container;
  import net.minecraft.world.Difficulty;
  import net.minecraft.world.InteractionHand;
-@@ -1377,14 +1375,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1372,14 +1370,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  this.unsetRemoved();
                  */
                  // CraftBukkit end
@@ -1106,7 +1106,7 @@ index 568b6e60482c61363b6052c73fbc26a2ba19d5df..14c91a12be5f586c3a3060c1fe645ab0
                  // CraftBukkit start
                  this.isChangingDimension = true; // CraftBukkit - Set teleport invulnerability only if player changing worlds
                  LevelData worlddata = level.getLevelData();
-@@ -1401,7 +1395,6 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1396,7 +1390,6 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  this.connection.internalTeleport(PositionMoveRotation.of(teleportTransition), teleportTransition.relatives()); // CraftBukkit - use internal teleport without event
                  this.connection.resetPosition();
                  level.addDuringTeleport(this);
@@ -1115,7 +1115,7 @@ index 568b6e60482c61363b6052c73fbc26a2ba19d5df..14c91a12be5f586c3a3060c1fe645ab0
                  this.stopUsingItem();
                  this.connection.send(new ClientboundPlayerAbilitiesPacket(this.getAbilities()));
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index d385cb836b7713f2dbd0b8693777c8e5ea0a74e4..976525a885cf6422f8a40e92d594eef312c159bd 100644
+index 186393485396cfe9b1baef29586198356e2d2600..776ff13b399fa01bf3900280cf1b5782370732a0 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -24,7 +24,6 @@ import net.minecraft.network.protocol.cookie.ServerboundCookieResponsePacket;
@@ -1234,7 +1234,7 @@ index 64b0508ef21952c65b0b967b756b2a4c64d96899..b6b03fbbd669e6331b30255df5419611
  
      protected abstract T prepare(ResourceManager resourceManager, ProfilerFiller profiler);
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 9a0334134d8020e9d52e542859f29b5c6efad643..a8be25542f63d6166cbed065e5006cbf27253d49 100644
+index 43f0777683039a6e8e57eebc9445538487d35c53..5e4b7e420c46e011293618fb52f8a273dacb4a33 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -82,8 +82,6 @@ import net.minecraft.tags.FluidTags;
@@ -1306,7 +1306,7 @@ index 9a0334134d8020e9d52e542859f29b5c6efad643..a8be25542f63d6166cbed065e5006cbf
              }
          }
          // Paper start - detailed watchdog information
-@@ -3191,8 +3178,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3192,8 +3179,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.processPortalCooldown();
              if (this.portalProcess != null) {
                  if (this.portalProcess.processPortalTeleportation(serverLevel, this, this.canUsePortal(false))) {
@@ -1315,7 +1315,7 @@ index 9a0334134d8020e9d52e542859f29b5c6efad643..a8be25542f63d6166cbed065e5006cbf
                      this.setPortalCooldown();
                      TeleportTransition portalDestination = this.portalProcess.getPortalDestination(serverLevel, this);
                      if (portalDestination != null) {
-@@ -3203,7 +3188,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3204,7 +3189,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          }
                      }
  
@@ -1323,7 +1323,7 @@ index 9a0334134d8020e9d52e542859f29b5c6efad643..a8be25542f63d6166cbed065e5006cbf
                  } else if (this.portalProcess.hasExpired()) {
                      this.portalProcess = null;
                  }
-@@ -3758,15 +3742,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3759,15 +3743,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              entity.teleport(this.calculatePassengerTransition(teleportTransition, entity));
          }
  
@@ -1339,7 +1339,7 @@ index 9a0334134d8020e9d52e542859f29b5c6efad643..a8be25542f63d6166cbed065e5006cbf
          return this;
      }
  
-@@ -3782,11 +3763,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3783,11 +3764,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              }
          }
  
@@ -1351,7 +1351,7 @@ index 9a0334134d8020e9d52e542859f29b5c6efad643..a8be25542f63d6166cbed065e5006cbf
              return null;
          } else {
              // Paper start - Fix item duplication and teleport issues
-@@ -3805,7 +3783,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3806,7 +3784,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
              level.resetEmptyTime();
              teleportTransition.postTeleportTransition().onTransition(entityx);

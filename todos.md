@@ -4,8 +4,6 @@
 # Leaf TODOs
 - [ ] refactor leaves protocol manager opt and pr it.
 - [ ] Transfer patch notes to file for Gale and Leaf
-- [ ] Add spigot config unknown message to leaf docs
-- [ ] Add purpur config changes to docs moved config
 - [ ] check Dont send useless entity packets
 - [ ] Use different state to separate different configs reload
 

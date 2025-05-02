@@ -48,10 +48,10 @@ index bb021fc9de91f8c4f79e6a753d57fa157efbbda7..9926848124f0b74ebb615fbbc45d95eb
          final DamageSource damageSource = this.copy();
          damageSource.eventEntityDamager = entity;
 diff --git a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-index f3ea8b9e8f4510112ec5e41727ebc0cf9ecee195..77f16166588b0d07fb08b9c8f060a3d076b479de 100644
+index 384f2cd090d6d23bd1308d6e82c24338f2bf55d1..3634d68c77ee99567b51a9a848d7cbbb218a0ba7 100644
 --- a/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
 +++ b/net/minecraft/world/level/chunk/storage/RegionFileStorage.java
-@@ -283,7 +283,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
+@@ -308,7 +308,7 @@ public class RegionFileStorage implements AutoCloseable, ca.spottedleaf.moonrise
  
      // Paper start
      private static void printOversizedLog(String msg, Path file, int x, int z) {

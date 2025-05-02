@@ -91,10 +91,10 @@ index 094d1821d298fc228270b2d6cf0445949434f3e2..21334ae4764740e5cf1382726d5f5231
  
      public record Favicon(byte[] iconBytes) {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 8fe1834250f8a708791f76a3f008198c6abf1ef4..82972531ce40dad0bb4b3c2337d04143576020f9 100644
+index cdfb9004dd4f4ea1bbb77895b7fc020d628c485d..54910c2e1d6e6bb556e536fda060bd09402e04e8 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -625,6 +625,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -616,6 +616,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
  
      @Override
      public boolean enforceSecureProfile() {
@@ -103,7 +103,7 @@ index 8fe1834250f8a708791f76a3f008198c6abf1ef4..82972531ce40dad0bb4b3c2337d04143
          // Paper start - Add setting for proxy online mode status
          return properties.enforceSecureProfile
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index ea7710c17bfc9fcfe736c3a2e83898b7ad6a7869..29adf7f0881cb4b73610ca526e6cccfe10458cd4 100644
+index d2e8adccf33c6b842fac615006b782b09cfa7a1a..434be9d08d8e816e2dea1e9d23fa26d21b9f35f6 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -315,10 +315,30 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -138,10 +138,10 @@ index ea7710c17bfc9fcfe736c3a2e83898b7ad6a7869..29adf7f0881cb4b73610ca526e6cccfe
          if (packet == null || this.processedDisconnect) { // Spigot
              return;
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index bbdb8e00ac0fdcc4f1b94faf8e2cd13597e4e2a0..c18921f4ec1d4c205fa1d6efbb60eb05dcec4908 100644
+index 37ba75bd50f785da11a0127fb40d86ee8b988c17..a3fdc328399c5d4806c6f361ba83515cf2094336 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -1375,7 +1375,7 @@ public abstract class PlayerList {
+@@ -1386,7 +1386,7 @@ public abstract class PlayerList {
      public void broadcastChatMessage(PlayerChatMessage message, Predicate<ServerPlayer> shouldFilterMessageTo, @Nullable ServerPlayer sender, ChatType.Bound boundChatType, @Nullable Function<net.kyori.adventure.audience.Audience, Component> unsignedFunction) {
          // Paper end
          boolean flag = this.verifyChatTrusted(message);
@@ -150,7 +150,7 @@ index bbdb8e00ac0fdcc4f1b94faf8e2cd13597e4e2a0..c18921f4ec1d4c205fa1d6efbb60eb05
          OutgoingChatMessage outgoingChatMessage = OutgoingChatMessage.create(message);
          boolean flag1 = false;
  
-@@ -1400,6 +1400,7 @@ public abstract class PlayerList {
+@@ -1411,6 +1411,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(PlayerChatMessage message) {

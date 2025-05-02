@@ -5,7 +5,7 @@ Subject: [PATCH] Remove stream in entity mountedOrDismounted changes update
 
 
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index 936429fd17d8649329e6258a4e10c9e6bf62f6de..28c90d0a70048f6992a96aeb25ebafef579e8003 100644
+index 27e8c6a61cfa30b4e5bcc8ac30b0023940d9f310..dca939778d637ee293dc14f55edde7b1a97a2617 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
 @@ -118,7 +118,19 @@ public class ServerEntity {
@@ -27,5 +27,5 @@ index 936429fd17d8649329e6258a4e10c9e6bf62f6de..28c90d0a70048f6992a96aeb25ebafef
 +            }
 +            // Leaf end - Remove stream in entity mountedOrDismounted changes update
              this.broadcastWithIgnore.accept(new ClientboundSetPassengersPacket(this.entity), list);
-             this.lastPassengers = passengers;
-         }
+             // Paper start - Allow riding players
+             if (this.entity instanceof ServerPlayer player) {

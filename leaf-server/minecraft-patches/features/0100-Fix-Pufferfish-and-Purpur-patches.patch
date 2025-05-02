@@ -5,7 +5,7 @@ Subject: [PATCH] Fix Pufferfish and Purpur patches
 
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 91fa7f0bac5681413cd8d66fe1ebf2029713408f..3a970b1f751726e4eec2832e94295c242cc7c997 100644
+index 5c0e7804555f9b789a96a98008dd1edf0be68104..62b82b753c36b5400e371952e0685115453bd953 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -276,7 +276,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -26,7 +26,7 @@ index 91fa7f0bac5681413cd8d66fe1ebf2029713408f..3a970b1f751726e4eec2832e94295c24
      public boolean lagging = false; // Purpur - Lagging threshold
      protected boolean upnp = false; // Purpur - UPnP Port Forwarding
  
-@@ -1248,9 +1248,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1238,9 +1238,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                      tps15.add(currentTps, diff);
  
                      // Backwards compat with bad plugins
@@ -42,7 +42,7 @@ index 91fa7f0bac5681413cd8d66fe1ebf2029713408f..3a970b1f751726e4eec2832e94295c24
                      lagging = recentTps[0] < org.purpurmc.purpur.PurpurConfig.laggingThreshold; // Purpur - Lagging threshold
                      tickSection = currentTime;
                  }
-@@ -1278,7 +1281,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1268,7 +1271,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                      this.mayHaveDelayedTasks = true;
                      this.delayedTasksMaxNextTickTimeNanos = Math.max(Util.getNanos() + l, this.nextTickTimeNanos);
                      // Purpur start - Configurable TPS Catchup
@@ -65,7 +65,7 @@ index 35fd539eb2bfe60ad17ab1e558a01273666acc54..445bbdc8da7f1fdbddfc4d8787d78fea
          this.values[this.vp++ & 0xFF] = (int)(l * 100L / Runtime.getRuntime().maxMemory());
          this.repaint();
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 90d0c59c66c2e18d601838886ff55bb428547779..62586fc315b473761579daa863f89df150fb9576 100644
+index bc935e51c2c5134813d3476da14a596fc47cec76..4f88a9f4f7a1f5234e1f506e1e3d22a5e1710a98 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1287,7 +1287,7 @@ public class ServerGamePacketListenerImpl
@@ -78,7 +78,7 @@ index 90d0c59c66c2e18d601838886ff55bb428547779..62586fc315b473761579daa863f89df1
                  this.disconnectAsync(Component.literal("Book too large!"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION); // Paper - kick event cause // Paper - add proper async disconnect
                  return;
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 1539e039d4d5fd539cfc552a4d420ae5a6fb8b56..109ec179bd7e960cb09a98e1ec6179a60b2cba57 100644
+index 30e341bd5fca8b95d6911ca94f4aac17962f3269..55854dbacef9b3da9f12f67be21dd49007ea3c45 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -522,23 +522,36 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -305,16 +305,3 @@ index bde9370798c037c494a9c73f328cb251e68c21b1..3a6be0122d49b20f78be6cc8f1c7acb5
                      } else if (maxProjectileChunkLoadsConfig.perProjectile.resetMovementAfterReachLimit) {
                          this.setDeltaMovement(0, this.getDeltaMovement().y, 0);
                      }
-diff --git a/org/purpurmc/purpur/PurpurWorldConfig.java b/org/purpurmc/purpur/PurpurWorldConfig.java
-index ed5bbc49da258f8db249b1387f51ed1b22a29053..98f7fd9a9c9eec89c510c313bd2ac5bed918707e 100644
---- a/org/purpurmc/purpur/PurpurWorldConfig.java
-+++ b/org/purpurmc/purpur/PurpurWorldConfig.java
-@@ -17,7 +17,7 @@ import net.minecraft.world.item.Items;
- import net.minecraft.world.level.block.Block;
- import net.minecraft.world.level.block.Blocks;
- import net.minecraft.world.level.block.state.properties.Tilt;
--import org.apache.commons.lang.BooleanUtils;
-+import org.apache.commons.lang3.BooleanUtils; // Leaf - Fix build
- import org.bukkit.ChatColor;
- import org.bukkit.World;
- import org.bukkit.configuration.ConfigurationSection;

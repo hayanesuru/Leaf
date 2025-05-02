@@ -8,7 +8,7 @@ avoids multiple casting in Entity#distanceTo, using Math#sqrt directly instead o
 these methods more able to be inlined by the JIT compiler.
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 753515c65a2b49db15ef6616cc7caf276fdbbeb1..a2e9306d9a5eef738f8225e98fb1cc1f4bbca504 100644
+index 689d5d215ab372b482ad715fc86df257ba04ed53..0fc0a69d377060aab39f179240c25031bebb2d97 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -2186,31 +2186,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -43,7 +43,7 @@ index 753515c65a2b49db15ef6616cc7caf276fdbbeb1..a2e9306d9a5eef738f8225e98fb1cc1f
      public void playerTouch(Player player) {
      }
  
-@@ -5248,4 +5223,34 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -5249,4 +5224,34 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return false;
      }
      // Purpur end - Ridables
