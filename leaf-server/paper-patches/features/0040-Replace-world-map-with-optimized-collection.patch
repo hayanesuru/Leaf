@@ -5,10 +5,10 @@ Subject: [PATCH] Replace world map with optimized collection
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 84752038245c15e60cc5d8280b8cc37259ca3e3e..ce866cecc1012f91577ee4dd90957d905c7134d6 100644
+index b4cddcf1075df81224e25ecdc298eb7fd6446ba6..78fe9bea28907ac18746f8851f474f2c1cec0864 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -281,7 +281,7 @@ public final class CraftServer implements Server {
+@@ -284,7 +284,7 @@ public final class CraftServer implements Server {
      private final StructureManager structureManager;
      final DedicatedServer console;
      private final DedicatedPlayerList playerList;

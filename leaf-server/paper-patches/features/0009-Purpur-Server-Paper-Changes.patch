@@ -268,40 +268,6 @@ index 41c95f00b4b2bea6d31f85e268c33d7f6184823e..2eaf27ddf0bddb23b8850310c332b202
              sender.sendMessage(component);
          }
  
-diff --git a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-index 352d62385e56d5805510596ec9424e5d14336861..b4d4ad2dc7d719d72c0786791f803fbcf0982d1f 100644
---- a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-+++ b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-@@ -267,6 +267,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
-         for (final NodePath path : RemovedConfigurations.REMOVED_WORLD_PATHS) {
-             builder.addAction(path, TransformAction.remove());
-         }
-+        org.purpurmc.purpur.configuration.transformation.VoidDamageHeightMigration.apply(builder, contextMap); // Purpur - Configurable void damage height and damage
-         builder.build().apply(node);
- 
-         final ConfigurationTransformation.VersionedBuilder versionedBuilder = Transformations.versionedBuilder();
-diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-index 9511f978f6c7da506f67928f5a5a92ecf28e5930..65f6839fe75340a4b58894ad50c6eda7b59128c0 100644
---- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-+++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-@@ -402,6 +402,7 @@ public class WorldConfiguration extends ConfigurationPart {
-         public boolean useVanillaWorldScoreboardNameColoring = false;
-     }
- 
-+    @Setting(org.purpurmc.purpur.configuration.transformation.VoidDamageHeightMigration.ENVIRONMENT_KEY) // Purpur - Configurable void damage height and damage
-     public Environment environment;
- 
-     public class Environment extends ConfigurationPart {
-@@ -411,7 +412,9 @@ public class WorldConfiguration extends ConfigurationPart {
-         public boolean disableExplosionKnockback = false;
-         public boolean generateFlatBedrock = false;
-         public FrostedIce frostedIce;
-+        @Setting(org.purpurmc.purpur.configuration.transformation.VoidDamageHeightMigration.VOID_DAMAGE_KEY) // Purpur - Configurable void damage height and damage
-         public DoubleOr.Disabled voidDamageAmount = new DoubleOr.Disabled(OptionalDouble.of(4));
-+        @Setting(org.purpurmc.purpur.configuration.transformation.VoidDamageHeightMigration.VOID_DAMAGE_MIN_HEIGHT_OFFSET_KEY) // Purpur - Configurable void damage height and damage
-         public double voidDamageMinBuildHeightOffset = -64.0;
- 
-         public class FrostedIce extends ConfigurationPart {
 diff --git a/src/main/java/io/papermc/paper/logging/SysoutCatcher.java b/src/main/java/io/papermc/paper/logging/SysoutCatcher.java
 index a8e813ca89b033f061e695288b3383bdcf128531..96a377a07d8396f893954a3ba97fbf88d73faf6d 100644
 --- a/src/main/java/io/papermc/paper/logging/SysoutCatcher.java
@@ -319,10 +285,10 @@ index a8e813ca89b033f061e695288b3383bdcf128531..96a377a07d8396f893954a3ba97fbf88
                  }
                  if (SysoutCatcher.NAG_INTERVAL > 0 || SysoutCatcher.NAG_TIMEOUT > 0) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
-index 79e226da354d15ba9687d3f09c9b4f318cf40e8d..1456f2d1a92c8315177fb03d0c7ec943d5f5b097 100644
+index 43ae147ae15668d3357ff1f7ae66bcad241d3ff3..ecd9e392e9e026cbeac4c65bfdb7467f971ca92d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
-@@ -339,6 +339,12 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+@@ -336,6 +336,12 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
  
      @Override
      public Location getLocation() {
@@ -335,7 +301,7 @@ index 79e226da354d15ba9687d3f09c9b4f318cf40e8d..1456f2d1a92c8315177fb03d0c7ec943
          CompoundTag data = this.getData();
          if (data == null) {
              return null;
-@@ -571,4 +577,183 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+@@ -573,4 +579,183 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
              manager.save();
          }
      }
@@ -520,10 +486,10 @@ index 79e226da354d15ba9687d3f09c9b4f318cf40e8d..1456f2d1a92c8315177fb03d0c7ec943
 +    // Purpur end - OfflinePlayer API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 72bc64514079fa0b9588a7a7fdbc211c3e5f2769..fb6ec51678c8d8a02a29bdbfae8839e58ce7414c 100644
+index e299baae86bf0aa21294b2afc82623db838ce427..144bb76945677eaa63381db67ff8feac2e433021 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -423,6 +423,20 @@ public final class CraftServer implements Server {
+@@ -426,6 +426,20 @@ public final class CraftServer implements Server {
          this.paperPluginManager = new io.papermc.paper.plugin.manager.PaperPluginManagerImpl(this, this.commandMap, pluginManager);
          this.pluginManager.paperPluginManager = this.paperPluginManager;
           // Paper end
@@ -544,7 +510,7 @@ index 72bc64514079fa0b9588a7a7fdbc211c3e5f2769..fb6ec51678c8d8a02a29bdbfae8839e5
  
          CraftRegistry.setMinecraftRegistry(console.registryAccess());
  
-@@ -1065,6 +1079,7 @@ public final class CraftServer implements Server {
+@@ -1071,6 +1085,7 @@ public final class CraftServer implements Server {
          org.spigotmc.SpigotConfig.init((File) this.console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
          this.console.galeConfigurations.reloadConfigs(this.console); // Gale - Gale configuration
@@ -552,7 +518,7 @@ index 72bc64514079fa0b9588a7a7fdbc211c3e5f2769..fb6ec51678c8d8a02a29bdbfae8839e5
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -1080,6 +1095,7 @@ public final class CraftServer implements Server {
+@@ -1086,6 +1101,7 @@ public final class CraftServer implements Server {
                  }
              }
              world.spigotConfig.init(); // Spigot
@@ -560,7 +526,7 @@ index 72bc64514079fa0b9588a7a7fdbc211c3e5f2769..fb6ec51678c8d8a02a29bdbfae8839e5
          }
  
          Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
-@@ -1097,6 +1113,7 @@ public final class CraftServer implements Server {
+@@ -1103,6 +1119,7 @@ public final class CraftServer implements Server {
          org.spigotmc.SpigotConfig.registerCommands(); // Spigot
          io.papermc.paper.command.PaperCommands.registerCommands(this.console); // Paper
          this.spark.registerCommandBeforePlugins(this); // Paper - spark
@@ -568,7 +534,7 @@ index 72bc64514079fa0b9588a7a7fdbc211c3e5f2769..fb6ec51678c8d8a02a29bdbfae8839e5
          this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
          this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
  
-@@ -1596,6 +1613,60 @@ public final class CraftServer implements Server {
+@@ -1602,6 +1619,60 @@ public final class CraftServer implements Server {
          return true;
      }
  
@@ -629,7 +595,7 @@ index 72bc64514079fa0b9588a7a7fdbc211c3e5f2769..fb6ec51678c8d8a02a29bdbfae8839e5
      @Override
      public List<Recipe> getRecipesFor(ItemStack result) {
          Preconditions.checkArgument(result != null, "ItemStack cannot be null");
-@@ -2951,6 +3022,18 @@ public final class CraftServer implements Server {
+@@ -2968,6 +3039,18 @@ public final class CraftServer implements Server {
          }
          // Gale end - Gale configuration - API
  
@@ -648,7 +614,7 @@ index 72bc64514079fa0b9588a7a7fdbc211c3e5f2769..fb6ec51678c8d8a02a29bdbfae8839e5
          @Override
          public void restart() {
              CraftServer.this.restart();
-@@ -3190,4 +3273,18 @@ public final class CraftServer implements Server {
+@@ -3207,4 +3290,18 @@ public final class CraftServer implements Server {
      public void allowPausing(final Plugin plugin, final boolean value) {
          this.console.addPluginAllowingSleep(plugin.getName(), value);
      }
@@ -874,10 +840,10 @@ index 6e2f931b06d4ef702e0abf609a5f5bba780c5b7a..15ae2653c1809041b7ab7cb67015e82c
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEndermite.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEndermite.java
-index 4d5958405e1c86c289d24500705686e7da02c3f6..86541e322fcacb6c525af39ba2675b71bd799af8 100644
+index 000c5ea5d39d5ab6e5592012ab1cc7ee547505dc..140da7078217f833f490d88faaf803ab1763115d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEndermite.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEndermite.java
-@@ -21,12 +21,12 @@ public class CraftEndermite extends CraftMonster implements Endermite {
+@@ -16,12 +16,12 @@ public class CraftEndermite extends CraftMonster implements Endermite {
  
      @Override
      public boolean isPlayerSpawned() {
@@ -893,7 +859,7 @@ index 4d5958405e1c86c289d24500705686e7da02c3f6..86541e322fcacb6c525af39ba2675b71
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index c8caeba7737c2386f7194207a5ea11b74c6179e4..8feb78c4d7fa793f01991756b618fc49de023db6 100644
+index cd145edc45776c3b7af6295872b65ca74e5b3107..58c60172c4e71afa5ac41f56b15d6b1592b7e082 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -98,6 +98,25 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
@@ -922,7 +888,7 @@ index c8caeba7737c2386f7194207a5ea11b74c6179e4..8feb78c4d7fa793f01991756b618fc49
      public static <T extends Entity> CraftEntity getEntity(CraftServer server, T entity) {
          Preconditions.checkArgument(entity != null, "Unknown entity");
  
-@@ -255,6 +274,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -287,6 +306,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          boolean retainPassengers = flagSet.contains(io.papermc.paper.entity.TeleportFlag.EntityState.RETAIN_PASSENGERS);
          // Don't allow teleporting between worlds while keeping passengers
          if (flagSet.contains(io.papermc.paper.entity.TeleportFlag.EntityState.RETAIN_PASSENGERS) && this.entity.isVehicle() && location.getWorld() != this.getWorld()) {
@@ -958,10 +924,10 @@ index c8caeba7737c2386f7194207a5ea11b74c6179e4..8feb78c4d7fa793f01991756b618fc49
 +    // Purpur end - Ridables
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index e0e6a5087a8da7926d1e731e28a1800036acb9f4..5b7c8516d8a6ae993d4c556e3e742deb57bf4096 100644
+index 934eb5c668b09d871c62a17c8d0916723fa25695..d4e36d6d2e11d43db4c80bf95d0a935f99de576e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-@@ -277,6 +277,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+@@ -295,6 +295,7 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
      @Override
      public void recalculatePermissions() {
          this.perm.recalculatePermissions();
@@ -970,10 +936,10 @@ index e0e6a5087a8da7926d1e731e28a1800036acb9f4..5b7c8516d8a6ae993d4c556e3e742deb
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftIronGolem.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftIronGolem.java
-index 63cae1a2e95d8da17c45c4404a8dd0ca6a413c39..464a3713845548473a357ea66c6147b10ff2cb16 100644
+index 2d7be6f2afe32fd7555640989313052d37973e61..5bafbb876e4780ff6ea0408c95007bdfcef8fa89 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftIronGolem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftIronGolem.java
-@@ -27,4 +27,17 @@ public class CraftIronGolem extends CraftGolem implements IronGolem {
+@@ -22,4 +22,17 @@ public class CraftIronGolem extends CraftGolem implements IronGolem {
      public void setPlayerCreated(boolean playerCreated) {
          this.getHandle().setPlayerCreated(playerCreated);
      }
@@ -992,12 +958,12 @@ index 63cae1a2e95d8da17c45c4404a8dd0ca6a413c39..464a3713845548473a357ea66c6147b1
 +    // Purpur end - Summoner API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftItem.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftItem.java
-index cef51ad02f079695d75d9c87f5878b13702eda8e..0140b99fc8f60216dea77c11e1c5a231628d990f 100644
+index ca656d97a00eef86773be9833fd908283002c885..01759ae999cd158e540f1e282473740758d6cf54 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftItem.java
-@@ -148,4 +148,53 @@ public class CraftItem extends CraftEntity implements Item {
-     public String toString() {
-         return "CraftItem";
+@@ -143,4 +143,53 @@ public class CraftItem extends CraftEntity implements Item {
+     public UUID getThrower() {
+         return this.getHandle().thrower;
      }
 +
 +    // Purpur start - Item entity immunities
@@ -1050,10 +1016,10 @@ index cef51ad02f079695d75d9c87f5878b13702eda8e..0140b99fc8f60216dea77c11e1c5a231
 +    // Purpur end - Item entity immunities
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index bd39ecac806a008583eaf041c75e1bb95a3912b7..5b74ca7c52fb0437726a2a00483134884dc50b2f 100644
+index ff8987ca8f0d88c80f7229b33e6b356f1e342010..fda6883bca79e99e486aef87866d8877eea9f140 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-@@ -520,7 +520,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+@@ -518,7 +518,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
          net.minecraft.server.level.ServerPlayer nmsKiller = killer == null ? null : ((CraftPlayer) killer).getHandle();
          this.getHandle().setLastHurtByMob(nmsKiller);
          if (nmsKiller != null) {
@@ -1062,9 +1028,9 @@ index bd39ecac806a008583eaf041c75e1bb95a3912b7..5b74ca7c52fb0437726a2a0048313488
          } else {
              this.getHandle().lastHurtByPlayer = null;
              this.getHandle().lastHurtByPlayerMemoryTime = 0;
-@@ -1167,4 +1167,16 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
-     public boolean canUseEquipmentSlot(org.bukkit.inventory.EquipmentSlot slot) {
-         return this.getHandle().canUseSlot(org.bukkit.craftbukkit.CraftEquipmentSlot.getNMS(slot));
+@@ -1170,4 +1170,16 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+     public CombatTracker getCombatTracker() {
+         return this.combatTracker;
      }
 +
 +    // Purpur start - API for any mob to burn daylight
@@ -1080,10 +1046,10 @@ index bd39ecac806a008583eaf041c75e1bb95a3912b7..5b74ca7c52fb0437726a2a0048313488
 +    // Purpur end - API for any mob to burn daylight
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLlama.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLlama.java
-index 9aaaf2fc6a7bc49d1c3d0be68854e7fb2524fd25..a8e045af6b3b20027877d958d58dc09ca078aaf1 100644
+index 02deb9c37250144be9afa0fe55df2a49017a7070..dfb597fcb8d01ed6cf20eae57e260949356275de 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLlama.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLlama.java
-@@ -92,4 +92,17 @@ public class CraftLlama extends CraftChestedHorse implements Llama, com.destroys
+@@ -86,4 +86,17 @@ public class CraftLlama extends CraftChestedHorse implements Llama, com.destroys
      public Llama getCaravanTail() {
          return this.getHandle().caravanTail == null ? null : (Llama) this.getHandle().caravanTail.getBukkitEntity();
      }
@@ -1102,10 +1068,10 @@ index 9aaaf2fc6a7bc49d1c3d0be68854e7fb2524fd25..a8e045af6b3b20027877d958d58dc09c
 +    // Purpur end - Llama API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index df6612a86f7b0c06d8733852bf5c46b37a81bc3e..a5cf4e4b9cc35bd81b530bc3eac31b0af3d72b7c 100644
+index c6ca86dbbb483c2093cbedd8588755dad67c981a..09fc84319df0adb741dc29092ae33768878c8676 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -591,10 +591,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -612,10 +612,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public void setPlayerListName(String name) {
@@ -1122,7 +1088,7 @@ index df6612a86f7b0c06d8733852bf5c46b37a81bc3e..a5cf4e4b9cc35bd81b530bc3eac31b0a
          if (this.getHandle().connection == null) return; // Paper - Updates are possible before the player has fully joined
          for (ServerPlayer player : (List<ServerPlayer>) this.server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
-@@ -1416,6 +1421,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1429,6 +1434,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          // Paper start - Teleport passenger API
          // Don't allow teleporting between worlds while keeping passengers
          if (ignorePassengers && entity.isVehicle() && location.getWorld() != this.getWorld()) {
@@ -1130,7 +1096,7 @@ index df6612a86f7b0c06d8733852bf5c46b37a81bc3e..a5cf4e4b9cc35bd81b530bc3eac31b0a
              return false;
          }
  
-@@ -1437,6 +1443,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1450,6 +1456,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
  
          if (entity.isVehicle() && !ignorePassengers) { // Paper - Teleport API
@@ -1138,7 +1104,7 @@ index df6612a86f7b0c06d8733852bf5c46b37a81bc3e..a5cf4e4b9cc35bd81b530bc3eac31b0a
              return false;
          }
  
-@@ -2731,6 +2738,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2723,6 +2730,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.getHandle().getAbilities().walkingSpeed * 2f;
      }
  
@@ -1167,7 +1133,7 @@ index df6612a86f7b0c06d8733852bf5c46b37a81bc3e..a5cf4e4b9cc35bd81b530bc3eac31b0a
      private void validateSpeed(float value) {
          Preconditions.checkArgument(value <= 1f && value >= -1f, "Speed value (%s) need to be between -1f and 1f", value);
      }
-@@ -3593,4 +3622,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3585,4 +3614,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public void setSimplifyContainerDesyncCheck(final boolean simplifyContainerDesyncCheck) {
          this.simplifyContainerDesyncCheck = simplifyContainerDesyncCheck;
      }
@@ -1245,12 +1211,12 @@ index df6612a86f7b0c06d8733852bf5c46b37a81bc3e..a5cf4e4b9cc35bd81b530bc3eac31b0a
 +    // Purpur end - Death screen API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftSnowman.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftSnowman.java
-index 4ce2373ff71c3c1b8951646e057587a3ab09e145..997b8e5059569de4ee8e70127c5d6019ce53afe3 100644
+index f03f9f94c51ef2f2eb24e4f65ec69b542b1c0a07..af60e3ef00ce1e98708d9963d466e72b6cde53cc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftSnowman.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftSnowman.java
-@@ -28,4 +28,17 @@ public class CraftSnowman extends CraftGolem implements Snowman, com.destroystok
-     public String toString() {
-         return "CraftSnowman";
+@@ -24,4 +24,17 @@ public class CraftSnowman extends CraftGolem implements Snowman, com.destroystok
+     public void setDerp(boolean derpMode) {
+         this.getHandle().setPumpkin(!derpMode);
      }
 +
 +    // Purpur start - Summoner API
@@ -1267,10 +1233,10 @@ index 4ce2373ff71c3c1b8951646e057587a3ab09e145..997b8e5059569de4ee8e70127c5d6019
 +    // Purpur end - Summoner API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
-index 196e64467d642b887b8dda2b2130518b22c9f593..d6169e59b4a08a31007f579b747ee3a375c48613 100644
+index 258e149a4c239328f4b068ac4617ca63b788dab3..a69b1b56a0e34673005e5da700943c656d2ec724 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
-@@ -385,4 +385,12 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
+@@ -380,4 +380,12 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
      public void clearReputations() {
          getHandle().getGossips().gossips.clear();
      }
@@ -1284,10 +1250,10 @@ index 196e64467d642b887b8dda2b2130518b22c9f593..d6169e59b4a08a31007f579b747ee3a3
 +    // Purpur end - Lobotomize stuck villagers
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftWither.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftWither.java
-index 51383cd065bd3731fff70091be52f340922dab0a..92029ba33c768e5732b7b2d3a9d7902c44218bb2 100644
+index 2e11df97e5c8ff5fbf22ba87946d6018ac8bbbed..83b779eb0adcaf2e6d5658cddc2607f6deea6bb9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftWither.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftWither.java
-@@ -97,4 +97,18 @@ public class CraftWither extends CraftMonster implements Wither, com.destroystok
+@@ -92,4 +92,18 @@ public class CraftWither extends CraftMonster implements Wither, com.destroystok
      public void enterInvulnerabilityPhase() {
          this.getHandle().makeInvulnerable();
      }
@@ -1307,10 +1273,10 @@ index 51383cd065bd3731fff70091be52f340922dab0a..92029ba33c768e5732b7b2d3a9d7902c
 +    // Purpur end - Summoner API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftWolf.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftWolf.java
-index b9cd648b296bc53cbc2d53486cbbb611c3e895a3..f127499eb79a282df7db337d8a6737daeeb6e7e4 100644
+index c3bd4cc1458bf62639d43854c2fdd0b479993b22..52a492ed8651e2ecb8b47cc3394fa4c722f99b71 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftWolf.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftWolf.java
-@@ -227,4 +227,15 @@ public class CraftWolf extends CraftTameableAnimal implements Wolf {
+@@ -228,4 +228,15 @@ public class CraftWolf extends CraftTameableAnimal implements Wolf {
              return this.getKey().hashCode();
          }
      }
@@ -1355,10 +1321,10 @@ index a7e3afe04ffbb0fd5fa5fcf7cd15efd7cea1c4e0..f32316b0357f1cb0501a052361a0221f
              event = new EntityDamageEvent(damagee.getBukkitEntity(), cause, bukkitDamageSource, modifiers, modifierFunctions);
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
-index 1ce328bed5cf3d087a3f7dc9236153381d758493..364afc994443f6c64af4f9ebbe210da63e18681c 100644
+index c00ddfe41439954fa0fd87c0933f274c8a752eb6..5fde4c71915f55f100cd30406803d6fca5b573dc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
-@@ -145,8 +145,19 @@ public class CraftContainer extends AbstractContainerMenu {
+@@ -150,8 +150,19 @@ public class CraftContainer extends AbstractContainerMenu {
              case PLAYER:
              case CHEST:
              case ENDER_CHEST:
@@ -1855,79 +1821,6 @@ index a38d464b470bacd9280fb4ae69f3600cbd5dbe22..a36b0b535252c06fc426535ad2138e23
          DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "experience", "Allows the user to give themselves or others arbitrary values of experience", PermissionDefault.OP, commands); // Paper - wrong permission; redirects are de-redirected and the root literal name is used, so xp -> experience
          DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "defaultgamemode", "Allows the user to change the default gamemode of the server", PermissionDefault.OP, commands);
          DefaultPermissions.registerPermission(CommandPermissions.PREFIX + "seed", "Allows the user to view the seed of the world", PermissionDefault.OP, commands);
-diff --git a/src/main/java/org/purpurmc/purpur/configuration/transformation/VoidDamageHeightMigration.java b/src/main/java/org/purpurmc/purpur/configuration/transformation/VoidDamageHeightMigration.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..a04d23bd98075cd65a24d4de8d18281d1668480f
---- /dev/null
-+++ b/src/main/java/org/purpurmc/purpur/configuration/transformation/VoidDamageHeightMigration.java
-@@ -0,0 +1,67 @@
-+package org.purpurmc.purpur.configuration.transformation;
-+
-+import io.papermc.paper.configuration.Configurations;
-+import io.papermc.paper.configuration.PaperConfigurations;
-+import io.papermc.paper.configuration.type.number.DoubleOr;
-+import java.util.OptionalDouble;
-+import org.checkerframework.checker.nullness.qual.Nullable;
-+import org.purpurmc.purpur.PurpurConfig;
-+import org.spongepowered.configurate.ConfigurateException;
-+import org.spongepowered.configurate.ConfigurationNode;
-+import org.spongepowered.configurate.NodePath;
-+import org.spongepowered.configurate.transformation.ConfigurationTransformation;
-+import org.spongepowered.configurate.transformation.TransformAction;
-+
-+import static org.spongepowered.configurate.NodePath.path;
-+
-+public class VoidDamageHeightMigration implements TransformAction {
-+
-+    public static boolean HAS_BEEN_REGISTERED = false;
-+
-+    public static final String ENVIRONMENT_KEY = "environment";
-+    public static final String VOID_DAMAGE_KEY = "void-damage-amount";
-+    public static final String VOID_DAMAGE_MIN_HEIGHT_OFFSET_KEY = "void-damage-min-build-height-offset";
-+    public static final double DEFAULT_VOID_DAMAGE_HEIGHT = -64.0D;
-+    public static final double DEFAULT_VOID_DAMAGE = 4.0D;
-+
-+    private final String worldName;
-+
-+    private VoidDamageHeightMigration(String worldName) {
-+        this.worldName = PaperConfigurations.WORLD_DEFAULTS.equals(worldName) ? "default" : worldName;
-+    }
-+
-+    @Override
-+    public Object @Nullable [] visitPath(final NodePath path, final ConfigurationNode value) throws ConfigurateException {
-+        String purpurVoidDamageHeightPath = "world-settings." + this.worldName + ".gameplay-mechanics.void-damage-height";
-+        ConfigurationNode voidDamageMinHeightOffsetNode = value.node(ENVIRONMENT_KEY, VOID_DAMAGE_MIN_HEIGHT_OFFSET_KEY);
-+        if (PurpurConfig.config.contains(purpurVoidDamageHeightPath)) {
-+            double purpurVoidDamageHeight = PurpurConfig.config.getDouble(purpurVoidDamageHeightPath);
-+            if (purpurVoidDamageHeight != DEFAULT_VOID_DAMAGE_HEIGHT && (voidDamageMinHeightOffsetNode.empty() || voidDamageMinHeightOffsetNode.getDouble() == DEFAULT_VOID_DAMAGE_HEIGHT)) {
-+                voidDamageMinHeightOffsetNode.raw(null);
-+                voidDamageMinHeightOffsetNode.set(purpurVoidDamageHeight);
-+            }
-+            PurpurConfig.config.set(purpurVoidDamageHeightPath, null);
-+        }
-+
-+        String purpurVoidDamagePath = "world-settings." + this.worldName + ".gameplay-mechanics.void-damage-dealt";
-+        ConfigurationNode voidDamageNode = value.node(ENVIRONMENT_KEY, VOID_DAMAGE_KEY);
-+        if (PurpurConfig.config.contains(purpurVoidDamagePath)) {
-+            double purpurVoidDamage = PurpurConfig.config.getDouble(purpurVoidDamagePath);
-+            if (purpurVoidDamage != DEFAULT_VOID_DAMAGE && (voidDamageNode.empty() || voidDamageNode.getDouble() == DEFAULT_VOID_DAMAGE)) {
-+                voidDamageNode.raw(null);
-+                voidDamageNode.set(new DoubleOr.Disabled(OptionalDouble.of(purpurVoidDamage)));
-+            }
-+            PurpurConfig.config.set(purpurVoidDamagePath, null);
-+        }
-+
-+        return null;
-+    }
-+
-+    public static void apply(final ConfigurationTransformation.Builder builder, final Configurations.ContextMap contextMap) {
-+        if (PurpurConfig.version < 36) {
-+            HAS_BEEN_REGISTERED = true;
-+            builder.addAction(path(), new VoidDamageHeightMigration(contextMap.require(Configurations.WORLD_NAME)));
-+        }
-+    }
-+
-+}
 diff --git a/src/main/resources/log4j2.xml b/src/main/resources/log4j2.xml
 index d2a75850af9c6ad2aca66a5f994f1b587d73eac4..a056aa167887abef9e6d531a9edd2cda433567d2 100644
 --- a/src/main/resources/log4j2.xml
