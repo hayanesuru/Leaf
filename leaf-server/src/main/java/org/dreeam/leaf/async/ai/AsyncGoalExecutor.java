@@ -18,6 +18,7 @@ public class AsyncGoalExecutor {
     private final ServerLevel serverLevel;
     private boolean dirty = false;
     private long tickCount = 0L;
+    private static final int SPIN_LIMIT = 100;
 
     public AsyncGoalExecutor(AsyncGoalThread thread, ServerLevel serverLevel) {
         this.serverLevel = serverLevel;
@@ -38,8 +39,14 @@ public class AsyncGoalExecutor {
 
     public final void submit(int entityId) {
         if (!this.queue.send(entityId)) {
-            LockSupport.unpark(thread);
+            int spinCount = 0;
             while (!this.queue.send(entityId)) {
+                spinCount++;
+                // Unpark thread after some spinning to help clear the queue
+                if (spinCount > SPIN_LIMIT) {
+                    unpark();
+                    spinCount = 0;
+                }
                 Thread.onSpinWait();
             }
         }
@@ -52,15 +59,18 @@ public class AsyncGoalExecutor {
     }
 
     public final void midTick() {
+        boolean didWork = false;
         while (true) {
             int id = this.wake.recv();
             if (id == Integer.MAX_VALUE) {
                 break;
             }
+            didWork = true;
             Entity entity = this.serverLevel.getEntities().get(id);
             if (entity == null || !entity.isAlive() || !(entity instanceof Mob mob)) {
                 continue;
             }
+
             mob.tickingTarget = true;
             boolean a = mob.targetSelector.poll();
             mob.tickingTarget = false;
@@ -69,8 +79,7 @@ public class AsyncGoalExecutor {
                 submit(id);
             }
         }
-        if ((tickCount & 3L) == 0L) unpark();
+        if (didWork || (tickCount & 15L) == 0L) unpark();
         tickCount += 1;
     }
 }
-
