@@ -5,7 +5,7 @@ Subject: [PATCH] Cache player profileResult
 
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 9dce1d22c7de3a3dd0e0e8f117cfbb54d1b15042..c4d0372feb6299b785a7e569314cc91f07870036 100644
+index 9dce1d22c7de3a3dd0e0e8f117cfbb54d1b15042..50137b67b578b0f9f34bb11a6d572df99ee9fa37 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -70,6 +70,11 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -20,7 +20,7 @@ index 9dce1d22c7de3a3dd0e0e8f117cfbb54d1b15042..c4d0372feb6299b785a7e569314cc91f
  
      public ServerLoginPacketListenerImpl(MinecraftServer server, Connection connection, boolean transferred) {
          this.server = server;
-@@ -303,9 +308,23 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -303,9 +308,25 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
                  String string1 = Objects.requireNonNull(ServerLoginPacketListenerImpl.this.requestedUsername, "Player name not initialized");
  
                  try {
@@ -36,7 +36,9 @@ index 9dce1d22c7de3a3dd0e0e8f117cfbb54d1b15042..c4d0372feb6299b785a7e569314cc91f
 +                            profileResult = ServerLoginPacketListenerImpl.this.server
 +                                .getSessionService()
 +                                .hasJoinedServer(string1, string, this.getAddress());
-+                            playerProfileResultCache.put(string1, profileResult);
++                            if (profileResult != null) {
++                                playerProfileResultCache.put(string1, profileResult);
++                            }
 +                        }
 +                    } else {
 +                        profileResult = ServerLoginPacketListenerImpl.this.server

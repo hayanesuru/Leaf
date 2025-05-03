@@ -144,6 +144,10 @@ public class LinearRegionFile implements IRegionFile {
     }
 
     private synchronized void save() throws IOException {
+        if (MinecraftServer.getServer().hasStopped()) {
+            // Save only once on shutdown
+            if (!closed) return;
+        }
         long timestamp = getTimestamp();
         short chunkCount = 0;
 
@@ -217,7 +221,7 @@ public class LinearRegionFile implements IRegionFile {
             LOGGER.error("Chunk write IOException {} {}", e, this.path);
         }
 
-        if ((System.nanoTime() - this.lastFlushed) >= TimeUnit.NANOSECONDS.toSeconds(RegionFormatConfig.linearFlushFrequency)) {
+        if (TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - this.lastFlushed) >= (RegionFormatConfig.linearFlushFrequency)) {
             this.flushWrapper();
         }
     }

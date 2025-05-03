@@ -23,7 +23,7 @@ and, in my opinion, worth the low risk of minor mob-spawning-related
 inconsistencies.
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java b/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
-index ece6db7b9a0dfd535141c0c756947c4898140503..82738ad42853e328532d854e3369e6a475ad729d 100644
+index ece6db7b9a0dfd535141c0c756947c4898140503..13df153d7b63a5c36a2fd14d3292e7eb32a394df 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
 @@ -11,7 +11,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
@@ -31,7 +31,7 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..82738ad42853e328532d854e3369e6a4
  
      private final Reference2IntLinkedOpenHashMap<E> indexMap;
 -    private int firstInvalidIndex = -1;
-+    private volatile int firstInvalidIndex = -1; // Leaf - Async mob spawning - volatile
++    private final java.util.concurrent.atomic.AtomicInteger firstInvalidIndex = new java.util.concurrent.atomic.AtomicInteger(-1); // Leaf - Pufferfish - Async mob spawning - atomic
  
      /* list impl */
      private E[] listElements;
@@ -44,7 +44,7 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..82738ad42853e328532d854e3369e6a4
  
      public IteratorSafeOrderedReferenceSet() {
          this(Object.class);
-@@ -99,7 +99,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -99,11 +99,11 @@ public final class IteratorSafeOrderedReferenceSet<E> {
      }
  
      public int createRawIterator() {
@@ -53,6 +53,11 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..82738ad42853e328532d854e3369e6a4
          if (this.indexMap.isEmpty()) {
              return Integer.MAX_VALUE;
          } else {
+-            return this.firstInvalidIndex == 0 ? this.indexMap.getInt(this.indexMap.firstKey()) : 0;
++            return this.firstInvalidIndex.get() == 0 ? this.indexMap.getInt(this.indexMap.firstKey()) : 0; // Leaf - Pufferfish - Async mob spawning
+         }
+     }
+ 
 @@ -120,7 +120,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
      }
  
@@ -62,7 +67,19 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..82738ad42853e328532d854e3369e6a4
              if (this.getFragFactor() >= this.maxFragFactor) {
                  this.defrag();
              }
-@@ -137,7 +137,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -130,14 +130,17 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+     public boolean remove(final E element) {
+         final int index = this.indexMap.removeInt(element);
+         if (index >= 0) {
+-            if (this.firstInvalidIndex < 0 || index < this.firstInvalidIndex) {
+-                this.firstInvalidIndex = index;
++            // Leaf start - Pufferfish - Async mob spawning
++            int firstInvalidIndex = this.firstInvalidIndex.get();
++            if (firstInvalidIndex < 0 || index < firstInvalidIndex) {
++                this.firstInvalidIndex.set(index);
+             }
++            // Leaf end - Pufferfish - Async mob spawning
+             if (this.listElements[index] != element) {
                  throw new IllegalStateException();
              }
              this.listElements[index] = null;
@@ -71,7 +88,49 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..82738ad42853e328532d854e3369e6a4
                  this.defrag();
              }
              //this.check();
-@@ -235,7 +235,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -169,14 +172,16 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+     }
+ 
+     private void defrag() {
+-        if (this.firstInvalidIndex < 0) {
++        // Leaf start - Pufferfish - Async mob spawning
++        int firstInvalidIndex = this.firstInvalidIndex.get();
++        if (firstInvalidIndex < 0) {
+             return; // nothing to do
+         }
+ 
+         if (this.indexMap.isEmpty()) {
+             Arrays.fill(this.listElements, 0, this.listSize, null);
+             this.listSize = 0;
+-            this.firstInvalidIndex = -1;
++            this.firstInvalidIndex.set(-1); // Leaf - Pufferfish - Async mob spawning
+             //this.check();
+             return;
+         }
+@@ -186,11 +191,11 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+         int lastValidIndex;
+         java.util.Iterator<Reference2IntMap.Entry<E>> iterator;
+ 
+-        if (this.firstInvalidIndex == 0) {
++        if (firstInvalidIndex == 0) { // Leaf - Pufferfish - Async mob spawning
+             iterator = this.indexMap.reference2IntEntrySet().fastIterator();
+             lastValidIndex = 0;
+         } else {
+-            lastValidIndex = this.firstInvalidIndex;
++            lastValidIndex = firstInvalidIndex; // Leaf - Pufferfish - Async mob spawning
+             final E key = backingArray[lastValidIndex - 1];
+             iterator = this.indexMap.reference2IntEntrySet().fastIterator(new Reference2IntMap.Entry<E>() {
+                 @Override
+@@ -221,7 +226,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+         // cleanup end
+         Arrays.fill(backingArray, lastValidIndex, this.listSize, null);
+         this.listSize = lastValidIndex;
+-        this.firstInvalidIndex = -1;
++        this.firstInvalidIndex.set(-1); // Leaf - Pufferfish - Async mob spawning
+         //this.check();
+     }
+ 
+@@ -235,7 +240,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
      }
  
      public IteratorSafeOrderedReferenceSet.Iterator<E> iterator(final int flags) {
@@ -80,3 +139,12 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..82738ad42853e328532d854e3369e6a4
          return new BaseIterator<>(this, true, (flags & ITERATOR_FLAG_SEE_ADDITIONS) != 0 ? Integer.MAX_VALUE : this.listSize);
      }
  
+@@ -322,7 +327,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+             }
+             this.lastReturned = null;
+             this.finished = true;
+-            this.set.finishRawIterator();
++            this.set.finishRawIterator(); // Pufferfish - async mob spawning - diff on change
+         }
+     }
+ }

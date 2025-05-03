@@ -175,7 +175,7 @@ index 6683df8d0f5a61ab094393f761a3d3a22d6e0455..4fd9313ce2c87383685d80e2533b93d5
      // Paper start - rewrite chunk system
      private volatile ca.spottedleaf.moonrise.patches.starlight.light.SWMRNibbleArray[] blockNibbles;
 diff --git a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-index 62a40e88fc03b7f383bd750d72c42747ddd591b4..6f4f431d5197e8157908191709776ff6d406207b 100644
+index 749096358fccbd5d1d13801092255c51096eb001..ccec1b847ba1a3667206cbeac4ed541a9fb028ea 100644
 --- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
 +++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
 @@ -92,6 +92,7 @@ public record SerializableChunkData(
@@ -230,7 +230,7 @@ index 62a40e88fc03b7f383bd750d72c42747ddd591b4..6f4f431d5197e8157908191709776ff6
          if (chunkType == ChunkType.LEVELCHUNK) {
              return this.loadStarlightLightData(level, new ImposterProtoChunk((LevelChunk)chunkAccess, false)); // Paper - starlight
          } else {
-@@ -570,6 +594,7 @@ public record SerializableChunkData(
+@@ -554,6 +578,7 @@ public record SerializableChunkData(
                  persistentDataContainer = chunk.persistentDataContainer.toTagCompound();
              }
              // CraftBukkit end
@@ -238,7 +238,7 @@ index 62a40e88fc03b7f383bd750d72c42747ddd591b4..6f4f431d5197e8157908191709776ff6
              return new SerializableChunkData(
                  level.registryAccess().lookupOrThrow(Registries.BIOME),
                  pos,
-@@ -590,6 +615,7 @@ public record SerializableChunkData(
+@@ -574,6 +599,7 @@ public record SerializableChunkData(
                  list1,
                  compoundTag
                  , persistentDataContainer // CraftBukkit - persistentDataContainer
@@ -246,7 +246,7 @@ index 62a40e88fc03b7f383bd750d72c42747ddd591b4..6f4f431d5197e8157908191709776ff6
              );
          }
      }
-@@ -674,6 +700,21 @@ public record SerializableChunkData(
+@@ -658,6 +684,21 @@ public record SerializableChunkData(
              compoundTag.put("ChunkBukkitValues", this.persistentDataContainer);
          }
          // CraftBukkit end
@@ -268,7 +268,7 @@ index 62a40e88fc03b7f383bd750d72c42747ddd591b4..6f4f431d5197e8157908191709776ff6
          // Paper start - starlight
          if (this.lightCorrect && !this.chunkStatus.isBefore(net.minecraft.world.level.chunk.status.ChunkStatus.LIGHT)) {
              // clobber vanilla value to force vanilla to relight
-@@ -881,4 +922,50 @@ public record SerializableChunkData(
+@@ -865,4 +906,50 @@ public record SerializableChunkData(
          }
          // Paper end - starlight - convert from record
      }

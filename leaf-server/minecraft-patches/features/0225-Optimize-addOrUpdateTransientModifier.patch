@@ -5,7 +5,7 @@ Subject: [PATCH] Optimize addOrUpdateTransientModifier
 
 
 diff --git a/net/minecraft/world/entity/ai/attributes/AttributeInstance.java b/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
-index d99bbf299af2b2d3a61761c5c3c33c4d371d1b9b..643a2005567e883a2ca545d0f65bc59914ddee00 100644
+index 11520972f4fabde3be48edd296351113453b2869..5fe88b105efd3546c675b3397be46bf42e830fb3 100644
 --- a/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
 +++ b/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
 @@ -90,8 +90,13 @@ public class AttributeInstance {

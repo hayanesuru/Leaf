@@ -5,23 +5,56 @@ Subject: [PATCH] PlayerInventoryOverflowEvent
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
-index 19180c08f41db939c1a9f0caeb62e5beb1117f69..c765118189cbf8db7291c1d50214a7f31acc3a49 100644
+index 19180c08f41db939c1a9f0caeb62e5beb1117f69..9b5c8c4c39657c18e67ad654bd0e5a30c09232c6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
-@@ -340,6 +340,16 @@ public class CraftInventory implements Inventory {
+@@ -340,9 +340,49 @@ public class CraftInventory implements Inventory {
                  }
              }
          }
 +
 +        // Leaf start - PlayerInventoryOverflowEvent
-+        if (org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent.getHandlerList().getRegisteredListeners().length > 0
++        if (isListeningInventoryOverflowEvent()
 +            && !leftover.isEmpty() && this.inventory instanceof net.minecraft.world.entity.player.Inventory && this.inventory.getOwner() instanceof org.bukkit.entity.Player player) {
 +            new org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent(player, leftover).callEvent();
 +
-+            leftover = new HashMap<>();
++            return new HashMap<>();
 +        }
 +        // Leaf end - PlayerInventoryOverflowEvent
 +
          return leftover;
      }
  
++    // Leaf start - PlayerInventoryOverflowEvent
++    private static boolean isListeningInventoryOverflowEvent() {
++        if (org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent.isListeningInvOverflowCached == -1) {
++            org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent.isListeningInvOverflowCached = 0;
++
++            if (!org.dreeam.leaf.config.modules.gameplay.ConfigurableInventoryOverflowEvent.enabled) {
++                return false;
++            }
++
++            org.bukkit.plugin.RegisteredListener[] listeners = org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent.getHandlerList().getRegisteredListeners();
++            if (listeners.length == 1) {
++                if (listeners[0].getListener().getClass().getName().equals(org.dreeam.leaf.config.modules.gameplay.ConfigurableInventoryOverflowEvent.listenerClass)) {
++                    org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent.isListeningInvOverflowCached = 1;
++                    return true;
++                }
++            } else if (listeners.length > 1) {
++                for (org.bukkit.plugin.RegisteredListener registeredListener : listeners) {
++                    if (registeredListener.getListener().getClass().getName().equals(org.dreeam.leaf.config.modules.gameplay.ConfigurableInventoryOverflowEvent.listenerClass)) {
++                        org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent.isListeningInvOverflowCached = 1;
++                        return true;
++                    }
++                    ;
++                }
++            }
++        }
++
++        return org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent.isListeningInvOverflowCached == 1;
++    }
++    // Leaf end - PlayerInventoryOverflowEvent
++
+     @Override
+     public HashMap<Integer, ItemStack> removeItem(ItemStack... items) {
+         // Paper start

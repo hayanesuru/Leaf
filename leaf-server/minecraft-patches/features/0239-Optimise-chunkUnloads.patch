@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Taiyou06 <kaandindar21@gmail.com>
-Date: Fri, 28 Feb 2025 01:35:49 +0100
-Subject: [PATCH] Optimize chunkUnload
+Date: Mon, 14 Apr 2025 20:07:52 +0200
+Subject: [PATCH] Optimise chunkUnloads
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/starlight/light/SWMRNibbleArray.java b/ca/spottedleaf/moonrise/patches/starlight/light/SWMRNibbleArray.java
@@ -211,3 +211,131 @@ index 36c033b0ee63dfc273d721fb4b614733e8fdef19..dc9f1bc6dd8b1057da3416e24f15f232
          return new LevelChunkSection(this);
      }
  }
+diff --git a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
+index ccec1b847ba1a3667206cbeac4ed541a9fb028ea..5c2d29e749fdd317f231489401601c82191552bf 100644
+--- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
++++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
+@@ -493,14 +493,16 @@ public record SerializableChunkData(
+             throw new IllegalArgumentException("Chunk can't be serialized: " + chunk);
+         } else {
+             ChunkPos pos = chunk.getPos();
+-            List<SerializableChunkData.SectionData> list = new ArrayList<>(); final List<SerializableChunkData.SectionData> sectionsList = list; // Paper - starlight - OBFHELPER
+-            LevelChunkSection[] sections = chunk.getSections();
+-            LevelLightEngine lightEngine = level.getChunkSource().getLightEngine();
+ 
+             // Paper start - starlight
+             final int minLightSection = ca.spottedleaf.moonrise.common.util.WorldUtil.getMinLightSection(level);
+             final int maxLightSection = ca.spottedleaf.moonrise.common.util.WorldUtil.getMaxLightSection(level);
+             final int minBlockSection = ca.spottedleaf.moonrise.common.util.WorldUtil.getMinSection(level);
++            // Leaf start - Optimize chunkUnload
++            // Pre-allocate with correct capacity to avoid resizing
++            final int expectedSectionCount = maxLightSection - minLightSection + 1;
++            List<SerializableChunkData.SectionData> list = new ArrayList<>(expectedSectionCount);
++            // Leaf end - Optimize chunkUnload
+ 
+             final LevelChunkSection[] chunkSections = chunk.getSections();
+             final ca.spottedleaf.moonrise.patches.starlight.light.SWMRNibbleArray[] blockNibbles = ((ca.spottedleaf.moonrise.patches.starlight.chunk.StarlightChunk)chunk).starlight$getBlockNibbles();
+@@ -518,10 +520,20 @@ public record SerializableChunkData(
+                     continue;
+                 }
+ 
++                // Leaf start - Optimize chunkUnload
++                DataLayer blockDataLayer = null;
++                if (blockNibble != null && blockNibble.data != null) {
++                    blockDataLayer = new DataLayer(blockNibble.data);
++                }
++
++                DataLayer skyDataLayer = null;
++                if (skyNibble != null && skyNibble.data != null) {
++                    skyDataLayer = new DataLayer(skyNibble.data);
++                }
++                // Leaf end - Optimize chunkUnload
++
+                 final SerializableChunkData.SectionData sectionData = new SerializableChunkData.SectionData(
+-                    lightSection, chunkSection,
+-                    blockNibble == null ? null : (blockNibble.data == null ? null : new DataLayer(blockNibble.data)),
+-                    skyNibble == null ? null : (skyNibble.data == null ? null : new DataLayer(skyNibble.data))
++                    lightSection, chunkSection, blockDataLayer, skyDataLayer // Leaf - Optimize chunkUnload
+                 );
+ 
+                 if (blockNibble != null) {
+@@ -532,12 +544,16 @@ public record SerializableChunkData(
+                     ((ca.spottedleaf.moonrise.patches.starlight.storage.StarlightSectionData)(Object)sectionData).starlight$setSkyLightState(skyNibble.state);
+                 }
+ 
+-                sectionsList.add(sectionData);
++                list.add(sectionData); // Leaf - Optimize chunkUnload
+             }
+             // Paper end - starlight
+ 
+-            List<CompoundTag> list1 = new ArrayList<>(chunk.getBlockEntitiesPos().size());
++            // Leaf start - Optimize chunkUnload
++            // Pre-allocate block entities list with exact size needed
++            final int blockEntityCount = chunk.getBlockEntitiesPos().size();
++            List<CompoundTag> list1 = blockEntityCount > 0 ? new ArrayList<>(blockEntityCount) : java.util.Collections.emptyList();
+ 
++            if (blockEntityCount > 0) // Leaf - Optimize chunkUnload
+             for (BlockPos blockPos : chunk.getBlockEntitiesPos()) {
+                 CompoundTag blockEntityNbtForSaving = chunk.getBlockEntityNbtForSaving(blockPos, level.registryAccess());
+                 if (blockEntityNbtForSaving != null) {
+@@ -545,15 +561,27 @@ public record SerializableChunkData(
+                 }
+             }
+ 
+-            List<CompoundTag> list2 = new ArrayList<>();
++            // Leaf start - Optimize chunkUnload
++            // For entities, use an initial estimated capacity if it's a ProtoChunk
++            List<CompoundTag> list2;
+             long[] longs = null;
+             if (chunk.getPersistedStatus().getChunkType() == ChunkType.PROTOCHUNK) {
+                 ProtoChunk protoChunk = (ProtoChunk)chunk;
+-                list2.addAll(protoChunk.getEntities());
++                // Leaf start - Optimize chunkUnload
++                int entitySize = protoChunk.getEntities().size();
++                if (entitySize > 0) {
++                    list2 = new ArrayList<>(Math.max(16, entitySize));
++                    list2.addAll(protoChunk.getEntities());
++                } else {
++                    list2 = java.util.Collections.emptyList();
++                }
++                // Leaf end - Optimize chunkUnload
+                 CarvingMask carvingMask = protoChunk.getCarvingMask();
+                 if (carvingMask != null) {
+                     longs = carvingMask.toArray();
+                 }
++            } else {
++                list2 = java.util.Collections.emptyList(); // Leaf - Optimize chunkUnload
+             }
+ 
+             Map<Heightmap.Types, long[]> map = new EnumMap<>(Heightmap.Types.class);
+@@ -561,14 +589,26 @@ public record SerializableChunkData(
+             for (Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
+                 if (chunk.getPersistedStatus().heightmapsAfter().contains(entry.getKey())) {
+                     long[] rawData = entry.getValue().getRawData();
+-                    map.put(entry.getKey(), (long[])rawData.clone());
++                    map.put(entry.getKey(), Arrays.copyOf(rawData, rawData.length)); // Leaf - Optimize chunkUnload
+                 }
+             }
+ 
+             ChunkAccess.PackedTicks ticksForSerialization = chunk.getTicksForSerialization(level.getGameTime());
+-            ShortList[] lists = Arrays.stream(chunk.getPostProcessing())
+-                .map(list3 -> list3 != null ? new ShortArrayList(list3) : null)
+-                .toArray(ShortList[]::new);
++            // Leaf start - Optimize chunkUnload - remove stream
++            ShortList[] postProcessing = chunk.getPostProcessing();
++            ShortList[] lists = new ShortList[postProcessing.length];
++            for (int i = 0; i < postProcessing.length; i++) {
++                ShortList source = postProcessing[i];
++                // Only create a new list if there's actual data to copy
++                if (source != null) {
++                    int size = source.size();
++                    if (size > 0) {
++                        lists[i] = new ShortArrayList(size);
++                        lists[i].addAll(source);
++                    }
++                }
++            }
++            // Leaf end - Optimize chunkUnload - remove stream
+             CompoundTag compoundTag = packStructureData(
+                 StructurePieceSerializationContext.fromLevel(level), pos, chunk.getAllStarts(), chunk.getAllReferences()
+             );

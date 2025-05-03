@@ -4,12 +4,40 @@ Date: Wed, 19 Feb 2025 00:34:16 -0500
 Subject: [PATCH] PlayerInventoryOverflowEvent
 
 
+diff --git a/src/main/java/org/bukkit/event/HandlerList.java b/src/main/java/org/bukkit/event/HandlerList.java
+index ef9d9f3ddaf25aa990715139e1916672f76c35e5..97b591ab30d6e0af4518b71fefcf9c8f3c050176 100644
+--- a/src/main/java/org/bukkit/event/HandlerList.java
++++ b/src/main/java/org/bukkit/event/HandlerList.java
+@@ -64,6 +64,7 @@ public class HandlerList {
+                     h.handlers = null;
+                 }
+             }
++            org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent.isListeningInvOverflowCached = -1; // Leaf - PlayerInventoryOverflowEvent
+         }
+     }
+ 
+@@ -77,6 +78,7 @@ public class HandlerList {
+             for (HandlerList h : allLists) {
+                 h.unregister(plugin);
+             }
++            org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent.isListeningInvOverflowCached = -1; // Leaf - PlayerInventoryOverflowEvent
+         }
+     }
+ 
+@@ -90,6 +92,7 @@ public class HandlerList {
+             for (HandlerList h : allLists) {
+                 h.unregister(listener);
+             }
++            org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent.isListeningInvOverflowCached = -1; // Leaf - PlayerInventoryOverflowEvent
+         }
+     }
+ 
 diff --git a/src/main/java/org/dreeam/leaf/event/player/PlayerInventoryOverflowEvent.java b/src/main/java/org/dreeam/leaf/event/player/PlayerInventoryOverflowEvent.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..44c65eb6c503b94ac73d2b2169359be1b4810c98
+index 0000000000000000000000000000000000000000..eae76671190ef84529c0dd503263e43a15a74e8a
 --- /dev/null
 +++ b/src/main/java/org/dreeam/leaf/event/player/PlayerInventoryOverflowEvent.java
-@@ -0,0 +1,63 @@
+@@ -0,0 +1,65 @@
 +package org.dreeam.leaf.event.player;
 +
 +import org.bukkit.entity.Player;
@@ -35,6 +63,8 @@ index 0000000000000000000000000000000000000000..44c65eb6c503b94ac73d2b2169359be1
 +public class PlayerInventoryOverflowEvent extends PlayerEvent {
 +
 +    private static final HandlerList HANDLER_LIST = new HandlerList();
++
++    public static short isListeningInvOverflowCached = -1;
 +
 +    private final Inventory inventory;
 +    private final Map<Integer, ItemStack> overflowItemStacks;

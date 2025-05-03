@@ -4,7 +4,7 @@
 [![Github Releases](https://img.shields.io/badge/Download-Releases-blue?&style=for-the-badge&colorA=19201a&colorB=298046)](https://github.com/Winds-Studio/Leaf/releases)⠀
 [![Github Actions Build](https://img.shields.io/github/actions/workflow/status/Winds-Studio/Leaf/build-1215.yml?&style=for-the-badge&colorA=19201a&colorB=298046)](https://github.com/Winds-Studio/Leaf/actions)⠀
 [![Discord](https://img.shields.io/discord/1145991395388162119?label=discord&style=for-the-badge&colorA=19201a&colorB=298046)](https://discord.gg/gfgAwdSEuM)
-[![Docs](https://img.shields.io/badge/Docs-docs.leafmc.one-blue?label=docs&style=for-the-badge&colorA=19201a&colorB=298046)](https://docs.leafmc.one)
+[![Docs](https://img.shields.io/badge/Docs-leafmc.one/docs/-blue?label=docs&style=for-the-badge&colorA=19201a&colorB=298046)](https://www.leafmc.one/docs/)
 
 **Leaf** is a [Paper](https://papermc.io/) fork designed to be customized and high-performance.
 </div>
@@ -42,7 +42,7 @@ You can find the latest successful build in [GitHub Action](https://github.com/W
 **Please note Java >= 21 is required.**
 
 ## 📄 Documentation
-Documentation on how to use/configure Leaf: [www.leafmc.one/docs](https://www.leafmc.one/docs/)
+Documentation on how to use/configure Leaf: [www.leafmc.one/docs](https://www.leafmc.one/docs)
 
 ## 📦 Building
 Building a Paperclip JAR for distribution:
@@ -118,6 +118,7 @@ If these excellent projects hadn't appeared, Leaf wouldn't have become great.
       • <a href="https://github.com/LuminolMC/Luminol">Luminol</a><br>
       • <a href="https://github.com/Gensokyo-Reimagined/Nitori">Nitori</a><br>
       • <a href="https://github.com/Tuinity/Moonrise">Moonrise</a> (during 1.21.1)<br> 
+      • <a href="https://github.com/Samsuik/Sakura">Sakura</a><br> 
     </p>
 </details>
 

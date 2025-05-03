@@ -177,10 +177,10 @@ index f106373ef3ac4a8685c2939c9e8361688a285913..51ae390c68e7a3aa193329cc3bc47ca6
      public boolean visible = true;
  
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index 44d87997e1ce9b846ebed541634a4478334c920c..6b421f84e2d4e286ad4b7624670c90a76e86c8fe 100644
+index 44d87997e1ce9b846ebed541634a4478334c920c..87b032ad2ba3e3e0a2e5cfcf185533102247a946 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -460,12 +460,15 @@ public class ServerEntity {
+@@ -460,15 +460,18 @@ public class ServerEntity {
          if (this.entity instanceof LivingEntity) {
              Set<AttributeInstance> attributesToSync = ((LivingEntity)this.entity).getAttributes().getAttributesToSync();
              if (!attributesToSync.isEmpty()) {
@@ -197,7 +197,11 @@ index 44d87997e1ce9b846ebed541634a4478334c920c..6b421f84e2d4e286ad4b7624670c90a7
 +                // Leaf end - petal - Multithreaded tracker - send in main thread
              }
  
-             attributesToSync.clear();
+-            attributesToSync.clear();
++            ((LivingEntity)this.entity).getAttributes().getAttributesToSync().clear(); // Leaf - Multithreaded tracker
+         }
+     }
+ 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
 index 5943b18f172fb1d77ef1fe768daa8e8f43c3c8c1..7b85a9ebdbe3e8bee0a8fc100ede8a3f07eee5ce 100644
 --- a/net/minecraft/server/level/ServerLevel.java
@@ -234,7 +238,7 @@ index c34cf83f79314198b0f7a747e4ae68b88d09d2cd..c8590517efe4124c2b1db2b927d131b8
          if (this.player.isRemoved()) {
              LOGGER.info("Attempt to teleport removed player {} restricted", player.getScoreboardName());
 diff --git a/net/minecraft/world/entity/ai/attributes/AttributeInstance.java b/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
-index 3ac9f36eae87369354e992a1d9b5c5b2d87d17cb..d99bbf299af2b2d3a61761c5c3c33c4d371d1b9b 100644
+index 3ac9f36eae87369354e992a1d9b5c5b2d87d17cb..11520972f4fabde3be48edd296351113453b2869 100644
 --- a/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
 +++ b/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
 @@ -26,8 +26,11 @@ public class AttributeInstance {
@@ -245,34 +249,86 @@ index 3ac9f36eae87369354e992a1d9b5c5b2d87d17cb..d99bbf299af2b2d3a61761c5c3c33c4d
 -    private final Map<ResourceLocation, AttributeModifier> permanentModifiers = new Object2ObjectArrayMap<>();
 +    // Leaf start - Multithreaded tracker
 +    private final boolean multiThreadedTrackingEnabled = org.dreeam.leaf.config.modules.async.MultithreadedTracker.enabled;
-+    private final Map<ResourceLocation, AttributeModifier> modifierById = multiThreadedTrackingEnabled ? new java.util.concurrent.ConcurrentHashMap<>() : new Object2ObjectArrayMap<>();
-+    private final Map<ResourceLocation, AttributeModifier> permanentModifiers = multiThreadedTrackingEnabled ? new java.util.concurrent.ConcurrentHashMap<>() : new Object2ObjectArrayMap<>();
++    private final Map<ResourceLocation, AttributeModifier> modifierById = multiThreadedTrackingEnabled ? it.unimi.dsi.fastutil.objects.Object2ObjectMaps.synchronize(new Object2ObjectArrayMap<>(), this) : new Object2ObjectArrayMap<>();
++    private final Map<ResourceLocation, AttributeModifier> permanentModifiers = multiThreadedTrackingEnabled ? it.unimi.dsi.fastutil.objects.Object2ObjectMaps.synchronize(new Object2ObjectArrayMap<>(), this) : new Object2ObjectArrayMap<>();
 +    // Leaf end - Multithreaded tracker
      private double baseValue;
      private boolean dirty = true;
      private double cachedValue;
+@@ -116,7 +119,15 @@ public class AttributeInstance {
+     }
+ 
+     protected void setDirty() {
+-        this.dirty = true;
++        // Leaf start - Multithreaded tracker
++        if (multiThreadedTrackingEnabled) {
++            synchronized (this) {
++                this.dirty = true;
++            }
++        } else {
++            this.dirty = true;
++        }
++        // Leaf end - Multithreaded tracker
+         this.onDirty.accept(this);
+     }
+ 
+@@ -143,6 +154,17 @@ public class AttributeInstance {
+     }
+ 
+     public double getValue() {
++        // Leaf start - Multithreaded tracker
++        if (multiThreadedTrackingEnabled) {
++            synchronized (this) {
++                if (this.dirty) {
++                    this.cachedValue = this.calculateValue();
++                    this.dirty = false;
++                }
++                return this.cachedValue;
++            }
++        }
++        // Leaf end - Multithreaded tracker
+         if (this.dirty) {
+             this.cachedValue = this.calculateValue();
+             this.dirty = false;
 diff --git a/net/minecraft/world/entity/ai/attributes/AttributeMap.java b/net/minecraft/world/entity/ai/attributes/AttributeMap.java
-index 701025715e0aca3c1f920a66f9b3d03ec08eaf02..2b8b335cf5779d1b6eb639935d1b92d82aa85d7f 100644
+index 701025715e0aca3c1f920a66f9b3d03ec08eaf02..8a299c81799b3f0c353eecce56afd14b9150df5f 100644
 --- a/net/minecraft/world/entity/ai/attributes/AttributeMap.java
 +++ b/net/minecraft/world/entity/ai/attributes/AttributeMap.java
-@@ -14,11 +14,14 @@ import net.minecraft.nbt.ListTag;
+@@ -14,11 +14,11 @@ import net.minecraft.nbt.ListTag;
  import net.minecraft.resources.ResourceLocation;
  
  public class AttributeMap {
-+    // Leaf start - Multithreaded tracker
-+    private final boolean multiThreadedTrackingEnabled = org.dreeam.leaf.config.modules.async.MultithreadedTracker.enabled;
-     // Gale start - Lithium - replace AI attributes with optimized collections
+-    // Gale start - Lithium - replace AI attributes with optimized collections
 -    private final Map<Holder<Attribute>, AttributeInstance> attributes = new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0);
 -    private final Set<AttributeInstance> attributesToSync = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0);
 -    private final Set<AttributeInstance> attributesToUpdate = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0);
-+    private final Map<Holder<Attribute>, AttributeInstance> attributes = multiThreadedTrackingEnabled ? new java.util.concurrent.ConcurrentHashMap<>() : new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0);
-+    private final Set<AttributeInstance> attributesToSync = multiThreadedTrackingEnabled ? com.google.common.collect.Sets.newConcurrentHashSet() : new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0);
-+    private final Set<AttributeInstance> attributesToUpdate = multiThreadedTrackingEnabled ? com.google.common.collect.Sets.newConcurrentHashSet() : new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>(0);
-     // Gale end - Lithium - replace AI attributes with optimized collections
+-    // Gale end - Lithium - replace AI attributes with optimized collections
++    // Leaf start - Multithreaded tracker
++    private final Map<Holder<Attribute>, AttributeInstance> attributes;
++    private final Set<AttributeInstance> attributesToSync;
++    private final Set<AttributeInstance> attributesToUpdate;
 +    // Leaf end - Multithreaded tracker
      private final AttributeSupplier supplier;
      private final java.util.function.Function<Holder<Attribute>, AttributeInstance> createInstance; // Gale - Airplane - reduce entity allocations
      private final net.minecraft.world.entity.LivingEntity entity; // Purpur - Ridables
+@@ -32,6 +32,17 @@ public class AttributeMap {
+         // Purpur end - Ridables
+         this.supplier = defaultAttributes;
+         this.createInstance = holder -> this.supplier.createInstance(this::onAttributeModified, holder); // Gale - Airplane - reduce entity allocations
++        // Leaf start - Multithreaded tracker
++        if (org.dreeam.leaf.config.modules.async.MultithreadedTracker.enabled) {
++            this.attributes = it.unimi.dsi.fastutil.objects.Reference2ReferenceMaps.synchronize(new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0));
++            this.attributesToSync = it.unimi.dsi.fastutil.objects.ReferenceSets.synchronize(new it.unimi.dsi.fastutil.objects.ReferenceArraySet<>(0));
++            this.attributesToUpdate = it.unimi.dsi.fastutil.objects.ReferenceSets.synchronize(new it.unimi.dsi.fastutil.objects.ReferenceArraySet<>(0));
++        } else {
++            this.attributes = new it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap<>(0);
++            this.attributesToSync = new it.unimi.dsi.fastutil.objects.ReferenceArraySet<>(0);
++            this.attributesToUpdate = new it.unimi.dsi.fastutil.objects.ReferenceArraySet<>(0);
++        }
++        // Leaf end - Multithreaded tracker
+     }
+ 
+     private void onAttributeModified(AttributeInstance instance) {
 diff --git a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 index 7bbeed6c998c91e68376d3f17a510d68e3cd0b27..d62ff9ebd4b55e1a9a0b51e84be868d844e5a954 100644
 --- a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
