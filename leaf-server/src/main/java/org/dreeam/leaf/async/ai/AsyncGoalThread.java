@@ -7,6 +7,7 @@ import net.minecraft.server.level.ServerLevel;
 import java.util.concurrent.locks.LockSupport;
 
 public class AsyncGoalThread extends Thread {
+
     private static final int SPIN_TRIES = 1000;
 
     public AsyncGoalThread(final MinecraftServer server) {
