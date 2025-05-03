@@ -11,4 +11,5 @@
 - [ ] Check beacon issues fix
 - [ ] Update README.md
 - [ ] Remove stream in Inventory and check new changes
+- [ ] Check Purpur's Projectile offset config, in BowItem shoot
 - [ ] Update from Leaf 1.21.4 (curr commit: `1431eff510a3ac1725ec82d52f5c253b4b7932d9`)

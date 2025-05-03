@@ -53,10 +53,10 @@ index f3ccabaf4ff9bd0265415193831fd22b1868c00e..6d3b895fcbb3c2fe4438e1e30d87dc21
              } else {
                  getBukkitEntity().setPlayerListName(prefix + scoreboardName + suffix, true);
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index cec88f9bf2ca92dcd97addfbf256cda0bd0b3f6a..76e197dc09f07b5a0156dbc629dfd6818bd03110 100644
+index 470660998d3df511f00936bcaa210142ab8ba7b2..220dd097aa1d912feb6699dccd1b68523c14cdf6 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2322,6 +2322,7 @@ public class ServerGamePacketListenerImpl
+@@ -2324,6 +2324,7 @@ public class ServerGamePacketListenerImpl
  
      @Override
      public void handleChatCommand(ServerboundChatCommandPacket packet) {
@@ -64,7 +64,7 @@ index cec88f9bf2ca92dcd97addfbf256cda0bd0b3f6a..76e197dc09f07b5a0156dbc629dfd681
          this.tryHandleChat(packet.command(), () -> {
              // CraftBukkit start - SPIGOT-7346: Prevent disconnected players from executing commands
              if (this.player.hasDisconnected()) {
-@@ -2330,7 +2331,7 @@ public class ServerGamePacketListenerImpl
+@@ -2332,7 +2333,7 @@ public class ServerGamePacketListenerImpl
              // CraftBukkit end
              this.performUnsignedChatCommand(packet.command());
              this.detectRateSpam("/" + packet.command()); // Spigot
@@ -73,7 +73,7 @@ index cec88f9bf2ca92dcd97addfbf256cda0bd0b3f6a..76e197dc09f07b5a0156dbc629dfd681
      }
  
      private void performUnsignedChatCommand(String command) {
-@@ -2363,6 +2364,7 @@ public class ServerGamePacketListenerImpl
+@@ -2365,6 +2366,7 @@ public class ServerGamePacketListenerImpl
      public void handleSignedChatCommand(ServerboundChatCommandSignedPacket packet) {
          Optional<LastSeenMessages> optional = this.unpackAndApplyLastSeen(packet.lastSeenMessages());
          if (!optional.isEmpty()) {
@@ -81,7 +81,7 @@ index cec88f9bf2ca92dcd97addfbf256cda0bd0b3f6a..76e197dc09f07b5a0156dbc629dfd681
              this.tryHandleChat(packet.command(), () -> {
                  // CraftBukkit start - SPIGOT-7346: Prevent disconnected players from executing commands
                  if (this.player.hasDisconnected()) {
-@@ -2371,7 +2373,7 @@ public class ServerGamePacketListenerImpl
+@@ -2373,7 +2375,7 @@ public class ServerGamePacketListenerImpl
                  // CraftBukkit end
                  this.performSignedChatCommand(packet, optional.get());
                  this.detectRateSpam("/" + packet.command()); // Spigot
@@ -90,7 +90,7 @@ index cec88f9bf2ca92dcd97addfbf256cda0bd0b3f6a..76e197dc09f07b5a0156dbc629dfd681
          }
      }
  
-@@ -2478,12 +2480,17 @@ public class ServerGamePacketListenerImpl
+@@ -2480,12 +2482,17 @@ public class ServerGamePacketListenerImpl
          return dispatcher.parse(command, this.player.createCommandSourceStack());
      }
  
@@ -110,7 +110,7 @@ index cec88f9bf2ca92dcd97addfbf256cda0bd0b3f6a..76e197dc09f07b5a0156dbc629dfd681
              this.player.resetLastActionTime();
              // CraftBukkit start
              if (sync) {
-@@ -2495,6 +2502,40 @@ public class ServerGamePacketListenerImpl
+@@ -2497,6 +2504,40 @@ public class ServerGamePacketListenerImpl
          }
      }
  

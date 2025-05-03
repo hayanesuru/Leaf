@@ -1284,7 +1284,7 @@ index c4f4c21f32e2aba79e15315d73124c803bb1223a..d2e8adccf33c6b842fac615006b782b0
                  this.player.clientBrandName = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.wrappedBuffer(data)).readUtf(256);
              }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596fc47cec76 100644
+index c6f52c899a3e4baf483412af8315d72a29f7139a..d2c1da7df4961fddbb7db952d817f127ece275d9 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -321,6 +321,20 @@ public class ServerGamePacketListenerImpl
@@ -1338,7 +1338,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
                  this.disconnect(Component.translatable("multiplayer.disconnect.invalid_player_movement"), org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT); // Paper - kick event cause
                  return;
              }
-@@ -1236,6 +1259,10 @@ public class ServerGamePacketListenerImpl
+@@ -1238,6 +1261,10 @@ public class ServerGamePacketListenerImpl
              final int maxBookPageSize = pageMax.intValue();
              final double multiplier = Math.clamp(io.papermc.paper.configuration.GlobalConfiguration.get().itemValidation.bookSize.totalMultiplier, 0.3D, 1D);
              long byteAllowed = maxBookPageSize;
@@ -1349,7 +1349,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
              for (final String page : pageList) {
                  final int byteLength = page.getBytes(java.nio.charset.StandardCharsets.UTF_8).length;
                  byteTotal += byteLength;
-@@ -1260,7 +1287,8 @@ public class ServerGamePacketListenerImpl
+@@ -1262,7 +1289,8 @@ public class ServerGamePacketListenerImpl
              }
  
              if (byteTotal > byteAllowed) {
@@ -1359,7 +1359,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
                  this.disconnectAsync(Component.literal("Book too large!"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION); // Paper - kick event cause // Paper - add proper async disconnect
                  return;
              }
-@@ -1279,31 +1307,45 @@ public class ServerGamePacketListenerImpl
+@@ -1281,31 +1309,45 @@ public class ServerGamePacketListenerImpl
              Optional<String> optional = packet.title();
              optional.ifPresent(list::add);
              list.addAll(packet.pages());
@@ -1409,7 +1409,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
              itemStack.set(
                  DataComponents.WRITTEN_BOOK_CONTENT,
                  new WrittenBookContent(this.filterableFromOutgoing(title), this.player.getName().getString(), 0, list, true)
-@@ -1317,6 +1359,16 @@ public class ServerGamePacketListenerImpl
+@@ -1319,6 +1361,16 @@ public class ServerGamePacketListenerImpl
          return this.player.isTextFilteringEnabled() ? Filterable.passThrough(filteredText.filteredOrEmpty()) : Filterable.from(filteredText);
      }
  
@@ -1426,7 +1426,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
      @Override
      public void handleEntityTagQuery(ServerboundEntityTagQueryPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.serverLevel());
-@@ -1352,7 +1404,15 @@ public class ServerGamePacketListenerImpl
+@@ -1354,7 +1406,15 @@ public class ServerGamePacketListenerImpl
      @Override
      public void handleMovePlayer(ServerboundMovePlayerPacket packet) {
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.serverLevel());
@@ -1443,7 +1443,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
              this.disconnect(Component.translatable("multiplayer.disconnect.invalid_player_movement"), org.bukkit.event.player.PlayerKickEvent.Cause.INVALID_PLAYER_MOVEMENT); // Paper - kick event cause
          } else {
              ServerLevel serverLevel = this.player.serverLevel();
-@@ -1534,7 +1594,7 @@ public class ServerGamePacketListenerImpl
+@@ -1536,7 +1596,7 @@ public class ServerGamePacketListenerImpl
                                          movedWrongly = true;
                                          if (event.getLogWarning())
                                       // Paper end
@@ -1452,7 +1452,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
                                      } // Paper
                                  }
  
-@@ -1600,6 +1660,8 @@ public class ServerGamePacketListenerImpl
+@@ -1602,6 +1662,8 @@ public class ServerGamePacketListenerImpl
                                          this.lastYaw = to.getYaw();
                                          this.lastPitch = to.getPitch();
  
@@ -1461,7 +1461,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
                                          Location oldTo = to.clone();
                                          PlayerMoveEvent event = new PlayerMoveEvent(player, from, to);
                                          this.cserver.getPluginManager().callEvent(event);
-@@ -1655,6 +1717,13 @@ public class ServerGamePacketListenerImpl
+@@ -1657,6 +1719,13 @@ public class ServerGamePacketListenerImpl
                                          this.player.tryResetCurrentImpulseContext();
                                      }
  
@@ -1475,7 +1475,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
                                      this.player.checkMovementStatistics(this.player.getX() - x, this.player.getY() - y, this.player.getZ() - z);
                                      this.lastGoodX = this.player.getX();
                                      this.lastGoodY = this.player.getY();
-@@ -1672,6 +1741,17 @@ public class ServerGamePacketListenerImpl
+@@ -1674,6 +1743,17 @@ public class ServerGamePacketListenerImpl
          }
      }
  
@@ -1493,7 +1493,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
      private boolean shouldCheckPlayerMovement(boolean isElytraMovement) {
          if (this.isSingleplayerOwner()) {
              return false;
-@@ -2068,6 +2148,7 @@ public class ServerGamePacketListenerImpl
+@@ -2070,6 +2150,7 @@ public class ServerGamePacketListenerImpl
  
                  boolean cancelled;
                  if (hitResult == null || hitResult.getType() != HitResult.Type.BLOCK) {
@@ -1501,7 +1501,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
                      org.bukkit.event.player.PlayerInteractEvent event = CraftEventFactory.callPlayerInteractEvent(this.player, Action.RIGHT_CLICK_AIR, itemInHand, hand);
                      cancelled = event.useItemInHand() == Event.Result.DENY;
                  } else {
-@@ -2740,6 +2821,7 @@ public class ServerGamePacketListenerImpl
+@@ -2742,6 +2823,7 @@ public class ServerGamePacketListenerImpl
  
                  AABB boundingBox = target.getBoundingBox();
                  if (this.player.canInteractWithEntity(boundingBox, io.papermc.paper.configuration.GlobalConfiguration.get().misc.clientInteractionLeniencyDistance.or(3.0))) { // Paper - configurable lenience value for interact range
@@ -1509,7 +1509,7 @@ index 096354ff2e65321b46bffefc91c0c47d2b114526..bc935e51c2c5134813d3476da14a596f
                      packet.dispatch(
                          new ServerboundInteractPacket.Handler() {
                              private void performInteraction(InteractionHand hand, ServerGamePacketListenerImpl.EntityInteraction entityInteraction, PlayerInteractEntityEvent event) { // CraftBukkit
-@@ -2752,6 +2834,8 @@ public class ServerGamePacketListenerImpl
+@@ -2754,6 +2836,8 @@ public class ServerGamePacketListenerImpl
  
                                      ServerGamePacketListenerImpl.this.cserver.getPluginManager().callEvent(event);
  
@@ -3184,7 +3184,7 @@ index 6eaf0bd944349cd0c6084462ac385fa2caafe933..be59d0c27a83b329ec3f97c029cfb9c1
              double d = this.llama.distanceToSqr(this.llama.getCaravanHead());
              if (d > 676.0) {
 diff --git a/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java b/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
-index 3d40911970caf6f1de2a1ebee1df4c077703226a..9b29c0c676a45de2abdc76e0502ac06ac1e53097 100644
+index 5d025e0e4381a045fd82c26cdd3907e1a8710b45..084156166905562beb8d36db400bc9cab5c14be2 100644
 --- a/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
 @@ -35,7 +35,7 @@ public class RemoveBlockGoal extends MoveToBlockGoal {
@@ -8086,7 +8086,7 @@ index 09924cccf9208abda22cc7e1635b567ed166e95a..bbcb03548052b28bd622d7d8ce161cca
      }
  
 diff --git a/net/minecraft/world/entity/decoration/ArmorStand.java b/net/minecraft/world/entity/decoration/ArmorStand.java
-index 99b8f53fc553bf3e752208a5c007bc49266ffc27..49500127eb3a471c41dc3ff32372ad6f20c6d69a 100644
+index 1297f585753c53275e8e54e41b2e718b44aee1bf..0417175c7beabbca53cd080d158001eabe3941f0 100644
 --- a/net/minecraft/world/entity/decoration/ArmorStand.java
 +++ b/net/minecraft/world/entity/decoration/ArmorStand.java
 @@ -95,10 +95,13 @@ public class ArmorStand extends LivingEntity {
@@ -8111,7 +8111,7 @@ index 99b8f53fc553bf3e752208a5c007bc49266ffc27..49500127eb3a471c41dc3ff32372ad6f
          itemStack.set(DataComponents.CUSTOM_NAME, this.getCustomName());
          this.drops.add(new DefaultDrop(itemStack, stack -> Block.popResource(this.level(), this.blockPosition(), stack))); // CraftBukkit - add to drops // Paper - Restore vanilla drops behavior
          return this.brokenByAnything(level, damageSource); // Paper
-@@ -538,6 +542,7 @@ public class ArmorStand extends LivingEntity {
+@@ -546,6 +550,7 @@ public class ArmorStand extends LivingEntity {
  
      @Override
      public void tick() {
@@ -8119,7 +8119,7 @@ index 99b8f53fc553bf3e752208a5c007bc49266ffc27..49500127eb3a471c41dc3ff32372ad6f
          // Paper start - Allow ArmorStands not to tick
          if (!this.canTick) {
              if (this.noTickPoseDirty) {
-@@ -867,4 +872,18 @@ public class ArmorStand extends LivingEntity {
+@@ -875,4 +880,18 @@ public class ArmorStand extends LivingEntity {
          }
      }
      // Paper end
@@ -8258,7 +8258,7 @@ index 5d23d8754b304d5e2fd54400cc81c7fe5c14a804..9a00aead39e194de076ee651d2f75b29
 +    // Purpur end - Shears can defuse TNT
  }
 diff --git a/net/minecraft/world/entity/monster/AbstractSkeleton.java b/net/minecraft/world/entity/monster/AbstractSkeleton.java
-index 408c72a28bde6d2f0a7c410c5c7558e5fe7ad4c8..185edd9878f5193c44b75a126e8182caade7e943 100644
+index 22d5ccb271fc19255e99afa5d1ff10549a20dc31..21cf84f1d037e3e387a3e254599673125f89ba9c 100644
 --- a/net/minecraft/world/entity/monster/AbstractSkeleton.java
 +++ b/net/minecraft/world/entity/monster/AbstractSkeleton.java
 @@ -64,21 +64,24 @@ public abstract class AbstractSkeleton extends Monster implements RangedAttackMo
@@ -9622,7 +9622,7 @@ index 8d6def85583a111841b28f20f58ddb8b8cbd7bc1..a4ce65911a5d778f60bcedb3acd9fe59
  
      @Override
 diff --git a/net/minecraft/world/entity/monster/Illusioner.java b/net/minecraft/world/entity/monster/Illusioner.java
-index 264ec7acfc03eca4a8f5758ad8d3e11714e934b4..b8ada9ebd0d8d4ca0e8eb7e6084a0057f4758ea4 100644
+index ec090d191969983c31950b8376bbb36ee8fce922..93eaafe260312f26840a2afee8375b8a95d97ba2 100644
 --- a/net/minecraft/world/entity/monster/Illusioner.java
 +++ b/net/minecraft/world/entity/monster/Illusioner.java
 @@ -57,10 +57,52 @@ public class Illusioner extends SpellcasterIllager implements RangedAttackMob {
@@ -10681,7 +10681,7 @@ index 48f26ed693b43e3f65f1559ba69b3d7249664f71..48cbc3cb983da08cfec78828b15f1484
 +    // Purpur end - Skeletons eat wither roses
  }
 diff --git a/net/minecraft/world/entity/monster/Slime.java b/net/minecraft/world/entity/monster/Slime.java
-index 6a8a5a76400beeaf69a17d53105a7a522ec5791e..7b6db084a483b4a9c2f292c5ed6e4c7550344c50 100644
+index 5a81172c88f5699f1440b69b331a8ea353c1950a..9a157a2bdbbeab89dbfcd23be8bdc62c8de4548c 100644
 --- a/net/minecraft/world/entity/monster/Slime.java
 +++ b/net/minecraft/world/entity/monster/Slime.java
 @@ -58,6 +58,7 @@ public class Slime extends Mob implements Enemy {
@@ -13869,7 +13869,7 @@ index 13ce174e4f7e406f57a68ea0d3ef0ee3367f3f3b..ca86122e38688b29340cd8413ccf1746
                          return InteractionResult.FAIL;
                      } else {
 diff --git a/net/minecraft/world/item/BowItem.java b/net/minecraft/world/item/BowItem.java
-index 57c933af200551162774f1d473437521e5a85833..b3e003694ce0da357e91ab3ce2b1380f9ab0a32a 100644
+index c4c8775de328d40bb8218d993872be5249e8174d..ce1ce18410fc1d47d999c918a8f880b43bf9797c 100644
 --- a/net/minecraft/world/item/BowItem.java
 +++ b/net/minecraft/world/item/BowItem.java
 @@ -28,6 +28,11 @@ public class BowItem extends ProjectileWeaponItem {
@@ -13888,8 +13888,8 @@ index 57c933af200551162774f1d473437521e5a85833..b3e003694ce0da357e91ab3ce2b1380f
                  } else {
                      List<ItemStack> list = draw(stack, projectile, player);
                      if (level instanceof ServerLevel serverLevel && !list.isEmpty()) {
--                        this.shoot(serverLevel, player, player.getUsedItemHand(), stack, list, powerForTime * 3.0F, 1.0F, powerForTime == 1.0F, null);
-+                        this.shoot(serverLevel, player, player.getUsedItemHand(), stack, list, powerForTime * 3.0F, (float) serverLevel.purpurConfig.bowProjectileOffset, powerForTime == 1.0F, null); // Purpur - Projectile offset config
+-                        this.shoot(serverLevel, player, player.getUsedItemHand(), stack, list, powerForTime * 3.0F, 1.0F, powerForTime == 1.0F, null, powerForTime); // Paper - Pass draw strength
++                        this.shoot(serverLevel, player, player.getUsedItemHand(), stack, list, powerForTime * 3.0F, (float) serverLevel.purpurConfig.bowProjectileOffset, powerForTime == 1.0F, null, powerForTime); // Paper - Pass draw strength // Purpur - Projectile offset config
                      }
  
                      level.playSound(
@@ -13925,7 +13925,7 @@ index de287715568f358dd83383d68f845df9a7b5a117..8c7be8a71348a3e66c8bf6b6cb39fe00
  
                  return true;
 diff --git a/net/minecraft/world/item/CrossbowItem.java b/net/minecraft/world/item/CrossbowItem.java
-index f5189cf0a0006864ac67b191cc0f1cd63b40f9e2..ff4294b9bcb6e2bb0f9d51dee6dcc889e45df95c 100644
+index 45fc973971d00c35e5b715bfa6ae5042822ed35f..2ab3da301f7edbb811c2e055f75434a799ef093a 100644
 --- a/net/minecraft/world/item/CrossbowItem.java
 +++ b/net/minecraft/world/item/CrossbowItem.java
 @@ -66,7 +66,7 @@ public class CrossbowItem extends ProjectileWeaponItem {
@@ -14217,10 +14217,10 @@ index a928124ee46a10e9033f771970198e36712917a6..65ff8078474d5039238e9398d8cfc12e
                      // Paper end - Add PlayerNameEntityEvent
                      mob.setPersistenceRequired();
 diff --git a/net/minecraft/world/item/ProjectileWeaponItem.java b/net/minecraft/world/item/ProjectileWeaponItem.java
-index 220a1d955f31698d5aa6c81c6c779a87c17de447..662e286f40e042823fa7cdd9e27b44e4bfad9cb9 100644
+index 1a9f91f3ee9c4d3902106eebd2639cc85a0dc34c..fb5077450aa9f7b7a03dd20c27a68dfdaab5ef06 100644
 --- a/net/minecraft/world/item/ProjectileWeaponItem.java
 +++ b/net/minecraft/world/item/ProjectileWeaponItem.java
-@@ -108,6 +108,8 @@ public abstract class ProjectileWeaponItem extends Item {
+@@ -109,6 +109,8 @@ public abstract class ProjectileWeaponItem extends Item {
              abstractArrow.setCritArrow(true);
          }
  

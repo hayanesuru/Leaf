@@ -139,10 +139,10 @@ index b127f444b79ef9430121045f328dd77b6b8182b2..3d476a93ecf3b12012db92ef07c0a899
          return ret;
      }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index d8e66642bb33dc00d2e410c2739c0291777c88bc..096354ff2e65321b46bffefc91c0c47d2b114526 100644
+index 421665c29e55c1b1a732e38e4b41577a82d901e5..c6f52c899a3e4baf483412af8315d72a29f7139a 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2769,7 +2769,7 @@ public class ServerGamePacketListenerImpl
+@@ -2771,7 +2771,7 @@ public class ServerGamePacketListenerImpl
                                          // SPIGOT-7136 - Allays
                                          if (target instanceof net.minecraft.world.entity.animal.allay.Allay || target instanceof net.minecraft.world.entity.animal.horse.AbstractHorse) { // Paper - Fix horse armor desync
                                              ServerGamePacketListenerImpl.this.send(new net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket(
