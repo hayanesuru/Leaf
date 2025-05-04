@@ -177,7 +177,7 @@ index f106373ef3ac4a8685c2939c9e8361688a285913..51ae390c68e7a3aa193329cc3bc47ca6
      public boolean visible = true;
  
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index d8298c7925e3bcea07ead4d438478cc51abcfa16..865e98a7afe116fe42c5ad0d8a96adbd92bc8dc0 100644
+index d8298c7925e3bcea07ead4d438478cc51abcfa16..a13ce614722d26dcbb2f7f3ceeb68915bbaec304 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
 @@ -110,8 +110,16 @@ public class ServerEntity {
@@ -199,28 +199,28 @@ index d8298c7925e3bcea07ead4d438478cc51abcfa16..865e98a7afe116fe42c5ad0d8a96adbd
                          }
                      }
                  );
-@@ -435,15 +443,18 @@ public class ServerEntity {
+@@ -434,15 +442,17 @@ public class ServerEntity {
+ 
          if (this.entity instanceof LivingEntity) {
              Set<AttributeInstance> attributesToSync = ((LivingEntity)this.entity).getAttributes().getAttributesToSync();
-             if (!attributesToSync.isEmpty()) {
-+                // Leaf start - petal - Multithreaded tracker - send in main thread
-+                final Set<AttributeInstance> copy = new it.unimi.dsi.fastutil.objects.ObjectOpenHashSet<>(attributesToSync);
+-            if (!attributesToSync.isEmpty()) {
++            // Leaf start - petal - Multithreaded tracker - send in the main thread
++            var clonedAttributes = new it.unimi.dsi.fastutil.objects.ObjectArraySet<>(attributesToSync);
++            if (!clonedAttributes.isEmpty()) {
                  // CraftBukkit start - Send scaled max health
                  if (this.entity instanceof ServerPlayer serverPlayer) {
 -                    serverPlayer.getBukkitEntity().injectScaledMaxHealth(attributesToSync, false);
-+                    serverPlayer.getBukkitEntity().injectScaledMaxHealth(copy, false);
++                    serverPlayer.getBukkitEntity().injectScaledMaxHealth(clonedAttributes, false);
                  }
                  // CraftBukkit end
 -                this.broadcastAndSend(new ClientboundUpdateAttributesPacket(this.entity.getId(), attributesToSync));
-+                this.broadcastAndSend(new ClientboundUpdateAttributesPacket(this.entity.getId(), copy));
-+                // Leaf end - petal - Multithreaded tracker - send in main thread
++                this.broadcastAndSend(new ClientboundUpdateAttributesPacket(this.entity.getId(), clonedAttributes)); // Leaf - petal - Multithreaded tracker - send in the main thread
              }
- 
--            attributesToSync.clear();
-+            ((LivingEntity)this.entity).getAttributes().getAttributesToSync().clear(); // Leaf - Multithreaded tracker
+-
++            // Leaf end - petal - Multithreaded tracker - send in the main thread
+             attributesToSync.clear();
          }
      }
- 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
 index d6ebc25dc5f04194edde5ad3a1166113e5542a1d..49cbdf014d0626b36eb4c451b6de09508822b7fd 100644
 --- a/net/minecraft/server/level/ServerLevel.java
@@ -256,6 +256,27 @@ index 04bf8bba0d8c0d5459605253dcc3f135bf43fd95..abe79d07196de0a10a382d4c37161c7e
          // Paper start - Prevent teleporting dead entities
          if (this.player.isRemoved()) {
              LOGGER.info("Attempt to teleport removed player {} restricted", player.getScoreboardName());
+diff --git a/net/minecraft/world/entity/ai/attributes/Attribute.java b/net/minecraft/world/entity/ai/attributes/Attribute.java
+index f8419dde44ebc7324e783f8bee42132d5ec973c3..db076814f44f18b549020a38c86587e7b7525ce5 100644
+--- a/net/minecraft/world/entity/ai/attributes/Attribute.java
++++ b/net/minecraft/world/entity/ai/attributes/Attribute.java
+@@ -17,10 +17,16 @@ public class Attribute {
+     private final String descriptionId;
+     private Attribute.Sentiment sentiment = Attribute.Sentiment.POSITIVE;
+ 
++    // Leaf start - optimize AttributeMap
++    private final static java.util.concurrent.atomic.AtomicInteger COUNTER = new java.util.concurrent.atomic.AtomicInteger(0);
++    public final int uid;
++
+     protected Attribute(String descriptionId, double defaultValue) {
+         this.defaultValue = defaultValue;
+         this.descriptionId = descriptionId;
++        this.uid = COUNTER.getAndAdd(1);
+     }
++    // Leaf end - optimize AttributeMap
+ 
+     public double getDefaultValue() {
+         return this.defaultValue;
 diff --git a/net/minecraft/world/entity/ai/attributes/AttributeInstance.java b/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
 index 8013594bb4844e7a8abf28123958e7f632d39341..80c703fe85ec21e4d218823504f4bbf7826b2fa6 100644
 --- a/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
