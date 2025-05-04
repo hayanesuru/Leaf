@@ -256,27 +256,6 @@ index 04bf8bba0d8c0d5459605253dcc3f135bf43fd95..abe79d07196de0a10a382d4c37161c7e
          // Paper start - Prevent teleporting dead entities
          if (this.player.isRemoved()) {
              LOGGER.info("Attempt to teleport removed player {} restricted", player.getScoreboardName());
-diff --git a/net/minecraft/world/entity/ai/attributes/Attribute.java b/net/minecraft/world/entity/ai/attributes/Attribute.java
-index f8419dde44ebc7324e783f8bee42132d5ec973c3..db076814f44f18b549020a38c86587e7b7525ce5 100644
---- a/net/minecraft/world/entity/ai/attributes/Attribute.java
-+++ b/net/minecraft/world/entity/ai/attributes/Attribute.java
-@@ -17,10 +17,16 @@ public class Attribute {
-     private final String descriptionId;
-     private Attribute.Sentiment sentiment = Attribute.Sentiment.POSITIVE;
- 
-+    // Leaf start - optimize AttributeMap
-+    private final static java.util.concurrent.atomic.AtomicInteger COUNTER = new java.util.concurrent.atomic.AtomicInteger(0);
-+    public final int uid;
-+
-     protected Attribute(String descriptionId, double defaultValue) {
-         this.defaultValue = defaultValue;
-         this.descriptionId = descriptionId;
-+        this.uid = COUNTER.getAndAdd(1);
-     }
-+    // Leaf end - optimize AttributeMap
- 
-     public double getDefaultValue() {
-         return this.defaultValue;
 diff --git a/net/minecraft/world/entity/ai/attributes/AttributeInstance.java b/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
 index 8013594bb4844e7a8abf28123958e7f632d39341..80c703fe85ec21e4d218823504f4bbf7826b2fa6 100644
 --- a/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
