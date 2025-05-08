@@ -78,8 +78,8 @@ public class MultithreadedTracker {
                 // Don't Parallel Tick Tracker of Entity
                 synchronized (tracker.sync) {
                     tracker.moonrise$tick(nearbyPlayers.getChunk(entity.chunkPosition()));
+                    tracker.serverEntity.sendChanges();
                 }
-                tracker.serverEntity.sendChanges();
             }
         });
     }

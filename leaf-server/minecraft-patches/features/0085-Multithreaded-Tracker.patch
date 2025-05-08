@@ -367,6 +367,32 @@ index 89f4c5b2d61e27acd48063f9f24ce9ea91898b8b..d6e7685cb0e9beaa017bcc665f0f1c7c
      }
  
      private void onAttributeModified(AttributeInstance instance) {
+diff --git a/net/minecraft/world/entity/vehicle/NewMinecartBehavior.java b/net/minecraft/world/entity/vehicle/NewMinecartBehavior.java
+index 724466d14c925704671e510cea1919ee95a2ae02..4426b344677ab9f2753dd2d219921bcb7cf39980 100644
+--- a/net/minecraft/world/entity/vehicle/NewMinecartBehavior.java
++++ b/net/minecraft/world/entity/vehicle/NewMinecartBehavior.java
+@@ -35,13 +35,20 @@ public class NewMinecartBehavior extends MinecartBehavior {
+     private int cachedLerpDelay;
+     private float cachedPartialTick;
+     private int lerpDelay = 0;
+-    public final List<NewMinecartBehavior.MinecartStep> lerpSteps = new LinkedList<>();
++    public final List<NewMinecartBehavior.MinecartStep> lerpSteps; // Leaf - Multithreaded tracker
+     public final List<NewMinecartBehavior.MinecartStep> currentLerpSteps = new LinkedList<>();
+     public double currentLerpStepsTotalWeight = 0.0;
+     public NewMinecartBehavior.MinecartStep oldLerp = NewMinecartBehavior.MinecartStep.ZERO;
+ 
+     public NewMinecartBehavior(AbstractMinecart minecart) {
+         super(minecart);
++        // Leaf start - Multithreaded tracker
++        if (org.dreeam.leaf.config.modules.async.MultithreadedTracker.enabled) {
++            lerpSteps = it.unimi.dsi.fastutil.objects.ObjectLists.synchronize(new it.unimi.dsi.fastutil.objects.ObjectArrayList<>());
++        } else {
++            lerpSteps = new it.unimi.dsi.fastutil.objects.ObjectArrayList<>();
++        }
++        // Leaf end - Multithreaded tracker
+     }
+ 
+     @Override
 diff --git a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java b/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
 index 681dec447486138088fe5f705ef4fadab531139f..27f8a22d798a17dbd5949d1b6ff0526837fe91d5 100644
 --- a/net/minecraft/world/level/saveddata/maps/MapItemSavedData.java
