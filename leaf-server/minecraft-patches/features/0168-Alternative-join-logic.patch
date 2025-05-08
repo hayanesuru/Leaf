@@ -1,0 +1,86 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Taiyou06 <kaandindar21@gmail.com>
+Date: Thu, 8 May 2025 11:14:06 +0200
+Subject: [PATCH] Alternative join logic
+
+
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index f998cf8d70302a21289de4d84b46d322d0b8a8fe..85b3e78ae72d550c5cce0b46e059737086527a7e 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -66,6 +66,8 @@ import org.slf4j.Logger;
+ import org.slf4j.Marker;
+ import org.slf4j.MarkerFactory;
+ 
++import static org.dreeam.leaf.config.modules.network.AlternativeJoin.AlternativeJoin;
++
+ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     private static final float AVERAGE_PACKETS_SMOOTHING = 0.75F;
+     private static final Logger LOGGER = LogUtils.getLogger();
+@@ -340,36 +342,43 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     public <T extends PacketListener> void setupInboundProtocol(ProtocolInfo<T> protocolInfo, T packetInfo) {
+         this.validateListener(protocolInfo, packetInfo);
+         if (protocolInfo.flow() != this.getReceiving()) {
+-            throw new IllegalStateException("Invalid inbound protocol: " + protocolInfo.id());
++            throw new IllegalStateException("Invalid inbound protocol: " + String.valueOf(protocolInfo.id()));
++        }
++        this.packetListener = packetInfo;
++        this.disconnectListener = null;
++        UnconfiguredPipelineHandler.InboundConfigurationTask inboundConfigurationTask = UnconfiguredPipelineHandler.setupInboundProtocol(protocolInfo);
++        BundlerInfo bundlerInfo = protocolInfo.bundlerInfo();
++        if (bundlerInfo != null) {
++            PacketBundlePacker packetBundlePacker = new PacketBundlePacker(bundlerInfo);
++            inboundConfigurationTask = inboundConfigurationTask.andThen(context -> context.pipeline().addAfter("decoder", "bundler", (ChannelHandler)packetBundlePacker));
++        }
++        if (!AlternativeJoin) {
++            Connection.syncAfterConfigurationChange(this.channel.writeAndFlush(inboundConfigurationTask));
+         } else {
+-            this.packetListener = packetInfo;
+-            this.disconnectListener = null;
+-            UnconfiguredPipelineHandler.InboundConfigurationTask inboundConfigurationTask = UnconfiguredPipelineHandler.setupInboundProtocol(protocolInfo);
+-            BundlerInfo bundlerInfo = protocolInfo.bundlerInfo();
+-            if (bundlerInfo != null) {
+-                PacketBundlePacker packetBundlePacker = new PacketBundlePacker(bundlerInfo);
+-                inboundConfigurationTask = inboundConfigurationTask.andThen(context -> context.pipeline().addAfter("decoder", "bundler", packetBundlePacker));
+-            }
+-
+-            syncAfterConfigurationChange(this.channel.writeAndFlush(inboundConfigurationTask));
++            this.channel.writeAndFlush(inboundConfigurationTask);
+         }
+     }
+ 
+     public void setupOutboundProtocol(ProtocolInfo<?> protocolInfo) {
++        boolean flag;
+         if (protocolInfo.flow() != this.getSending()) {
+-            throw new IllegalStateException("Invalid outbound protocol: " + protocolInfo.id());
++            throw new IllegalStateException("Invalid outbound protocol: " + String.valueOf(protocolInfo.id()));
++        }
++        UnconfiguredPipelineHandler.OutboundConfigurationTask outboundConfigurationTask = UnconfiguredPipelineHandler.setupOutboundProtocol(protocolInfo);
++        BundlerInfo bundlerInfo = protocolInfo.bundlerInfo();
++        if (bundlerInfo != null) {
++            PacketBundleUnpacker packetBundleUnpacker = new PacketBundleUnpacker(bundlerInfo);
++            outboundConfigurationTask = outboundConfigurationTask.andThen(context -> context.pipeline().addAfter("encoder", "unbundler", (ChannelHandler)packetBundleUnpacker));
++        }
++        boolean bl = flag = protocolInfo.id() == ConnectionProtocol.LOGIN;
++        if (!AlternativeJoin) {
++            Connection.syncAfterConfigurationChange(this.channel.writeAndFlush(outboundConfigurationTask.andThen(context -> {
++                this.sendLoginDisconnect = flag;
++            })));
+         } else {
+-            UnconfiguredPipelineHandler.OutboundConfigurationTask outboundConfigurationTask = UnconfiguredPipelineHandler.setupOutboundProtocol(protocolInfo);
+-            BundlerInfo bundlerInfo = protocolInfo.bundlerInfo();
+-            if (bundlerInfo != null) {
+-                PacketBundleUnpacker packetBundleUnpacker = new PacketBundleUnpacker(bundlerInfo);
+-                outboundConfigurationTask = outboundConfigurationTask.andThen(
+-                    context -> context.pipeline().addAfter("encoder", "unbundler", packetBundleUnpacker)
+-                );
+-            }
+-
+-            boolean flag = protocolInfo.id() == ConnectionProtocol.LOGIN;
+-            syncAfterConfigurationChange(this.channel.writeAndFlush(outboundConfigurationTask.andThen(context -> this.sendLoginDisconnect = flag)));
++            this.channel.writeAndFlush(outboundConfigurationTask.andThen(context -> {
++                this.sendLoginDisconnect = flag;
++            }));
+         }
+     }
+ 
