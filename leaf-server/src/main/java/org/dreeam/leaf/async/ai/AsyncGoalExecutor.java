@@ -65,7 +65,7 @@ public class AsyncGoalExecutor {
                 submit(id);
             }
         }
-        if ((tickCount & 7L) == 7L) {
+        if ((tickCount & 10L) == 10L) {
             unpark();
         }
         tickCount += 1;
