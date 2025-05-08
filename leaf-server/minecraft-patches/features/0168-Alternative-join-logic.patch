@@ -5,7 +5,7 @@ Subject: [PATCH] Alternative join logic
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index f998cf8d70302a21289de4d84b46d322d0b8a8fe..1eba5608af0bf70d6c7a9e34c5726ac6eaa6e096 100644
+index f998cf8d70302a21289de4d84b46d322d0b8a8fe..a0df7cb76b5877a0fcfcac457c5031502ecd18f5 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -66,6 +66,8 @@ import org.slf4j.Logger;
@@ -57,8 +57,7 @@ index f998cf8d70302a21289de4d84b46d322d0b8a8fe..1eba5608af0bf70d6c7a9e34c5726ac6
      public void setupOutboundProtocol(ProtocolInfo<?> protocolInfo) {
 +        boolean flag;
          if (protocolInfo.flow() != this.getSending()) {
--            throw new IllegalStateException("Invalid outbound protocol: " + protocolInfo.id());
-+            throw new IllegalStateException("Invalid inbound protocol: " + protocolInfo.id());
+             throw new IllegalStateException("Invalid outbound protocol: " + protocolInfo.id());
 +        }
 +        UnconfiguredPipelineHandler.OutboundConfigurationTask outboundConfigurationTask = UnconfiguredPipelineHandler.setupOutboundProtocol(protocolInfo);
 +        BundlerInfo bundlerInfo = protocolInfo.bundlerInfo();
