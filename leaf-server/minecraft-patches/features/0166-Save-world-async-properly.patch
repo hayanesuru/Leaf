@@ -5,7 +5,6 @@ Subject: [PATCH] Save world async properly
 
 P.S from Tai: I've been using this fix for weeks in my own server but didn't had balls to push it as thought it may cause issues but, it's merged in paper 1.21.5 now.
 
-
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
 index ba1dd51e7187a80e8438e46383257c22f5382130..6cb0c14cb7aa243bbee6ca9ba57da4cc6eafdfd8 100644
 --- a/net/minecraft/server/level/ServerLevel.java
