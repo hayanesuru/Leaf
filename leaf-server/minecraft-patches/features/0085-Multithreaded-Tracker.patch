@@ -37,7 +37,7 @@ index dd2509996bfd08e8c3f9f2be042229eac6d7692d..a35e9fae8f8da0c42f0616c4f78dc396
          private static final byte CHUNK_TICKET_STAGE_NONE           = 0;
          private static final byte CHUNK_TICKET_STAGE_LOADING        = 1;
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10f9faa6b2 100644
+index 5d9d233e3a568aa6297ed9c703fa450f98158602..c9222a1a8ea9f88eadbb3c16925f96e92867b682 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
 @@ -248,6 +248,15 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -70,7 +70,7 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
          // Paper start - optimise entity tracker
          if (true) {
              this.newTrackerTick();
-@@ -1073,7 +1089,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1073,12 +1089,14 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          final Entity entity;
          private final int range;
          SectionPos lastSectionPos;
@@ -79,7 +79,14 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
  
          // Paper start - optimise entity tracker
          private long lastChunkUpdate = -1L;
-@@ -1100,7 +1116,39 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         private ca.spottedleaf.moonrise.common.misc.NearbyPlayers.TrackedChunk lastTrackedChunk;
+ 
++        public final Object sync = new Object(); // Leaf
++
+         @Override
+         public final void moonrise$tick(final ca.spottedleaf.moonrise.common.misc.NearbyPlayers.TrackedChunk chunk) {
+             if (chunk == null) {
+@@ -1100,8 +1118,41 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
              this.lastTrackedChunk = chunk;
  
              final ServerPlayer[] playersRaw = players.getRawDataUnchecked();
@@ -95,6 +102,7 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
 +                        this.updatePlayer(player);
 +                    }
  
+-            for (int i = 0, len = players.size(); i < len; ++i) {
 +                    if (lastChunkUpdate != currChunkUpdate || lastTrackedChunk != chunk) {
 +                        // need to purge any players possible not in the chunk list
 +                        for (final ServerPlayerConnection conn : new java.util.ArrayList<>(this.seenBy)) {
@@ -116,10 +124,12 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
 +                    updatePlayerTasks.run();
 +                }
 +            } else {
-             for (int i = 0, len = players.size(); i < len; ++i) {
++            final int playersLength = Math.min(playersRaw.length, players.size());
++            for (int i = 0; i < playersLength; ++i) {
                  final ServerPlayer player = playersRaw[i];
                  this.updatePlayer(player);
-@@ -1115,6 +1163,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+             }
+@@ -1115,6 +1166,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                      }
                  }
              }
@@ -128,7 +138,7 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
          }
  
          @Override
-@@ -1176,7 +1226,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1176,7 +1229,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          }
  
          public void broadcast(Packet<?> packet) {
@@ -137,7 +147,7 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..8986c059e7aadb58ae8d9ab7b848de10
                  serverPlayerConnection.send(packet);
              }
          }
-@@ -1189,21 +1239,22 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1189,21 +1242,22 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          }
  
          public void broadcastRemoved() {
