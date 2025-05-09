@@ -9,7 +9,7 @@ public class OptimizeItemTicking extends ConfigModules {
         return EnumConfigCategory.PERF.getBaseKeyName();
     }
 
-    public static boolean onlyTickItemsInHand = true;
+    public static boolean onlyTickItemsInHand = false;
 
     @Override
     public void onLoaded() {
