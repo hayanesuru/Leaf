@@ -65,7 +65,7 @@ public class AsyncGoalExecutor {
                 submit(id);
             }
         }
-        if ((tickCount & 10L) == 10L) {
+        if ((tickCount % AsyncTargetFinding.threshold) == 0L) {
             unpark();
         }
         tickCount += 1;
