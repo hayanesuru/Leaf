@@ -1,57 +1,55 @@
 package org.dreeam.leaf.util;
 
 import java.util.List;
-import java.util.Arrays; // For Arrays.copyOf
-import net.minecraft.world.entity.LivingEntity;
+import java.util.Arrays;
+import net.minecraft.world.entity.Entity;
+import java.lang.reflect.Array; // Required for Array.newInstance
 
 public class fastBitRadixSort {
 
     private static final int SMALL_ARRAY_THRESHOLD = 2;
-    private LivingEntity[] entityBuffer = new LivingEntity[0];
+    private Entity[] entityBuffer = new Entity[0];
     private long[] bitsBuffer = new long[0];
 
-    /**
-     * Sorts a list of LivingEntity objects based on their squared distance
-     * to a reference entity using a fast radix sort algorithm.
-     **/
-    public <T_REF extends LivingEntity> LivingEntity[] sort(
-        List<LivingEntity> entities,
-        T_REF referenceEntity
-    ) {
+    @SuppressWarnings("unchecked")
+    public <T extends Entity, T_REF extends Entity> T[] sort(List<T> entities, T_REF referenceEntity, Class<T> entityClass) {
         int size = entities.size();
         if (size <= 1) {
-            return entities.toArray(new LivingEntity[0]);
+            T[] resultArray = (T[]) Array.newInstance(entityClass, size);
+            return entities.toArray(resultArray);
         }
 
         if (this.entityBuffer.length < size) {
-            this.entityBuffer = new LivingEntity[size];
+            this.entityBuffer = new Entity[size];
             this.bitsBuffer = new long[size];
         }
         for (int i = 0; i < size; i++) {
-            LivingEntity e = entities.get(i);
-            this.entityBuffer[i] = e;
+            this.entityBuffer[i] = entities.get(i);
             this.bitsBuffer[i] = Double.doubleToRawLongBits(
-                referenceEntity.distanceToSqr(e)
+                referenceEntity.distanceToSqr(entities.get(i))
             );
         }
 
-        // start from bit 62 (most significant for positive doubles, ignoring sign bit)
         fastRadixSort(this.entityBuffer, this.bitsBuffer, 0, size - 1, 62);
-        return Arrays.copyOf(this.entityBuffer, size);
+
+        T[] resultArray = (T[]) Array.newInstance(entityClass, size);
+        for (int i = 0; i < size; i++) {
+            resultArray[i] = entityClass.cast(this.entityBuffer[i]);
+        }
+        return resultArray;
     }
 
     private void fastRadixSort(
-        LivingEntity[] ents,
+        Entity[] ents,
         long[] bits,
         int low,
         int high,
         int bit
     ) {
         if (bit < 0 || low >= high) {
-            return; // Base case: no bits left or subarray is trivial
+            return;
         }
 
-        // For small subarrays, insertion sort is generally faster
         if (high - low <= SMALL_ARRAY_THRESHOLD) {
             insertionSort(ents, bits, low, high);
             return;
@@ -82,14 +80,14 @@ public class fastBitRadixSort {
     }
 
     private void insertionSort(
-        LivingEntity[] ents,
+        Entity[] ents,
         long[] bits,
         int low,
         int high
     ) {
         for (int i = low + 1; i <= high; i++) {
             int j = i;
-            LivingEntity currentEntity = ents[j];
+            Entity currentEntity = ents[j];
             long currentBits = bits[j];
 
             while (j > low && bits[j - 1] > currentBits) {
@@ -97,14 +95,13 @@ public class fastBitRadixSort {
                 bits[j] = bits[j - 1];
                 j--;
             }
-
             ents[j] = currentEntity;
             bits[j] = currentBits;
         }
     }
 
-    private void swap(LivingEntity[] ents, long[] bits, int a, int b) {
-        LivingEntity tempEntity = ents[a];
+    private void swap(Entity[] ents, long[] bits, int a, int b) {
+        Entity tempEntity = ents[a];
         ents[a] = ents[b];
         ents[b] = tempEntity;
 

@@ -12,10 +12,10 @@ In non-strict test, this can give ~60-110% improvement (524ms on Paper, 204ms on
 under 625 villagers situation.
 
 diff --git a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
-index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..3fc212c10d230f027292865a214a8164a84e284a 100644
+index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..a887bb8ed2318d6ee39be350a1d0e7223ecf3ff5 100644
 --- a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
 +++ b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
-@@ -13,17 +13,30 @@ import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
+@@ -13,17 +13,28 @@ import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
  import net.minecraft.world.phys.AABB;
  
  public class NearestLivingEntitySensor<T extends LivingEntity> extends Sensor<T> {
@@ -34,13 +34,12 @@ index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..3fc212c10d230f027292865a214a8164
          AABB aabb = entity.getBoundingBox().inflate(attributeValue, attributeValue, attributeValue);
 -        List<LivingEntity> entitiesOfClass = level.getEntitiesOfClass(
 -            LivingEntity.class, aabb, matchableEntity -> matchableEntity != entity && matchableEntity.isAlive()
-+
-+        List<LivingEntity> entities = level.getEntitiesOfClass(
-+            LivingEntity.class, aabb, e -> e != entity && e.isAlive() && entity.distanceToSqr(e) <= rangeSqr
-         );
+-        );
 -        entitiesOfClass.sort(Comparator.comparingDouble(entity::distanceToSqr));
 +
-+        LivingEntity[] sorted = this.sorter.sort(entities, entity);
++        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, aabb, e -> e != entity && e.isAlive() && entity.distanceToSqr(e) <= rangeSqr);
++
++        LivingEntity[] sorted = this.sorter.sort(entities, entity, LivingEntity.class);
 +        List<LivingEntity> sortedList = java.util.Arrays.asList(sorted);
 +
          Brain<?> brain = entity.getBrain();
