@@ -33,7 +33,7 @@ index 405b8da8b886b5caac7ed774472e106374c42185..0f3ec730ddffc6af8e9a556e303c653c
                              // Paper start - Add fail move event
                              // Paper start - optimise out extra getCubes
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 477455fdfcc591a89823e88983eb12dabb078d9b..f427606d98b8e72638291a9db4077c8e71dce9a8 100644
+index 477455fdfcc591a89823e88983eb12dabb078d9b..46b1e4d5cbb9db0402b9901a3879272da5e1dfe6 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -1414,6 +1414,23 @@ public abstract class Player extends LivingEntity {
@@ -44,7 +44,7 @@ index 477455fdfcc591a89823e88983eb12dabb078d9b..f427606d98b8e72638291a9db4077c8e
 +                                    if (org.dreeam.leaf.config.modules.gameplay.Knockback.flushKnockback) {
 +                                        ServerPlayer targetPlayer = (ServerPlayer) target;
 +                                        targetPlayer.connection.allowMoveWrong = 3;
-+                                        this.travel(getDeltaMovement());
++                                        targetPlayer.travel(targetPlayer.getDeltaMovement());
 +                                        targetPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(this));
 +                                        targetPlayer.connection.send(net.minecraft.network.protocol.game.ClientboundEntityPositionSyncPacket.of(this));
 +                                        targetPlayer.connection.connection.flushChannel();
