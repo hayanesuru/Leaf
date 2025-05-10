@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Taiyou06 <kaandindar21@gmail.com>
+Date: Sat, 10 May 2025 23:18:17 +0200
+Subject: [PATCH] Optimise player movement checks
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 2786fbc43f238be058b153ba551f0a616c4a18f4..48c386360c331b8e1a44524951b74874a953df5e 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -1149,6 +1149,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+             return;
+         }
+         // Gale end - VMP - skip entity move if movement is zero
++
++
+         final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
+         ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread("Cannot move an entity off-main");
+         if (this.noPhysics) {
+@@ -1176,6 +1178,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+             }
+             // Paper end
+ 
++            if (!org.dreeam.leaf.config.modules.opt.OptimizePlayerMovementProcessing.enabled) {
++                movement = this.maybeBackOffFromEdge(movement, type);
++            }
++
+             movement = this.maybeBackOffFromEdge(movement, type);
+             Vec3 vec3 = this.collide(movement);
+             double d = vec3.lengthSqr();
