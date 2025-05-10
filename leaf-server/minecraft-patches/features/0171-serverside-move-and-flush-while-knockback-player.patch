@@ -1,0 +1,62 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Thu, 8 May 2025 04:56:30 +0900
+Subject: [PATCH] serverside move and flush while knockback player
+
+
+diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 405b8da8b886b5caac7ed774472e106374c42185..0f3ec730ddffc6af8e9a556e303c653cdb8226b9 100644
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -316,6 +316,7 @@ public class ServerGamePacketListenerImpl
+     private boolean waitingForSwitchToConfig;
+     private static final int MAX_SIGN_LINE_LENGTH = Integer.getInteger("Paper.maxSignLength", 80); // Paper - Limit client sign length
+     private final io.papermc.paper.event.packet.ClientTickEndEvent tickEndEvent; // Paper - add client tick end event
++    public int allowMoveWrong = 0; // Leaf
+ 
+     public ServerGamePacketListenerImpl(MinecraftServer server, Connection connection, ServerPlayer player, CommonListenerCookie cookie) {
+         super(server, connection, cookie, player); // CraftBukkit
+@@ -1526,6 +1527,7 @@ public class ServerGamePacketListenerImpl
+                             d7 = d3 * d3 + d4 * d4 + d5 * d5;
+                             boolean movedWrongly = false; // Paper - Add fail move event; rename
+                             if (!this.player.isChangingDimension()
++                                && (this.allowMoveWrong == 0 || d7 > 3.0) // Leaf
+                                 && d7 > org.spigotmc.SpigotConfig.movedWronglyThreshold // Spigot
+                                 && !this.player.isSleeping()
+                                 && !this.player.gameMode.isCreative()
+@@ -1540,6 +1542,7 @@ public class ServerGamePacketListenerImpl
+                                 LOGGER.warn("{} moved wrongly!, ({})", this.player.getName().getString(), verticalDelta); // Purpur - AFK API
+                                 } // Paper
+                             }
++                            if (this.allowMoveWrong != 0) this.allowMoveWrong--; // Leaf
+ 
+                             // Paper start - Add fail move event
+                             // Paper start - optimise out extra getCubes
+diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
+index 477455fdfcc591a89823e88983eb12dabb078d9b..f427606d98b8e72638291a9db4077c8e71dce9a8 100644
+--- a/net/minecraft/world/entity/player/Player.java
++++ b/net/minecraft/world/entity/player/Player.java
+@@ -1414,6 +1414,23 @@ public abstract class Player extends LivingEntity {
+                                 if (!cancelled) {
+                                 ((ServerPlayer)target).connection.send(new ClientboundSetEntityMotionPacket(target));
+                                 target.hurtMarked = false;
++                                    // Leaf start
++                                    if (org.dreeam.leaf.config.modules.gameplay.Knockback.flushKnockback) {
++                                        ServerPlayer targetPlayer = (ServerPlayer) target;
++                                        targetPlayer.connection.allowMoveWrong = 3;
++                                        this.travel(getDeltaMovement());
++                                        targetPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(this));
++                                        targetPlayer.connection.send(net.minecraft.network.protocol.game.ClientboundEntityPositionSyncPacket.of(this));
++                                        targetPlayer.connection.connection.flushChannel();
++                                        targetPlayer.hasImpulse = true;
++                                        if (this instanceof ServerPlayer player1) {
++                                            player1.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(targetPlayer));
++                                            player1.connection.send(net.minecraft.network.protocol.game.ClientboundEntityPositionSyncPacket.of(targetPlayer));
++                                            player1.connection.connection.flushChannel();
++                                            player1.hasImpulse = true;
++                                        }
++                                    }
++                                    // Leaf end
+                                 target.setDeltaMovement(deltaMovement);
+                                 }
+                                 // CraftBukkit end
