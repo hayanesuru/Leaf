@@ -5,19 +5,10 @@ Subject: [PATCH] Optimise player movement checks
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 2786fbc43f238be058b153ba551f0a616c4a18f4..48c386360c331b8e1a44524951b74874a953df5e 100644
+index 2786fbc43f238be058b153ba551f0a616c4a18f4..94414d33fa7bd20b4926cb4dcb966a15d86e545e 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1149,6 +1149,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
-             return;
-         }
-         // Gale end - VMP - skip entity move if movement is zero
-+
-+
-         final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
-         ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread("Cannot move an entity off-main");
-         if (this.noPhysics) {
-@@ -1176,6 +1178,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1176,6 +1176,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              }
              // Paper end
  
