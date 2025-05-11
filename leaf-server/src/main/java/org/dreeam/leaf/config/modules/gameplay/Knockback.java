@@ -13,6 +13,7 @@ public class Knockback extends ConfigModules {
     public static boolean snowballCanKnockback = false;
     public static boolean eggCanKnockback = false;
     public static boolean canPlayerKnockbackZombie = true;
+    @Experimental
     public static boolean flushKnockback = false;
 
     @Override
