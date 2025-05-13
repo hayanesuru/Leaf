@@ -5,10 +5,10 @@ Subject: [PATCH] Sakura: Optimise-check-inside-blocks-and-traverse-blocks
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 2c15f8f0be8ba03f2c9481bed0d46aad738848a0..ad674cf202c61b50f568a36777cee196627b402c 100644
+index df4b26a6304df92f4eda27ac986ca78d5217ce6c..a4de10a32f49b7b361fc9dd1d142caeef8d7d148 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1711,6 +1711,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1710,6 +1710,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      private void checkInsideBlocks(List<Entity.Movement> movements, Set<BlockState> blocksInside) {
          if (this.isAffectedByBlocks()) {
              LongSet set = this.visitedBlocks;
@@ -20,7 +20,7 @@ index 2c15f8f0be8ba03f2c9481bed0d46aad738848a0..ad674cf202c61b50f568a36777cee196
  
              for (Entity.Movement movement : movements) {
                  Vec3 vec3 = movement.from();
-@@ -1722,7 +1727,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1721,7 +1726,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          return;
                      }
  
