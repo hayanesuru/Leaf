@@ -5,7 +5,7 @@ Subject: [PATCH] async switch connection state
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index f998cf8d70302a21289de4d84b46d322d0b8a8fe..32f26640664135c9f7f45f8b204b7ff412fe343e 100644
+index f3e9de8716f5e1a72ec465ee897c8f0413f7b1c3..3a82e1e510029576485427af9fd705b37c5f6e20 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -342,6 +342,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
