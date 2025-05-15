@@ -7,6 +7,7 @@ import net.minecraft.Util;
 import org.dreeam.leaf.config.modules.misc.SentryDSN;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -223,6 +224,11 @@ public class LeafConfig {
             "config/gale-world-defaults.yml"
         ));
 
+        @Nullable String existing = System.getProperty("spark.serverconfigs.extra");
+        if (existing != null) {
+            extraConfigs.addAll(Arrays.asList(existing.split(",")));
+        }
+
         for (World world : Bukkit.getWorlds()) {
             extraConfigs.add(world.getWorldFolder().getName() + "/gale-world.yml"); // Gale world config
         }
@@ -230,10 +236,13 @@ public class LeafConfig {
         return extraConfigs;
     }
 
-    private static String[] buildSparkHiddenPaths() {
-        return new String[]{
-            SentryDSN.sentryDsnConfigPath // Hide Sentry DSN key
-        };
+    private static List<String> buildSparkHiddenPaths() {
+        @Nullable String existing = System.getProperty("spark.serverconfigs.hiddenpaths");
+
+        List<String> extraHidden = existing != null ? new ArrayList<>(Arrays.asList(existing.split(","))) : new ArrayList<>();
+        extraHidden.add(SentryDSN.sentryDsnConfigPath); // Hide Sentry DSN key
+
+        return extraHidden;
     }
 
     public static void regSparkExtraConfig() {
