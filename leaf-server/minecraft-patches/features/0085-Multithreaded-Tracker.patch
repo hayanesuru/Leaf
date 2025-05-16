@@ -37,7 +37,7 @@ index dd2509996bfd08e8c3f9f2be042229eac6d7692d..a35e9fae8f8da0c42f0616c4f78dc396
          private static final byte CHUNK_TICKET_STAGE_NONE           = 0;
          private static final byte CHUNK_TICKET_STAGE_LOADING        = 1;
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index 5d9d233e3a568aa6297ed9c703fa450f98158602..08873993b3b75db325fe1f2b4ab1de73b3d05be4 100644
+index 5d9d233e3a568aa6297ed9c703fa450f98158602..4984e57d3b0806164111e79acfc82f6d9b27bfbf 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
 @@ -248,6 +248,15 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -88,9 +88,9 @@ index 5d9d233e3a568aa6297ed9c703fa450f98158602..08873993b3b75db325fe1f2b4ab1de73
              this.lastTrackedChunk = chunk;
  
              final ServerPlayer[] playersRaw = players.getRawDataUnchecked();
++            // Leaf start - Multithreaded tracker
 +            final int playersLen = players.size(); // Ensure length won't change in the future tasks
 +
-+            // Leaf start - Multithreaded tracker
 +            if (org.dreeam.leaf.config.modules.async.MultithreadedTracker.enabled && org.dreeam.leaf.config.modules.async.MultithreadedTracker.compatModeEnabled) {
 +                final boolean isServerPlayer = this.entity instanceof ServerPlayer;
 +                final boolean isRealPlayer = isServerPlayer && ((ca.spottedleaf.moonrise.patches.chunk_system.player.ChunkSystemServerPlayer) this.entity).moonrise$isRealPlayer();
