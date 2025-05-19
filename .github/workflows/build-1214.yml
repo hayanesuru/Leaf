@@ -108,9 +108,6 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Rename JAR
-        run:  mv ./leaf-server/build/libs/leaf-paperclip-1.21.4-R0.1-SNAPSHOT-mojmap.jar ./leaf-1.21.4-${{ env.BUILD_NUMBER }}.jar
-
       - name: Calculate SHA-256
         id: hash
         run: |
