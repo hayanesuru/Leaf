@@ -26,9 +26,7 @@ public class AttributeInstanceArrayMap implements Map<Holder<Attribute>, Attribu
 
     public AttributeInstanceArrayMap(final @NotNull Map<Holder<Attribute>, AttributeInstance> m) {
         this();
-        for (AttributeInstance e : m.values()) {
-            setByIndex(e.getAttribute().value().uid, e);
-        }
+        putAll(m);
     }
 
     private void setByIndex(int index, @Nullable AttributeInstance instance) {
@@ -99,7 +97,11 @@ public class AttributeInstanceArrayMap implements Map<Holder<Attribute>, Attribu
 
     @Override
     public final void putAll(@NotNull Map<? extends Holder<Attribute>, ? extends AttributeInstance> m) {
-        m.forEach(this::put);
+        for (AttributeInstance e : m.values()) {
+            if (e != null) {
+                setByIndex(e.getAttribute().value().uid, e);
+            }
+        }
     }
 
     @Override
@@ -134,14 +136,13 @@ public class AttributeInstanceArrayMap implements Map<Holder<Attribute>, Attribu
 
     @Override
     public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Map<?, ?> other)) return false;
-        return entrySet().equals(other.entrySet());
+        if (!(o instanceof AttributeInstanceArrayMap that)) return false;
+        return size == that.size && Arrays.equals(a, that.a);
     }
 
     @Override
     public final int hashCode() {
-        return entrySet().hashCode();
+        return Arrays.hashCode(a);
     }
 
     @Override
