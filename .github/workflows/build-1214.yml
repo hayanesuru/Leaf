@@ -142,6 +142,8 @@ jobs:
               --projectName leaf \
               --projectFriendlyName "Leaf" \
               --version 1.21.4 \
+              --versionGroupName 1.21.4 \
+              --versionName 1.21.4 \
               --build-number ${{ env.BUILD_NUMBER }} \
               --repositoryPath "$REPO_DIR" \
               --storagePath /root/api/storage \
