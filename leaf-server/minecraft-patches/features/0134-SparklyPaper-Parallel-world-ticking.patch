@@ -869,18 +869,10 @@ index 88b07fbb96b20124777889830afa480673629d43..f8bb32840129e57b7799f883cb4570d2
 +    // Leaf end - SparklyPaper - parallel world ticking mod (prevent clearing portal process)
  }
 diff --git a/net/minecraft/world/entity/ai/behavior/GoToPotentialJobSite.java b/net/minecraft/world/entity/ai/behavior/GoToPotentialJobSite.java
-index 3614551856c594f3c0cfee984fcf03fad672b007..f39e2e4b6a3b18a3fbfbd58c99560b9378b7a031 100644
+index 3614551856c594f3c0cfee984fcf03fad672b007..f4577f908ca9f279b72d89e5b0822d34b6fb7dd1 100644
 --- a/net/minecraft/world/entity/ai/behavior/GoToPotentialJobSite.java
 +++ b/net/minecraft/world/entity/ai/behavior/GoToPotentialJobSite.java
-@@ -3,6 +3,7 @@ package net.minecraft.world.entity.ai.behavior;
- import com.google.common.collect.ImmutableMap;
- import java.util.Optional;
- import net.minecraft.core.BlockPos;
-+import net.minecraft.core.SectionPos;
- import net.minecraft.core.GlobalPos;
- import net.minecraft.network.protocol.game.DebugPackets;
- import net.minecraft.server.level.ServerLevel;
-@@ -44,14 +45,32 @@ public class GoToPotentialJobSite extends Behavior<Villager> {
+@@ -44,14 +44,34 @@ public class GoToPotentialJobSite extends Behavior<Villager> {
          Optional<GlobalPos> memory = entity.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
          memory.ifPresent(globalPos -> {
              BlockPos blockPos = globalPos.pos();
@@ -890,6 +882,7 @@ index 3614551856c594f3c0cfee984fcf03fad672b007..f39e2e4b6a3b18a3fbfbd58c99560b93
 -                if (poiManager.exists(blockPos, holder -> true)) {
 -                    poiManager.release(blockPos);
 -                }
++            // Leaf start - SparklyPaper - parallel world ticking
 +            ServerLevel entityLevel = level; // Villager's current level
 +            ServerLevel poiLevel = entityLevel.getServer().getLevel(globalPos.dimension()); // POI's actual level
 +
@@ -909,7 +902,7 @@ index 3614551856c594f3c0cfee984fcf03fad672b007..f39e2e4b6a3b18a3fbfbd58c99560b93
 -                DebugPackets.sendPoiTicketCountPacket(level, blockPos);
 +                if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) { // Added curly braces here
 +                    // Schedule POI operations on the POI's level thread, using POI's chunk coordinates for locality
-+                    poiLevel.moonrise$getChunkTaskScheduler().scheduleChunkTask(SectionPos.blockToSectionCoord(blockPos.getX()), SectionPos.blockToSectionCoord(blockPos.getZ()), poiOperationsTask, ca.spottedleaf.concurrentutil.util.Priority.BLOCKING);
++                    poiLevel.moonrise$getChunkTaskScheduler().scheduleChunkTask(blockPos.getX() >> 4, blockPos.getZ() >> 4, poiOperationsTask, ca.spottedleaf.concurrentutil.util.Priority.BLOCKING);
 +                    // Schedule debug packet on the entity's level thread, using entity's chunk coordinates for locality
 +                    entityLevel.moonrise$getChunkTaskScheduler().scheduleChunkTask(entity.chunkPosition().x, entity.chunkPosition().z, debugPacketTask, ca.spottedleaf.concurrentutil.util.Priority.BLOCKING);
 +                }
@@ -917,6 +910,7 @@ index 3614551856c594f3c0cfee984fcf03fad672b007..f39e2e4b6a3b18a3fbfbd58c99560b93
 +                    poiOperationsTask.run(); // This will use poiLevel's PoiManager but thread checks are permissive
 +                    debugPacketTask.run();   // This will use entityLevel's PoiManager
 +                }
++                // Leaf end - SparklyPaper - parallel world ticking
              }
          });
          entity.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
@@ -1037,7 +1031,7 @@ index d212f57c8c0b2086f567fd30237b110203d9e8cb..ed4df82581b5411e54068ccc59ea85a7
                  } else {
                      Entity entity = owner.teleport(
 diff --git a/net/minecraft/world/inventory/AbstractContainerMenu.java b/net/minecraft/world/inventory/AbstractContainerMenu.java
-index f4c4998a4913358e5164b44eb78b4f3df04778d2..cb0a064a41f4f72f4f1a8768b6a1961b903e7708 100644
+index cee7daa4908efde754442bf7ef0932b94cf5ebca..ff2ff95ec9d94e2e31e8174196b384c37d56f38a 100644
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
 @@ -92,8 +92,14 @@ public abstract class AbstractContainerMenu {

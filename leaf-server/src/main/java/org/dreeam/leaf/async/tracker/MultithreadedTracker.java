@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
@@ -191,11 +190,11 @@ public class MultithreadedTracker {
 
     private static @NotNull ThreadFactory getThreadFactory() {
         return new ThreadFactoryBuilder()
-                .setThreadFactory(MultithreadedTrackerThread::new)
-                .setNameFormat(THREAD_PREFIX + " Thread - %d")
-                .setPriority(Thread.NORM_PRIORITY - 2)
-                .setUncaughtExceptionHandler(Util::onThreadException)
-                .build();
+            .setThreadFactory(MultithreadedTrackerThread::new)
+            .setNameFormat(THREAD_PREFIX + " Thread - %d")
+            .setPriority(Thread.NORM_PRIORITY - 2)
+            .setUncaughtExceptionHandler(Util::onThreadException)
+            .build();
     }
 
     private static @NotNull RejectedExecutionHandler getRejectedPolicy() {

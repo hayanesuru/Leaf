@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.OptionalInt;
 
 public class DoABarrelRollProtocol implements Protocol {
+
     protected static final String NAMESPACE = "do_a_barrel_roll";
     private static final Logger LOGGER = LogManager.getLogger(NAMESPACE);
     private static final int PROTOCOL_VERSION = 4;

@@ -10,8 +10,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 
-/// fast array backend map with O(1) get & put & remove
+// fast array backend map with O(1) get & put & remove
 public class AttributeInstanceArrayMap implements Map<Holder<Attribute>, AttributeInstance>, Cloneable {
+
     private int size = 0;
     private transient AttributeInstance[] a = new AttributeInstance[32];
     private transient KeySet keys;

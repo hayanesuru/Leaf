@@ -49,7 +49,7 @@ index edcd209798740f31cb302f36d7864a0d8ea1d561..e2444cc9e28dd432bf3351066b140810
  
          if (entityTracker != null) {
 -            for (ServerPlayerConnection connection : entityTracker.seenBy) {
-+            for (ServerPlayerConnection connection : entityTracker.seenBy()) { // Leaf
++            for (ServerPlayerConnection connection : entityTracker.seenBy()) { // Leaf - Multithreaded tracker
                  players.add(connection.getPlayer().getBukkitEntity());
              }
          }
@@ -58,7 +58,7 @@ index edcd209798740f31cb302f36d7864a0d8ea1d561..e2444cc9e28dd432bf3351066b140810
  
          // Paper start - resend possibly desynced entity instead of add entity packet
 -        for (final ServerPlayerConnection connection : entityTracker.seenBy) {
-+        for (final ServerPlayerConnection connection : entityTracker.seenBy()) { // Leaf
++        for (final ServerPlayerConnection connection : entityTracker.seenBy()) { // Leaf - Multithreaded tracker
              this.getHandle().resendPossiblyDesyncedEntityData(connection.getPlayer());
          }
          // Paper end - resend possibly desynced entity instead of add entity packet
@@ -67,7 +67,7 @@ index edcd209798740f31cb302f36d7864a0d8ea1d561..e2444cc9e28dd432bf3351066b140810
  
          Set<org.bukkit.entity.Player> set = new java.util.HashSet<>(tracker.seenBy.size());
 -        for (net.minecraft.server.network.ServerPlayerConnection connection : tracker.seenBy) {
-+        for (net.minecraft.server.network.ServerPlayerConnection connection : tracker.seenBy()) { // Leaf
++        for (net.minecraft.server.network.ServerPlayerConnection connection : tracker.seenBy()) { // Leaf - Multithreaded tracker
              set.add(connection.getPlayer().getBukkitEntity().getPlayer());
          }
          return set;

@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
 Date: Thu, 24 Apr 2025 16:36:16 -0400
-Subject: [PATCH] paw optimization
+Subject: [PATCH] Paw optimization
 
 Some random optimizations
 
@@ -10,10 +10,10 @@ Some random optimizations
 - Secret patches (WIP)
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 3a82e1e510029576485427af9fd705b37c5f6e20..32f26640664135c9f7f45f8b204b7ff412fe343e 100644
+index c83ee2137a57e62003b1d20c3ceea9f569350a53..de1f271d36c7daa10c398e146386b51e2622df9a 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -661,13 +661,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -660,13 +660,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
              if (!(this.packetListener instanceof net.minecraft.server.network.ServerLoginPacketListenerImpl loginPacketListener)
                  || loginPacketListener.state != net.minecraft.server.network.ServerLoginPacketListenerImpl.State.VERIFYING
                  || Connection.joinAttemptsThisTick++ < MAX_PER_TICK) {
