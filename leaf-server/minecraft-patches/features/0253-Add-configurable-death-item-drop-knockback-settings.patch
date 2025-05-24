@@ -5,10 +5,10 @@ Subject: [PATCH] Add configurable death item drop knockback settings
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index e2178e12a5c41ab525eea2cd13f14aadd8d66f49..8cc4ee6b62a7f7bd86dce0b5cd7c470156872fdc 100644
+index 487d3f1856ac9a0977bbc3a2c54cd1e85328ad73..432362df2401ec5d05f80fea7756befd7f30e6d4 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1033,7 +1033,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1049,7 +1049,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          if (!keepInventory) {
              for (ItemStack item : this.getInventory().getContents()) {
                  if (!item.isEmpty() && !EnchantmentHelper.has(item, net.minecraft.world.item.enchantment.EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
@@ -18,7 +18,7 @@ index e2178e12a5c41ab525eea2cd13f14aadd8d66f49..8cc4ee6b62a7f7bd86dce0b5cd7c4701
              }
          }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 8461be7c6723925d26f7f162564a18f4aa162089..27dffa0a104b27687fd7ec0add46657bcab4299a 100644
+index c46bc07e6bd8f121bb6df922408a931ab01ce2ca..ebe8b4c51152e691322571750949e13a986ea7a5 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -4088,9 +4088,9 @@ public abstract class LivingEntity extends Entity implements Attackable {

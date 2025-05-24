@@ -75,10 +75,10 @@ index 652ff54e7c50412503725d628bfe72ed03059790..f738bbcefe288474c5f591dda03d7138
       * Gets the {@code ServerBuildInfo}.
       *
 diff --git a/src/main/java/org/bukkit/command/defaults/VersionCommand.java b/src/main/java/org/bukkit/command/defaults/VersionCommand.java
-index 26bc02a534cbf77fb3f605ee9d27cea6258fea0f..3c4e127cbd3b8310070f94e38d501d68860710a3 100644
+index 29756f4ea6c6abf3b35106ee05a4f9ffd404a6af..d14d29364c4f180053158c1af0d9b49aba6cb641 100644
 --- a/src/main/java/org/bukkit/command/defaults/VersionCommand.java
 +++ b/src/main/java/org/bukkit/command/defaults/VersionCommand.java
-@@ -213,7 +213,7 @@ public class VersionCommand extends BukkitCommand {
+@@ -214,7 +214,7 @@ public class VersionCommand extends BukkitCommand {
          String version = Bukkit.getVersion();
          // Paper start
          if (version.startsWith("null")) { // running from ide?

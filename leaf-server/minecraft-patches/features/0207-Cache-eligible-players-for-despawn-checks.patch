@@ -5,7 +5,7 @@ Subject: [PATCH] Cache eligible players for despawn checks
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index c8c99323b6397c3e595e7a9007e5d801ee2ac14a..7ca4fd418599cdb1bb1de44f4c3c57f1770a4038 100644
+index 1f3020f5a051d5f4e5c8fa088f844962c3105573..c6eb136e8db0aa232681ac9bd28c4b70fbbacb40 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -723,6 +723,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -38,10 +38,10 @@ index c8c99323b6397c3e595e7a9007e5d801ee2ac14a..7ca4fd418599cdb1bb1de44f4c3c57f1
                  .forEach(
                      entity -> {
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index a909056b922ad29607a5f85b6affa4fb5aa82d67..ff4ca34dca8e0061977ea63707eb34c6e06dd66a 100644
+index afbac4f2da3aa58da82b9a06d656851f12756f32..f765cc0044282ad592a146773ab93f82fefcebc4 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1514,6 +1514,13 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1517,6 +1517,13 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.containerMenu.broadcastChanges();
      }
  
@@ -56,7 +56,7 @@ index a909056b922ad29607a5f85b6affa4fb5aa82d67..ff4ca34dca8e0061977ea63707eb34c6
      private Either<Player.BedSleepingProblem, Unit> getBedResult(BlockPos at, Direction direction) {
          if (this.isSleeping() || !this.isAlive()) {
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index d473c09e98eb5d3ef7b3e096197c7bf9a6219c56..77075bf43e7e2301e58aa6d9f8bfe934cce42f55 100644
+index c15b6e32bd00650366dc4ecba2abeb6bfb98d638..81bd431e641be474f7a43a78df083756de1798de 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -705,7 +705,24 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab

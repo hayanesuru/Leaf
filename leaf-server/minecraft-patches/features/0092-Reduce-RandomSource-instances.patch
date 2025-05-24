@@ -26,10 +26,10 @@ index d381800ad054be6b054dcca43fbe80d3f0c0c771..5904b9d985487ff8bd1f330667c43096
              double d1 = center.y - maxRange;
              double d2 = center.x + maxRange;
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 08a4454a8dbbd75b60b8aaeafc03d2323a583c12..29e61a4cc550e4a627f4da99d116da5d4af9a45d 100644
+index f1fb5a87844ca7fb1de6afc532e7e0b058e6f580..7f18fb7f61e9219eb23073d9215f3bd6c57dc320 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -496,7 +496,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -488,7 +488,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              long l1 = l * l;
              int i = l1 > 2147483647L ? Integer.MAX_VALUE : (int)l1;
              int coprime = this.getCoprime(i);
@@ -52,7 +52,7 @@ index 0b8d279a53196f3998b1f6901738ca8e02ef7311..9add567d2ec2f5e9cd5bee84423c5a44
          }
  
 diff --git a/net/minecraft/world/entity/projectile/FishingHook.java b/net/minecraft/world/entity/projectile/FishingHook.java
-index 9476a33ff4ec272a2c3b3cf9685cb4653138c57e..1ecfcb37a0d1c3f3810c5c8ce8043626ce8c25a9 100644
+index ca5cd9354d53c6c05bd7ba50c6e1dbd1ed548f67..6cfd384aea8c8e90b4e4ae08ece86d52640c95d7 100644
 --- a/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/net/minecraft/world/entity/projectile/FishingHook.java
 @@ -48,7 +48,7 @@ import org.slf4j.Logger;

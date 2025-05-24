@@ -98,10 +98,10 @@ index db92261a6cb3758391108361096417c61bc82cdc..1a14fddb36ca3c14d243304db629d0c5
  
      public SortedList(final E[] elements, final Comparator<? super E> comparator) {
 diff --git a/src/main/java/io/papermc/paper/command/brigadier/PaperCommands.java b/src/main/java/io/papermc/paper/command/brigadier/PaperCommands.java
-index 4b6d845423ca845cb8780499757d627773c688da..9c2864675bc0b13ba088ba699be3c5692c2fa0a4 100644
+index 84fab94f38e8ee51f2c82fc8c3ddffe2a24d7148..6d1d05caa7c3b6a43770aa185070317a89c1bd74 100644
 --- a/src/main/java/io/papermc/paper/command/brigadier/PaperCommands.java
 +++ b/src/main/java/io/papermc/paper/command/brigadier/PaperCommands.java
-@@ -175,7 +175,7 @@ public class PaperCommands implements Commands, PaperRegistrar<LifecycleEventOwn
+@@ -178,7 +178,7 @@ public class PaperCommands implements Commands, PaperRegistrar<LifecycleEventOwn
                      })
              )
              .executes((stack) -> {

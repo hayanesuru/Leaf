@@ -220,7 +220,7 @@ index 94a9ed024d3859793618152ea559a168bbcbb5e2..e60008693e017bec1b4eb49c84be3898
 -<http://www.gnu.org/philosophy/why-not-lgpl.html>.
 +<https://www.gnu.org/philosophy/why-not-lgpl.html>.
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index bad941054349efe53756d6ab53ba7f6872de8e6f..8f42fba5615c7e1bda4c27334e39a8e3e434db81 100644
+index d0554ed6631535815e5932930911e3fe1dee8710..8f42fba5615c7e1bda4c27334e39a8e3e434db81 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
@@ -271,7 +271,7 @@ index bad941054349efe53756d6ab53ba7f6872de8e6f..8f42fba5615c7e1bda4c27334e39a8e3
      }
  
      @Override
--    public Component getVersionMessage(final String serverVersion) {
+-    public Component getVersionMessage() {
 -        final Component updateMessage;
 -        final ServerBuildInfo build = ServerBuildInfo.buildInfo();
 -        if (build.buildNumber().isEmpty() && build.gitCommit().isEmpty()) {
@@ -429,7 +429,7 @@ index 1354ccfbf525e5e64483ac5f443cc2325ba63850..f6f787db016f4d1ac14648ebf2b8e162
                  // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
              }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index f78cfd9c03014a10187dae58e2af1e137149dbc7..e0a7e8f97b1e00c9de7f764c686d4de9579cd93a 100644
+index a287ad5cce532229f2a514956d34a9358175bc45..d705eae9da291b7d3095994bc4baa7a2c570ddeb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 @@ -485,7 +485,7 @@ public final class CraftMagicNumbers implements UnsafeValues {

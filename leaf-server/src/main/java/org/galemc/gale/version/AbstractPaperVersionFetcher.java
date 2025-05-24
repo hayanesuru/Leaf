@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static net.kyori.adventure.text.Component.text;
@@ -66,7 +67,7 @@ public abstract class AbstractPaperVersionFetcher implements VersionFetcher {
     }
 
     @Override
-    public @NotNull Component getVersionMessage(final @NotNull String serverVersion) {
+    public @NotNull Component getVersionMessage() {
         final Component updateMessage;
         final ServerBuildInfo build = ServerBuildInfo.buildInfo();
         if (build.buildNumber().isEmpty() && build.gitCommit().isEmpty()) {
@@ -118,9 +119,8 @@ public abstract class AbstractPaperVersionFetcher implements VersionFetcher {
         try {
             final HttpURLConnection connection = (HttpURLConnection) URI.create("https://api.github.com/repos/%s/compare/%s...%s".formatted(repo, branch, hash)).toURL().openConnection();
             connection.connect();
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND)
-                return DISTANCE_UNKNOWN; // Unknown commit
-            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), Charsets.UTF_8))) {
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_NOT_FOUND) return DISTANCE_UNKNOWN; // Unknown commit
+            try (final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                 final JsonObject obj = new Gson().fromJson(reader, JsonObject.class);
                 final String status = obj.get("status").getAsString();
                 return switch (status) {

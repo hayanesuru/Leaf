@@ -94,7 +94,7 @@ index 0f9d18dd29e210ad656da211a3cb1cb25cd4efb1..d1c36cd17c83e7e0167046093c4a2b84
  
              for (LevelChunk levelChunk : list) {
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 48e06770ee9789e0b64e7369e26f23eea72f691a..31599270e0827db49037d54b0bf5f7a78e3a5e5e 100644
+index a753481afe02a2367c378c7f39206fde23eda00d..753b4255d9e9b9628bc5825a6b4f0f2540f06e7a 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1367,13 +1367,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -126,7 +126,7 @@ index 48e06770ee9789e0b64e7369e26f23eea72f691a..31599270e0827db49037d54b0bf5f7a7
  
      private void tickPassenger(Entity ridingEntity, Entity passengerEntity, final boolean isActive) { // Paper - EAR 2
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index fbdc7e54df6cf28264b1dc0d395b9f91206cd50e..fa315f46e9b917ef2329d7071c0790d7a4b8ed53 100644
+index f3a6c98fb803f2141be0ef8315ed9294515f1b73..6d8c7d90b0a64e99a2e811ccdb84a03be95e27b3 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1140,16 +1140,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -177,7 +177,7 @@ index fbdc7e54df6cf28264b1dc0d395b9f91206cd50e..fa315f46e9b917ef2329d7071c0790d7
      }
  
      private void applyMovementEmissionAndPlaySound(Entity.MovementEmission movementEmission, Vec3 movement, BlockPos pos, BlockState state) {
-@@ -4801,9 +4775,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4817,9 +4791,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public void setDeltaMovement(Vec3 deltaMovement) {
@@ -187,7 +187,7 @@ index fbdc7e54df6cf28264b1dc0d395b9f91206cd50e..fa315f46e9b917ef2329d7071c0790d7
      }
  
      public void addDeltaMovement(Vec3 addend) {
-@@ -4911,9 +4883,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4927,9 +4899,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
          // Paper end - Fix MC-4
          if (this.position.x != x || this.position.y != y || this.position.z != z) {

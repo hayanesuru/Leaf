@@ -6,10 +6,10 @@ Subject: [PATCH] Fix MC-119417
 Related MC issue: https://bugs.mojang.com/browse/MC/issues/MC-119417
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 6d3b895fcbb3c2fe4438e1e30d87dc2150c7f462..87651c9286fa61a7eeed95d0679230ee77616c9e 100644
+index 602a087122a6baa3cb33e1bf5e6c4d98e500fa05..f898961de04ad0b224d0405e2cd43d61665cc1b1 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -2186,6 +2186,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2189,6 +2189,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              this.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.CHANGE_GAME_MODE, gameMode.getId()));
              if (gameMode == GameType.SPECTATOR) {
                  this.removeEntitiesOnShoulder();

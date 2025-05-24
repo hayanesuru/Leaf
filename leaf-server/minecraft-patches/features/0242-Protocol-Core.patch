@@ -47,10 +47,10 @@ index 867936866d952c559b6ffa49fdf78acd70a9bab9..b1953701583ba88c524368a52988fea6
  
      private Stream<Entity> mountedOrDismounted(List<Entity> entities) {
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index ff4ca34dca8e0061977ea63707eb34c6e06dd66a..30783379baee569ec7ff51d34524ccdcba38d764 100644
+index f765cc0044282ad592a146773ab93f82fefcebc4..4a611930d8b153f60611275b2b5acacf26add509 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -809,6 +809,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -801,6 +801,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              }
          }
          // Purpur end - Ridables

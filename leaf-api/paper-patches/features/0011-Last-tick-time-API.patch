@@ -23,10 +23,10 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index ccdd6fba261cb148cf02017c2bf779b3d3bb070b..10662089e8a08bae6c6077b72c30b14bb94cc2c7 100644
+index f998208e0b26132d29d79fc2653d9f5572046f70..2e316238da9377c046105249273b260912ebfcab 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -3034,6 +3034,20 @@ public final class Bukkit {
+@@ -3044,6 +3044,20 @@ public final class Bukkit {
      }
      // Paper end - Folia region threading API
  
@@ -48,10 +48,10 @@ index ccdd6fba261cb148cf02017c2bf779b3d3bb070b..10662089e8a08bae6c6077b72c30b14b
       * @deprecated All methods on this class have been deprecated, see the individual methods for replacements.
       */
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 4265607a6f5ca535a17756b417e22ac3478cfa5c..ea27c7ba247e7726ca623e6a22110f94f70f81c9 100644
+index d57a77ff531e8bc5c0fa41e66c64c28f9a4a1515..e8f192bad2ffa3cb1c5217293420a863d57b5377 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2764,4 +2764,29 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2776,4 +2776,29 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
       */
      void allowPausing(@NotNull org.bukkit.plugin.Plugin plugin, boolean value);
      // Paper end - API to check if the server is sleeping

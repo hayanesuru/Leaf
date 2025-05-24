@@ -13,10 +13,10 @@ As part of: Paper (https://github.com/PaperMC/Paper)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/src/main/java/io/papermc/paper/configuration/Configurations.java b/src/main/java/io/papermc/paper/configuration/Configurations.java
-index 4a9258b62db3a9d1150f0dfbe916fa549b596686..7c2f3b46f94989e532694ce3fbba90489caceb7f 100644
+index d0c4037c3cc60c54ea4c60ffc2c227107fecd01c..c01f3bd5022371b71f2bdc00ebf9d1340afe86d2 100644
 --- a/src/main/java/io/papermc/paper/configuration/Configurations.java
 +++ b/src/main/java/io/papermc/paper/configuration/Configurations.java
-@@ -94,7 +94,7 @@ public abstract class Configurations<G, W> {
+@@ -95,7 +95,7 @@ public abstract class Configurations<G, W> {
          };
      }
  
@@ -25,7 +25,7 @@ index 4a9258b62db3a9d1150f0dfbe916fa549b596686..7c2f3b46f94989e532694ce3fbba9048
          return node -> {
              ObjectMapper.Factory factory = (ObjectMapper.Factory) Objects.requireNonNull(node.options().serializers().get(type));
              ObjectMapper.Mutable<T> mutable = (ObjectMapper.Mutable<T>) factory.get(type);
-@@ -168,7 +168,7 @@ public abstract class Configurations<G, W> {
+@@ -169,7 +169,7 @@ public abstract class Configurations<G, W> {
          final YamlConfigurationLoader loader = result.loader();
          final ConfigurationNode node = loader.load();
          if (result.isNewFile()) { // add version to new files
@@ -34,7 +34,7 @@ index 4a9258b62db3a9d1150f0dfbe916fa549b596686..7c2f3b46f94989e532694ce3fbba9048
          } else {
              this.verifyWorldConfigVersion(contextMap, node);
          }
-@@ -230,7 +230,7 @@ public abstract class Configurations<G, W> {
+@@ -231,7 +231,7 @@ public abstract class Configurations<G, W> {
              .build();
          final ConfigurationNode worldNode = worldLoader.load();
          if (newFile) { // set the version field if new file
@@ -43,7 +43,7 @@ index 4a9258b62db3a9d1150f0dfbe916fa549b596686..7c2f3b46f94989e532694ce3fbba9048
          } else {
              this.verifyWorldConfigVersion(contextMap, worldNode);
          }
-@@ -356,4 +356,25 @@ public abstract class Configurations<G, W> {
+@@ -357,4 +357,25 @@ public abstract class Configurations<G, W> {
              return "ContextKey{" + this.name + "}";
          }
      }
@@ -144,10 +144,10 @@ index 05339a176083af667c16f77d76dc1878dafce3f0..9ca55cba185b9de566f911b08d671bee
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 41bf483b13d43c8fd20d91c2d800677833674ebf..e299baae86bf0aa21294b2afc82623db838ce427 100644
+index 1da86b25e3b89c79d4f3920c8d2ef10ee2757f65..c92adb939892e1054f7b2d24070f43e6104dda2b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1070,6 +1070,7 @@ public final class CraftServer implements Server {
+@@ -1073,6 +1073,7 @@ public final class CraftServer implements Server {
  
          org.spigotmc.SpigotConfig.init((File) this.console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
@@ -155,7 +155,7 @@ index 41bf483b13d43c8fd20d91c2d800677833674ebf..e299baae86bf0aa21294b2afc82623db
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -2959,6 +2960,14 @@ public final class CraftServer implements Server {
+@@ -2967,6 +2968,14 @@ public final class CraftServer implements Server {
              return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
          }
  

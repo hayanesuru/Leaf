@@ -12,4 +12,5 @@
 - [ ] Remove stream in Inventory and check new changes
 - [ ] Check Purpur's Projectile offset config, in BowItem shoot
 - [ ] Remove Gale's attribute patch
+- [ ] Check SparklyPaper's mapitem update skip
 - [ ] Update from Leaf 1.21.4 (curr commit: `a022d84c5b5b52f7e8a62f6bff774d0c23176ed5`)

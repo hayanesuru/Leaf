@@ -5,10 +5,10 @@ Subject: [PATCH] Only tick items at hand
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 30783379baee569ec7ff51d34524ccdcba38d764..e2178e12a5c41ab525eea2cd13f14aadd8d66f49 100644
+index 4a611930d8b153f60611275b2b5acacf26add509..487d3f1856ac9a0977bbc3a2c54cd1e85328ad73 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -838,12 +838,19 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -830,12 +830,19 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  super.tick();
              }
  

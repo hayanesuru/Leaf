@@ -149,7 +149,7 @@ index 54910c2e1d6e6bb556e536fda060bd09402e04e8..747eb54f84650a9a507398e3d5352e00
  
          // Gale start - Pufferfish - SIMD support
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 461b620b703c9fca2691f724a9b865ad54aa90a4..48e06770ee9789e0b64e7369e26f23eea72f691a 100644
+index 1346cff0018e6d17cb892892c3aeebfb86453b60..a753481afe02a2367c378c7f39206fde23eda00d 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -173,7 +173,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -237,7 +237,7 @@ index 461b620b703c9fca2691f724a9b865ad54aa90a4..48e06770ee9789e0b64e7369e26f23ee
  
      // Paper start - log detailed entity tick information
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 77075bf43e7e2301e58aa6d9f8bfe934cce42f55..edd9de6992489404f421164dd25edc4023fb14d6 100644
+index 81bd431e641be474f7a43a78df083756de1798de..7092599cfbce0c632775f70fc599172b51d9e2cd 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -135,6 +135,12 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
@@ -1327,12 +1327,12 @@ index 4ba5f7da27f7f6842790c0093bc0f25e138fa982..0f2841a9681997c0d4b915284f7f5b38
      public boolean canContinueToUse() {
          return this.tick > 0;
 diff --git a/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java b/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
-index 084156166905562beb8d36db400bc9cab5c14be2..3eed1ac1cab130034f47da6efa33c0ad2a77a7e2 100644
+index 16ec032d84f128fc44a836843fafef303f52b699..767dff2aa4c1d71cc3c22104366605486a5004b9 100644
 --- a/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/RemoveBlockGoal.java
 @@ -37,7 +37,14 @@ public class RemoveBlockGoal extends MoveToBlockGoal {
      public boolean canUse() {
-         if (!getServerLevel(this.removerMob).purpurConfig.zombieBypassMobGriefing == !getServerLevel(this.removerMob).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) { // Purpur - Add mobGriefing bypass to everything affected
+         if (!getServerLevel(this.removerMob).getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING, getServerLevel(this.removerMob).purpurConfig.zombieMobGriefingOverride)) { // Purpur - Add mobGriefing override to everything affected
              return false;
 -        } else if (this.nextStartTick > 0) {
 +        }
@@ -1796,7 +1796,7 @@ index 002d3c0d8b1107a275020d5c582c37e9a5c536ee..6fa0b8defbd1d06b3bf5d9b32ffd08f3
          // Gale start - Petal - reduce line of sight cache lookups - merge sets
          int cached = this.seen.get(id);
 diff --git a/net/minecraft/world/entity/animal/Fox.java b/net/minecraft/world/entity/animal/Fox.java
-index fcda990a5575288b39f6aa16b0ec48d2a57542e9..fb956c0bd8a877117ec33f753f6e6bb096831f78 100644
+index ff20a6e9745c7724dfae41d5868912c8cc19eb8e..9eb9b978e2cc8570d8b884603172f2718e770d93 100644
 --- a/net/minecraft/world/entity/animal/Fox.java
 +++ b/net/minecraft/world/entity/animal/Fox.java
 @@ -870,6 +870,11 @@ public class Fox extends Animal {
@@ -1867,7 +1867,7 @@ index 99d99d59ec0eb13dc40bc88bd70ad884bb9e2859..d0be031cedcc895b8cca8666f826628a
                      ServerLevel serverLevel = getServerLevel(this.mob);
                      if (this.lookAtType == Player.class) {
 diff --git a/net/minecraft/world/entity/animal/Rabbit.java b/net/minecraft/world/entity/animal/Rabbit.java
-index 38e2698c5084f0c14c7fde5de542ed61a7cb7f1d..d96eb5a6fde72a9e7e7799624b63ec72e9b77f90 100644
+index fd8026cf1d884e95e8260ad52d4e0bbad20b0fdf..7ea36f2de5ecad35651d5333235e079a28bd0101 100644
 --- a/net/minecraft/world/entity/animal/Rabbit.java
 +++ b/net/minecraft/world/entity/animal/Rabbit.java
 @@ -669,7 +669,13 @@ public class Rabbit extends Animal {
@@ -1987,7 +1987,7 @@ index 2e04078664cd723e3e0c80565e4b6e6416b13901..ed790a407b4be9e2f7fcb8cf36b8d03c
  
      static class DrownedGoToWaterGoal extends Goal {
 diff --git a/net/minecraft/world/entity/monster/EnderMan.java b/net/minecraft/world/entity/monster/EnderMan.java
-index b9160f939894f784e8a733b0c00055b51aec694a..1baaf3dd103c1dd8a1c7d9457e5f878f5d31d04d 100644
+index b57f16d8faca315a2b080407e007e9a18ca3c2fc..13d4d25191c4ed262acc54eb6d3517587846c1ae 100644
 --- a/net/minecraft/world/entity/monster/EnderMan.java
 +++ b/net/minecraft/world/entity/monster/EnderMan.java
 @@ -590,10 +590,34 @@ public class EnderMan extends Monster implements NeutralMob {
@@ -2047,7 +2047,7 @@ index e1717b5c854aa81fdd7b7e715d7c3498d9f86072..3627e7479b4deea28e268245410ec4cd
  
      static class StriderPathNavigation extends GroundPathNavigation {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 20be5c4200bfee01d62fa1103a3663b91107d5d8..3f5fb9d0002f7e11cd6dbe38eaa054c63a625d9a 100644
+index 309dbb3b7a485ef5e13f893e53bbdbec1401422e..1ef49db44e8dcfd944b600ef64dbcaee36546688 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1525,6 +1525,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
