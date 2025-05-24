@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
 Date: Thu, 24 Apr 2025 16:36:16 -0400
-Subject: [PATCH] paw optimization
+Subject: [PATCH] Paw optimization
 
 Some random optimizations
 
@@ -10,10 +10,10 @@ Some random optimizations
 - Secret patches (WIP)
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index f3e9de8716f5e1a72ec465ee897c8f0413f7b1c3..f998cf8d70302a21289de4d84b46d322d0b8a8fe 100644
+index c83ee2137a57e62003b1d20c3ceea9f569350a53..de1f271d36c7daa10c398e146386b51e2622df9a 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -617,13 +617,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -660,13 +660,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
              if (!(this.packetListener instanceof net.minecraft.server.network.ServerLoginPacketListenerImpl loginPacketListener)
                  || loginPacketListener.state != net.minecraft.server.network.ServerLoginPacketListenerImpl.State.VERIFYING
                  || Connection.joinAttemptsThisTick++ < MAX_PER_TICK) {
@@ -77,7 +77,7 @@ index 4535858701b2bb232b9d2feb2af6551526232ddc..e65c62dbe4c1560ae153e4c4344e9194
 -    // Paper end - detailed watchdog information
  }
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index f89fb321e50338e7765476cb5d7bdf2f02a497b3..83fcef85ed2a5410275e4419e4356994016f21d1 100644
+index 0f9d18dd29e210ad656da211a3cb1cb25cd4efb1..d1c36cd17c83e7e0167046093c4a2b8427c8bae0 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -622,8 +622,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -94,7 +94,7 @@ index f89fb321e50338e7765476cb5d7bdf2f02a497b3..83fcef85ed2a5410275e4419e4356994
  
              for (LevelChunk levelChunk : list) {
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 8ade900d016026cde482ccbca7a411993d9eadd9..414a70c352263a1cd2bfb938053990ea2be2b2c3 100644
+index 48e06770ee9789e0b64e7369e26f23eea72f691a..31599270e0827db49037d54b0bf5f7a78e3a5e5e 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1367,13 +1367,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -126,10 +126,10 @@ index 8ade900d016026cde482ccbca7a411993d9eadd9..414a70c352263a1cd2bfb938053990ea
  
      private void tickPassenger(Entity ridingEntity, Entity passengerEntity, final boolean isActive) { // Paper - EAR 2
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 960ae487a5a88a5fe9899c16b9553cea0fbfba37..1ff8522b81eb4bc6297b44a1f2a48c8021104185 100644
+index fbdc7e54df6cf28264b1dc0d395b9f91206cd50e..fa315f46e9b917ef2329d7071c0790d7a4b8ed53 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1138,16 +1138,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1140,16 +1140,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.onGround;
      }
  
@@ -146,7 +146,7 @@ index 960ae487a5a88a5fe9899c16b9553cea0fbfba37..1ff8522b81eb4bc6297b44a1f2a48c80
      public void move(MoverType type, Vec3 movement) {
          // Gale start - VMP - skip entity move if movement is zero
          if (!this.boundingBoxChanged && movement.equals(Vec3.ZERO)) {
-@@ -1155,16 +1145,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1157,16 +1147,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
          // Gale end - VMP - skip entity move if movement is zero
          final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
@@ -163,7 +163,7 @@ index 960ae487a5a88a5fe9899c16b9553cea0fbfba37..1ff8522b81eb4bc6297b44a1f2a48c80
          if (this.noPhysics) {
              this.setPos(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
          } else {
-@@ -1298,13 +1279,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1300,13 +1281,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                  // Gale end - skip negligible planar movement multiplication
              }
          }
@@ -177,7 +177,7 @@ index 960ae487a5a88a5fe9899c16b9553cea0fbfba37..1ff8522b81eb4bc6297b44a1f2a48c80
      }
  
      private void applyMovementEmissionAndPlaySound(Entity.MovementEmission movementEmission, Vec3 movement, BlockPos pos, BlockState state) {
-@@ -4771,9 +4745,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4801,9 +4775,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public void setDeltaMovement(Vec3 deltaMovement) {
@@ -187,7 +187,7 @@ index 960ae487a5a88a5fe9899c16b9553cea0fbfba37..1ff8522b81eb4bc6297b44a1f2a48c80
      }
  
      public void addDeltaMovement(Vec3 addend) {
-@@ -4881,9 +4853,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4911,9 +4883,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
          // Paper end - Fix MC-4
          if (this.position.x != x || this.position.y != y || this.position.z != z) {
@@ -197,3 +197,16 @@ index 960ae487a5a88a5fe9899c16b9553cea0fbfba37..1ff8522b81eb4bc6297b44a1f2a48c80
              int floor = Mth.floor(x);
              int floor1 = Mth.floor(y);
              int floor2 = Mth.floor(z);
+diff --git a/net/minecraft/world/level/levelgen/structure/structures/DesertPyramidStructure.java b/net/minecraft/world/level/levelgen/structure/structures/DesertPyramidStructure.java
+index ef9c2c0a665a1acf490affd9cd4496ae9d677410..27e7c1bb585f30165bd501bb8f8aab0dd147ca5b 100644
+--- a/net/minecraft/world/level/levelgen/structure/structures/DesertPyramidStructure.java
++++ b/net/minecraft/world/level/levelgen/structure/structures/DesertPyramidStructure.java
+@@ -48,7 +48,7 @@ public class DesertPyramidStructure extends SinglePieceStructure {
+             }
+         }
+ 
+-        ObjectArrayList<BlockPos> list = new ObjectArrayList<>(set.stream().toList());
++        ObjectArrayList<BlockPos> list = new ObjectArrayList<>(set); // Leaf - paw optimization - TODO: use array
+         RandomSource randomSource = RandomSource.create(level.getSeed()).forkPositional().at(pieces.calculateBoundingBox().getCenter());
+         Util.shuffle(list, randomSource);
+         int min = Math.min(set.size(), randomSource.nextInt(5, 8));

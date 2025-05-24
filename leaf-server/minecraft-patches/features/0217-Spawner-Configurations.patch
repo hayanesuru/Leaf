@@ -5,7 +5,7 @@ Subject: [PATCH] Spawner Configurations
 
 
 diff --git a/net/minecraft/world/level/BaseSpawner.java b/net/minecraft/world/level/BaseSpawner.java
-index 9fa9d84033c28071120e8a1c796ace4f9a45d4c5..9914e347838f55b4658a0ab8998bc0eeade0f4f8 100644
+index 9fa9d84033c28071120e8a1c796ace4f9a45d4c5..dc1d0c8a5b26142eeb8b9c167cef8d3ddcc1ad55 100644
 --- a/net/minecraft/world/level/BaseSpawner.java
 +++ b/net/minecraft/world/level/BaseSpawner.java
 @@ -55,6 +55,12 @@ public abstract class BaseSpawner {
@@ -58,17 +58,21 @@ index 9fa9d84033c28071120e8a1c796ace4f9a45d4c5..9914e347838f55b4658a0ab8998bc0ee
          if (this.isNearPlayer(serverLevel, pos)) {
              if (this.spawnDelay < -tickDelay) { // Paper - Configurable mob spawner tick rate
                  this.delay(serverLevel, pos);
-@@ -112,18 +141,41 @@ public abstract class BaseSpawner {
+@@ -112,18 +141,48 @@ public abstract class BaseSpawner {
                                  pos.getZ() + (random.nextDouble() - random.nextDouble()) * this.spawnRange + 0.5
                              )
                          );
 -                    if (serverLevel.noCollision(optional.get().getSpawnAABB(vec3.x, vec3.y, vec3.z))) {
-+                        // Leaf start - Spawner Configurations
++                    // Leaf start - Spawner Configurations
 +                    // Skip collision check if block checks are disabled
 +                    boolean skipBlockChecks = org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.enabled &&
 +                        !org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.spawnerBlockChecks;
 +                    if (skipBlockChecks || serverLevel.noCollision(optional.get().getSpawnAABB(vec3.x, vec3.y, vec3.z))) {
++                        // 'skipBlockChecks' is true if SpawnerSettings.spawnerBlockChecks is false.
++                        // It means we skip physical block checks like collision and custom rule isValidPosition.
++
                          BlockPos blockPos = BlockPos.containing(vec3);
++
 +                        // Add light level check if enabled
 +                        if (org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.enabled &&
 +                            org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.lightLevelCheck) {
@@ -85,8 +89,9 @@ index 9fa9d84033c28071120e8a1c796ace4f9a45d4c5..9914e347838f55b4658a0ab8998bc0ee
 +                            continue;
 +                        }
 +
-+                        // Handle spawn rules checks
-+                        boolean skipSpawnRules = false;
++                        // Determine if mob-specific spawn rules (like block types, biome requirements) should be skipped
++                        boolean skipMobSpecificRules = org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.enabled &&
++                            org.dreeam.leaf.config.modules.gameplay.SpawnerSettings.ignoreSpawnRules;
 +                        // Leaf end - Spawner Configurations
                          if (nextSpawnData.getCustomSpawnRules().isPresent()) {
                              if (!optional.get().getCategory().isFriendly() && serverLevel.getDifficulty() == Difficulty.PEACEFUL) {
@@ -95,15 +100,17 @@ index 9fa9d84033c28071120e8a1c796ace4f9a45d4c5..9914e347838f55b4658a0ab8998bc0ee
  
                              SpawnData.CustomSpawnRules customSpawnRules = nextSpawnData.getCustomSpawnRules().get();
 -                            if (!customSpawnRules.isValidPosition(blockPos, serverLevel)) {
++                            // customSpawnRules.isValidPosition is controlled by spawnerBlockChecks (via !skipBlockChecks)
 +                            if (!skipBlockChecks && !customSpawnRules.isValidPosition(blockPos, serverLevel)) { // Leaf - Spawner Configurations
                                  continue;
                              }
 -                        } else if (!SpawnPlacements.checkSpawnRules(optional.get(), serverLevel, EntitySpawnReason.SPAWNER, blockPos, serverLevel.getRandom())) {
-+                        } else if (!skipBlockChecks && !SpawnPlacements.checkSpawnRules(optional.get(), serverLevel, EntitySpawnReason.SPAWNER, blockPos, serverLevel.getRandom())) { // Leaf - Spawner Configurations
++                        } else if (!skipMobSpecificRules && !SpawnPlacements.checkSpawnRules(optional.get(), serverLevel, EntitySpawnReason.SPAWNER, blockPos, serverLevel.getRandom())) {
++                            // If not skipping mob-specific rules AND standard spawn rules fail, continue.
                              continue;
                          }
  
-@@ -151,6 +203,7 @@ public abstract class BaseSpawner {
+@@ -151,6 +210,7 @@ public abstract class BaseSpawner {
                              return;
                          }
  
@@ -111,7 +118,7 @@ index 9fa9d84033c28071120e8a1c796ace4f9a45d4c5..9914e347838f55b4658a0ab8998bc0ee
                          int size = serverLevel.getEntities(
                                  EntityTypeTest.forExactClass(entity.getClass()),
                                  new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1).inflate(this.spawnRange),
-@@ -161,12 +214,16 @@ public abstract class BaseSpawner {
+@@ -161,12 +221,29 @@ public abstract class BaseSpawner {
                              this.delay(serverLevel, pos);
                              return;
                          }
@@ -123,14 +130,27 @@ index 9fa9d84033c28071120e8a1c796ace4f9a45d4c5..9914e347838f55b4658a0ab8998bc0ee
 -                            if (nextSpawnData.getCustomSpawnRules().isEmpty() && !mob.checkSpawnRules(serverLevel, EntitySpawnReason.SPAWNER)
 -                                || !mob.checkSpawnObstruction(serverLevel)) {
 +                            // Leaf start - Spawner Configurations
-+                            // Skip spawn rule and obstruction checks if block checks are disabled
-+                            if (!skipBlockChecks && (nextSpawnData.getCustomSpawnRules().isEmpty() && !mob.checkSpawnRules(serverLevel, EntitySpawnReason.SPAWNER)
-+                                || !mob.checkSpawnObstruction(serverLevel))) {
++                            // mob.checkSpawnRules is controlled by ignoreSpawnRules (via !skipMobSpecificRules)
++                            // mob.checkSpawnObstruction is controlled by spawnerBlockChecks (via !skipBlockChecks)
++
++                            boolean mobSpecificRulesFailed = false;
++                            if (nextSpawnData.getCustomSpawnRules().isEmpty() && !skipMobSpecificRules) {
++                                if (!mob.checkSpawnRules(serverLevel, EntitySpawnReason.SPAWNER)) {
++                                    mobSpecificRulesFailed = true;
++                                }
++                            }
++
++                            boolean obstructionFailed = false;
++                            if (!skipBlockChecks && !mob.checkSpawnObstruction(serverLevel)) { // If not skipping physical checks and obstruction fails
++                                obstructionFailed = true;
++                            }
++
++                            if (mobSpecificRulesFailed || obstructionFailed) {
 +                                // Leaf end - Spawner Configurations
                                  continue;
                              }
  
-@@ -231,10 +288,16 @@ public abstract class BaseSpawner {
+@@ -231,10 +308,16 @@ public abstract class BaseSpawner {
          tag.read("SpawnData", SpawnData.CODEC).ifPresent(spawnData -> this.setNextSpawnData(level, pos, spawnData));
          this.spawnPotentials = tag.read("SpawnPotentials", SpawnData.LIST_CODEC)
                  .orElseGet(() -> WeightedList.of(this.nextSpawnData != null ? this.nextSpawnData : new SpawnData()));

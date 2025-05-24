@@ -2,7 +2,6 @@
 - [ ] Do a benchmark for `Remove streams and iterators from range check`, getEffectiveRange in ChunkMap
 
 # Leaf TODOs
-- [ ] refactor leaves protocol manager opt and pr it.
 - [ ] Transfer patch notes to file for Gale and Leaf
 - [ ] check Dont send useless entity packets
 - [ ] Use different state to separate different configs reload
@@ -12,4 +11,5 @@
 - [ ] Update README.md
 - [ ] Remove stream in Inventory and check new changes
 - [ ] Check Purpur's Projectile offset config, in BowItem shoot
-- [ ] Update from Leaf 1.21.4 (curr commit: `1431eff510a3ac1725ec82d52f5c253b4b7932d9`)
+- [ ] Remove Gale's attribute patch
+- [ ] Update from Leaf 1.21.4 (curr commit: `a022d84c5b5b52f7e8a62f6bff774d0c23176ed5`)

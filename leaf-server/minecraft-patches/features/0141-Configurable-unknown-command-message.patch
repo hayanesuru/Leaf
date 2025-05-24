@@ -5,7 +5,7 @@ Subject: [PATCH] Configurable unknown command message
 
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index aba02a7e3139030050c3c61aabf7708c6c088a68..a6d5ad7690f3acc7e80770e24c41d7dbf2b71861 100644
+index aba02a7e3139030050c3c61aabf7708c6c088a68..4bc1aa7a85596fa1bb275e88834b25f4fe2c6ea0 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -403,31 +403,8 @@ public class Commands {
@@ -41,59 +41,65 @@ index aba02a7e3139030050c3c61aabf7708c6c088a68..a6d5ad7690f3acc7e80770e24c41d7db
              org.bukkit.Bukkit.getServer().getPluginManager().callEvent(event);
              if (event.message() != null) {
                  source.sendFailure(io.papermc.paper.adventure.PaperAdventure.asVanilla(event.message()), false);
-@@ -677,6 +654,86 @@ public class Commands {
+@@ -677,6 +654,92 @@ public class Commands {
          };
      }
  
 +    // Leaf start - Configurable unknown command message
-+    private static net.kyori.adventure.text.TextComponent getUnknownCommandMessage(
++    private static net.kyori.adventure.text.Component getUnknownCommandMessage(
 +        net.kyori.adventure.text.TextComponent.Builder builder, CommandSyntaxException commandSyntaxException, String label
 +    ) {
 +        String rawMessage = org.dreeam.leaf.config.modules.misc.UnknownCommandMessage.unknownCommandMessage;
 +
-+        if (!"default".equals(rawMessage)) {
-+            final String input = commandSyntaxException.getInput();
-+            final int cursor = commandSyntaxException.getCursor();
-+
-+            if (rawMessage.contains("<detail>") && input != null && cursor >= 0) {
-+                final int min = Math.min(input.length(), cursor);
-+                final net.kyori.adventure.text.TextComponent.Builder detail = net.kyori.adventure.text.Component.text();
-+                final net.kyori.adventure.text.Component context = net.kyori.adventure.text.Component.translatable("command.context.here")
-+                    .color(net.kyori.adventure.text.format.NamedTextColor.RED)
-+                    .decorate(net.kyori.adventure.text.format.TextDecoration.ITALIC);
-+                final net.kyori.adventure.text.event.ClickEvent event = net.kyori.adventure.text.event.ClickEvent.suggestCommand("/" + label);
-+
-+                detail.color(net.kyori.adventure.text.format.NamedTextColor.GRAY);
-+
-+                if (min > 10) {
-+                    detail.append(net.kyori.adventure.text.Component.text("..."));
-+                }
-+
-+                detail.append(net.kyori.adventure.text.Component.text(input.substring(Math.max(0, min - 10), min)));
-+                if (min < input.length()) {
-+                    net.kyori.adventure.text.Component commandInput = net.kyori.adventure.text.Component.text(input.substring(min))
-+                        .color(net.kyori.adventure.text.format.NamedTextColor.RED)
-+                        .decorate(net.kyori.adventure.text.format.TextDecoration.UNDERLINED);
-+
-+                    detail.append(commandInput);
-+                }
-+
-+                detail.append(context);
-+                detail.clickEvent(event);
-+
-+                builder.append(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(rawMessage, net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component("detail", detail.build())));
-+            } else {
-+                rawMessage = rawMessage.replace("<detail>", "");
-+                builder.append(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(rawMessage));
-+            }
-+
-+            return builder.build();
++        if ("default".equals(rawMessage)) {
++            return getVanillaUnknownCommandMessage(builder, commandSyntaxException, label);
 +        }
 +
-+        return getVanillaUnknownCommandMessage(builder, commandSyntaxException, label);
++        net.kyori.adventure.text.Component messageComponent = null;
++        net.kyori.adventure.text.Component detailComponent = null;
++
++        if (rawMessage.contains("<message>")) {
++            messageComponent = io.papermc.paper.command.brigadier.MessageComponentSerializer.message().deserialize(commandSyntaxException.getRawMessage());
++        }
++
++        final String input = commandSyntaxException.getInput();
++        final int cursor = commandSyntaxException.getCursor();
++
++        if (rawMessage.contains("<detail>") && input != null && cursor >= 0) {
++            final int min = Math.min(input.length(), cursor);
++            final net.kyori.adventure.text.TextComponent.Builder detail = net.kyori.adventure.text.Component.text();
++            final net.kyori.adventure.text.Component context = net.kyori.adventure.text.Component.translatable("command.context.here")
++                .color(net.kyori.adventure.text.format.NamedTextColor.RED)
++                .decorate(net.kyori.adventure.text.format.TextDecoration.ITALIC);
++            final net.kyori.adventure.text.event.ClickEvent event = net.kyori.adventure.text.event.ClickEvent.suggestCommand("/" + label);
++
++            detail.color(net.kyori.adventure.text.format.NamedTextColor.GRAY);
++
++            if (min > 10) {
++                detail.append(net.kyori.adventure.text.Component.text("..."));
++            }
++
++            detail.append(net.kyori.adventure.text.Component.text(input.substring(Math.max(0, min - 10), min)));
++            if (min < input.length()) {
++                net.kyori.adventure.text.Component commandInput = net.kyori.adventure.text.Component.text(input.substring(min))
++                    .color(net.kyori.adventure.text.format.NamedTextColor.RED)
++                    .decorate(net.kyori.adventure.text.format.TextDecoration.UNDERLINED);
++
++                detail.append(commandInput);
++            }
++
++            detail.append(context);
++            detail.clickEvent(event);
++
++            detailComponent = detail.build();
++        }
++
++        return builder.append(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(rawMessage)).build()
++            .replaceText(net.kyori.adventure.text.TextReplacementConfig.builder().matchLiteral("<message>").replacement(messageComponent).build())
++            .replaceText(net.kyori.adventure.text.TextReplacementConfig.builder().matchLiteral("<detail>").replacement(detailComponent).build());
 +    }
 +
-+    private static net.kyori.adventure.text.TextComponent getVanillaUnknownCommandMessage(
++    private static net.kyori.adventure.text.Component getVanillaUnknownCommandMessage(
 +        net.kyori.adventure.text.TextComponent.Builder builder, CommandSyntaxException var7, String label
 +    ) {
 +        builder.color(net.kyori.adventure.text.format.NamedTextColor.RED).append(io.papermc.paper.command.brigadier.MessageComponentSerializer.message().deserialize(var7.getRawMessage()));

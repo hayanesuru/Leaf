@@ -15,7 +15,7 @@ The delay is currently set to 2 seconds, however, we may want to adjust this bef
 fixes Paper#9581
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
-index 67275e803e0287306b163f4eec17388b9c701a8c..4344e5d9eda940849352e08734f95de2036bd87a 100644
+index 3a78e7512772fd3f7cf8f221e3a72474def14bea..ba52af914e9e231caa0ac50562e9a6925908c615 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
 @@ -48,6 +48,7 @@ public final class RegionizedPlayerChunkLoader {

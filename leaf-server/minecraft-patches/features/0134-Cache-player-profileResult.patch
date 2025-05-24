@@ -5,7 +5,7 @@ Subject: [PATCH] Cache player profileResult
 
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 9dce1d22c7de3a3dd0e0e8f117cfbb54d1b15042..50137b67b578b0f9f34bb11a6d572df99ee9fa37 100644
+index 9dce1d22c7de3a3dd0e0e8f117cfbb54d1b15042..405b62c082017024abae7ccc1db5f74caab1eabf 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -70,6 +70,11 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -29,7 +29,7 @@ index 9dce1d22c7de3a3dd0e0e8f117cfbb54d1b15042..50137b67b578b0f9f34bb11a6d572df9
 -                        .hasJoinedServer(string1, string, this.getAddress());
 +                    // Leaf start - Cache player profileResult
 +                    ProfileResult profileResult;
-+                    if (org.dreeam.leaf.config.modules.misc.Cache.cachePlayerProfileResult) {
++                    if (false) { // TODO
 +                        profileResult = playerProfileResultCache.getIfPresent(string1);
 +
 +                        if (profileResult == null) {

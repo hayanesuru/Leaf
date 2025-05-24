@@ -1,0 +1,85 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Tue, 6 May 2025 17:44:16 +0900
+Subject: [PATCH] Protocol Core
+
+
+diff --git a/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java b/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
+index fb263fa1f30a7dfcb7ec2656abfb38e5fe88eac9..a5f4deff8ecde365b7fbec92760b1a7cc5b8c58e 100644
+--- a/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
++++ b/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
+@@ -40,6 +40,12 @@ public interface CustomPacketPayload {
+ 
+             @Override
+             public void encode(B buffer, CustomPacketPayload value) {
++                // Leaf start - Protocol core
++                if (value instanceof org.dreeam.leaf.protocol.LeafCustomPayload payload) {
++                    org.dreeam.leaf.protocol.Protocols.write(buffer, payload);
++                    return;
++                }
++                // Leaf end - Protocol core
+                 this.writeCap(buffer, value.type(), value);
+             }
+ 
+diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
+index 78aee57ad8224b0728411c699d2e3844847c9c79..8f5b400bdf5c1c194f75ee98e2f1e984e6137a50 100644
+--- a/net/minecraft/server/MinecraftServer.java
++++ b/net/minecraft/server/MinecraftServer.java
+@@ -1770,6 +1770,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             GameTestTicker.SINGLETON.tick();
+         }
+ 
++        org.dreeam.leaf.protocol.Protocols.tickServer(this); // Leaf - Protocol core
++
+         for (int i = 0; i < this.tickables.size(); i++) {
+             this.tickables.get(i).run();
+         }
+diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
+index 867936866d952c559b6ffa49fdf78acd70a9bab9..b1953701583ba88c524368a52988fea6fb1ab8d2 100644
+--- a/net/minecraft/server/level/ServerEntity.java
++++ b/net/minecraft/server/level/ServerEntity.java
+@@ -298,6 +298,7 @@ public class ServerEntity {
+             this.entity.hurtMarked = false;
+             this.broadcastAndSend(new ClientboundSetEntityMotionPacket(this.entity));
+         }
++        if (entity instanceof ServerPlayer serverPlayer) org.dreeam.leaf.protocol.Protocols.tickTracker(serverPlayer); // Leaf - Protocol core
+     }
+ 
+     private Stream<Entity> mountedOrDismounted(List<Entity> entities) {
+diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
+index ff4ca34dca8e0061977ea63707eb34c6e06dd66a..30783379baee569ec7ff51d34524ccdcba38d764 100644
+--- a/net/minecraft/server/level/ServerPlayer.java
++++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -809,6 +809,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+             }
+         }
+         // Purpur end - Ridables
++        org.dreeam.leaf.protocol.Protocols.tickPlayer(this); // Leaf - Protocol core
+     }
+ 
+     private void updatePlayerAttributes() {
+diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+index 434be9d08d8e816e2dea1e9d23fa26d21b9f35f6..98f169c64b31ff523fe8b2d435f796a5156203a9 100644
+--- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+@@ -162,6 +162,8 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+ 
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.serverLevel());
+ 
++        org.dreeam.leaf.protocol.Protocols.handle(this.player, discardedPayload); // Leaf - Protocol core
++
+         final net.minecraft.resources.ResourceLocation identifier = packet.payload().type().id();
+         final byte[] data = discardedPayload.data();
+         try {
+diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
+index 8173242d149709f092e6d609f6e1d831eca0a884..05bc165ecae4151355dd9329673f10cff6253ca4 100644
+--- a/net/minecraft/server/players/PlayerList.java
++++ b/net/minecraft/server/players/PlayerList.java
+@@ -536,6 +536,7 @@ public abstract class PlayerList {
+         return this.remove(player, net.kyori.adventure.text.Component.translatable("multiplayer.player.left", net.kyori.adventure.text.format.NamedTextColor.YELLOW, io.papermc.paper.configuration.GlobalConfiguration.get().messages.useDisplayNameInQuitMessage ? player.getBukkitEntity().displayName() : io.papermc.paper.adventure.PaperAdventure.asAdventure(player.getDisplayName())));
+     }
+     public @Nullable net.kyori.adventure.text.Component remove(ServerPlayer player, net.kyori.adventure.text.Component leaveMessage) {
++        org.dreeam.leaf.protocol.Protocols.disconnected(player); // Leaf - Protocol core
+         // Paper end - Fix kick event leave message not being sent
+         org.purpurmc.purpur.task.BossBarTask.removeFromAll(player.getBukkitEntity()); // Purpur - Implement TPSBar
+         net.minecraft.server.network.ServerGamePacketListenerImpl.afkCooldown.remove(player.getBukkitEntity().getUniqueId()); // Leaf - Improve Purpur AFK system

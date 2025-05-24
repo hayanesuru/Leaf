@@ -1,7 +1,7 @@
 name: Publish API
 on:
   push:
-    branches: [ "ver/1.21.4" ]
+    branches: [ "dev/1.21.5" ]
 
 jobs:
   build:
@@ -44,7 +44,7 @@ jobs:
       - name: Build
         run: ./gradlew build -x test
 
-      - name: Publish API
+      - name: Publish Maven API
         continue-on-error: true
         run: |
           ./gradlew :leaf-api:publish

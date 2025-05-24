@@ -159,7 +159,7 @@ index 4ca68a903e67606fc4ef0bfa9862a73797121c8b..bed3a64388bb43e47c2ba4e67f7dde5b
  
      public static final class SaveState {
 diff --git a/net/minecraft/world/level/chunk/LevelChunkSection.java b/net/minecraft/world/level/chunk/LevelChunkSection.java
-index 36c033b0ee63dfc273d721fb4b614733e8fdef19..dc9f1bc6dd8b1057da3416e24f15f2329658f996 100644
+index 1cc33a038060aaf5258ee4f1deb19b4a1be59a29..a14247b043715de50b253ab1f10a9244003f8797 100644
 --- a/net/minecraft/world/level/chunk/LevelChunkSection.java
 +++ b/net/minecraft/world/level/chunk/LevelChunkSection.java
 @@ -24,6 +24,7 @@ public class LevelChunkSection implements ca.spottedleaf.moonrise.patches.block_
