@@ -1987,10 +1987,10 @@ index 2e04078664cd723e3e0c80565e4b6e6416b13901..ed790a407b4be9e2f7fcb8cf36b8d03c
  
      static class DrownedGoToWaterGoal extends Goal {
 diff --git a/net/minecraft/world/entity/monster/EnderMan.java b/net/minecraft/world/entity/monster/EnderMan.java
-index b57f16d8faca315a2b080407e007e9a18ca3c2fc..13d4d25191c4ed262acc54eb6d3517587846c1ae 100644
+index 16886178079a096329d06f40d502012b6fa473e0..36d5621d4d92c86a6edbd088ce5e5a246cdbe5cb 100644
 --- a/net/minecraft/world/entity/monster/EnderMan.java
 +++ b/net/minecraft/world/entity/monster/EnderMan.java
-@@ -590,10 +590,34 @@ public class EnderMan extends Monster implements NeutralMob {
+@@ -592,10 +592,34 @@ public class EnderMan extends Monster implements NeutralMob {
  
          @Override
          public boolean canUse() {

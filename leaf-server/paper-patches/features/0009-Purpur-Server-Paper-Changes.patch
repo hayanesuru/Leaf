@@ -1068,10 +1068,10 @@ index 02deb9c37250144be9afa0fe55df2a49017a7070..dfb597fcb8d01ed6cf20eae57e260949
 +    // Purpur end - Llama API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 8a1e2785d4a3dd6f5d97c152e9b42d5c257d1ee6..616c25e3e447923235e2586f8a74d1eca39cbb32 100644
+index 1db6276ae7a547860cf2c6f85b37ec4d6b33655a..fcc7bc9098e2544588d8b36dd0cff59e6a2563bd 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -611,10 +611,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -614,10 +614,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public void setPlayerListName(String name) {
@@ -1088,7 +1088,7 @@ index 8a1e2785d4a3dd6f5d97c152e9b42d5c257d1ee6..616c25e3e447923235e2586f8a74d1ec
          if (this.getHandle().connection == null) return; // Paper - Updates are possible before the player has fully joined
          for (ServerPlayer player : (List<ServerPlayer>) this.server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
-@@ -1428,6 +1433,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1431,6 +1436,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          // Paper start - Teleport passenger API
          // Don't allow teleporting between worlds while keeping passengers
          if (ignorePassengers && entity.isVehicle() && location.getWorld() != this.getWorld()) {
@@ -1096,7 +1096,7 @@ index 8a1e2785d4a3dd6f5d97c152e9b42d5c257d1ee6..616c25e3e447923235e2586f8a74d1ec
              return false;
          }
  
-@@ -1449,6 +1455,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1452,6 +1458,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
  
          if (entity.isVehicle() && !ignorePassengers) { // Paper - Teleport API
@@ -1104,7 +1104,7 @@ index 8a1e2785d4a3dd6f5d97c152e9b42d5c257d1ee6..616c25e3e447923235e2586f8a74d1ec
              return false;
          }
  
-@@ -2720,6 +2727,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2723,6 +2730,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.getHandle().getAbilities().walkingSpeed * 2f;
      }
  
@@ -1133,7 +1133,7 @@ index 8a1e2785d4a3dd6f5d97c152e9b42d5c257d1ee6..616c25e3e447923235e2586f8a74d1ec
      private void validateSpeed(float value) {
          Preconditions.checkArgument(value <= 1f && value >= -1f, "Speed value (%s) need to be between -1f and 1f", value);
      }
-@@ -3566,4 +3595,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3576,4 +3605,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public void setDeathScreenScore(final int score) {
          getHandle().setScore(score);
      }
@@ -1293,7 +1293,7 @@ index c3bd4cc1458bf62639d43854c2fdd0b479993b22..52a492ed8651e2ecb8b47cc3394fa4c7
 +    // Purpur end - Configurable chance for wolves to spawn rabid
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 6f86a505c99010eb80e76e2fbe36414fcde80a39..3a3fbbfa0b82092cd9ac8eab2d179fb9f590aec8 100644
+index 9774c9c72a910ccd919b903d92f4068c06d199d7..5300a513a295d472752d31a6e8af48bb64b06704 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -514,6 +514,15 @@ public class CraftEventFactory {
