@@ -1,4 +1,4 @@
-package org.dreeam.leaf.optimize;
+package org.dreeam.leaf.world.block;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
