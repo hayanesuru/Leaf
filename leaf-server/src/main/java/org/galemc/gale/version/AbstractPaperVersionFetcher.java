@@ -5,7 +5,6 @@ package org.galemc.gale.version;
 import com.destroystokyo.paper.PaperVersionFetcher;
 import com.destroystokyo.paper.VersionHistoryManager;
 import com.destroystokyo.paper.util.VersionFetcher;
-import com.google.common.base.Charsets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
@@ -41,18 +40,15 @@ public abstract class AbstractPaperVersionFetcher implements VersionFetcher {
     protected static final Logger LOGGER = LogUtils.getClassLogger();
     protected static final int DISTANCE_ERROR = -1;
     protected static final int DISTANCE_UNKNOWN = -2;
-    protected static final ServerBuildInfo BUILD_INFO = ServerBuildInfo.buildInfo();
 
     // Gale start - branding changes - version fetcher
-    protected final String gitHubBranchName;
     protected final String downloadPage;
     protected final String organizationDisplayName;
     protected final String projectDisplayName;
     protected final String gitHubOrganizationName;
     protected final String gitHubRepoName;
 
-    protected AbstractPaperVersionFetcher(String githubBranchName, String downloadPage, String organizationDisplayName, String projectDisplayName, String gitHubOrganizationName, String gitHubRepoName) {
-        this.gitHubBranchName = githubBranchName;
+    protected AbstractPaperVersionFetcher(String downloadPage, String organizationDisplayName, String projectDisplayName, String gitHubOrganizationName, String gitHubRepoName) {
         this.downloadPage = downloadPage;
         this.organizationDisplayName = organizationDisplayName;
         this.projectDisplayName = projectDisplayName;
@@ -70,7 +66,7 @@ public abstract class AbstractPaperVersionFetcher implements VersionFetcher {
     public @NotNull Component getVersionMessage() {
         final Component updateMessage;
         final ServerBuildInfo build = ServerBuildInfo.buildInfo();
-        if (build.buildNumber().isEmpty() && build.gitCommit().isEmpty()) {
+        if (build.buildNumber().isEmpty() || build.gitCommit().isEmpty()) { // Gale - branding changes - version fetcher
             updateMessage = text("You are running a development version without access to version information", color(0xFF5300));
         } else {
             updateMessage = getUpdateStatusMessage(this.gitHubOrganizationName + "/" + this.gitHubRepoName, build); // Gale - branding changes - version fetcher

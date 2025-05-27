@@ -220,7 +220,7 @@ index 94a9ed024d3859793618152ea559a168bbcbb5e2..e60008693e017bec1b4eb49c84be3898
 -<http://www.gnu.org/philosophy/why-not-lgpl.html>.
 +<https://www.gnu.org/philosophy/why-not-lgpl.html>.
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index d0554ed6631535815e5932930911e3fe1dee8710..8f42fba5615c7e1bda4c27334e39a8e3e434db81 100644
+index d0554ed6631535815e5932930911e3fe1dee8710..4608f94a2cc98e397aed41fa5c65749bdbe92ce7 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
@@ -239,7 +239,7 @@ index d0554ed6631535815e5932930911e3fe1dee8710..8f42fba5615c7e1bda4c27334e39a8e3
  import net.kyori.adventure.text.Component;
  import net.kyori.adventure.text.event.ClickEvent;
  import net.kyori.adventure.text.format.NamedTextColor;
-@@ -30,58 +32,35 @@ import org.slf4j.Logger;
+@@ -30,58 +32,34 @@ import org.slf4j.Logger;
  import static net.kyori.adventure.text.Component.text;
  import static net.kyori.adventure.text.format.TextColor.color;
  
@@ -261,7 +261,6 @@ index d0554ed6631535815e5932930911e3fe1dee8710..8f42fba5615c7e1bda4c27334e39a8e3
 -        return 720000;
 +    public PaperVersionFetcher() {
 +        super(
-+            "main",
 +            "https://papermc.io/downloads/paper",
 +            "PaperMC",
 +            "Paper",
@@ -319,7 +318,7 @@ index d0554ed6631535815e5932930911e3fe1dee8710..8f42fba5615c7e1bda4c27334e39a8e3
  
      private static int fetchDistanceFromSiteApi(final ServerBuildInfo build, final int jenkinsBuild) {
          try {
-@@ -105,42 +84,4 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -105,42 +83,4 @@ public class PaperVersionFetcher implements VersionFetcher {
              return DISTANCE_ERROR;
          }
      }
@@ -415,6 +414,19 @@ index 790bad0494454ca12ee152e3de6da3da634d9b20..5b844d2fea387f2cb655169f458ec0ca
      }
  
      @Override
+diff --git a/src/main/java/io/papermc/paper/command/PaperVersionCommand.java b/src/main/java/io/papermc/paper/command/PaperVersionCommand.java
+index a7d1a959af6a810c0ce6d5baa08e4429e14d4f5b..3a64b6845b1175bee2c0e4bc919eb5395657a28a 100644
+--- a/src/main/java/io/papermc/paper/command/PaperVersionCommand.java
++++ b/src/main/java/io/papermc/paper/command/PaperVersionCommand.java
+@@ -45,7 +45,7 @@ public class PaperVersionCommand {
+     private static final Component FAILED_TO_FETCH = Component.text("Could not fetch version information!", NamedTextColor.RED);
+     private static final Component FETCHING = Component.text("Checking version, please wait...", NamedTextColor.WHITE, TextDecoration.ITALIC);
+ 
+-    private final VersionFetcher versionFetcher = new PaperVersionFetcher();
++    public static final VersionFetcher versionFetcher = new org.dreeam.leaf.version.LeafVersionFetcher(); // Leaf - Rebrand
+     private CompletableFuture<ComputedVersion> computedVersion = CompletableFuture.completedFuture(new ComputedVersion(Component.empty(), -1)); // Precompute-- someday move that stuff out of bukkit
+ 
+     public static LiteralCommandNode<CommandSourceStack> create() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
 index 1354ccfbf525e5e64483ac5f443cc2325ba63850..f6f787db016f4d1ac14648ebf2b8e162a3e85962 100644
 --- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
@@ -429,7 +441,7 @@ index 1354ccfbf525e5e64483ac5f443cc2325ba63850..f6f787db016f4d1ac14648ebf2b8e162
                  // (async tasks must live with race-conditions if they attempt to cancel between these few lines of code)
              }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index a287ad5cce532229f2a514956d34a9358175bc45..d705eae9da291b7d3095994bc4baa7a2c570ddeb 100644
+index a287ad5cce532229f2a514956d34a9358175bc45..05823a2865565446a100e161ca3a44c972868ea7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 @@ -485,7 +485,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
@@ -437,7 +449,7 @@ index a287ad5cce532229f2a514956d34a9358175bc45..d705eae9da291b7d3095994bc4baa7a2
      @Override
      public com.destroystokyo.paper.util.VersionFetcher getVersionFetcher() {
 -        return new com.destroystokyo.paper.PaperVersionFetcher();
-+        return new org.dreeam.leaf.version.LeafVersionFetcher(); // Leaf - Rebrand
++        return io.papermc.paper.command.PaperVersionCommand.versionFetcher; // Leaf - Rebrand
      }
  
      @Override
