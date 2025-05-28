@@ -149,7 +149,7 @@ index 33dd16a26edd2974f04d9a868d3e58e8e3060032..eb0589b203bcf72cd24bb37f2c448c23
  
          // Gale start - Pufferfish - SIMD support
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 9af7dafe03812d96aa477584d4147a68c240ab21..e6fd46b8148e050c4807abf6c8a03e4747bc0da2 100644
+index 60d5539f2a94b19281bcd8bdc2044eae1225278d..e95cbbc2757ed7f8d8aa873cec6bd49269592dae 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -177,7 +177,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -220,7 +220,7 @@ index 9af7dafe03812d96aa477584d4147a68c240ab21..e6fd46b8148e050c4807abf6c8a03e47
          }
  
          // Paper - rewrite chunk system
-@@ -1329,6 +1354,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1333,6 +1358,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          // Leaf end - SparklyPaper - parallel world ticking (only run mid-tick at the end of each tick / fixes concurrency bugs related to executeMidTickTasks)
          // Paper end - rewrite chunk system
  
@@ -228,7 +228,7 @@ index 9af7dafe03812d96aa477584d4147a68c240ab21..e6fd46b8148e050c4807abf6c8a03e47
      }
  
      private void tickBlock(BlockPos pos, Block block) {
-@@ -1345,6 +1371,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1349,6 +1375,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          // Leaf end - SparklyPaper - parallel world ticking (only run mid-tick at the end of each tick / fixes concurrency bugs related to executeMidTickTasks)
          // Paper end - rewrite chunk system
  
