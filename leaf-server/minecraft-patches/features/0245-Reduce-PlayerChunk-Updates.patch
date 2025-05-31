@@ -5,7 +5,7 @@ Subject: [PATCH] Reduce PlayerChunk Updates
 
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a3069b29a1b78012314747d705e27c167acd10b3..3b322c7d65a7f71b94cff660d8702abf646f52e6 100644
+index 6992a53abdcff6299bedf33ba0b1bc6386a1ea74..b89b6c5affd0a84f56756d9c5e92fe176c41061b 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1418,6 +1418,8 @@ public class ServerGamePacketListenerImpl

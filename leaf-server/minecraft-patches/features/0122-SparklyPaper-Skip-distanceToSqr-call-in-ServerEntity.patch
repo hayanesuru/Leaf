@@ -11,7 +11,7 @@ The "distanceToSqr" call is a bit expensive, so avoiding it is pretty nice, arou
 We could also check if the x,y,z coordinates are equal, but for now, let's just keep the identity check, which also helps us since Minecraft's code does reuse the original delta movement Vec3 object
 
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index 0db57c334bef3b6473ae1b734f953e150862eab5..27e8c6a61cfa30b4e5bcc8ac30b0023940d9f310 100644
+index 7fe21b10eefce56dde19baebf9cb6d2d0a8d73ec..b3fe9ea70148cdbefbdb617abaf81fe48ee26685 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
 @@ -211,6 +211,7 @@ public class ServerEntity {

@@ -126,7 +126,7 @@ index a753481afe02a2367c378c7f39206fde23eda00d..753b4255d9e9b9628bc5825a6b4f0f25
  
      private void tickPassenger(Entity ridingEntity, Entity passengerEntity, final boolean isActive) { // Paper - EAR 2
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index f3a6c98fb803f2141be0ef8315ed9294515f1b73..6d8c7d90b0a64e99a2e811ccdb84a03be95e27b3 100644
+index ffb23578d5d7a2a821427dae9bab343ec3c45036..95a15fa08a5bd2bb799a125e03844259038ef290 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1140,16 +1140,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -177,7 +177,7 @@ index f3a6c98fb803f2141be0ef8315ed9294515f1b73..6d8c7d90b0a64e99a2e811ccdb84a03b
      }
  
      private void applyMovementEmissionAndPlaySound(Entity.MovementEmission movementEmission, Vec3 movement, BlockPos pos, BlockState state) {
-@@ -4817,9 +4791,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4831,9 +4805,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public void setDeltaMovement(Vec3 deltaMovement) {
@@ -187,7 +187,7 @@ index f3a6c98fb803f2141be0ef8315ed9294515f1b73..6d8c7d90b0a64e99a2e811ccdb84a03b
      }
  
      public void addDeltaMovement(Vec3 addend) {
-@@ -4927,9 +4899,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4941,9 +4913,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
          // Paper end - Fix MC-4
          if (this.position.x != x || this.position.y != y || this.position.z != z) {

@@ -3,6 +3,7 @@ From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
 Date: Tue, 27 Aug 2024 22:53:08 -0400
 Subject: [PATCH] Don't spawn if lastSpawnState is null
 
+Removed since Leaf 1.21.5, uesless
 
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
 index 6c031f6b1d9c762c8ce7c39a002f9f151347d3a1..6735f9e23c8972b7cf1438a2f3b49d780c1ff78c 100644

@@ -230,7 +230,7 @@ index fb5077450aa9f7b7a03dd20c27a68dfdaab5ef06..f37fd3b9ab725e5b8eb7fccf9b35bbc0
                  player.getInventory().removeItem(ammo);
              }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 817cc2e4f311a626681d94b748a01ae2e3048445..e47e4d11e7dcd8cb4ab6ef965d8b16e6396d2856 100644
+index 22da84734462d09a55bc599db4374e1e4f4d6bd2..2f679f03360a2847ba3d98a6698b7c0210a0b67e 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -170,6 +170,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl

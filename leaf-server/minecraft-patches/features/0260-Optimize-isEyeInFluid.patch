@@ -5,7 +5,7 @@ Subject: [PATCH] Optimize isEyeInFluid
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 6f3fd83c9f0bafe613c780ba56430084e91fdd2a..fbdc7e54df6cf28264b1dc0d395b9f91206cd50e 100644
+index 1b4aae603e965ae15d9b7e204a2ac5d31d045db0..ffb23578d5d7a2a821427dae9bab343ec3c45036 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -269,6 +269,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -18,7 +18,7 @@ index 6f3fd83c9f0bafe613c780ba56430084e91fdd2a..fbdc7e54df6cf28264b1dc0d395b9f91
      public int invulnerableTime;
      protected boolean firstTick = true;
      protected final SynchedEntityData entityData;
-@@ -1997,7 +2000,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2011,7 +2014,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
      private void updateFluidOnEyes() {
          this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
@@ -28,7 +28,7 @@ index 6f3fd83c9f0bafe613c780ba56430084e91fdd2a..fbdc7e54df6cf28264b1dc0d395b9f91
          double eyeY = this.getEyeY();
          if (!(
              this.getVehicle() instanceof AbstractBoat abstractBoat
-@@ -2009,7 +2013,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2023,7 +2027,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              FluidState fluidState = this.level().getFluidState(blockPos);
              double d = blockPos.getY() + fluidState.getHeight(this.level(), blockPos);
              if (d > eyeY) {
@@ -48,7 +48,7 @@ index 6f3fd83c9f0bafe613c780ba56430084e91fdd2a..fbdc7e54df6cf28264b1dc0d395b9f91
              }
          }
      }
-@@ -2089,9 +2104,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2103,9 +2118,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
      }
  

@@ -5,7 +5,7 @@ Subject: [PATCH] Optimise player movement checks
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 658b8af9b1db252d5664956907a5c0db538018b0..6f3fd83c9f0bafe613c780ba56430084e91fdd2a 100644
+index 5d1027cb511be78b1e29d0e3bdc49cc9d6add346..1b4aae603e965ae15d9b7e204a2ac5d31d045db0 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1190,7 +1190,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
