@@ -26126,10 +26126,10 @@ index 0000000000000000000000000000000000000000..f5b46c9f10719ce0e2014eb2289648fc
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4307.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4307.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..8431579068c0b319dc8e3848a5b94f26e75ad486
+index 0000000000000000000000000000000000000000..d2877c20f389d0131e1dd208b464f590671e5d82
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4307.java
-@@ -0,0 +1,223 @@
+@@ -0,0 +1,224 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
@@ -26231,6 +26231,7 @@ index 0000000000000000000000000000000000000000..8431579068c0b319dc8e3848a5b94f26
 +                updateComponentAndUnwrap(root, "minecraft:attribute_modifiers", "modifiers", hiddenComponents);
 +                updateComponentAndUnwrap(root, "minecraft:enchantments", "levels", hiddenComponents);
 +                updateComponentAndUnwrap(root, "minecraft:stored_enchantments", "levels", hiddenComponents);
++                updateComponentAndUnwrap(root, "minecraft:jukebox_playable", "song", hiddenComponents);
 +
 +                final boolean hideTooltip = root.hasKey("minecraft:hide_tooltip");
 +                final boolean hideAdditionalTooltip = root.hasKey("minecraft:hide_additional_tooltip");
@@ -26355,10 +26356,10 @@ index 0000000000000000000000000000000000000000..8431579068c0b319dc8e3848a5b94f26
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4309.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4309.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..8f7a38a91b45a6190367a2be3afcc53f790b788f
+index 0000000000000000000000000000000000000000..6b73fcafb812f24aede33868ef87408a60ef19c8
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4309.java
-@@ -0,0 +1,108 @@
+@@ -0,0 +1,109 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
@@ -26427,6 +26428,7 @@ index 0000000000000000000000000000000000000000..8f7a38a91b45a6190367a2be3afcc53f
 +                        RenameHelper.renameSingle(raid, "TotalHealth", "total_health");
 +                        RenameHelper.renameSingle(raid, "NumGroups", "group_count");
 +                        RenameHelper.renameSingle(raid, "Status", "status");
++                        RenameHelper.renameSingle(raid, "HeroesOfTheVillage", "heroes_of_the_village");
 +                    }
 +                }
 +
