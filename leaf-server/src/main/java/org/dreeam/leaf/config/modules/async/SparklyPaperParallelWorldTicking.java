@@ -8,7 +8,6 @@ import org.dreeam.leaf.config.annotations.Experimental;
 public class SparklyPaperParallelWorldTicking extends ConfigModules {
 
     public String getBasePath() {
-        // Corrected path based on your comment
         return EnumConfigCategory.ASYNC.getBaseKeyName() + ".parallel-world-ticking";
     }
 
@@ -46,7 +45,7 @@ public class SparklyPaperParallelWorldTicking extends ConfigModules {
         asyncUnsafeReadHandling = config.getString(getBasePath() + ".async-unsafe-read-handling", asyncUnsafeReadHandling).toUpperCase();
 
         if (!asyncUnsafeReadHandling.equals("STRICT") && !asyncUnsafeReadHandling.equals("BUFFERED") && !asyncUnsafeReadHandling.equals("DISABLED")) {
-            System.err.println("[Leaf] Invalid value for " + getBasePath() + ".async-unsafe-read-handling: " + asyncUnsafeReadHandling + ". Defaulting to STRICT.");
+            LeafConfig.LOGGER.warn("Invalid value for {}.async-unsafe-read-handling: {}, fallback to STRICT.", getBasePath(), asyncUnsafeReadHandling);
             asyncUnsafeReadHandling = "STRICT";
         }
         if (!enabled) {
@@ -55,7 +54,7 @@ public class SparklyPaperParallelWorldTicking extends ConfigModules {
 
         runAsyncTasksSync = config.getBoolean(getBasePath() + ".run-async-tasks-sync", false); // Default to false now
         if (runAsyncTasksSync) {
-            System.err.println("[Leaf] WARNING: The setting '" + getBasePath() + ".run-async-tasks-sync' is deprecated. Use 'async-unsafe-read-handling: STRICT' for similar safety checks or 'BUFFERED' for buffered reads.");
+            LeafConfig.LOGGER.warn("The setting '{}.run-async-tasks-sync' is deprecated. Use 'async-unsafe-read-handling: STRICT' for similar safety checks or 'BUFFERED' for buffered reads.", getBasePath());
         }
 
         if (enabled) {
