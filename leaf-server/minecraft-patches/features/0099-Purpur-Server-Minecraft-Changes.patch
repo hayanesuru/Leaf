@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Minecraft Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: fd78b90f2041e50b2a94110859b951fc8fa320e9
+Commit: 5d3463aaa0472c7d3c2028ea4d0ad3fb128785d2
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "net/minecraft/CrashReport.java.patch"
