@@ -9,10 +9,10 @@ This patch didn't cahce SectionPos or BlockPos to chunkKey, since it needs to co
 TODO: Cache block pos and section pos, whether need?
 
 diff --git a/ca/spottedleaf/moonrise/common/misc/NearbyPlayers.java b/ca/spottedleaf/moonrise/common/misc/NearbyPlayers.java
-index 1b8193587814225c2ef2c5d9e667436eb50ff6c5..288a3eb57f3431dd624ad8a4b08684563abbc5ad 100644
+index 4200d22606c6a3dbdf282792a4007a51df66963b..4b258f048c73107d0d050a9aa4b4a39788145b17 100644
 --- a/ca/spottedleaf/moonrise/common/misc/NearbyPlayers.java
 +++ b/ca/spottedleaf/moonrise/common/misc/NearbyPlayers.java
-@@ -127,7 +127,7 @@ public final class NearbyPlayers {
+@@ -136,7 +136,7 @@ public final class NearbyPlayers {
      }
  
      public TrackedChunk getChunk(final ChunkPos pos) {
@@ -21,7 +21,7 @@ index 1b8193587814225c2ef2c5d9e667436eb50ff6c5..288a3eb57f3431dd624ad8a4b0868456
      }
  
      public TrackedChunk getChunk(final BlockPos pos) {
-@@ -143,7 +143,7 @@ public final class NearbyPlayers {
+@@ -152,7 +152,7 @@ public final class NearbyPlayers {
      }
  
      public ReferenceList<ServerPlayer> getPlayers(final ChunkPos pos, final NearbyMapType type) {
@@ -97,7 +97,7 @@ index fd3d0f6cb53bc8b6186f0d86575f21007b2c20ed..cddeeab73e7b981701a42c5aad6b4777
          // Paper end - rewrite chunk system
      }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 7b85a9ebdbe3e8bee0a8fc100ede8a3f07eee5ce..c8c99323b6397c3e595e7a9007e5d801ee2ac14a 100644
+index 0471b04833fbca5dfc0cc6575692cdefb83edbed..1f3020f5a051d5f4e5c8fa088f844962c3105573 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -503,7 +503,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

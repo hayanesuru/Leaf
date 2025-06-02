@@ -19,7 +19,7 @@ This patch was ported downstream from the Petal fork.
 Makes most pathfinding-related work happen asynchronously
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 33c99f3b24596fbbf3283b455ea8bf340203e01b..e9ebf23b0b1af85e3738a70acc0eaa3e8980261f 100644
+index fbcf26c0bfb9f496c99bd5a2ba988be06162cd52..cf136bc3d0d285ebde23c6e31c002933564fdcb2 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -243,6 +243,7 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
@@ -560,19 +560,20 @@ index 1f96fd5085bacb4c584576c7cb9f51e7898e9b03..03b6c8c8dcd42e864751e68be9d35d20
 +    // Leaf end - Kaiiju - await on async path processing
  }
 diff --git a/net/minecraft/world/entity/animal/Bee.java b/net/minecraft/world/entity/animal/Bee.java
-index e9dfff7e3726cd2229f89bb39fa1ca4815d99a6d..654ecd20ef4a43f7ffc447c15434ce46ab89efe9 100644
+index e9dfff7e3726cd2229f89bb39fa1ca4815d99a6d..04c0dad21c4cdd464a8ebe830bcdd217bb4156ec 100644
 --- a/net/minecraft/world/entity/animal/Bee.java
 +++ b/net/minecraft/world/entity/animal/Bee.java
-@@ -936,7 +936,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+@@ -936,7 +936,8 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
                          } else {
                              Bee.this.pathfindRandomlyTowards(Bee.this.hivePos);
                          }
 -                    } else {
-+                    } else if (navigation.getPath() != null && navigation.getPath().isProcessed()) { // Kaiiju - petal - check processing
++                        //} else if (navigation.getPath() != null && navigation.getPath().isProcessed()) { // Kaiiju - petal - check processing // todo
++                        } else {
                          boolean flag = this.pathfindDirectlyTowards(Bee.this.hivePos);
                          if (!flag) {
                              this.dropAndBlacklistHive();
-@@ -990,7 +990,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
+@@ -990,7 +991,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {
                  return true;
              } else {
                  Path path = Bee.this.navigation.getPath();

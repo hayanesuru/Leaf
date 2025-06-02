@@ -2,6 +2,8 @@ package org.dreeam.leaf.config.modules.network;
 
 import org.dreeam.leaf.config.ConfigModules;
 import org.dreeam.leaf.config.EnumConfigCategory;
+import org.dreeam.leaf.protocol.DoABarrelRollPackets;
+import org.dreeam.leaf.protocol.DoABarrelRollProtocol;
 
 import java.util.concurrent.ThreadLocalRandom;
 

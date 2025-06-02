@@ -33,6 +33,8 @@ import net.minecraft.world.level.ChunkPos;
 import org.dreeam.leaf.config.modules.misc.RegionFormatConfig;
 import org.slf4j.Logger;
 
+import net.minecraft.server.MinecraftServer;
+
 public class LinearRegionFile implements IRegionFile {
 
     private static final long SUPERBLOCK = -4323716122432332390L;
@@ -148,6 +150,7 @@ public class LinearRegionFile implements IRegionFile {
             // Save only once on shutdown
             if (!closed) return;
         }
+        
         long timestamp = getTimestamp();
         short chunkCount = 0;
 

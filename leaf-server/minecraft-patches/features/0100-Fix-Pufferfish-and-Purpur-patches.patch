@@ -65,7 +65,7 @@ index 35fd539eb2bfe60ad17ab1e558a01273666acc54..445bbdc8da7f1fdbddfc4d8787d78fea
          this.values[this.vp++ & 0xFF] = (int)(l * 100L / Runtime.getRuntime().maxMemory());
          this.repaint();
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index d2c1da7df4961fddbb7db952d817f127ece275d9..39d4ae0ae1ec89007fe1c86dc8d3409902890552 100644
+index 35ca166964e8436154891708f69ac010491b64aa..586c00610fdba178f27391820d623c3a5254529f 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1289,7 +1289,7 @@ public class ServerGamePacketListenerImpl
@@ -78,7 +78,7 @@ index d2c1da7df4961fddbb7db952d817f127ece275d9..39d4ae0ae1ec89007fe1c86dc8d34099
                  this.disconnectAsync(Component.literal("Book too large!"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION); // Paper - kick event cause // Paper - add proper async disconnect
                  return;
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 30e341bd5fca8b95d6911ca94f4aac17962f3269..55854dbacef9b3da9f12f67be21dd49007ea3c45 100644
+index b714c64a318d38e309351f34426406c70d35d384..4e3b73bee5dae2b5921db86cc53b4cd9ebbd06f8 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -522,23 +522,36 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -128,7 +128,7 @@ index 30e341bd5fca8b95d6911ca94f4aac17962f3269..55854dbacef9b3da9f12f67be21dd490
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index eb17ef1e0c350e97149452dbdc79398d71370fb1..d265278a56575529198735c113fa72c53b541669 100644
+index cd8c764f9aa2321c6e157abe958d89868a9f7bd1..ed15b5f29658d799a36dcbd196a8fcb107be4bda 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -1024,13 +1024,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -150,7 +150,7 @@ index eb17ef1e0c350e97149452dbdc79398d71370fb1..d265278a56575529198735c113fa72c5
              }
              // Purpur end - Mob head visibility percent
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index ba2f9ab55e52e25788b38c81e1070ae953b66371..33c99f3b24596fbbf3283b455ea8bf340203e01b 100644
+index 6a94f42c8e048985b94db64fa0405e12824a8a0f..fbcf26c0bfb9f496c99bd5a2ba988be06162cd52 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -1505,10 +1505,6 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
@@ -279,7 +279,7 @@ index 584955d151e95727406bc68d6a6f15a33c0f920c..865a83fc73d79893e9bdedad37a6e398
          HoglinAi.updateActivity(this);
          if (this.isConverting()) {
 diff --git a/net/minecraft/world/entity/monster/piglin/Piglin.java b/net/minecraft/world/entity/monster/piglin/Piglin.java
-index bac328ebdf9f94d156211e03d3913157e2b80374..bf1b33b7bb71ec8387d95d9089f199627a041945 100644
+index 0afdfdc07764a26316c171c2a6722caf786875f2..732d44372cf226ca9d008ebc26d1838237ec96d6 100644
 --- a/net/minecraft/world/entity/monster/piglin/Piglin.java
 +++ b/net/minecraft/world/entity/monster/piglin/Piglin.java
 @@ -357,8 +357,7 @@ public class Piglin extends AbstractPiglin implements CrossbowAttackMob, Invento
@@ -293,7 +293,7 @@ index bac328ebdf9f94d156211e03d3913157e2b80374..bf1b33b7bb71ec8387d95d9089f19962
          PiglinAi.updateActivity(this);
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/projectile/Projectile.java b/net/minecraft/world/entity/projectile/Projectile.java
-index bde9370798c037c494a9c73f328cb251e68c21b1..3a6be0122d49b20f78be6cc8f1c7acb5c2e45f39 100644
+index 9f1c07be83999b7bafdee9238e8bad8c646d42f1..554e679a756dc1bf529053594231a958717f3573 100644
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
 @@ -85,7 +85,7 @@ public abstract class Projectile extends Entity implements TraceableEntity {
@@ -305,3 +305,21 @@ index bde9370798c037c494a9c73f328cb251e68c21b1..3a6be0122d49b20f78be6cc8f1c7acb5
                      } else if (maxProjectileChunkLoadsConfig.perProjectile.resetMovementAfterReachLimit) {
                          this.setDeltaMovement(0, this.getDeltaMovement().y, 0);
                      }
+diff --git a/org/purpurmc/purpur/PurpurWorldConfig.java b/org/purpurmc/purpur/PurpurWorldConfig.java
+index 31cc4e6e68a9743aaaeb296cb31e64526d3f1f73..cadfbb7310fce33eda24d69c39fda5689c7fb882 100644
+--- a/org/purpurmc/purpur/PurpurWorldConfig.java
++++ b/org/purpurmc/purpur/PurpurWorldConfig.java
+@@ -2435,6 +2435,13 @@ public class PurpurWorldConfig {
+         piglinMobGriefingOverride = getBooleanOrDefault("mobs.piglin.mob-griefing-override", piglinMobGriefingOverride);
+         piglinTakeDamageFromWater = getBoolean("mobs.piglin.takes-damage-from-water", piglinTakeDamageFromWater);
+         piglinPortalSpawnModifier = getInt("mobs.piglin.portal-spawn-modifier", piglinPortalSpawnModifier);
++        // Leaf start - Fix Pufferfish and Purpur patches - better input sanitization
++        if (piglinPortalSpawnModifier < 1) {
++            piglinPortalSpawnModifier = 1;
++            log(Level.WARNING, "mobs.piglin.portal-spawn-modifier is set to below minimum allowed value of 1");
++            log(Level.WARNING, "Using value of 1 to prevent issues");
++        }
++        // Leaf end - Fix Pufferfish and Purpur patches - better input sanitization
+         piglinAlwaysDropExp = getBoolean("mobs.piglin.always-drop-exp", piglinAlwaysDropExp);
+         piglinHeadVisibilityPercent = getDouble("mobs.piglin.head-visibility-percent", piglinHeadVisibilityPercent);
+         piglinIgnoresArmorWithGoldTrim = getBoolean("mobs.piglin.ignores-armor-with-gold-trim", piglinIgnoresArmorWithGoldTrim);

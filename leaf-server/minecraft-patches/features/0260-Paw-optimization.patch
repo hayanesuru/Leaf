@@ -94,10 +94,10 @@ index 0f9d18dd29e210ad656da211a3cb1cb25cd4efb1..d1c36cd17c83e7e0167046093c4a2b84
  
              for (LevelChunk levelChunk : list) {
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index a753481afe02a2367c378c7f39206fde23eda00d..753b4255d9e9b9628bc5825a6b4f0f2540f06e7a 100644
+index db3bff36c812a00fc35ebcc6ac6d11ce24040003..e8706189de80a2f0e60882fff0fe891165050f38 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1367,13 +1367,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1371,13 +1371,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      // Paper end - log detailed entity tick information
  
      public void tickNonPassenger(Entity entity) {
@@ -111,7 +111,7 @@ index a753481afe02a2367c378c7f39206fde23eda00d..753b4255d9e9b9628bc5825a6b4f0f25
          entity.setOldPosAndRot();
          entity.tickCount++;
          entity.totalEntityAge++; // Paper - age-like counter for all entities
-@@ -1386,13 +1380,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1390,13 +1384,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          for (Entity entity1 : entity.getPassengers()) {
              this.tickPassenger(entity, entity1, isActive); // Paper - EAR 2
          }

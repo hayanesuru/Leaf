@@ -4,18 +4,18 @@ Date: Fri, 23 May 2025 12:01:42 +0900
 Subject: [PATCH] Cache block path type
 
 
-diff --git a/net/minecraft/server/Bootstrap.java b/net/minecraft/server/Bootstrap.java
-index 83bc2f6b7774c8753a15dbeb00f0c9103713fd1b..20a720253092b4ec0b648edf06a048f92da201e0 100644
---- a/net/minecraft/server/Bootstrap.java
-+++ b/net/minecraft/server/Bootstrap.java
-@@ -60,6 +60,7 @@ public class Bootstrap {
-                         io.papermc.paper.world.worldgen.OptionallyFlatBedrockConditionSource.bootstrap(); // Paper - Flat bedrock generator settings
-                     });
-                     // Paper end
-+                    net.minecraft.world.level.block.Blocks.initPathType(); // Leaf - Cache path type
-                     CreativeModeTabs.validate();
-                     wrapStreams();
-                     bootstrapDuration.set(Duration.between(instant, Instant.now()).toMillis());
+diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
+index 595284787053a5fb7385e8493953c73a19fe7aee..6dec45b376288638433f0d50e474f9713266d99c 100644
+--- a/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -360,6 +360,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+             }
+ 
+             if (org.dreeam.leaf.config.modules.async.AsyncMobSpawning.enabled) mobSpawnExecutor.start(); // Pufferfish
++            net.minecraft.world.level.block.Blocks.initPathType(); // Leaf - Cache path type
+             org.purpurmc.purpur.task.BossBarTask.startAll(); // Purpur - Implement TPSBar
+             if (org.purpurmc.purpur.PurpurConfig.beeCountPayload) org.purpurmc.purpur.task.BeehiveTask.instance().register(); // Purpur - Give bee counts in beehives to Purpur clients
+ 
 diff --git a/net/minecraft/world/level/block/Blocks.java b/net/minecraft/world/level/block/Blocks.java
 index 303bd27d44e4acfee49334235a6704724e3fd616..d001d0859c9508eb06f05010ab1cb8069f9b87cf 100644
 --- a/net/minecraft/world/level/block/Blocks.java

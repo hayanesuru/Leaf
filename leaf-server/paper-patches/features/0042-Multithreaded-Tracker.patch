@@ -71,8 +71,21 @@ index 2a63e8e725fa97da5d4b9fba6bfe19377c7cfbe1..0c286eabd8e4d5e599d93a151874af6b
              set.add(connection.getPlayer().getBukkitEntity().getPlayer());
          }
          return set;
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index cab15624afaeaca5d69206a0b7fff5da54e5ef29..4533fbbbc35ed92177f7704f243a1614a1773ca1 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -2892,7 +2892,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         Iterator<AttributeInstance> iterator = collection.iterator();
+         while (iterator.hasNext()) {
+             AttributeInstance genericInstance = iterator.next();
+-            if (genericInstance.getAttribute() == Attributes.MAX_HEALTH) {
++            if (genericInstance != null && genericInstance.getAttribute() == Attributes.MAX_HEALTH) { // Leaf - Multithreaded tracker
+                 iterator.remove();
+                 break;
+             }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 3a3fbbfa0b82092cd9ac8eab2d179fb9f590aec8..566eab1add471266c8617747c8c25ee04e13c02f 100644
+index 5300a513a295d472752d31a6e8af48bb64b06704..fec0f3b72c1808c5019e95760e3fef19c45e1be0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -1751,6 +1751,26 @@ public class CraftEventFactory {

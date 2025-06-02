@@ -35,10 +35,10 @@ index 78aee57ad8224b0728411c699d2e3844847c9c79..8f5b400bdf5c1c194f75ee98e2f1e984
              this.tickables.get(i).run();
          }
 diff --git a/net/minecraft/server/level/ServerEntity.java b/net/minecraft/server/level/ServerEntity.java
-index 867936866d952c559b6ffa49fdf78acd70a9bab9..b1953701583ba88c524368a52988fea6fb1ab8d2 100644
+index 16b2ca8c96e9561aa57e0903d1e98e6441044b6d..939400c18eb4e87e0bf1b131e1601f4dcaa4885c 100644
 --- a/net/minecraft/server/level/ServerEntity.java
 +++ b/net/minecraft/server/level/ServerEntity.java
-@@ -298,6 +298,7 @@ public class ServerEntity {
+@@ -297,6 +297,7 @@ public class ServerEntity {
              this.entity.hurtMarked = false;
              this.broadcastAndSend(new ClientboundSetEntityMotionPacket(this.entity));
          }

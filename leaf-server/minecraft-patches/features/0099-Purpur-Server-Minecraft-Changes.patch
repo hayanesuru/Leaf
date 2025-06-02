@@ -15750,13 +15750,13 @@ index 248ac9bc820a96fc7653471308b18834fc735a77..ef70ba88e492904c426c7d35df442fa6
                      }
                      // CraftBukkit end
 diff --git a/net/minecraft/world/level/block/PoweredRailBlock.java b/net/minecraft/world/level/block/PoweredRailBlock.java
-index 5ec12356e9f044d99762bf64a6d3bf74856d97a6..e80069d27ff60e0967d9333e2a0d6c8bf2f20a16 100644
+index 6c64fc260669266869f7495ff07e1270dcb4ac75..a2202d2b4352be07b2445064339c61ba6a2521c7 100644
 --- a/net/minecraft/world/level/block/PoweredRailBlock.java
 +++ b/net/minecraft/world/level/block/PoweredRailBlock.java
 @@ -28,7 +28,7 @@ public class PoweredRailBlock extends BaseRailBlock {
      }
  
-     protected boolean findPoweredRailSignal(Level level, BlockPos pos, BlockState state, boolean searchForward, int recursionCount) {
+     public boolean findPoweredRailSignal(Level level, BlockPos pos, BlockState state, boolean searchForward, int recursionCount) {
 -        if (recursionCount >= 8) {
 +        if (recursionCount >= level.purpurConfig.railActivationRange) { // Purpur - Config for powered rail activation distance
              return false;

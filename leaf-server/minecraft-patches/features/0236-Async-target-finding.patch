@@ -149,7 +149,7 @@ index 54910c2e1d6e6bb556e536fda060bd09402e04e8..747eb54f84650a9a507398e3d5352e00
  
          // Gale start - Pufferfish - SIMD support
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 1346cff0018e6d17cb892892c3aeebfb86453b60..a753481afe02a2367c378c7f39206fde23eda00d 100644
+index 1d2c27a7595701895aa3c96339814fd1454a50dd..db3bff36c812a00fc35ebcc6ac6d11ce24040003 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -173,7 +173,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -220,7 +220,7 @@ index 1346cff0018e6d17cb892892c3aeebfb86453b60..a753481afe02a2367c378c7f39206fde
          }
          // Paper - rewrite chunk system
      }
-@@ -1312,6 +1337,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1316,6 +1341,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          }
          // Paper end - rewrite chunk system
  
@@ -228,7 +228,7 @@ index 1346cff0018e6d17cb892892c3aeebfb86453b60..a753481afe02a2367c378c7f39206fde
      }
  
      private void tickBlock(BlockPos pos, Block block) {
-@@ -1325,6 +1351,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1329,6 +1355,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          }
          // Paper end - rewrite chunk system
  
