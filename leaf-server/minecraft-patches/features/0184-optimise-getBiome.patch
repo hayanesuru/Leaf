@@ -57,26 +57,42 @@ index ce2621a87dec1befb016b3437ceb2d02ed6d0b75..c0d941af10ffe8c158dab9db40c7c576
  
      public static boolean isInNetherFortressBounds(BlockPos pos, ServerLevel level, MobCategory category, StructureManager structureManager) {
 diff --git a/net/minecraft/world/level/biome/BiomeManager.java b/net/minecraft/world/level/biome/BiomeManager.java
-index a48175a7ebb1788ace46395621ed78d910178a53..4c0c74b73651cdbc98f0c8f101832e4c23fd0f8d 100644
+index a48175a7ebb1788ace46395621ed78d910178a53..cb6b99dd4504681bdf2f7dbd7e3d2218304f891a 100644
 --- a/net/minecraft/world/level/biome/BiomeManager.java
 +++ b/net/minecraft/world/level/biome/BiomeManager.java
-@@ -15,6 +15,10 @@ public class BiomeManager {
+@@ -15,10 +15,23 @@ public class BiomeManager {
      private final BiomeManager.NoiseBiomeSource noiseBiomeSource;
      private final long biomeZoomSeed;
      private static final double maxOffset = 0.4500000001D; // Leaf - Carpet-Fixes - Optimized getBiome method
 +    // Leaf start - cache getBiome
-+    private final Holder<Biome>[] biomeCache = new Holder[65536];
-+    private final long[] biomeCachePos = new long[65536];
++    private final Holder<Biome>[] biomeCache;
++    private final long[] biomeCachePos;
 +    // Leaf end - cache getBiome
  
      public BiomeManager(BiomeManager.NoiseBiomeSource noiseBiomeSource, long biomeZoomSeed) {
          this.noiseBiomeSource = noiseBiomeSource;
-@@ -29,6 +33,37 @@ public class BiomeManager {
+         this.biomeZoomSeed = biomeZoomSeed;
++        // Leaf start - cache getBiome
++        if (org.dreeam.leaf.config.modules.opt.OptimizeBiome.enabled) {
++            biomeCache = new Holder[65536];
++            biomeCachePos = new long[65536];
++        } else {
++            biomeCache = null;
++            biomeCachePos = null;
++        }
++        // Leaf end - cache getBiome
+     }
+ 
+     public static long obfuscateSeed(long seed) {
+@@ -29,6 +42,40 @@ public class BiomeManager {
          return new BiomeManager(newSource, this.biomeZoomSeed);
      }
  
 +    // Leaf start - cache getBiome
 +    public Holder<Biome> getBiomeCached(BlockPos pos) {
++        if (biomeCache == null) {
++            return getBiome(pos);
++        }
 +        int xMinus2 = pos.getX() - 2;
 +        int yMinus2 = pos.getY() - 2;
 +        int zMinus2 = pos.getZ() - 2;
@@ -109,7 +125,7 @@ index a48175a7ebb1788ace46395621ed78d910178a53..4c0c74b73651cdbc98f0c8f101832e4c
      public Holder<Biome> getBiome(BlockPos pos) {
          // Leaf start - Carpet-Fixes - Optimized getBiome method
          int xMinus2 = pos.getX() - 2;
-@@ -126,9 +161,18 @@ public class BiomeManager {
+@@ -126,9 +173,18 @@ public class BiomeManager {
          return Mth.square(zNoise + fiddle2) + Mth.square(yNoise + fiddle1) + Mth.square(xNoise + fiddle);
      }
  

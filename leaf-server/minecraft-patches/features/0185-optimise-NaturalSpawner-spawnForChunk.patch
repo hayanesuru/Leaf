@@ -5,45 +5,27 @@ Subject: [PATCH] optimise NaturalSpawner#spawnForChunk
 
 
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index c0d941af10ffe8c158dab9db40c7c5767b6cfd6e..878eb750f2d2bddae81d9fbfb772d13077b37d51 100644
+index c0d941af10ffe8c158dab9db40c7c5767b6cfd6e..450f17badaa3f6c8f1cdb9e6dc76828b70afe6fc 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -156,8 +156,15 @@ public final class NaturalSpawner {
-     }
+@@ -238,10 +238,13 @@ public final class NaturalSpawner {
+         // Paper end - throttle failed spawn attempts
+     ) {
+         // Paper end - Optional per player mob spawns
+-        BlockPos randomPosWithin = getRandomPosWithin(level, chunk);
+-        if (randomPosWithin.getY() >= level.getMinY() + 1) {
+-            return spawnCategoryForPosition(category, level, chunk, randomPosWithin, filter, callback, maxSpawns, trackEntity, false); // Paper - Optional per player mob spawns // Paper - throttle failed spawn attempts
++        // Leaf start
++        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
++        mutableRandomPosWithin(pos, level, chunk);
++        if (pos.getY() >= level.getMinY() + 1) {
++            return spawnCategoryForPosition(category, level, chunk, pos, filter, callback, maxSpawns, trackEntity, false); // Paper - Optional per player mob spawns // Paper - throttle failed spawn attempts
+         }
++        // Leaf end
  
-     public static void spawnForChunk(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, List<MobCategory> categories) {
-+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(); // Leaf
-         for (MobCategory mobCategory : categories) {
-             // Paper start - Optional per player mob spawns
-+            // Leaf start - reduce 3/4 while failed 16 canSpawn attempts
-+            if (chunk.failedSpawnAttempts[mobCategory.ordinal()] >= 16 && (level.random.nextInt(4)) != 0) {
-+                continue;
-+            }
-+            // Leaf end - reduce 3/4 while failed 16 canSpawn attempts
-+            // Paper start - Optional per player mob attempts
-             final boolean canSpawn;
-             int maxSpawns = Integer.MAX_VALUE;
-             if (level.paperConfig().entities.spawning.perPlayerMobSpawns) {
-@@ -197,9 +204,16 @@ public final class NaturalSpawner {
-                 canSpawn = spawnState.canSpawnForCategoryLocal(mobCategory, chunk.getPos());
-             }
-             if (canSpawn) {
-+                // Leaf start
-                 // Paper start - throttle failed spawn attempts
--                int spawnCount = spawnCategoryForChunk(mobCategory, level, chunk, spawnState::canSpawn, spawnState::afterSpawn,
--                    maxSpawns, level.paperConfig().entities.spawning.perPlayerMobSpawns ? level.getChunkSource().chunkMap::updatePlayerMobTypeMap : null, false);
-+                int spawnCount = 0;
-+                final Consumer<Entity> trackEntity = level.paperConfig().entities.spawning.perPlayerMobSpawns ? level.getChunkSource().chunkMap::updatePlayerMobTypeMap : null;
-+                // Paper end - Optional per player mob spawns
-+                mutableRandomPosWithin(pos, level, chunk);
-+                if (pos.getY() >= level.getMinY() + 1) {
-+                    spawnCount = spawnCategoryForPosition(mobCategory, level, chunk, pos, spawnState::canSpawn, spawnState::afterSpawn, maxSpawns, trackEntity, false);// Paper - Optional per player mob spawns // Paper - throttle failed spawn attempts
-+                } // Paper - throttle failed spawn attempts
-+                // Leaf end
-                 if (spawnCount == 0) {
-                     chunk.failedSpawnAttempts[mobCategory.ordinal()]++;
-                 } else {
-@@ -275,31 +289,60 @@ public final class NaturalSpawner {
+         return 0; // Paper - throttle failed spawn attempts
+     }
+@@ -275,31 +278,60 @@ public final class NaturalSpawner {
          StructureManager structureManager = level.structureManager();
          ChunkGenerator generator = level.getChunkSource().getGenerator();
          int y = pos.getY();
@@ -113,7 +95,7 @@ index c0d941af10ffe8c158dab9db40c7c5767b6cfd6e..878eb750f2d2bddae81d9fbfb772d130
                              if (spawnerData == null) {
                                  Optional<MobSpawnSettings.SpawnerData> randomSpawnMobAt = getRandomSpawnMobAt(
                                      level, structureManager, generator, category, level.random, mutableBlockPos
-@@ -368,8 +411,8 @@ public final class NaturalSpawner {
+@@ -368,8 +400,8 @@ public final class NaturalSpawner {
  
      private static boolean isRightDistanceToPlayerAndSpawnPoint(ServerLevel level, ChunkAccess chunk, BlockPos.MutableBlockPos pos, double distance) {
          return !(distance <= 576.0)
@@ -124,7 +106,7 @@ index c0d941af10ffe8c158dab9db40c7c5767b6cfd6e..878eb750f2d2bddae81d9fbfb772d130
      }
  
      // Paper start - PreCreatureSpawnEvent
-@@ -474,6 +517,17 @@ public final class NaturalSpawner {
+@@ -474,6 +506,17 @@ public final class NaturalSpawner {
          }
      }
  

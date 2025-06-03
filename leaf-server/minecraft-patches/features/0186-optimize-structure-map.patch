@@ -5,7 +5,7 @@ Subject: [PATCH] optimize structure map
 
 
 diff --git a/net/minecraft/world/level/chunk/ChunkAccess.java b/net/minecraft/world/level/chunk/ChunkAccess.java
-index 50a9903367f49ece2a267d10944b1515c7b93859..db6828ec94682c16b5b7ec6fc6262df256781f01 100644
+index 50a9903367f49ece2a267d10944b1515c7b93859..ceabb277bef2633de8f55e16431dbb4d0869817b 100644
 --- a/net/minecraft/world/level/chunk/ChunkAccess.java
 +++ b/net/minecraft/world/level/chunk/ChunkAccess.java
 @@ -76,8 +76,8 @@ public abstract class ChunkAccess implements BiomeManager.NoiseBiomeSource, Ligh
@@ -24,7 +24,7 @@ index 50a9903367f49ece2a267d10944b1515c7b93859..db6828ec94682c16b5b7ec6fc6262df2
  
      public Map<Structure, StructureStart> getAllStarts() {
 -        return Collections.unmodifiableMap(this.structureStarts);
-+        return it.unimi.dsi.fastutil.objects.Object2ObjectMaps.unmodifiable((it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<Structure, StructureStart>) this.structureStarts); // Leaf
++        return this.structureStarts; // Leaf
      }
  
      public void setAllStarts(Map<Structure, StructureStart> structureStarts) {
@@ -40,7 +40,7 @@ index 50a9903367f49ece2a267d10944b1515c7b93859..db6828ec94682c16b5b7ec6fc6262df2
      @Override
      public Map<Structure, LongSet> getAllReferences() {
 -        return Collections.unmodifiableMap(this.structuresRefences);
-+        return it.unimi.dsi.fastutil.objects.Object2ObjectMaps.unmodifiable((it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap<Structure, LongSet>) this.structuresRefences); // Leaf
++        return this.structuresRefences; // Leaf
      }
  
      @Override
