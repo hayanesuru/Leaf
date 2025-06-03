@@ -1,0 +1,87 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: violetc <58360096+s-yh-china@users.noreply.github.com>
+Date: Thu, 3 Aug 2023 20:36:38 +0800
+Subject: [PATCH] Leaves: Replay Mod API
+
+Co-authored-by: alazeprt <nono135246@126.com>
+
+Original license: GPLv3
+Original project: https://github.com/LeavesMC/Leaves
+
+This patch is Powered by ReplayMod(https://github.com/ReplayMod)
+
+diff --git a/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java b/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
+index 4c003acccdd2dd17918b15316001e52e7670123e..780f3a48152fef6a06dc67bf7fbd1965b13bc4fa 100644
+--- a/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
++++ b/src/main/java/io/papermc/paper/plugin/manager/PaperEventManager.java
+@@ -40,6 +40,11 @@ class PaperEventManager {
+         } else if (!event.isAsynchronous() && !this.server.isPrimaryThread() && !this.server.isStopping()) {
+             throw new IllegalStateException(event.getEventName() + " may only be triggered synchronously.");
+         }
++        // Leaves start - skip photographer
++        if (event instanceof org.bukkit.event.player.PlayerEvent playerEvent && playerEvent.getPlayer() instanceof org.leavesmc.leaves.entity.Photographer) {
++            return;
++        }
++        // Leaves end - skip photographer
+ 
+         HandlerList handlers = event.getHandlers();
+         RegisteredListener[] listeners = handlers.getRegisteredListeners();
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index d877dbabb4e0ee1b167c9f56669ecd5b629b6146..2ea89dd5693e111367bc4c085bf30e9ddb0256a2 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -317,6 +317,7 @@ public final class CraftServer implements Server {
+     private final io.papermc.paper.potion.PaperPotionBrewer potionBrewer;
+     public final io.papermc.paper.SparksFly spark;
+     private final ServerConfiguration serverConfig = new PaperServerConfiguration();
++    private final org.leavesmc.leaves.entity.CraftPhotographerManager photographerManager = new org.leavesmc.leaves.entity.CraftPhotographerManager(); // Leaves
+ 
+     // Paper start - Folia region threading API
+     private final io.papermc.paper.threadedregions.scheduler.FallbackRegionScheduler regionizedScheduler = new io.papermc.paper.threadedregions.scheduler.FallbackRegionScheduler();
+@@ -411,7 +412,7 @@ public final class CraftServer implements Server {
+     public CraftServer(DedicatedServer console, PlayerList playerList) {
+         this.console = console;
+         this.playerList = (DedicatedPlayerList) playerList;
+-        this.playerView = Collections.unmodifiableList(Lists.transform(playerList.players, new Function<ServerPlayer, CraftPlayer>() {
++        this.playerView = Collections.unmodifiableList(Lists.transform(playerList.realPlayers, new Function<ServerPlayer, CraftPlayer>() { // Leaves - replay api
+             @Override
+             public CraftPlayer apply(ServerPlayer player) {
+                 return player.getBukkitEntity();
+@@ -3372,4 +3373,11 @@ public final class CraftServer implements Server {
+         return MinecraftServer.lastTickOversleepTime;
+     }
+     // Gale end - YAPFA - last tick time - API
++
++    // Leaves start - replay mod api
++    @Override
++    public org.leavesmc.leaves.entity.CraftPhotographerManager getPhotographerManager() {
++        return photographerManager;
++    }
++    // Leaves end - replay mod api
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+index 395951c968e95adffa97e1851d104faf192744fd..30d2ff810d8f9f1bdf785e9165c032eaa177ee43 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+@@ -127,6 +127,8 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+             return new CraftHumanEntity(server, (net.minecraft.world.entity.player.Player) entity);
+         }
+ 
++        if (entity instanceof org.leavesmc.leaves.replay.ServerPhotographer photographer) { return new org.leavesmc.leaves.entity.CraftPhotographer(server, photographer); } // Leaves - replay mod api
++
+         // Special case complex part, since there is no extra entity type for them
+         if (entity instanceof EnderDragonPart complexPart) {
+             if (complexPart.parentMob instanceof EnderDragon) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 03c93d7f17a0c5440cb1d8078e3e241cbd1f1c41..578b026cf6dbf2b00b796a7b69272c20152dc882 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -2283,7 +2283,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+     @Override
+     public boolean canSee(Player player) {
+-        return this.canSee((org.bukkit.entity.Entity) player);
++        return !(player instanceof org.leavesmc.leaves.entity.Photographer) && this.canSee((org.bukkit.entity.Entity) player); // Leaves - skip photographer
+     }
+ 
+     @Override

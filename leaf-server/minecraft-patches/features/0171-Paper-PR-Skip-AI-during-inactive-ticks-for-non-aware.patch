@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: froobynooby <froobynooby@froobworld.com>
+Date: Mon, 5 Aug 2024 20:33:57 +0800
+Subject: [PATCH] Paper PR: Skip AI during inactive ticks for non-aware mobs
+
+Original license: GPLv3
+Original project: https://github.com/PaperMC/Paper
+Paper pull request: https://github.com/PaperMC/Paper/pull/10990
+
+diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
+index cf136bc3d0d285ebde23c6e31c002933564fdcb2..c15b6e32bd00650366dc4ecba2abeb6bfb98d638 100644
+--- a/net/minecraft/world/entity/Mob.java
++++ b/net/minecraft/world/entity/Mob.java
+@@ -207,6 +207,11 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+     @Override
+     public void inactiveTick() {
+         super.inactiveTick();
++        // Paper start - Skip AI during inactive ticks for non-aware mobs
++        if (org.dreeam.leaf.config.modules.opt.SkipAIForNonAwareMob.enabled && !(this.isEffectiveAi() && this.aware)) {
++            return;
++        }
++        // Paper end - Skip AI during inactive ticks for non-aware mobs
+         boolean isThrottled = org.dreeam.leaf.config.modules.opt.ThrottleInactiveGoalSelectorTick.enabled && _pufferfish_inactiveTickDisableCounter++ % 20 != 0; // Pufferfish - throttle inactive goal selector ticking
+         if (this.goalSelector.inactiveTick(this.activatedPriority, true) && !isThrottled) { // Pufferfish - pass activated priroity // Pufferfish - throttle inactive goal selector ticking
+             this.goalSelector.tick();
+diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
+index 530a7873a0796bb5e8e25b91586d6c4cfa00a08c..48384d7a9cb41506e0b5024baf806e56497e9d62 100644
+--- a/net/minecraft/world/entity/npc/Villager.java
++++ b/net/minecraft/world/entity/npc/Villager.java
+@@ -374,7 +374,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+         if (this.getUnhappyCounter() > 0) {
+             this.setUnhappyCounter(this.getUnhappyCounter() - 1);
+         }
+-        if (this.isEffectiveAi()) {
++        if (this.isEffectiveAi() && (!org.dreeam.leaf.config.modules.opt.SkipAIForNonAwareMob.enabled || this.aware)) { // Paper - Skip AI during inactive ticks for non-aware mobs
+             if (this.level().spigotConfig.tickInactiveVillagers) {
+                 this.customServerAiStep(this.level().getMinecraftWorld());
+             } else {
