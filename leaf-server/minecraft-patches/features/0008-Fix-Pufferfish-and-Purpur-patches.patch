@@ -5,7 +5,7 @@ Subject: [PATCH] Fix Pufferfish and Purpur patches
 
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 5fb7a76faf72f7d91122e5bf01c51853164a73c0..011b1a8c13d41c6f1d54d9247b7e61a548f43382 100644
+index 68442c7d3d34596b0b0bdc47bcf56d44090fcbce..61f9e55d6cfeecaf01d6c63a1e7db1c1706bfc62 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -277,7 +277,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -26,7 +26,7 @@ index 5fb7a76faf72f7d91122e5bf01c51853164a73c0..011b1a8c13d41c6f1d54d9247b7e61a5
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> threadFunction) {
          ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.init(); // Paper - rewrite data converter system
-@@ -1250,9 +1250,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1258,9 +1258,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                      tps15.add(currentTps, diff);
  
                      // Backwards compat with bad plugins
@@ -42,7 +42,7 @@ index 5fb7a76faf72f7d91122e5bf01c51853164a73c0..011b1a8c13d41c6f1d54d9247b7e61a5
                      lagging = recentTps[0] < org.purpurmc.purpur.PurpurConfig.laggingThreshold; // Purpur - Lagging threshold
                      tickSection = currentTime;
                  }
-@@ -1280,7 +1283,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1288,7 +1291,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                      this.mayHaveDelayedTasks = true;
                      this.delayedTasksMaxNextTickTimeNanos = Math.max(Util.getNanos() + l, this.nextTickTimeNanos);
                      // Purpur start - Configurable TPS Catchup

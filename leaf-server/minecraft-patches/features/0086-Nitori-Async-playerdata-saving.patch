@@ -7,13 +7,13 @@ Original license: GPL v3
 Original project: https://github.com/Gensokyo-Reimagined/Nitori
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 5a0d30b8ff5e377224de67c9f464bd1c694a4397..1cb60107d95296fc9e2c106d70838c057564abeb 100644
+index 0e43622a95d12c249ff4a858d3064e1d44dfd1a6..3ff39af93f5ea857099dbff6251879c7f3f371d4 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1069,6 +1069,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-         io.papermc.paper.log.CustomLogManager.forceReset(); // Paper - Reset loggers after shutdown
-         this.onServerExit();
-         // Paper end - Improved watchdog support - move final shutdown items here
+@@ -1077,6 +1077,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             }
+         }
+         // Leaf end - Async mob spawning
 +        // Leaf start - Async playerdata saving
 +        org.dreeam.leaf.async.AsyncPlayerDataSaving.IO_POOL.shutdown();
 +        try {

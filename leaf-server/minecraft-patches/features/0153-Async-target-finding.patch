@@ -106,7 +106,7 @@ index b6af8da084c83ee38bb3ecea6a98feb0c1c74d2a..561723eeb1dd80f7fdd9aff33f6e1c4c
          final EntityCollectionBySection byType = this.entitiesByType.get(entity.getType());
          byType.removeEntity(entity, sectionIndex);
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 1431a0fac3c8a846535c1bd2f60a1279d08f14ea..c92005fcb9c6fdf63bf0854122d59d130315db85 100644
+index 97e5adf229ba514656d670521198b1f4c34c7d05..272204ae3f94f6f50454d0b5f5bcdd264971774e 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -292,6 +292,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -117,7 +117,7 @@ index 1431a0fac3c8a846535c1bd2f60a1279d08f14ea..c92005fcb9c6fdf63bf0854122d59d13
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> threadFunction) {
          ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.init(); // Paper - rewrite data converter system
-@@ -1094,6 +1095,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1102,6 +1103,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              org.dreeam.leaf.async.AsyncPlayerDataSaving.IO_POOL.awaitTermination(30, java.util.concurrent.TimeUnit.SECONDS);
          } catch (java.lang.InterruptedException ignored) {}
          // Leaf end - Async playerdata saving
