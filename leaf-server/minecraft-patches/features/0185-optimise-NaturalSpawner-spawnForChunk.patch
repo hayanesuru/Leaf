@@ -5,7 +5,7 @@ Subject: [PATCH] optimise NaturalSpawner#spawnForChunk
 
 
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index c0d941af10ffe8c158dab9db40c7c5767b6cfd6e..bbbb1b1f37406d86d15dca107e8b4f3e614a280d 100644
+index c0d941af10ffe8c158dab9db40c7c5767b6cfd6e..878eb750f2d2bddae81d9fbfb772d13077b37d51 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
 @@ -156,8 +156,15 @@ public final class NaturalSpawner {
@@ -43,7 +43,7 @@ index c0d941af10ffe8c158dab9db40c7c5767b6cfd6e..bbbb1b1f37406d86d15dca107e8b4f3e
                  if (spawnCount == 0) {
                      chunk.failedSpawnAttempts[mobCategory.ordinal()]++;
                  } else {
-@@ -275,24 +289,53 @@ public final class NaturalSpawner {
+@@ -275,31 +289,60 @@ public final class NaturalSpawner {
          StructureManager structureManager = level.structureManager();
          ChunkGenerator generator = level.getChunkSource().getGenerator();
          int y = pos.getY();
@@ -105,6 +105,14 @@ index c0d941af10ffe8c158dab9db40c7c5767b6cfd6e..bbbb1b1f37406d86d15dca107e8b4f3e
                      mutableBlockPos.set(x, y, z);
                      double d = x + 0.5;
                      double d1 = z + 0.5;
+                     Player nearestPlayer = level.getNearestPlayer(d, y, d1, -1.0, level.purpurConfig.mobSpawningIgnoreCreativePlayers); // Purpur - mob spawning option to ignore creative players
+                     if (nearestPlayer != null) {
+                         double d2 = nearestPlayer.distanceToSqr(d, y, d1);
+-                        if (level.isLoadedAndInBounds(mutableBlockPos) && isRightDistanceToPlayerAndSpawnPoint(level, chunk, mutableBlockPos, d2)) { // Paper - don't load chunks for mob spawn
++                        if (level.getWorldBorder().isWithinBounds(mutableBlockPos) && (chunk.getPos().longKey == ChunkPos.asLong(mutableBlockPos) || level.getChunkIfLoadedImmediately(mutableBlockPos.getX() >> 4, mutableBlockPos.getZ() >> 4) != null) && isRightDistanceToPlayerAndSpawnPoint(level, chunk, mutableBlockPos, d2)) { // Paper - don't load chunks for mob spawn // Leaf
+                             if (spawnerData == null) {
+                                 Optional<MobSpawnSettings.SpawnerData> randomSpawnMobAt = getRandomSpawnMobAt(
+                                     level, structureManager, generator, category, level.random, mutableBlockPos
 @@ -368,8 +411,8 @@ public final class NaturalSpawner {
  
      private static boolean isRightDistanceToPlayerAndSpawnPoint(ServerLevel level, ChunkAccess chunk, BlockPos.MutableBlockPos pos, double distance) {
