@@ -17,18 +17,6 @@ index a26a5311f87873e0d4d26fda9cb8956a32ee81e8..9405f1f211db3fa2d313429866de454e
                  && (!this.structures.isPresent() || isLoaded && level.structureManager().getStructureWithPieceAt(blockPos, this.structures.get()).isValid())
                  && (!this.smokey.isPresent() || isLoaded && this.smokey.get() == CampfireBlock.isSmokeyPos(level, blockPos))
                  && (!this.light.isPresent() || this.light.get().matches(level, blockPos))
-diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index eb849c57992658005e0f514c6f7923f8ca43bebf..29dc898b2586868da961616524eaad824f0a24b3 100644
---- a/net/minecraft/server/level/ServerLevel.java
-+++ b/net/minecraft/server/level/ServerLevel.java
-@@ -899,6 +899,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-             this.advanceWeatherCycle();
-         }
- 
-+        if (runsNormally && (random.nextInt(32) == 0)) this.getBiomeManager().clearCache(); // Leaf - cache getBiome
-         // Leaf start - SparklyPaper - parallel world ticking
-         if (!org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) {
-             this.moonrise$midTickTasks();
 diff --git a/net/minecraft/world/level/LevelReader.java b/net/minecraft/world/level/LevelReader.java
 index 26c8c1e5598daf3550aef05b12218c47bda6618b..91b2fc5b2da6566b05fef1111665b895cadad343 100644
 --- a/net/minecraft/world/level/LevelReader.java
@@ -69,7 +57,7 @@ index ce2621a87dec1befb016b3437ceb2d02ed6d0b75..c0d941af10ffe8c158dab9db40c7c576
  
      public static boolean isInNetherFortressBounds(BlockPos pos, ServerLevel level, MobCategory category, StructureManager structureManager) {
 diff --git a/net/minecraft/world/level/biome/BiomeManager.java b/net/minecraft/world/level/biome/BiomeManager.java
-index a48175a7ebb1788ace46395621ed78d910178a53..c9e3011ff873ace4d25727a5d82e249b8f028de0 100644
+index a48175a7ebb1788ace46395621ed78d910178a53..4c0c74b73651cdbc98f0c8f101832e4c23fd0f8d 100644
 --- a/net/minecraft/world/level/biome/BiomeManager.java
 +++ b/net/minecraft/world/level/biome/BiomeManager.java
 @@ -15,6 +15,10 @@ public class BiomeManager {
@@ -83,14 +71,11 @@ index a48175a7ebb1788ace46395621ed78d910178a53..c9e3011ff873ace4d25727a5d82e249b
  
      public BiomeManager(BiomeManager.NoiseBiomeSource noiseBiomeSource, long biomeZoomSeed) {
          this.noiseBiomeSource = noiseBiomeSource;
-@@ -29,6 +33,40 @@ public class BiomeManager {
+@@ -29,6 +33,37 @@ public class BiomeManager {
          return new BiomeManager(newSource, this.biomeZoomSeed);
      }
  
 +    // Leaf start - cache getBiome
-+    public void clearCache() {
-+        java.util.Arrays.fill(this.biomeCache, null);
-+    }
 +    public Holder<Biome> getBiomeCached(BlockPos pos) {
 +        int xMinus2 = pos.getX() - 2;
 +        int yMinus2 = pos.getY() - 2;
@@ -124,7 +109,7 @@ index a48175a7ebb1788ace46395621ed78d910178a53..c9e3011ff873ace4d25727a5d82e249b
      public Holder<Biome> getBiome(BlockPos pos) {
          // Leaf start - Carpet-Fixes - Optimized getBiome method
          int xMinus2 = pos.getX() - 2;
-@@ -126,9 +164,18 @@ public class BiomeManager {
+@@ -126,9 +161,18 @@ public class BiomeManager {
          return Mth.square(zNoise + fiddle2) + Mth.square(yNoise + fiddle1) + Mth.square(xNoise + fiddle);
      }
  
