@@ -48,7 +48,7 @@ public class AsteorBarProtocol implements LeavesProtocol {
     }
 
     @ProtocolHandler.MinecraftRegister(onlyNamespace = true)
-    public static void onPlayerSubscribed(@NotNull ServerPlayer player) {
+    public static void onPlayerSubscribed(@NotNull ServerPlayer player, ResourceLocation id) {
         players.add(player);
     }
 
