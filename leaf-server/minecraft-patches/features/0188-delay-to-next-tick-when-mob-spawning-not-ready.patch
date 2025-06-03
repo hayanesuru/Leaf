@@ -55,7 +55,7 @@ index d61da0fbe7f6c181e4084ce60bfe7dab86f361ad..d9f74ac79e67ed7b9619041cce763b60
                  this.level.tickChunk(levelChunk, _int);
              }
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index 8db4fd335e661111c52721be2f5ffc65a2c843d2..336bb6dd39a4678ea5d992b8857e79d69d673dd8 100644
+index 2f709cca7180e2f4874a7f80ed32498aba6dcac0..32c9106b70ef7ab85077d6ec4bd7d7b84d9f8c00 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
 @@ -156,6 +156,11 @@ public final class NaturalSpawner {
@@ -70,7 +70,7 @@ index 8db4fd335e661111c52721be2f5ffc65a2c843d2..336bb6dd39a4678ea5d992b8857e79d6
          for (MobCategory mobCategory : categories) {
              // Paper start - Optional per player mob spawns
              final boolean canSpawn;
-@@ -186,7 +191,7 @@ public final class NaturalSpawner {
+@@ -185,7 +190,7 @@ public final class NaturalSpawner {
                  }
                  // Paper end - throttle failed spawn attempts
                  if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {

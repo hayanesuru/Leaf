@@ -5,10 +5,10 @@ Subject: [PATCH] throttle mob spawning
 
 
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index 450f17badaa3f6c8f1cdb9e6dc76828b70afe6fc..8db4fd335e661111c52721be2f5ffc65a2c843d2 100644
+index 450f17badaa3f6c8f1cdb9e6dc76828b70afe6fc..2f709cca7180e2f4874a7f80ed32498aba6dcac0 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -160,6 +160,18 @@ public final class NaturalSpawner {
+@@ -160,6 +160,17 @@ public final class NaturalSpawner {
              // Paper start - Optional per player mob spawns
              final boolean canSpawn;
              int maxSpawns = Integer.MAX_VALUE;
@@ -17,7 +17,6 @@ index 450f17badaa3f6c8f1cdb9e6dc76828b70afe6fc..8db4fd335e661111c52721be2f5ffc65
 +                int spawnChance = org.dreeam.leaf.config.modules.opt.ThrottleNaturalSpawnMob.spawnChance[mobCategory.ordinal()];
 +                long failedAttempt = org.dreeam.leaf.config.modules.opt.ThrottleNaturalSpawnMob.failedAttempts[mobCategory.ordinal()];
 +                if (failedAttempt >= 0L
-+                    && spawnChance >= 0
 +                    && chunk.failedSpawnAttempts[mobCategory.ordinal()] >= failedAttempt
 +                    && (level.random.nextInt() & 1023) > spawnChance) {
 +                    continue;

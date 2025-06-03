@@ -21,8 +21,11 @@ public class ThrottleNaturalSpawnMob extends ConfigModules {
         spawnChance = new int[categories.length];
         for (int i = 0; i < categories.length; i++) {
             String category = getBasePath() + "." + categories[i].getSerializedName();
-            failedAttempts[i] = config.getLong(category + ".failed-attempts", -1);
-            spawnChance[i] = (int) Math.round(config.getDouble(category + ".spawn-chance", 100.0) * 10.24);
+            long attempts = config.getLong(category + ".min-failed-attempts", 8);
+            double chance = config.getDouble(category + ".spawn-chance", 25.0);
+
+            failedAttempts[i] = Math.max(-1, attempts);
+            spawnChance[i] = Math.clamp(0, (int) Math.round(chance * 10.24), 1024);
         }
     }
 }
