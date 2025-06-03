@@ -5,7 +5,7 @@ Subject: [PATCH] optimise NaturalSpawner#spawnForChunk
 
 
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index ce2621a87dec1befb016b3437ceb2d02ed6d0b75..a6831e701a0ffbc91ea947c09c39ac7d919d1870 100644
+index c0d941af10ffe8c158dab9db40c7c5767b6cfd6e..bbbb1b1f37406d86d15dca107e8b4f3e614a280d 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
 @@ -156,8 +156,15 @@ public final class NaturalSpawner {
@@ -43,14 +43,20 @@ index ce2621a87dec1befb016b3437ceb2d02ed6d0b75..a6831e701a0ffbc91ea947c09c39ac7d
                  if (spawnCount == 0) {
                      chunk.failedSpawnAttempts[mobCategory.ordinal()]++;
                  } else {
-@@ -275,24 +289,48 @@ public final class NaturalSpawner {
+@@ -275,24 +289,53 @@ public final class NaturalSpawner {
          StructureManager structureManager = level.structureManager();
          ChunkGenerator generator = level.getChunkSource().getGenerator();
          int y = pos.getY();
 +        int posX = pos.getX(); // Leaf
 +        int posZ = pos.getZ(); // Leaf
          int i = 0; // Paper - throttle failed spawn attempts
-         BlockState blockState = level.getBlockStateIfLoadedAndInBounds(pos); // Paper - don't load chunks for mob spawn
+-        BlockState blockState = level.getBlockStateIfLoadedAndInBounds(pos); // Paper - don't load chunks for mob spawn
++        // Leaf start
++        if (!level.getWorldBorder().isWithinBounds(pos) || level.isOutsideBuildHeight(pos)) {
++            return i;
++        }
++        BlockState blockState = chunk.getPos().longKey == ChunkPos.asLong(pos) ? chunk.getBlockState(posX, y, posZ) : level.getBlockStateIfLoaded(pos);
++        // Leaf end
          if (blockState != null && !blockState.isRedstoneConductor(chunk, pos)) { // Paper - don't load chunks for mob spawn
 -            BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 +            BlockPos.MutableBlockPos mutableBlockPos = pos instanceof BlockPos.MutableBlockPos pos2 ? pos2 : new BlockPos.MutableBlockPos(); // Leaf
@@ -99,7 +105,7 @@ index ce2621a87dec1befb016b3437ceb2d02ed6d0b75..a6831e701a0ffbc91ea947c09c39ac7d
                      mutableBlockPos.set(x, y, z);
                      double d = x + 0.5;
                      double d1 = z + 0.5;
-@@ -368,8 +406,8 @@ public final class NaturalSpawner {
+@@ -368,8 +411,8 @@ public final class NaturalSpawner {
  
      private static boolean isRightDistanceToPlayerAndSpawnPoint(ServerLevel level, ChunkAccess chunk, BlockPos.MutableBlockPos pos, double distance) {
          return !(distance <= 576.0)
@@ -110,7 +116,7 @@ index ce2621a87dec1befb016b3437ceb2d02ed6d0b75..a6831e701a0ffbc91ea947c09c39ac7d
      }
  
      // Paper start - PreCreatureSpawnEvent
-@@ -474,6 +512,17 @@ public final class NaturalSpawner {
+@@ -474,6 +517,17 @@ public final class NaturalSpawner {
          }
      }
  
