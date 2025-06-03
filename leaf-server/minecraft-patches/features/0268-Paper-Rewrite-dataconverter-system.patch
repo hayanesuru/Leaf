@@ -128,10 +128,10 @@ index 0000000000000000000000000000000000000000..a57dd1e28fd7a1e7d832833f820186da
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/MCDataConverter.java b/ca/spottedleaf/dataconverter/minecraft/MCDataConverter.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a27d3d41109271834b6c37fa22d4b80d9e4b88c8
+index 0000000000000000000000000000000000000000..515f6691c72ffa82ac8b92646768be7a17931efb
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/MCDataConverter.java
-@@ -0,0 +1,79 @@
+@@ -0,0 +1,86 @@
 +package ca.spottedleaf.dataconverter.minecraft;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
@@ -174,11 +174,18 @@ index 0000000000000000000000000000000000000000..a27d3d41109271834b6c37fa22d4b80d
 +        return replaced == null ? wrapped.getJson() : replaced.getJson();
 +    }
 +
-+    public static <T, R> R convert(final DataType<T, R> type, final T data, int fromVersion, final int toVersion) {
++    public static <T, R> R convert(final DataType<T, R> type, final T data, final int fromVersion, final int toVersion) {
++        return convertWithSubVersion(
++            type, data,
++            DataConverter.encodeVersions(Math.max(fromVersion, V99.VERSION), Integer.MAX_VALUE),
++            DataConverter.encodeVersions(toVersion, Integer.MAX_VALUE)
++        );
++    }
++
++    public static <T, R> R convertWithSubVersion(final DataType<T, R> type, final T data, final long fromVersion, final long toVersion) {
 +        Object ret = data;
 +
-+        long currentVersion = DataConverter.encodeVersions(fromVersion < V99.VERSION ? V99.VERSION : fromVersion, Integer.MAX_VALUE);
-+        final long nextVersion = DataConverter.encodeVersions(toVersion, Integer.MAX_VALUE);
++        long currentVersion = fromVersion;
 +
 +        for (int i = 0, len = BREAKPOINTS.size(); i < len; ++i) {
 +            final long breakpoint = BREAKPOINTS.getLong(i);
@@ -187,20 +194,20 @@ index 0000000000000000000000000000000000000000..a27d3d41109271834b6c37fa22d4b80d
 +                continue;
 +            }
 +
-+            final Object converted = type.convert((T)ret, currentVersion, Math.min(nextVersion, breakpoint - 1));
++            final Object converted = type.convert((T)ret, currentVersion, Math.min(toVersion, breakpoint - 1L));
 +            if (converted != null) {
 +                ret = converted;
 +            }
 +
-+            currentVersion = Math.min(nextVersion, breakpoint - 1);
++            currentVersion = Math.min(toVersion, breakpoint - 1L);
 +
-+            if (currentVersion == nextVersion) {
++            if (currentVersion == toVersion) {
 +                break;
 +            }
 +        }
 +
-+        if (currentVersion != nextVersion) {
-+            final Object converted = type.convert((T)ret, currentVersion, nextVersion);
++        if (currentVersion != toVersion) {
++            final Object converted = type.convert((T)ret, currentVersion, toVersion);
 +            if (converted != null) {
 +                ret = converted;
 +            }
@@ -213,13 +220,14 @@ index 0000000000000000000000000000000000000000..a27d3d41109271834b6c37fa22d4b80d
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/MCVersionRegistry.java b/ca/spottedleaf/dataconverter/minecraft/MCVersionRegistry.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..0dbf6f84790156005a8430cd2acf6b79e527c1bb
+index 0000000000000000000000000000000000000000..427222ee6d4300757864ebd1158f86443252604e
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/MCVersionRegistry.java
-@@ -0,0 +1,469 @@
+@@ -0,0 +1,485 @@
 +package ca.spottedleaf.dataconverter.minecraft;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
++import ca.spottedleaf.dataconverter.minecraft.versions.V4290;
 +import com.mojang.logging.LogUtils;
 +import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 +import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -370,6 +378,7 @@ index 0000000000000000000000000000000000000000..0dbf6f84790156005a8430cd2acf6b79
 +            2531,
 +            2533,
 +            2535,
++            2537,
 +            2538,
 +            2550,
 +            2551,
@@ -495,7 +504,9 @@ index 0000000000000000000000000000000000000000..0dbf6f84790156005a8430cd2acf6b79
 +            4311,
 +            4312,
 +            4314,
-+            // All up to 1.21.5
++//            4420,
++//            4424,
++            // All up to 1.21.6-pre2
 +        };
 +        Arrays.sort(converterVersions);
 +
@@ -545,6 +556,10 @@ index 0000000000000000000000000000000000000000..0dbf6f84790156005a8430cd2acf6b79
 +
 +        // final release of major version
 +        registerBreakpointAfter(MCVersions.V1_20_6, Integer.MAX_VALUE);
++
++        // There is a read of entity sub data in V4299 (salmon) which was written to after V1_20_6
++        // There is also a sub type read in V4290 as it reads and converts all data within a text component
++        registerBreakpointBefore(V4290.VERSION);
 +    }
 +
 +    static {
@@ -633,6 +648,14 @@ index 0000000000000000000000000000000000000000..0dbf6f84790156005a8430cd2acf6b79
 +        }).add(step);
 +    }
 +
++    private static void registerBreakpointBefore(final int version) {
++        registerBreakpointBefore(version, 0);
++    }
++
++    private static void registerBreakpointBefore(final int version, final int step) {
++        BREAKPOINTS.add(DataConverter.encodeVersions(version, step) - 1L);
++    }
++
 +    private static void registerBreakpoint(final int version) {
 +        registerBreakpoint(version, 0);
 +    }
@@ -688,10 +711,10 @@ index 0000000000000000000000000000000000000000..0dbf6f84790156005a8430cd2acf6b79
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/MCVersions.java b/ca/spottedleaf/dataconverter/minecraft/MCVersions.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..8f14620218f63d23683d84a72ffa5541d1a05d30
+index 0000000000000000000000000000000000000000..d2d572733f848108c156a629c9e65d35e0c681c4
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/MCVersions.java
-@@ -0,0 +1,584 @@
+@@ -0,0 +1,593 @@
 +package ca.spottedleaf.dataconverter.minecraft;
 +
 +@SuppressWarnings("unused")
@@ -1273,6 +1296,15 @@ index 0000000000000000000000000000000000000000..8f14620218f63d23683d84a72ffa5541
 +    public static final int V1_21_5_RC1           = 4323;
 +    public static final int V1_21_5_RC2           = 4324;
 +    public static final int V1_21_5               = 4325;
++//    public static final int V25W15A               = 4422;
++//    public static final int V25W16A               = 4423;
++//    public static final int V25W17A               = 4425;
++//    public static final int V25W18A               = 4426;
++//    public static final int V25W19A               = 4427;
++//    public static final int V25W20A               = 4428;
++//    public static final int V25W21A               = 4429;
++//    public static final int V1_21_6_PRE1          = 4430;
++//    public static final int V1_21_6_PRE2          = 4431;
 +
 +    private MCVersions() {}
 +}
@@ -2737,313 +2769,6 @@ index 0000000000000000000000000000000000000000..5ba45909b5e60655f83ba96a8dc9ae43
 +        NamespaceUtil.enforceForPath(data.getMap("below_zero_retrogen"), "target_status");
 +        RenameHelper.renameString(data.getMap("below_zero_retrogen"), "target_status", this.renamer);
 +        return null;
-+    }
-+}
-diff --git a/ca/spottedleaf/dataconverter/minecraft/converters/custom/V3818_Commands.java b/ca/spottedleaf/dataconverter/minecraft/converters/custom/V3818_Commands.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..2cb91a987a606c510c0b86ca5961f96dae5ac523
---- /dev/null
-+++ b/ca/spottedleaf/dataconverter/minecraft/converters/custom/V3818_Commands.java
-@@ -0,0 +1,301 @@
-+package ca.spottedleaf.dataconverter.minecraft.converters.custom;
-+
-+import ca.spottedleaf.dataconverter.converters.DataConverter;
-+import ca.spottedleaf.dataconverter.minecraft.MCDataConverter;
-+import ca.spottedleaf.dataconverter.minecraft.MCVersions;
-+import ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry;
-+import ca.spottedleaf.dataconverter.types.ListType;
-+import ca.spottedleaf.dataconverter.types.MapType;
-+import ca.spottedleaf.dataconverter.types.ObjectType;
-+import ca.spottedleaf.dataconverter.types.TypeUtil;
-+import ca.spottedleaf.dataconverter.types.Types;
-+import ca.spottedleaf.dataconverter.util.CommandArgumentUpgrader;
-+import com.google.common.base.Suppliers;
-+import com.google.gson.JsonArray;
-+import com.google.gson.JsonElement;
-+import com.google.gson.JsonObject;
-+import com.google.gson.JsonParseException;
-+import com.google.gson.JsonParser;
-+import com.google.gson.JsonPrimitive;
-+import com.mojang.brigadier.exceptions.CommandSyntaxException;
-+import com.mojang.logging.LogUtils;
-+import net.minecraft.SharedConstants;
-+import net.minecraft.nbt.CompoundTag;
-+import net.minecraft.nbt.Tag;
-+import net.minecraft.nbt.TagParser;
-+import net.minecraft.util.GsonHelper;
-+import org.slf4j.Logger;
-+import java.util.Iterator;
-+import java.util.function.Supplier;
-+
-+public final class V3818_Commands {
-+
-+    private static final int VERSION = MCVersions.V24W07A + 1;
-+
-+    private static final boolean DISABLE_COMMAND_CONVERTER = Boolean.getBoolean("Paper.DisableCommandConverter");
-+
-+    private static final Logger LOGGER = LogUtils.getLogger();
-+
-+    public static String toCommandFormat(final CompoundTag components) {
-+        final StringBuilder ret = new StringBuilder();
-+        ret.append('[');
-+        for (final Iterator<String> iterator = components.keySet().iterator(); iterator.hasNext();) {
-+            final String key = iterator.next();
-+            ret.append(key);
-+            ret.append('=');
-+            ret.append(components.get(key).toString());
-+            if (iterator.hasNext()) {
-+                ret.append(',');
-+            }
-+        }
-+        ret.append(']');
-+
-+        return ret.toString();
-+    }
-+
-+    public static JsonElement convertToJson(final Tag tag) {
-+        return Types.NBT.convertBaseToBase(tag, Types.JSON);
-+    }
-+
-+    public static void walkComponent(final JsonElement primitive) {
-+        if (!(primitive instanceof JsonObject root)) {
-+            if (primitive instanceof JsonArray array) {
-+                for (final JsonElement component : array) {
-+                    walkComponent(component);
-+                }
-+            }
-+            return;
-+        }
-+
-+        final JsonElement clickEventElement = root.get("clickEvent");
-+        if (clickEventElement instanceof JsonObject clickEvent) {
-+            final JsonElement actionElement = clickEvent.get("action");
-+            final JsonElement cmdElement = clickEvent.get("value");
-+            if (actionElement instanceof JsonPrimitive action && cmdElement instanceof JsonPrimitive cmd) {
-+                final String actionString = action.getAsString();
-+                final String cmdString = cmd.getAsString();
-+
-+                if ((actionString.equals("suggest_command") && cmdString.startsWith("/")) || actionString.equals("run_command")) {
-+                    try {
-+                        final Object res = MCDataConverter.convert(
-+                            MCTypeRegistry.DATACONVERTER_CUSTOM_TYPE_COMMAND, cmdString, MCVersions.V1_20_4, SharedConstants.getCurrentVersion().getDataVersion().getVersion()
-+                        );
-+                        if (res instanceof String newCmd) {
-+                            clickEvent.addProperty("value", newCmd);
-+                        }
-+                    } catch (final Exception ex) {
-+                        LOGGER.error("Failed to convert command '" + cmdString + "'", ex);
-+                    }
-+                }
-+            }
-+        }
-+
-+        final JsonElement hoverEventElement = root.get("hoverEvent");
-+        if (hoverEventElement instanceof JsonObject hoverEvent) {
-+            final JsonElement showText = hoverEvent.get("action");
-+            if (showText instanceof JsonPrimitive showTextPrimitive && showTextPrimitive.getAsString().equals("show_item")) {
-+                final JsonElement contentsElement = hoverEvent.get("contents");
-+                if (contentsElement instanceof JsonObject contents) {
-+                    final JsonElement idElement = contents.get("id");
-+                    final JsonElement tagElement = contents.get("tag");
-+
-+                    if (idElement instanceof JsonPrimitive idPrimitive) {
-+                        final CompoundTag itemNBT = new CompoundTag();
-+                        itemNBT.putString("id", idPrimitive.getAsString());
-+                        itemNBT.putInt("Count", 1);
-+
-+                        if (tagElement instanceof JsonPrimitive tagPrimitive) {
-+                            try {
-+                                final CompoundTag tag = TagParser.parseCompoundFully(tagPrimitive.getAsString());
-+                                itemNBT.put("tag", tag);
-+                            } catch (final CommandSyntaxException ignore) {}
-+                        }
-+
-+                        final CompoundTag converted = MCDataConverter.convertTag(
-+                                MCTypeRegistry.ITEM_STACK, itemNBT, MCVersions.V1_20_4,
-+                                SharedConstants.getCurrentVersion().getDataVersion().getVersion()
-+                        );
-+
-+                        contents.remove("tag");
-+
-+                        contents.addProperty("id", converted.getStringOr("id", ""));
-+
-+                        if (converted.contains("components")) {
-+                            contents.add("components", convertToJson(converted.getCompoundOrEmpty("components")));
-+                        }
-+                    }
-+                }
-+                final JsonElement valueElement = hoverEvent.get("value");
-+                if (valueElement instanceof JsonPrimitive valuePrimitive) {
-+                    try {
-+                        final CompoundTag itemNBT = TagParser.parseCompoundFully(valuePrimitive.getAsString());
-+                        if (itemNBT.contains("id")) {
-+                            final boolean explicitCount = itemNBT.contains("Count");
-+                            if (!explicitCount) {
-+                                itemNBT.putInt("Count", 1);
-+                            }
-+                            final CompoundTag converted = MCDataConverter.convertTag(
-+                                MCTypeRegistry.ITEM_STACK, itemNBT, MCVersions.V1_20_4,
-+                                SharedConstants.getCurrentVersion().getDataVersion().getVersion()
-+                            );
-+
-+                            hoverEvent.remove("value");
-+
-+                            final JsonObject contents = new JsonObject();
-+                            hoverEvent.add("contents", contents);
-+
-+                            contents.addProperty("id", converted.getStringOr("id", ""));
-+                            if (explicitCount) {
-+                                contents.addProperty("count", converted.getIntOr("count", 0));
-+                            }
-+
-+                            if (converted.contains("components")) {
-+                                contents.add("components", convertToJson(converted.getCompoundOrEmpty("components")));
-+                            }
-+                        }
-+                    } catch (final CommandSyntaxException ignore) {}
-+                }
-+            }
-+        }
-+
-+        final JsonElement extra = root.get("extra");
-+        if (extra instanceof JsonArray array) {
-+            for (final JsonElement component : array) {
-+                walkComponent(component);
-+            }
-+        }
-+    }
-+
-+    private static String walkComponent(final String json) {
-+        if (json == null || json.isEmpty()) {
-+            return json;
-+        }
-+
-+        try {
-+            final JsonElement element = JsonParser.parseString(json);
-+            walkComponent(element);
-+            return GsonHelper.toStableString(element);
-+        } catch (final JsonParseException ex) {
-+            return json;
-+        } catch (final Exception ex) {
-+            LOGGER.error("Failed to convert text component '" + json + "'", ex);
-+            return json;
-+        }
-+    }
-+
-+    // this is AFTER all the converters for subversion 5, so these run AFTER them
-+    public static void register_5() {
-+        if (DISABLE_COMMAND_CONVERTER) {
-+            return;
-+        }
-+        // Command is already registered in walker for command blocks
-+        MCTypeRegistry.DATACONVERTER_CUSTOM_TYPE_COMMAND.addConverter(new DataConverter<>(VERSION, 5) {
-+            private static final Supplier<CommandArgumentUpgrader> COMMAND_UPGRADER = Suppliers.memoize(() ->
-+                    CommandArgumentUpgrader.upgrader_1_20_4_to_1_20_5(999));
-+
-+            @Override
-+            public Object convert(final Object data, final long sourceVersion, final long toVersion) {
-+                if (!(data instanceof String cmd)) {
-+                    return null;
-+                }
-+                // We use startsWith("/") because we aren't supporting WorldEdit style commands,
-+                // and passing the context of whether the use supports leading slash would be high effort low return
-+                try {
-+                    return COMMAND_UPGRADER.get().upgradeCommandArguments(cmd, cmd.startsWith("/"));
-+                } catch (final Exception ex) {
-+                    LOGGER.error("Failed to convert command '" + cmd + "'", ex);
-+                    return null;
-+                }
-+            }
-+        });
-+
-+        // command is not registered in any walkers for books/signs, and we don't want to do that as we would parse
-+        // the json every walk. instead, we create a one time converter to avoid the additional cost of parsing the json
-+        // for future updates
-+
-+        // books
-+        // note: at this stage, item is converted to components, so we can use the data components type
-+        MCTypeRegistry.DATA_COMPONENTS.addStructureConverter(new DataConverter<>(VERSION, 5) {
-+            private static void walkPath(final MapType data, final String path) {
-+                final String str = data.getString(path);
-+                if (str == null) {
-+                    return;
-+                }
-+
-+                final String newStr = walkComponent(str);
-+                if (newStr != null) {
-+                    data.setString(path, newStr);
-+                }
-+            }
-+
-+            private static void walkBookContent(final MapType data, final String path) {
-+                if (data == null) {
-+                    return;
-+                }
-+
-+                final MapType content = data.getMap(path);
-+                if (content == null) {
-+                    return;
-+                }
-+
-+                final ListType pages = content.getList("pages", ObjectType.MAP);
-+                if (pages == null) {
-+                    return;
-+                }
-+
-+                for (int i = 0, len = pages.size(); i < len; ++i) {
-+                    final MapType text = pages.getMap(i);
-+
-+                    walkPath(text, "raw");
-+                    walkPath(text, "filtered");
-+                }
-+            }
-+
-+            @Override
-+            public MapType convert(final MapType data, final long sourceVersion, final long toVersion) {
-+                walkBookContent(data, "minecraft:written_book_content");
-+                return null;
-+            }
-+        });
-+
-+        // signs
-+
-+        final DataConverter<MapType, MapType> signTileConverter = new DataConverter<>(VERSION, 5) {
-+            private static void walkText(final MapType data, final String path) {
-+                if (data == null) {
-+                    return;
-+                }
-+
-+                final MapType text = data.getMap(path);
-+                if (text == null) {
-+                    return;
-+                }
-+
-+                final ListType messages = text.getList("messages", ObjectType.STRING);
-+                if (messages != null) {
-+                    for (int i = 0, len = Math.min(4, messages.size()); i < len; ++i) {
-+                        messages.setString(i, walkComponent(messages.getString(i)));
-+                    }
-+                }
-+
-+                final ListType filteredMessages = text.getList("filtered_messages", ObjectType.STRING);
-+
-+                if (filteredMessages != null) {
-+                    for (int i = 0, len = Math.min(4, filteredMessages.size()); i < len; ++i) {
-+                        filteredMessages.setString(i, walkComponent(filteredMessages.getString(i)));
-+                    }
-+                }
-+            }
-+
-+            @Override
-+            public MapType convert(final MapType data, final long sourceVersion, final long toVersion) {
-+                walkText(data, "front_text");
-+                walkText(data, "back_text");
-+                return null;
-+            }
-+        };
-+
-+        MCTypeRegistry.TILE_ENTITY.addConverterForId("minecraft:sign", signTileConverter);
-+        MCTypeRegistry.TILE_ENTITY.addConverterForId("minecraft:hanging_sign", signTileConverter);
 +    }
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/converters/entity/ConverterAbstractEntityRename.java b/ca/spottedleaf/dataconverter/minecraft/converters/entity/ConverterAbstractEntityRename.java
@@ -9557,10 +9282,10 @@ index 0000000000000000000000000000000000000000..e1f7c0d7fd80556941bbba8018aa85e7
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/datatypes/MCTypeRegistry.java b/ca/spottedleaf/dataconverter/minecraft/datatypes/MCTypeRegistry.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c2041e8b6c54e5545766e03165439023208886cc
+index 0000000000000000000000000000000000000000..1a09db070633d257174b6985d70f1801b06492d5
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/datatypes/MCTypeRegistry.java
-@@ -0,0 +1,362 @@
+@@ -0,0 +1,367 @@
 +package ca.spottedleaf.dataconverter.minecraft.datatypes;
 +
 +import ca.spottedleaf.dataconverter.minecraft.versions.*;
@@ -9573,6 +9298,7 @@ index 0000000000000000000000000000000000000000..c2041e8b6c54e5545766e03165439023
 +    private static final Logger LOGGER = LogUtils.getLogger();
 +
 +    public static final MCDataType LEVEL               = new MCDataType("Level");
++    public static final MCDataType LIGHTWEIGHT_LEVEL   = new MCDataType("LightweightLevel");
 +    public static final MCDataType PLAYER              = new MCDataType("Player");
 +    public static final MCDataType CHUNK               = new MCDataType("Chunk");
 +    public static final MCDataType HOTBAR              = new MCDataType("CreativeHotbar");
@@ -9619,7 +9345,7 @@ index 0000000000000000000000000000000000000000..c2041e8b6c54e5545766e03165439023
 +    public static final MCDataType SAVED_DATA_MAP_INDEX                 = new MCDataType("SavedData/IdCounts");
 +    public static final MCDataType SAVED_DATA_TICKETS                   = new MCDataType("SavedData/Tickets");
 +
-+    public static final MCValueType DATACONVERTER_CUSTOM_TYPE_COMMAND = new MCValueType("DC_Custom/Command");
++    public static final DynamicDataType DATACONVERTER_CUSTOM_TYPE_COMMAND = new DynamicDataType("DC_Custom/Command");
 +
 +    static {
 +        LOGGER.info("Initialising converters for DataConverter...");
@@ -9767,6 +9493,7 @@ index 0000000000000000000000000000000000000000..c2041e8b6c54e5545766e03165439023
 +        V2531.register();
 +        V2533.register();
 +        V2535.register();
++        V2537.register();
 +        V2538.register();
 +        V2550.register();
 +        V2551.register();
@@ -9919,6 +9646,9 @@ index 0000000000000000000000000000000000000000..c2041e8b6c54e5545766e03165439023
 +        V4311.register();
 +        V4312.register();
 +        V4314.register();
++//        V4420.register();
++//        V4421.register();
++//        V4424.register();
 +    }
 +
 +    private MCTypeRegistry() {}
@@ -10167,6 +9897,24 @@ index 0000000000000000000000000000000000000000..17ded002b5546de8be4a5238c20ccfda
 +    }
 +
 +    private ComponentUtils() {}
++}
+diff --git a/ca/spottedleaf/dataconverter/minecraft/util/Version.java b/ca/spottedleaf/dataconverter/minecraft/util/Version.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..57563e3f85653d1e946495e7609c6ee644095ceb
+--- /dev/null
++++ b/ca/spottedleaf/dataconverter/minecraft/util/Version.java
+@@ -0,0 +1,12 @@
++package ca.spottedleaf.dataconverter.minecraft.util;
++
++import net.minecraft.SharedConstants;
++
++public final class Version {
++
++    public static int getCurrentVersion() {
++        return SharedConstants.getCurrentVersion().getDataVersion().getVersion();
++    }
++
++    private Version() {}
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V100.java b/ca/spottedleaf/dataconverter/minecraft/versions/V100.java
 new file mode 100644
@@ -13653,10 +13401,10 @@ index 0000000000000000000000000000000000000000..cd07718649f0e2ca66f1ec3b0aba8161
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V1506.java b/ca/spottedleaf/dataconverter/minecraft/versions/V1506.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..cf52e682a6b6792712acfd356a7dc0a1baebce3c
+index 0000000000000000000000000000000000000000..36e32a8ff987e4006784c5cba369c736903fa222
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V1506.java
-@@ -0,0 +1,220 @@
+@@ -0,0 +1,221 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
@@ -13671,6 +13419,7 @@ index 0000000000000000000000000000000000000000..cf52e682a6b6792712acfd356a7dc0a1
 +import com.google.common.collect.ImmutableMap;
 +import com.google.common.collect.Lists;
 +import com.google.common.collect.Maps;
++import com.google.gson.JsonParser;
 +import com.mojang.datafixers.util.Pair;
 +import com.mojang.serialization.Dynamic;
 +import com.mojang.serialization.DynamicOps;
@@ -13777,7 +13526,7 @@ index 0000000000000000000000000000000000000000..cf52e682a6b6792712acfd356a7dc0a1
 +                if ("flat".equalsIgnoreCase(generatorName)) {
 +                    data.setMap("generatorOptions", V1506.convert(generatorOptions == null ? "" : generatorOptions));
 +                } else if ("buffet".equalsIgnoreCase(generatorName) && generatorOptions != null) {
-+                    data.setGeneric("generatorOptions", Types.JSON.convertFromBaseToGeneric(GsonHelper.parse(generatorOptions, true), data.getTypeUtil()));
++                    data.setGeneric("generatorOptions", Types.JSON.convertFromBaseToGeneric(JsonParser.parseString(generatorOptions), data.getTypeUtil()));
 +                }
 +                return null;
 +            }
@@ -14220,33 +13969,49 @@ index 0000000000000000000000000000000000000000..d1df382e095032950a1dc4c256b62b39
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V165.java b/ca/spottedleaf/dataconverter/minecraft/versions/V165.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..6b51c237e9bf841ec0c4c9d5d666623601bffe7b
+index 0000000000000000000000000000000000000000..c4476d08e1c0103a1f0beeb5144061aab01f5077
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V165.java
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,45 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
 +import ca.spottedleaf.dataconverter.minecraft.MCVersions;
 +import ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry;
 +import ca.spottedleaf.dataconverter.minecraft.util.ComponentUtils;
-+import ca.spottedleaf.dataconverter.types.ObjectType;
 +import ca.spottedleaf.dataconverter.types.ListType;
 +import ca.spottedleaf.dataconverter.types.MapType;
++import ca.spottedleaf.dataconverter.types.ObjectType;
 +
 +public final class V165 {
 +
 +    private static final int VERSION = MCVersions.V1_9_PRE2;
 +
 +    public static void register() {
-+        MCTypeRegistry.TEXT_COMPONENT.addStructureConverter(new DataConverter<>(VERSION) {
++        MCTypeRegistry.ITEM_STACK.addStructureConverter(new DataConverter<>(VERSION) {
 +            @Override
-+            public Object convert(final Object data, final long sourceVersion, final long toVersion) {
-+                if (!(data instanceof String dataString)) {
-+                    return data;
++            public MapType convert(final MapType data, final long sourceVersion, final long toVersion) {
++                if (!"minecraft:written_book".equals(data.getString("id"))) {
++                    return null;
 +                }
 +
-+                return ComponentUtils.convertFromLenient(dataString);
++                final MapType tag = data.getMap("tag");
++                if (tag == null) {
++                    return null;
++                }
++
++                final ListType pages = tag.getList("pages", ObjectType.STRING);
++                if (pages == null) {
++                    return null;
++                }
++
++                for (int i = 0, len = pages.size(); i < len; ++i) {
++                    final String page = pages.getString(i);
++
++                    pages.setString(i, ComponentUtils.convertFromLenient(page));
++                }
++
++                return null;
 +            }
 +        });
 +    }
@@ -14981,7 +14746,7 @@ index 0000000000000000000000000000000000000000..c6f99547735f0056609de2fd7c9e69c4
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V1946.java b/ca/spottedleaf/dataconverter/minecraft/versions/V1946.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..0b00e2d86fb8bb94746c600e7013684195d35ee3
+index 0000000000000000000000000000000000000000..2039be46ea37229b07bbfacb16506db7307cc576
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V1946.java
 @@ -0,0 +1,41 @@
@@ -15016,7 +14781,7 @@ index 0000000000000000000000000000000000000000..0b00e2d86fb8bb94746c600e70136841
 +
 +                    final MapType section = Types.NBT.createEmptyMap();
 +                    section.setGeneric("Records", records);
-+                    sections.setMap(key, section); // integer keys convert to string in DFU (at least for NBT ops)
++                    sections.setMap(key, section);
 +                }
 +
 +                return null;
@@ -15674,15 +15439,16 @@ index 0000000000000000000000000000000000000000..a1fca94f01bc9c18de17e4b40a98c57a
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V2505.java b/ca/spottedleaf/dataconverter/minecraft/versions/V2505.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..76b8135413b9feb72d4107b887613a96cf7b2506
+index 0000000000000000000000000000000000000000..c7c4ddf11e841b23c17fc95fdcb878dffecb07d8
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V2505.java
-@@ -0,0 +1,44 @@
+@@ -0,0 +1,45 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
 +import ca.spottedleaf.dataconverter.minecraft.MCVersions;
 +import ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry;
++import ca.spottedleaf.dataconverter.minecraft.walkers.itemstack.DataWalkerItemLists;
 +import ca.spottedleaf.dataconverter.types.MapType;
 +import ca.spottedleaf.dataconverter.types.Types;
 +
@@ -15717,7 +15483,7 @@ index 0000000000000000000000000000000000000000..76b8135413b9feb72d4107b887613a96
 +            }
 +        });
 +
-+        //registerMob("minecraft:piglin"); // changed to simple in 1.21.5
++        MCTypeRegistry.ENTITY.addWalker(VERSION, "minecraft:piglin", new DataWalkerItemLists("Inventory"));
 +    }
 +
 +    private V2505() {}
@@ -17044,6 +16810,73 @@ index 0000000000000000000000000000000000000000..21d79dfdfc0062bf66a904c66fd1445e
 +    }
 +
 +    private V2535() {}
++}
+diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V2537.java b/ca/spottedleaf/dataconverter/minecraft/versions/V2537.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..28709ea1eb0e8966321a4a959350778bb2ea5fed
+--- /dev/null
++++ b/ca/spottedleaf/dataconverter/minecraft/versions/V2537.java
+@@ -0,0 +1,61 @@
++package ca.spottedleaf.dataconverter.minecraft.versions;
++
++import ca.spottedleaf.dataconverter.converters.DataConverter;
++import ca.spottedleaf.dataconverter.minecraft.MCVersions;
++import ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry;
++import ca.spottedleaf.dataconverter.types.MapType;
++
++public final class V2537 {
++
++    private static final int VERSION = MCVersions.V20W20B;
++
++    private static void convertDimension(final MapType data, final String path) {
++        if (data == null) {
++            return;
++        }
++
++        final Number dimension = data.getNumber(path);
++        if (dimension == null) {
++            return;
++        }
++
++        final String newDimension;
++        switch (dimension.intValue()) {
++            case -1: {
++                newDimension = "minecraft:the_nether";
++                break;
++            }
++            case 1: {
++                newDimension = "minecraft:the_end";
++                break;
++            }
++            default: {
++                newDimension = "minecraft:overworld";
++                break;
++            }
++        }
++
++        data.setString(path, newDimension);
++        return;
++    }
++
++    public static void register() {
++        MCTypeRegistry.PLAYER.addStructureConverter(new DataConverter<>(VERSION) {
++            @Override
++            public MapType convert(final MapType data, final long sourceVersion, final long toVersion) {
++                convertDimension(data, "Dimension");
++                return null;
++            }
++        });
++
++        MCTypeRegistry.SAVED_DATA_MAP_DATA.addStructureConverter(new DataConverter<>(VERSION) {
++            @Override
++            public MapType convert(final MapType root, final long sourceVersion, final long toVersion) {
++                convertDimension(root.getMap("data"), "dimension");
++                return null;
++            }
++        });
++    }
++
++    private V2537() {}
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V2538.java b/ca/spottedleaf/dataconverter/minecraft/versions/V2538.java
 new file mode 100644
@@ -20985,7 +20818,7 @@ index 0000000000000000000000000000000000000000..c7ef09ed0c145d0e5adef04e9e969c83
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V3319.java b/ca/spottedleaf/dataconverter/minecraft/versions/V3319.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a4858005a7c7ec16ce0f3771ecb9ee52f878c84c
+index 0000000000000000000000000000000000000000..98944037c86cefb42f89674a2eb1abe20a90c800
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V3319.java
 @@ -0,0 +1,23 @@
@@ -21004,7 +20837,7 @@ index 0000000000000000000000000000000000000000..a4858005a7c7ec16ce0f3771ecb9ee52
 +        MCTypeRegistry.OPTIONS.addStructureConverter(new DataConverter<>(VERSION) {
 +            @Override
 +            public MapType convert(final MapType data, final long sourceVersion, final long toVersion) {
-+                data.setBoolean("onboardAccessibility", false);
++                data.setString("onboardAccessibility", "false");
 +                return null;
 +            }
 +        });
@@ -21249,10 +21082,10 @@ index 0000000000000000000000000000000000000000..203dfd16e37870b549e92ddd1483adee
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V3439.java b/ca/spottedleaf/dataconverter/minecraft/versions/V3439.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f090059239a64dba60dda5283d0085987b690066
+index 0000000000000000000000000000000000000000..d449c62b7be3748dfc34c11cf4d929974c9a5191
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V3439.java
-@@ -0,0 +1,118 @@
+@@ -0,0 +1,119 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
@@ -21366,6 +21199,7 @@ index 0000000000000000000000000000000000000000..f090059239a64dba60dda5283d008598
 +        MCTypeRegistry.TILE_ENTITY.addConverterForId("minecraft:hanging_sign", signTileUpdater);
 +
 +        registerSign(VERSION, "minecraft:sign");
++        // in 1.21.6 this was changed to a subversion. I don't see why we need that change.
 +        registerSign(VERSION, "minecraft:hanging_sign");
 +    }
 +
@@ -21373,7 +21207,7 @@ index 0000000000000000000000000000000000000000..f090059239a64dba60dda5283d008598
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V3440.java b/ca/spottedleaf/dataconverter/minecraft/versions/V3440.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..e49621981585d3be2e8afec29b9fcabfbbb73807
+index 0000000000000000000000000000000000000000..5cc9844fb342731e997b449e9b711c3b6d8e5762
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V3440.java
 @@ -0,0 +1,28 @@
@@ -21396,7 +21230,7 @@ index 0000000000000000000000000000000000000000..e49621981585d3be2e8afec29b9fcabf
 +        ConverterAbstractStringValueTypeRename.register(VERSION, MCTypeRegistry.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, (final String in) -> {
 +            return "minecraft:overworld_update_1_20".equals(NamespaceUtil.correctNamespace(in)) ? "minecraft:overworld" : null;
 +        });
-+        MCTypeRegistry.LEVEL.addStructureConverter(new ConverterRemoveFeatureFlag(VERSION, new HashSet<>(
++        MCTypeRegistry.LIGHTWEIGHT_LEVEL.addStructureConverter(new ConverterRemoveFeatureFlag(VERSION, new HashSet<>(
 +                Arrays.asList(
 +                        "minecraft:update_1_20"
 +                )
@@ -21636,10 +21470,10 @@ index 0000000000000000000000000000000000000000..6ef8c0f17c49405e38f299891c987919
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V3564.java b/ca/spottedleaf/dataconverter/minecraft/versions/V3564.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..4ea860455cb221d568d0580d339adbd5ee7034f8
+index 0000000000000000000000000000000000000000..8448981de260b7af33ea8ed62866b6fb95f544e5
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V3564.java
-@@ -0,0 +1,93 @@
+@@ -0,0 +1,94 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
@@ -21728,6 +21562,7 @@ index 0000000000000000000000000000000000000000..4ea860455cb221d568d0580d339adbd5
 +        };
 +
 +        MCTypeRegistry.TILE_ENTITY.addConverterForId("minecraft:sign", converter);
++        // I don't know why this was moved to a sub version, but we don't need to do that.
 +        MCTypeRegistry.TILE_ENTITY.addConverterForId("minecraft:hanging_sign", converter);
 +    }
 +
@@ -22817,16 +22652,15 @@ index 0000000000000000000000000000000000000000..b339e9559a3b5cadfab5e0c79327acac
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V3818.java b/ca/spottedleaf/dataconverter/minecraft/versions/V3818.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..35ad318df3bce56c835f1d3a6d924037c6604603
+index 0000000000000000000000000000000000000000..96f21374468614655e8c25e314e18c92eba7b41a
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V3818.java
-@@ -0,0 +1,365 @@
+@@ -0,0 +1,361 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
 +import ca.spottedleaf.dataconverter.converters.datatypes.DataWalker;
 +import ca.spottedleaf.dataconverter.minecraft.MCVersions;
-+import ca.spottedleaf.dataconverter.minecraft.converters.custom.V3818_Commands;
 +import ca.spottedleaf.dataconverter.minecraft.converters.helpers.RenameHelper;
 +import ca.spottedleaf.dataconverter.minecraft.converters.itemstack.ConverterItemStackToDataComponents;
 +import ca.spottedleaf.dataconverter.minecraft.converters.particle.ConverterParticleToNBT;
@@ -23088,8 +22922,8 @@ index 0000000000000000000000000000000000000000..35ad318df3bce56c835f1d3a6d924037
 +                    if (pages != null) {
 +                        for (int i = 0, len = pages.size(); i < len; ++i) {
 +                            final Object pageGeneric = pages.getGeneric(i);
-+                            if (pageGeneric instanceof String) {
-+                                final Object convertedGeneric = MCTypeRegistry.TEXT_COMPONENT.convert(pageGeneric, fromVersion, toVersion);
++                            if (pageGeneric instanceof String string) {
++                                final Object convertedGeneric = MCTypeRegistry.TEXT_COMPONENT.convert(string, fromVersion, toVersion);
 +                                if (convertedGeneric != null) {
 +                                    pages.setGeneric(i, convertedGeneric);
 +                                }
@@ -23145,9 +22979,6 @@ index 0000000000000000000000000000000000000000..35ad318df3bce56c835f1d3a6d924037
 +
 +            return null;
 +        });
-+
-+        // Custom converter for converting commands inside signs, books, command blocks
-+        V3818_Commands.register_5();
 +
 +        // Step 6
 +        MCTypeRegistry.ENTITY.addConverterForId("minecraft:area_effect_cloud", new DataConverter<>(VERSION, 6) {
@@ -23549,7 +23380,7 @@ index 0000000000000000000000000000000000000000..2a6d144c2f074403bde8a62377ca6986
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V3939.java b/ca/spottedleaf/dataconverter/minecraft/versions/V3939.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..632c8008484e844d962405c6ef8fb9f09fc6c977
+index 0000000000000000000000000000000000000000..2bcacb82a57bcdca6af699936b22db0ebe925f1b
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V3939.java
 @@ -0,0 +1,22 @@
@@ -23566,7 +23397,7 @@ index 0000000000000000000000000000000000000000..632c8008484e844d962405c6ef8fb9f0
 +    private static final int VERSION = MCVersions.V1_20_6 + 100;
 +
 +    public static void register() {
-+        MCTypeRegistry.LEVEL.addStructureConverter(new ConverterRemoveFeatureFlag(VERSION, new HashSet<>(
++        MCTypeRegistry.LIGHTWEIGHT_LEVEL.addStructureConverter(new ConverterRemoveFeatureFlag(VERSION, new HashSet<>(
 +            Arrays.asList(
 +                "minecraft:update_1_21"
 +            )
@@ -24005,10 +23836,10 @@ index 0000000000000000000000000000000000000000..4165efcb182a52d4f1d52f25e684ab8f
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4059.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4059.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..22b5e2047701b968fcd59a602a9d4e39fcbc65ca
+index 0000000000000000000000000000000000000000..e4a1bb8aa512203d28fb683d204762f322862921
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4059.java
-@@ -0,0 +1,166 @@
+@@ -0,0 +1,164 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
@@ -24092,7 +23923,7 @@ index 0000000000000000000000000000000000000000..22b5e2047701b968fcd59a602a9d4e39
 +                        for (int i = 0, len = pages.size(); i < len; ++i) {
 +                            final Object pageGeneric = pages.getGeneric(i);
 +                            final boolean isNBTFormat = fromVersion >= DataConverter.encodeVersions(V4290.VERSION, 0);
-+                            // Note: We only parse ListType for 4290 and above as only a String was valid JSON. List of String or anything else was not valid.
++                            // Note: We only parse ListType for 4290 and above as only a String was valid JSON. List of anything was not valid.
 +                            if (pageGeneric instanceof String || (isNBTFormat && pageGeneric instanceof ListType)) { // handles: String case (JSON/NBT), ListType case (NBT)
 +                                final Object convertedGeneric = MCTypeRegistry.TEXT_COMPONENT.convert(pageGeneric, fromVersion, toVersion);
 +                                if (convertedGeneric != null) {
@@ -24104,14 +23935,12 @@ index 0000000000000000000000000000000000000000..22b5e2047701b968fcd59a602a9d4e39
 +                                    // Assume filterable format
 +                                    WalkerUtils.convert(MCTypeRegistry.TEXT_COMPONENT, mapType, "raw", fromVersion, toVersion);
 +                                    WalkerUtils.convert(MCTypeRegistry.TEXT_COMPONENT, mapType, "filtered", fromVersion, toVersion);
-+                                } else {
-+                                    if (isNBTFormat) {
-+                                        final Object convertedGeneric = MCTypeRegistry.TEXT_COMPONENT.convert(mapType, fromVersion, toVersion);
-+                                        if (convertedGeneric != null) {
-+                                            pages.setGeneric(i, convertedGeneric);
-+                                        }
-+                                    } // else: invalid data
-+                                }
++                                } else if (isNBTFormat) {
++                                    final Object convertedGeneric = MCTypeRegistry.TEXT_COMPONENT.convert(mapType, fromVersion, toVersion);
++                                    if (convertedGeneric != null) {
++                                        pages.setGeneric(i, convertedGeneric);
++                                    }
++                                } // else: invalid data
 +                            } // else: invalid data
 +                        }
 +                    }
@@ -24337,7 +24166,7 @@ index 0000000000000000000000000000000000000000..a3bde5f57589d8ec3f1b1d1332ec8a17
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4067.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4067.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..cf001b97f81d022bcc71639cc3e357ccd87928f8
+index 0000000000000000000000000000000000000000..1f3d0dc9353444a3826d77272f974a3362e845e1
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4067.java
 @@ -0,0 +1,143 @@
@@ -24477,7 +24306,7 @@ index 0000000000000000000000000000000000000000..cf001b97f81d022bcc71639cc3e357cc
 +            }
 +        });
 +
-+        MCTypeRegistry.LEVEL.addStructureConverter(
++        MCTypeRegistry.LIGHTWEIGHT_LEVEL.addStructureConverter(
 +            new ConverterRemoveFeatureFlag(VERSION, new HashSet<>(Arrays.asList("minecraft:bundle")))
 +        );
 +    }
@@ -24767,7 +24596,7 @@ index 0000000000000000000000000000000000000000..c60f6da5422cc31a92164b5bc62f2afb
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4180.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4180.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c8eb7ba000310d1165c63fb9eef3787872f299bb
+index 0000000000000000000000000000000000000000..76eeb8739d9c517a7843545f230853d214ecb8b2
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4180.java
 @@ -0,0 +1,22 @@
@@ -24784,7 +24613,7 @@ index 0000000000000000000000000000000000000000..c8eb7ba000310d1165c63fb9eef37878
 +    private static final int VERSION = MCVersions.V1_21_4_PRE1 + 1;
 +
 +    public static void register() {
-+        MCTypeRegistry.LEVEL.addStructureConverter(new ConverterRemoveFeatureFlag(VERSION, new HashSet<>(
++        MCTypeRegistry.LIGHTWEIGHT_LEVEL.addStructureConverter(new ConverterRemoveFeatureFlag(VERSION, new HashSet<>(
 +            Arrays.asList(
 +                "minecraft:winter_drop"
 +            )
@@ -24935,13 +24764,15 @@ index 0000000000000000000000000000000000000000..7d09c4218d0db8119d1681bf95900be8
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4290.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4290.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..3aeca6410fca4dd8f6ccaf740aaacf2f7b5ecc10
+index 0000000000000000000000000000000000000000..4197a5e89aec77f2893f0f118a927b96d5377ec1
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4290.java
-@@ -0,0 +1,230 @@
+@@ -0,0 +1,248 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
++import ca.spottedleaf.dataconverter.converters.datatypes.DataType;
++import ca.spottedleaf.dataconverter.minecraft.MCDataConverter;
 +import ca.spottedleaf.dataconverter.minecraft.MCVersions;
 +import ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry;
 +import ca.spottedleaf.dataconverter.minecraft.walkers.generic.WalkerUtils;
@@ -24964,21 +24795,46 @@ index 0000000000000000000000000000000000000000..3aeca6410fca4dd8f6ccaf740aaacf2f
 +
 +    private static final Logger LOGGER = LogUtils.getLogger();
 +
-+    // note: we need to convert the hover component here, so that the walker can properly walk over
-+    //       the legacy hover event
-+    // note: this is not done by Vanilla, and they probably fail to correctly convert nested components
-+    //       here (as the converter to convert from JSON is ordered before the conversion of legacy hover)
-+    // note: the legacy hover event may contain legacy item data, but there's not really anything we can do about it.
-+    //       previous versions of the game never walked and converted this data, it was always left to the
-+    //       users to do it (except in the case that DataConverter was used when converting from 1.20.4,
-+    //       as we have the custom command walker).
-+    //       As a result, the item data could be from any version prior to 1.21.4.
-+    //       There's no way we can correctly convert it in all cases, the best we can do is just
-+    //       assume that it's 1.21.4 compatible - which is what the code in 1.21.4 was doing when parsing
-+    //       hover events.
-+    // note: this function does not need to be recursive, as the conversion process itself is recursive -
-+    //       the returned text component will be walked with the walker below
-+    private static void convertLegacyHover(final TypeUtil<?> typeUtil, final MapType textComponent) {
++    private static void convertNestedList(final ListType components) {
++        if (components == null) {
++            return;
++        }
++        for (int i = 0, len = components.size(); i < len; ++i) {
++            convertNested(components.getGeneric(i));
++        }
++    }
++
++    private static void convertNested(final Object component) {
++        if (component instanceof ListType listType) {
++            convertNestedList(listType);
++        } else if (component instanceof MapType root) {
++            convertLegacyHover(root);
++
++            convertNestedList(root.getListUnchecked("extra"));
++            convertNested(root.getGeneric("separator"));
++
++            final MapType hoverEvent = root.getMap("hoverEvent");
++            if (hoverEvent != null) {
++                switch (hoverEvent.getString("action", "")) {
++                    case "show_text": {
++                        convertNested(hoverEvent.getGeneric("contents"));
++                        break;
++                    }
++                    case "show_item": {
++                        break;
++                    }
++                    case "show_entity": {
++                        convertNested(hoverEvent.getGeneric("name"));
++                        break;
++                    }
++                    // default: do nothing
++                }
++            }
++        } // else: should only be string
++    }
++
++    private static void convertLegacyHover(final MapType textComponent) {
++        final TypeUtil<?> typeUtil = textComponent.getTypeUtil();
 +        final MapType hoverEvent = textComponent.getMap("hoverEvent");
 +        if (hoverEvent == null) {
 +            return;
@@ -25013,25 +24869,8 @@ index 0000000000000000000000000000000000000000..3aeca6410fca4dd8f6ccaf740aaacf2f
 +                    break;
 +                }
 +
-+                final MapType newContents = typeUtil.createEmptyMap();
 +                // note: blindly take precedence over non-legacy data
-+                hoverEvent.setMap("contents", newContents);
-+
-+                final String id = legacyItem.getString("id");
-+                if (id != null) {
-+                    newContents.setString("id", id);
-+                }
-+
-+                final Number count = legacyItem.getNumber("count");
-+                if (count != null) {
-+                    newContents.setGeneric("count", count);
-+                }
-+
-+                final MapType components = legacyItem.getMap("components");
-+                if (components != null) {
-+                    newContents.setMap("components", components.copy());
-+                }
-+
++                hoverEvent.setMap("contents", legacyItem);
 +                break;
 +            }
 +            case "show_entity": {
@@ -25081,9 +24920,8 @@ index 0000000000000000000000000000000000000000..3aeca6410fca4dd8f6ccaf740aaacf2f
 +                    // will be iterated by walker
 +                    return null;
 +                }
-+                if (data instanceof MapType mapType) {
++                if (data instanceof MapType) {
 +                    // (probably) iterated by walker
-+                    convertLegacyHover(mapType.getTypeUtil(), mapType);
 +                    return null;
 +                }
 +                if (data instanceof Number number) {
@@ -25119,9 +24957,7 @@ index 0000000000000000000000000000000000000000..3aeca6410fca4dd8f6ccaf740aaacf2f
 +                            default -> throw new IllegalStateException("Unknown nbt type: " + generic);
 +                        };
 +
-+                        if (ret instanceof MapType mapType) {
-+                            convertLegacyHover(Types.NBT, mapType);
-+                        }
++                        convertNested(ret);
 +                        return ret;
 +                    }
 +                } catch (final JsonParseException ex) {
@@ -25138,6 +24974,17 @@ index 0000000000000000000000000000000000000000..3aeca6410fca4dd8f6ccaf740aaacf2f
 +            } else if (input instanceof MapType root) {
 +                WalkerUtils.convertList(MCTypeRegistry.TEXT_COMPONENT, root, "extra", fromVersion, toVersion);
 +                WalkerUtils.convert(MCTypeRegistry.TEXT_COMPONENT, root, "separator", fromVersion, toVersion);
++
++                final MapType clickEvent = root.getMap("clickEvent");
++                if (clickEvent != null) {
++                    switch (clickEvent.getString("action", "")) {
++                        case "run_command":
++                        case "suggest_command": {
++                            WalkerUtils.convert(MCTypeRegistry.DATACONVERTER_CUSTOM_TYPE_COMMAND, clickEvent, "value", fromVersion, toVersion);
++                            break;
++                        }
++                    }
++                }
 +
 +                final MapType hoverEvent = root.getMap("hoverEvent");
 +                if (hoverEvent != null) {
@@ -25171,10 +25018,10 @@ index 0000000000000000000000000000000000000000..3aeca6410fca4dd8f6ccaf740aaacf2f
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4291.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4291.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b3db4d759d273f0b5291677ecac367183f166bc1
+index 0000000000000000000000000000000000000000..9c01fa1f41735dd54641533ce6eefec381270993
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4291.java
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,45 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
@@ -25195,6 +25042,8 @@ index 0000000000000000000000000000000000000000..b3db4d759d273f0b5291677ecac36718
 +                "underlined",
 +                "strikethrough",
 +                "obfuscated",
++                // add extra interpret field
++                "interpret",
 +            };
 +
 +            private static void convertToBoolean(final MapType data, final String path) {
@@ -25210,7 +25059,7 @@ index 0000000000000000000000000000000000000000..b3db4d759d273f0b5291677ecac36718
 +                    for (final String path : BOOLEAN_PATHS_TO_CONVERT) {
 +                        convertToBoolean(root, path);
 +                    }
-+                } // else: list or string, don't care about formatting for those
++                } // else: list -> handled by walker, string -> no formatting to convert
 +                return null;
 +            }
 +        });
@@ -25220,10 +25069,10 @@ index 0000000000000000000000000000000000000000..b3db4d759d273f0b5291677ecac36718
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4292.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4292.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..9a7c3f31102fab8bc71f187e824b42350b238961
+index 0000000000000000000000000000000000000000..34f20d3cb6595eaa11e00126804ef7bd3fafa05b
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4292.java
-@@ -0,0 +1,177 @@
+@@ -0,0 +1,180 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
@@ -25302,9 +25151,9 @@ index 0000000000000000000000000000000000000000..9a7c3f31102fab8bc71f187e824b4235
 +                                final MapType contents = hoverEvent.getOrCreateMap("contents");
 +                                hoverEvent.remove("contents");
 +
-+                                CopyHelper.copy(contents, "id", hoverEvent, "id");
-+                                CopyHelper.copy(contents, "count", hoverEvent, "count");
-+                                CopyHelper.copy(contents, "components", hoverEvent, "components");
++                                CopyHelper.move(contents, "id", hoverEvent, "id");
++                                CopyHelper.move(contents, "count", hoverEvent, "count");
++                                CopyHelper.move(contents, "components", hoverEvent, "components");
 +                            }
 +                            break;
 +                        }
@@ -25312,9 +25161,9 @@ index 0000000000000000000000000000000000000000..9a7c3f31102fab8bc71f187e824b4235
 +                            final MapType contents = hoverEvent.getOrCreateMap("contents");
 +                            hoverEvent.remove("contents");
 +
-+                            CopyHelper.copy(contents, "id", hoverEvent, "uuid");
-+                            CopyHelper.copy(contents, "type", hoverEvent, "id");
-+                            CopyHelper.copy(contents, "name", hoverEvent, "name");
++                            CopyHelper.move(contents, "id", hoverEvent, "uuid");
++                            CopyHelper.move(contents, "type", hoverEvent, "id");
++                            CopyHelper.move(contents, "name", hoverEvent, "name");
 +
 +                            break;
 +                        }
@@ -25374,6 +25223,9 @@ index 0000000000000000000000000000000000000000..9a7c3f31102fab8bc71f187e824b4235
 +            } else if (input instanceof MapType root) {
 +                WalkerUtils.convertList(MCTypeRegistry.TEXT_COMPONENT, root, "extra", fromVersion, toVersion);
 +                WalkerUtils.convert(MCTypeRegistry.TEXT_COMPONENT, root, "separator", fromVersion, toVersion);
++
++
++                WalkerUtils.convert(MCTypeRegistry.DATACONVERTER_CUSTOM_TYPE_COMMAND, root.getMap("clickEvent"), "command", fromVersion, toVersion);
 +
 +                final MapType hoverEvent = root.getMap("hover_event");
 +                if (hoverEvent != null) {
@@ -25576,10 +25428,10 @@ index 0000000000000000000000000000000000000000..a22ee6dee2f14a61688734a1afa71dc5
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4297.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4297.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..501e493dcd3178ae6bbbd4375ff37d0f63ca643d
+index 0000000000000000000000000000000000000000..83c2c4e3e3c73e605d0f57b7c85db1bef64f982f
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4297.java
-@@ -0,0 +1,58 @@
+@@ -0,0 +1,51 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
@@ -25595,8 +25447,6 @@ index 0000000000000000000000000000000000000000..501e493dcd3178ae6bbbd4375ff37d0f
 +
 +    public static void register() {
 +        MCTypeRegistry.SAVED_DATA_TICKETS.addStructureConverter(new DataConverter<>(VERSION) {
-+            private static final long INVALID_COORDINATE = ((long)Integer.MIN_VALUE & 0xFFFFFFFFL) | ((long)Integer.MIN_VALUE << 32);
-+
 +            @Override
 +            public MapType convert(final MapType root, final long sourceVersion, final long toVersion) {
 +                final MapType data = root.getMap("data");
@@ -25604,7 +25454,7 @@ index 0000000000000000000000000000000000000000..501e493dcd3178ae6bbbd4375ff37d0f
 +                    return null;
 +                }
 +
-+                final ListType forced = data.getListUnchecked("Forced");
++                final long[] forced = data.getLongs("Forced");
 +                if (forced == null) {
 +                    return null;
 +                }
@@ -25616,12 +25466,7 @@ index 0000000000000000000000000000000000000000..501e493dcd3178ae6bbbd4375ff37d0f
 +                final ListType tickets = typeUtil.createEmptyList();
 +                data.setList("tickets", tickets);
 +
-+                for (int i = 0, len = forced.size(); i < len; ++i) {
-+                    final long coordinate = forced.getLong(i, INVALID_COORDINATE);
-+                    if (coordinate == INVALID_COORDINATE) {
-+                        continue;
-+                    }
-+
++                for (final long coordinate : forced) {
 +                    final MapType ticket = typeUtil.createEmptyMap();
 +                    tickets.addMap(ticket);
 +
@@ -25640,7 +25485,7 @@ index 0000000000000000000000000000000000000000..501e493dcd3178ae6bbbd4375ff37d0f
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4299.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4299.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..af658ce34358939c6db0cda8968fb619fbc83d9d
+index 0000000000000000000000000000000000000000..e09c5ed9bd872ddb4d809b28434d35d48b065564
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4299.java
 @@ -0,0 +1,140 @@
@@ -25726,7 +25571,7 @@ index 0000000000000000000000000000000000000000..af658ce34358939c6db0cda8968fb619
 +
 +                        break;
 +                    }
-+                    case "tropical_fish_bucket": {
++                    case "minecraft:tropical_fish_bucket": {
 +                        final MapType bucketEntityData = components.getMap("minecraft:bucket_entity_data");
 +                        if (bucketEntityData == null) {
 +                            break;
@@ -26594,10 +26439,10 @@ index 0000000000000000000000000000000000000000..7015d97cb5b97d59ca41f63ba23da1ed
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4314.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4314.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f8f59a29aafee5dd59e2c8b76d57635d0a5e8662
+index 0000000000000000000000000000000000000000..3b61eb6776c517b553c76a6bd3651d3f7c7155c5
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4314.java
-@@ -0,0 +1,109 @@
+@@ -0,0 +1,110 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
 +import ca.spottedleaf.dataconverter.converters.DataConverter;
@@ -26702,6 +26547,7 @@ index 0000000000000000000000000000000000000000..f8f59a29aafee5dd59e2c8b76d57635d
 +        MCTypeRegistry.ENTITY.addConverterForId("minecraft:item_frame", attachedBlockConverter);
 +        MCTypeRegistry.ENTITY.addConverterForId("minecraft:glow_item_frame", attachedBlockConverter);
 +        MCTypeRegistry.ENTITY.addConverterForId("minecraft:painting", attachedBlockConverter);
++        // Note: Leash entities never wrote TileX/Y/Z and don't read block_pos... Why is this here then?
 +        MCTypeRegistry.ENTITY.addConverterForId("minecraft:leash_knot", attachedBlockConverter);
 +    }
 +
@@ -27974,12 +27820,15 @@ index 0000000000000000000000000000000000000000..0d59cb380e625bb2658216d4a6cb8fae
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V99.java b/ca/spottedleaf/dataconverter/minecraft/versions/V99.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..3ff579c5d39199a945aa0c2b280cc1f3cc21f968
+index 0000000000000000000000000000000000000000..3a2a82bc7c18667bed10086203d995f9effe3399
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V99.java
-@@ -0,0 +1,414 @@
+@@ -0,0 +1,418 @@
 +package ca.spottedleaf.dataconverter.minecraft.versions;
 +
++import ca.spottedleaf.dataconverter.converters.datatypes.DataHook;
++import ca.spottedleaf.dataconverter.converters.datatypes.DataWalker;
++import ca.spottedleaf.dataconverter.minecraft.MCDataConverter;
 +import ca.spottedleaf.dataconverter.minecraft.MCVersions;
 +import ca.spottedleaf.dataconverter.minecraft.converters.helpers.HelperItemNameV102;
 +import ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry;
@@ -28195,7 +28044,7 @@ index 0000000000000000000000000000000000000000..3ff579c5d39199a945aa0c2b280cc1f3
 +        MCTypeRegistry.LEVEL.addStructureWalker(VERSION, (final MapType data, final long fromVersion, final long toVersion) -> {
 +            WalkerUtils.convertListPath(MCTypeRegistry.TEXT_COMPONENT, data, "CustomBossEvents", "Name", fromVersion, toVersion);
 +
-+            return null;
++            return MCTypeRegistry.LIGHTWEIGHT_LEVEL.convert(data, fromVersion, toVersion);
 +        });
 +
 +        MCTypeRegistry.ITEM_STACK.addStructureWalker(VERSION, (final MapType data, final long fromVersion, final long toVersion) -> {
@@ -28323,6 +28172,7 @@ index 0000000000000000000000000000000000000000..3ff579c5d39199a945aa0c2b280cc1f3
 +
 +        MCTypeRegistry.SAVED_DATA_MAP_DATA.addStructureWalker(VERSION, (final MapType root, final long fromVersion, final long toVersion) -> {
 +            WalkerUtils.convertListPath(MCTypeRegistry.TEXT_COMPONENT, root, "banners", "Name", fromVersion, toVersion);
++            WalkerUtils.convertListPath(MCTypeRegistry.TEXT_COMPONENT, root.getMap("data"), "banners", "Name", fromVersion, toVersion);
 +            return null;
 +        });
 +        MCTypeRegistry.SAVED_DATA_SCOREBOARD.addStructureWalker(VERSION, (final MapType root, final long fromVersion, final long toVersion) -> {
@@ -28411,10 +28261,10 @@ index 0000000000000000000000000000000000000000..930e014858ef635ebe25f7f92dc81ba0
 +}
 diff --git a/ca/spottedleaf/dataconverter/minecraft/walkers/game_event/GameEventListenerWalker.java b/ca/spottedleaf/dataconverter/minecraft/walkers/game_event/GameEventListenerWalker.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..4a1f64353128db2a92c9375aac37317457160a42
+index 0000000000000000000000000000000000000000..618c6d141c30506123dc7acae793355a3f6ff02c
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/minecraft/walkers/game_event/GameEventListenerWalker.java
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,21 @@
 +package ca.spottedleaf.dataconverter.minecraft.walkers.game_event;
 +
 +import ca.spottedleaf.dataconverter.converters.datatypes.DataWalker;
@@ -28431,12 +28281,7 @@ index 0000000000000000000000000000000000000000..4a1f64353128db2a92c9375aac373174
 +            return null;
 +        }
 +
-+        final MapType event = listener.getMap("event");
-+        if (event == null) {
-+            return null;
-+        }
-+
-+        WalkerUtils.convert(MCTypeRegistry.GAME_EVENT_NAME, event, "game_event", fromVersion, toVersion);
++        WalkerUtils.convert(MCTypeRegistry.GAME_EVENT_NAME, listener.getMap("event"), "game_event", fromVersion, toVersion);
 +
 +        return null;
 +    }
@@ -29081,10 +28926,10 @@ index 0000000000000000000000000000000000000000..54a6b9db0bc3579735bb473f1e1f4a8c
 +}
 diff --git a/ca/spottedleaf/dataconverter/types/MapType.java b/ca/spottedleaf/dataconverter/types/MapType.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..bbe0c902206d40f5c6b50f2a8b2744b2e87e13af
+index 0000000000000000000000000000000000000000..709edd3e92fb8f73b8f9ae192162a72ce7f99fac
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/types/MapType.java
-@@ -0,0 +1,219 @@
+@@ -0,0 +1,220 @@
 +package ca.spottedleaf.dataconverter.types;
 +
 +import java.util.Set;
@@ -29256,6 +29101,7 @@ index 0000000000000000000000000000000000000000..bbe0c902206d40f5c6b50f2a8b2744b2
 +    public default void setGeneric(final String key, final Object value) {
 +        if (value instanceof Boolean bool) {
 +            this.setBoolean(key, bool.booleanValue());
++            return;
 +        } else if (value instanceof Number) {
 +            if (value instanceof Byte b) {
 +                this.setByte(key, b.byteValue());
@@ -29385,10 +29231,10 @@ index 0000000000000000000000000000000000000000..9775d810ba28e59d4eec6c79643c4bca
 +}
 diff --git a/ca/spottedleaf/dataconverter/types/TypeUtil.java b/ca/spottedleaf/dataconverter/types/TypeUtil.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b86e4b34a3f961ea8faa767878300dba5da9424b
+index 0000000000000000000000000000000000000000..4170c188d9e7150ef7b728d4992d10ec8dab4fa4
 --- /dev/null
 +++ b/ca/spottedleaf/dataconverter/types/TypeUtil.java
-@@ -0,0 +1,22 @@
+@@ -0,0 +1,26 @@
 +package ca.spottedleaf.dataconverter.types;
 +
 +public interface TypeUtil<T> {
@@ -29403,6 +29249,10 @@ index 0000000000000000000000000000000000000000..b86e4b34a3f961ea8faa767878300dba
 +
 +    public default <D> D convertBaseToBase(final T input, final TypeUtil<D> to) {
 +        return to.genericToBase(this.convertFromBaseToGeneric(input, to));
++    }
++
++    public default <D> D convertGenericToBase(final Object valueGeneric, final TypeUtil<D> to) {
++        return to.genericToBase(this.convertTo(valueGeneric, to));
 +    }
 +
 +    public Object convertTo(final Object valueGeneric, final TypeUtil<?> to);
@@ -31796,604 +31646,6 @@ index 0000000000000000000000000000000000000000..32d90fc5ab415b0261af8377b130404a
 +
 +    public static ListType convertNBT(final TypeUtil<?> to, final NBTListType nbt) {
 +        return convertNBT(to, nbt.list);
-+    }
-+}
-diff --git a/ca/spottedleaf/dataconverter/util/CommandArgumentUpgrader.java b/ca/spottedleaf/dataconverter/util/CommandArgumentUpgrader.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..f8789a2f7f2c65da6c205003b7e33318d1b214bd
---- /dev/null
-+++ b/ca/spottedleaf/dataconverter/util/CommandArgumentUpgrader.java
-@@ -0,0 +1,592 @@
-+package ca.spottedleaf.dataconverter.util;
-+
-+import ca.spottedleaf.dataconverter.minecraft.MCDataConverter;
-+import ca.spottedleaf.dataconverter.minecraft.MCVersions;
-+import ca.spottedleaf.dataconverter.minecraft.converters.custom.V3818_Commands;
-+import ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry;
-+import com.google.gson.JsonElement;
-+import com.google.gson.JsonParseException;
-+import com.google.gson.internal.Streams;
-+import com.google.gson.stream.JsonReader;
-+import com.mojang.brigadier.Command;
-+import com.mojang.brigadier.CommandDispatcher;
-+import com.mojang.brigadier.LiteralMessage;
-+import com.mojang.brigadier.ParseResults;
-+import com.mojang.brigadier.StringReader;
-+import com.mojang.brigadier.arguments.ArgumentType;
-+import com.mojang.brigadier.context.CommandContextBuilder;
-+import com.mojang.brigadier.context.ParsedArgument;
-+import com.mojang.brigadier.context.StringRange;
-+import com.mojang.brigadier.exceptions.CommandSyntaxException;
-+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-+import com.mojang.brigadier.tree.ArgumentCommandNode;
-+import com.mojang.brigadier.tree.CommandNode;
-+import com.mojang.brigadier.tree.LiteralCommandNode;
-+import com.mojang.serialization.Lifecycle;
-+import it.unimi.dsi.fastutil.Pair;
-+import java.lang.reflect.Field;
-+import java.util.ArrayList;
-+import java.util.HashMap;
-+import java.util.LinkedHashMap;
-+import java.util.List;
-+import java.util.Map;
-+import java.util.Optional;
-+import java.util.function.BiFunction;
-+import java.util.function.Consumer;
-+import java.util.function.Function;
-+import java.util.stream.Stream;
-+import net.minecraft.SharedConstants;
-+import net.minecraft.Util;
-+import net.minecraft.commands.CommandBuildContext;
-+import net.minecraft.commands.CommandSource;
-+import net.minecraft.commands.CommandSourceStack;
-+import net.minecraft.commands.Commands;
-+import net.minecraft.commands.arguments.ComponentArgument;
-+import net.minecraft.commands.arguments.CompoundTagArgument;
-+import net.minecraft.commands.arguments.ResourceLocationArgument;
-+import net.minecraft.commands.arguments.blocks.BlockStateArgument;
-+import net.minecraft.commands.arguments.coordinates.Vec3Argument;
-+import net.minecraft.commands.arguments.item.ItemArgument;
-+import net.minecraft.core.Holder;
-+import net.minecraft.core.HolderLookup;
-+import net.minecraft.core.HolderSet;
-+import net.minecraft.core.Registry;
-+import net.minecraft.nbt.CompoundTag;
-+import net.minecraft.nbt.Tag;
-+import net.minecraft.nbt.TagParser;
-+import net.minecraft.network.chat.CommonComponents;
-+import net.minecraft.resources.ResourceKey;
-+import net.minecraft.resources.ResourceLocation;
-+import net.minecraft.server.commands.ExecuteCommand;
-+import net.minecraft.server.commands.ReturnCommand;
-+import net.minecraft.tags.TagKey;
-+import net.minecraft.util.GsonHelper;
-+import net.minecraft.world.phys.Vec2;
-+import net.minecraft.world.phys.Vec3;
-+import org.jetbrains.annotations.Nullable;
-+
-+public final class CommandArgumentUpgrader {
-+    private final CommandDispatcher<CommandSourceStack> dispatcher;
-+    private final CommandBuildContext context;
-+    private final CommandSourceStack source;
-+    private final Map<Class<?>, BiFunction<ArgumentType<?>, CommandBuildContext, ArgumentType<?>>> replacements;
-+
-+    public static CommandArgumentUpgrader upgrader_1_20_4_to_1_20_5(final int functionPermissionLevel) {
-+        return new CommandArgumentUpgrader(functionPermissionLevel, builder -> {
-+            builder.registerReplacement(ItemArgument.class, (argument, ctx) -> new ItemParser_1_20_4());
-+            builder.registerReplacement(ComponentArgument.class, (argument, ctx) -> new ComponentParser_1_20_4());
-+            builder.registerReplacement(BlockStateArgument.class, (argument, ctx) -> new BlockStateParser_1_20_4());
-+            builder.registerExtraCommand(CommandArgumentUpgrader::registerSummon_1_20_4_to_1_20_5);
-+        });
-+    }
-+
-+    public CommandArgumentUpgrader(
-+        final int functionPermissionLevel,
-+        final Consumer<ReplacementsBuilder> consumer
-+    ) {
-+        this(
-+            new Commands(Commands.CommandSelection.DEDICATED, makeDummyCommandBuildContext()).getDispatcher(),
-+            functionPermissionLevel,
-+            consumer
-+        );
-+    }
-+
-+    private CommandArgumentUpgrader(
-+        final CommandDispatcher<CommandSourceStack> dispatcher,
-+        final int functionPermissionLevel,
-+        final Consumer<ReplacementsBuilder> consumer
-+    ) {
-+        final ReplacementsBuilder builder = new ReplacementsBuilder();
-+        consumer.accept(builder);
-+        this.replacements = Map.copyOf(builder.replacements);
-+
-+        final CommandBuildContext context = makeDummyCommandBuildContext();
-+        this.dispatcher = new CommandDispatcher<>();
-+        this.context = context;
-+        final List<CommandNode<CommandSourceStack>> aliases = new ArrayList<>();
-+        for (final CommandNode<CommandSourceStack> child : dispatcher.getRoot().getChildren()) {
-+            final CopyResult result = this.copyCommand(this.dispatcher.getRoot(), child, null);
-+            if (result.replaced()) {
-+                this.dispatcher.getRoot().addChild(result.root);
-+            }
-+            aliases.addAll(result.aliases);
-+        }
-+        aliases.forEach(redirectNode -> {
-+            final CommandNode<CommandSourceStack> toNode = this.dispatcher.getRoot()
-+                .getChild(redirectNode.getRedirect().getName());
-+            if (toNode != null) {
-+                this.dispatcher.getRoot().addChild(
-+                    new LiteralCommandNode<>(
-+                        redirectNode.getName(),
-+                        null,
-+                        toNode.getRequirement(),
-+                        toNode,
-+                        redirectNode.getRedirectModifier(),
-+                        redirectNode.isFork()
-+                    )
-+                );
-+            }
-+        });
-+        for (final Consumer<CommandDispatcher<CommandSourceStack>> extra : builder.extra) {
-+            extra.accept(this.dispatcher);
-+        }
-+        ExecuteCommand.register(this.dispatcher, context);
-+        ReturnCommand.register(this.dispatcher);
-+        // This looks weird, but it's what vanilla does when loading functions for datapacks
-+        this.source = new CommandSourceStack(
-+            CommandSource.NULL,
-+            Vec3.ZERO,
-+            Vec2.ZERO,
-+            null,
-+            functionPermissionLevel,
-+            "",
-+            CommonComponents.EMPTY,
-+            null,
-+            null
-+        );
-+    }
-+
-+    public static final class ReplacementsBuilder {
-+        private final Map<Class<?>, BiFunction<ArgumentType<?>, CommandBuildContext, ArgumentType<?>>> replacements =
-+            new HashMap<>();
-+        private final List<Consumer<CommandDispatcher<CommandSourceStack>>> extra = new ArrayList<>();
-+
-+        private ReplacementsBuilder() {
-+        }
-+
-+        @SuppressWarnings({"unchecked", "rawtypes"})
-+        public <A extends ArgumentType<?>> void registerReplacement(
-+            final Class<A> type,
-+            final BiFunction<A, CommandBuildContext, ? extends ArgumentType<UpgradedArgument>> upgrader
-+        ) {
-+            this.replacements.put(type, (BiFunction) upgrader);
-+        }
-+
-+        public void registerExtraCommand(final Consumer<CommandDispatcher<CommandSourceStack>> consumer) {
-+            this.extra.add(consumer);
-+        }
-+    }
-+
-+    public interface UpgradableArgument {
-+        String upgrade(int index, List<Pair<String, ParsedArgument<CommandSourceStack, ?>>> arguments);
-+    }
-+
-+    public record UpgradedArgument(String upgraded) {}
-+
-+    private static final class ItemParser_1_20_4 implements ArgumentType<UpgradedArgument> {
-+        @Override
-+        public UpgradedArgument parse(final StringReader reader) throws CommandSyntaxException {
-+            final ResourceLocation id = ResourceLocation.read(reader);
-+
-+            final CompoundTag itemNBT = new CompoundTag();
-+            itemNBT.putString("id", id.toString());
-+            itemNBT.putInt("Count", 1);
-+
-+            if (reader.canRead() && reader.peek() == '{') {
-+                itemNBT.put("tag", TagParser.parseCompoundAsArgument(reader));
-+            }
-+
-+            final CompoundTag converted = MCDataConverter.convertTag(
-+                MCTypeRegistry.ITEM_STACK, itemNBT, MCVersions.V1_20_4, SharedConstants.getCurrentVersion().getDataVersion().getVersion()
-+            );
-+
-+            final String newId = converted.getStringOr("id", "");
-+
-+            if (converted.contains("components")) {
-+                return new UpgradedArgument(newId + V3818_Commands.toCommandFormat(converted.getCompoundOrEmpty("components")));
-+            } else {
-+                return new UpgradedArgument(newId);
-+            }
-+        }
-+    }
-+
-+    private static final class ComponentParser_1_20_4 implements ArgumentType<UpgradedArgument> {
-+        private static final Field JSON_READER_POS = Util.make(() -> {
-+            try {
-+                final Field field = JsonReader.class.getDeclaredField("pos");
-+                field.setAccessible(true);
-+                return field;
-+            } catch (final NoSuchFieldException var1) {
-+                throw new IllegalStateException("Couldn't get field 'pos' for JsonReader", var1);
-+            }
-+        });
-+
-+        private static final Field JSON_READER_LINESTART = Util.make(() -> {
-+            try {
-+                final Field field = JsonReader.class.getDeclaredField("lineStart");
-+                field.setAccessible(true);
-+                return field;
-+            } catch (final NoSuchFieldException var1) {
-+                throw new IllegalStateException("Couldn't get field 'lineStart' for JsonReader", var1);
-+            }
-+        });
-+
-+        @Override
-+        public UpgradedArgument parse(final StringReader reader) throws CommandSyntaxException {
-+            final JsonElement element;
-+            try {
-+                element = parseJson(reader);
-+            } catch (final Exception e) {
-+                throw new SimpleCommandExceptionType(new LiteralMessage(e.getMessage())).createWithContext(reader);
-+            }
-+            V3818_Commands.walkComponent(element);
-+            return new UpgradedArgument(GsonHelper.toStableString(element));
-+        }
-+
-+        public static JsonElement parseJson(final StringReader stringReader) {
-+            final JsonReader jsonReader = new JsonReader(new java.io.StringReader(stringReader.getRemaining()));
-+            jsonReader.setLenient(false);
-+
-+            final JsonElement jsonElement;
-+            try {
-+                jsonElement = Streams.parse(jsonReader);
-+            } catch (final StackOverflowError var9) {
-+                throw new JsonParseException(var9);
-+            } finally {
-+                stringReader.setCursor(stringReader.getCursor() + getPos(jsonReader));
-+            }
-+            return jsonElement;
-+        }
-+
-+        private static int getPos(final JsonReader jsonReader) {
-+            try {
-+                return JSON_READER_POS.getInt(jsonReader) - JSON_READER_LINESTART.getInt(jsonReader);
-+            } catch (IllegalAccessException var2) {
-+                throw new IllegalStateException("Couldn't read position of JsonReader", var2);
-+            }
-+        }
-+    }
-+
-+    private static class BlockStateParser_1_20_4 implements ArgumentType<UpgradedArgument> {
-+        @Override
-+        public UpgradedArgument parse(final StringReader reader) throws CommandSyntaxException {
-+            String block = ResourceLocation.read(reader).toString();
-+
-+            StringBuilder properties = new StringBuilder();
-+            if (reader.canRead() && reader.peek() == '[') {
-+                char c;
-+                do {
-+                    c = reader.read();
-+                    properties.append(c);
-+                } while (reader.canRead() && c != ']');
-+            }
-+
-+            if (!reader.canRead() || reader.peek() != '{') {
-+                return new UpgradedArgument(block + properties);
-+            }
-+
-+            CompoundTag tag = TagParser.parseCompoundAsArgument(reader);
-+            boolean missId = !tag.contains("id");
-+            if (missId) { // Data converter can't upgrade tile entities without it
-+                tag.putString("id", CommandArgumentUpgrader.blockToTileEntity(block));
-+            }
-+            tag = MCDataConverter.convertTag(
-+                MCTypeRegistry.TILE_ENTITY, tag, MCVersions.V1_20_4, SharedConstants.getCurrentVersion().getDataVersion().getVersion()
-+            );
-+            if (missId) {
-+                tag.remove("id");
-+            }
-+
-+            return new UpgradedArgument(block + properties + tag);
-+        }
-+    }
-+
-+    private static String blockToTileEntity(String block) {
-+        return switch (block) {
-+            case "minecraft:acacia_sign", "minecraft:jungle_wall_sign", "minecraft:oak_sign",
-+                 "minecraft:cherry_sign", "minecraft:birch_wall_sign", "minecraft:dark_oak_sign",
-+                 "minecraft:mangrove_wall_sign", "minecraft:cherry_wall_sign", "minecraft:jungle_sign",
-+                 "minecraft:mangrove_sign", "minecraft:spruce_wall_sign", "minecraft:crimson_sign",
-+                 "minecraft:oak_wall_sign", "minecraft:crimson_wall_sign", "minecraft:bamboo_sign",
-+                 "minecraft:warped_wall_sign", "minecraft:bamboo_wall_sign", "minecraft:acacia_wall_sign",
-+                 "minecraft:spruce_sign", "minecraft:warped_sign", "minecraft:dark_oak_wall_sign",
-+                 "minecraft:birch_sign"
-+                -> "minecraft:sign";
-+            case "minecraft:acacia_hanging_sign", "minecraft:crimson_wall_hanging_sign",
-+                 "minecraft:jungle_wall_hanging_sign", "minecraft:dark_oak_wall_hanging_sign",
-+                 "minecraft:crimson_hanging_sign", "minecraft:bamboo_wall_hanging_sign",
-+                 "minecraft:bamboo_hanging_sign", "minecraft:oak_wall_hanging_sign",
-+                 "minecraft:cherry_wall_hanging_sign", "minecraft:warped_wall_hanging_sign",
-+                 "minecraft:birch_hanging_sign", "minecraft:mangrove_hanging_sign",
-+                 "minecraft:birch_wall_hanging_sign", "minecraft:jungle_hanging_sign",
-+                 "minecraft:cherry_hanging_sign", "minecraft:spruce_hanging_sign",
-+                 "minecraft:warped_hanging_sign", "minecraft:mangrove_wall_hanging_sign",
-+                 "minecraft:spruce_wall_hanging_sign", "minecraft:dark_oak_hanging_sign",
-+                 "minecraft:oak_hanging_sign", "minecraft:acacia_wall_hanging_sign"
-+                -> "minecraft:hanging_sign";
-+            case "minecraft:spawner" -> "minecraft:mob_spawner";
-+            case "minecraft:moving_piston" -> "minecraft:piston";
-+            case "minecraft:skeleton_skull" , "minecraft:skeleton_wall_skull", "minecraft:player_wall_head",
-+                 "minecraft:creeper_wall_head", "minecraft:zombie_head", "minecraft:wither_skeleton_skull",
-+                 "minecraft:creeper_head", "minecraft:wither_skeleton_wall_skull", "minecraft:dragon_head",
-+                 "minecraft:piglin_wall_head", "minecraft:dragon_wall_head", "minecraft:player_head",
-+                 "minecraft:zombie_wall_head", "minecraft:piglin_head"
-+                -> "minecraft:skull";
-+            case "minecraft:black_banner", "minecraft:orange_wall_banner", "minecraft:gray_wall_banner",
-+                 "minecraft:magenta_banner", "minecraft:red_banner", "minecraft:brown_wall_banner",
-+                 "minecraft:pink_banner", "minecraft:light_blue_banner", "minecraft:cyan_wall_banner",
-+                 "minecraft:purple_banner", "minecraft:brown_banner", "minecraft:light_gray_wall_banner",
-+                 "minecraft:black_wall_banner", "minecraft:gray_banner", "minecraft:yellow_wall_banner",
-+                 "minecraft:light_gray_banner", "minecraft:red_wall_banner", "minecraft:light_blue_wall_banner",
-+                 "minecraft:pink_wall_banner", "minecraft:white_banner", "minecraft:green_wall_banner",
-+                 "minecraft:white_wall_banner", "minecraft:magenta_wall_banner", "minecraft:green_banner",
-+                 "minecraft:orange_banner", "minecraft:blue_wall_banner", "minecraft:cyan_banner",
-+                 "minecraft:purple_wall_banner", "minecraft:lime_wall_banner", "minecraft:yellow_banner",
-+                 "minecraft:lime_banner", "minecraft:blue_banner"
-+                -> "minecraft:banner";
-+            case "minecraft:repeating_command_block", "minecraft:chain_command_block"
-+                -> "minecraft:command_block";
-+            case "minecraft:brown_shulker_box", "minecraft:light_blue_shulker_box", "minecraft:white_shulker_box",
-+                 "minecraft:green_shulker_box", "minecraft:black_shulker_box", "minecraft:lime_shulker_box",
-+                 "minecraft:pink_shulker_box", "minecraft:light_gray_shulker_box", "minecraft:magenta_shulker_box",
-+                 "minecraft:orange_shulker_box", "minecraft:purple_shulker_box", "minecraft:cyan_shulker_box",
-+                 "minecraft:yellow_shulker_box", "minecraft:red_shulker_box", "minecraft:blue_shulker_box",
-+                 "minecraft:gray_shulker_box"
-+                -> "minecraft:shulker_box";
-+            case "minecraft:purple_bed", "minecraft:light_blue_bed", "minecraft:yellow_bed",
-+                 "minecraft:orange_bed", "minecraft:light_gray_bed", "minecraft:red_bed",
-+                 "minecraft:gray_bed", "minecraft:brown_bed", "minecraft:cyan_bed", "minecraft:magenta_bed",
-+                 "minecraft:green_bed", "minecraft:white_bed", "minecraft:black_bed", "minecraft:blue_bed",
-+                 "minecraft:pink_bed", "minecraft:lime_bed"
-+                -> "minecraft:bed";
-+            case "minecraft:soul_campfire" -> "minecraft:campfire";
-+            case "minecraft:bee_nest" -> "minecraft:beehive";
-+            case "minecraft:suspicious_sand", "minecraft:suspicious_gravel" -> "minecraft:brushable_block";
-+            default -> block;
-+        };
-+    }
-+
-+    // important: leadingSlash should not just be the result of a startsWith on command,
-+    // it should reflect whether the command use is in a place that will skip a leading slash when parsing
-+    public String upgradeCommandArguments(final String command, final boolean leadingSlash) {
-+        final StringReader reader = new StringReader(command);
-+        if (leadingSlash && reader.peek() == '/') {
-+            reader.skip();
-+        }
-+        final ParseResults<CommandSourceStack> parseResult = this.dispatcher.parse(reader, this.source);
-+        if (!parseResult.getExceptions().isEmpty()) {
-+            return command;
-+        }
-+        final Map<StringRange, String> replacements = new LinkedHashMap<>();
-+        final List<Pair<String, ParsedArgument<CommandSourceStack, ?>>> mergedArguments = new ArrayList<>();
-+        addArguments(mergedArguments, parseResult.getContext());
-+        for (int i = 0; i < mergedArguments.size(); i++) {
-+            final Pair<String, ParsedArgument<CommandSourceStack, ?>> pair = mergedArguments.get(i);
-+            if (pair.value().getResult() instanceof UpgradedArgument upgraded) {
-+                replacements.put(pair.value().getRange(), upgraded.upgraded());
-+            } else if (pair.value().getResult() instanceof UpgradableArgument upgradable) {
-+                replacements.put(pair.value().getRange(), upgradable.upgrade(i, mergedArguments));
-+            }
-+        }
-+        String upgradedCommand = command;
-+        while (!replacements.isEmpty()) {
-+            final Map.Entry<StringRange, String> next = replacements.entrySet().iterator().next();
-+            replacements.remove(next.getKey());
-+            upgradedCommand = upgradedCommand.substring(0, next.getKey().getStart()) + next.getValue() + upgradedCommand.substring(next.getKey().getEnd());
-+            // Update the offsets for the remaining replacements
-+            final int diff = next.getValue().length() - next.getKey().getLength();
-+            final Map<StringRange, String> replacementsCopy = new LinkedHashMap<>(replacements);
-+            replacements.clear();
-+            replacementsCopy.forEach((range, value) -> {
-+                replacements.put(new StringRange(range.getStart() + diff, range.getEnd() + diff), value);
-+            });
-+        }
-+        return upgradedCommand;
-+    }
-+
-+    public String upgradeSingleArgument(
-+        final Function<CommandBuildContext, ? extends ArgumentType<?>> argumentFactory,
-+        final String input
-+    ) {
-+        final ArgumentType<?> argument = argumentFactory.apply(this.context);
-+        final ArgumentType<?> replaced = this.replaceArgumentType(this.context, argument);
-+        if (argument == replaced) {
-+            return input;
-+        }
-+        try {
-+            final UpgradedArgument parsed = (UpgradedArgument) replaced.parse(new StringReader(input));
-+            return parsed.upgraded();
-+        } catch (final CommandSyntaxException e) {
-+            return input;
-+        }
-+    }
-+
-+    private static void addArguments(
-+        final List<Pair<String, ParsedArgument<CommandSourceStack, ?>>> mergedArguments,
-+        final @Nullable CommandContextBuilder<CommandSourceStack> context
-+    ) {
-+        if (context == null) {
-+            return;
-+        }
-+        context.getArguments().forEach((name, argument) -> mergedArguments.add(Pair.of(name, argument)));
-+        addArguments(mergedArguments, context.getChild());
-+    }
-+
-+    private ArgumentType<?> replaceArgumentType(final CommandBuildContext ctx, final ArgumentType<?> type) {
-+        final BiFunction<ArgumentType<?>, CommandBuildContext, ArgumentType<?>> upgrader =
-+            this.replacements.get(type.getClass());
-+        if (upgrader != null) {
-+            return upgrader.apply(type, ctx);
-+        }
-+        return type;
-+    }
-+
-+    record CopyResult(
-+        CommandNode<CommandSourceStack> root,
-+        boolean replaced,
-+        List<CommandNode<CommandSourceStack>> aliases
-+    ) {
-+        CopyResult replacedResult() {
-+            if (this.replaced) {
-+                return this;
-+            }
-+            return new CopyResult(this.root, true, new ArrayList<>(this.aliases));
-+        }
-+    }
-+
-+    private CopyResult copyCommand(
-+        final CommandNode<CommandSourceStack> parent,
-+        final CommandNode<CommandSourceStack> node,
-+        @Nullable CopyResult result
-+    ) {
-+        final CommandNode<CommandSourceStack> copy;
-+        final boolean replaced;
-+        if (node instanceof LiteralCommandNode<?> literal) {
-+            if (node.getName().equals("execute") || node.getName().equals("return")) {
-+                return new CopyResult(parent, false, new ArrayList<>());
-+            }
-+            if (node.getRedirect() != null) {
-+                if (result != null) {
-+                    throw new IllegalStateException("Cannot handle non-root redirects");
-+                }
-+                final List<CommandNode<CommandSourceStack>> aliases = new ArrayList<>();
-+                aliases.add(node);
-+                return new CopyResult(parent, false, aliases);
-+            }
-+            copy = new LiteralCommandNode<>(
-+                literal.getLiteral(),
-+                node.getCommand(),
-+                node.getRequirement(),
-+                null,
-+                node.getRedirectModifier(),
-+                node.isFork()
-+            );
-+            replaced = false;
-+        } else if (node instanceof ArgumentCommandNode<?, ?>) {
-+            final ArgumentCommandNode<CommandSourceStack, ?> argument =
-+                (ArgumentCommandNode<CommandSourceStack, ?>) node;
-+            final ArgumentType<?> replacedType = this.replaceArgumentType(this.context, argument.getType());
-+            replaced = replacedType != argument.getType();
-+            copy = new ArgumentCommandNode<>(
-+                node.getName(),
-+                replacedType,
-+                node.getCommand(),
-+                node.getRequirement(),
-+                null,
-+                node.getRedirectModifier(),
-+                node.isFork(),
-+                argument.getCustomSuggestions()
-+            );
-+        } else {
-+            throw new UnsupportedOperationException();
-+        }
-+        if (result == null) {
-+            result = new CopyResult(copy, false, new ArrayList<>());
-+        }
-+        if (replaced) {
-+            result = result.replacedResult();
-+        }
-+        for (final CommandNode<CommandSourceStack> child : node.getChildren()) {
-+            result = this.copyCommand(copy, child, result);
-+        }
-+        if (parent != this.dispatcher.getRoot()) {
-+            parent.addChild(copy);
-+        }
-+        return result;
-+    }
-+
-+    public static void registerSummon_1_20_4_to_1_20_5(final CommandDispatcher<CommandSourceStack> dispatcher) {
-+        dispatcher.register(
-+            Commands.literal("summon")
-+                .then(Commands.argument("entity", ResourceLocationArgument.id())
-+                    .executes(commandContext -> Command.SINGLE_SUCCESS)
-+                    .then(Commands.argument("pos", Vec3Argument.vec3())
-+                        .executes(commandContext -> Command.SINGLE_SUCCESS)
-+                        .then(Commands.argument("nbt", new ArgumentType<UpgradableArgument>() {
-+                                @Override
-+                                public UpgradableArgument parse(final StringReader reader) throws CommandSyntaxException {
-+                                    final CompoundTag tag = CompoundTagArgument.compoundTag().parse(reader);
-+
-+                                    return (index, args) -> {
-+                                        final CompoundTag tagCopy = tag.copy();
-+
-+                                        final Pair<String, ParsedArgument<CommandSourceStack, ?>> entityTypePair =
-+                                            args.get(index - 2);
-+                                        final ResourceLocation entityType =
-+                                            (ResourceLocation) entityTypePair.value().getResult();
-+
-+                                        tagCopy.putString("id", entityType.toString());
-+                                        final CompoundTag convertedTag = MCDataConverter.convertTag(
-+                                            MCTypeRegistry.ENTITY,
-+                                            tagCopy,
-+                                            MCVersions.V1_20_4, SharedConstants.getCurrentVersion().getDataVersion().getVersion()
-+                                        );
-+                                        convertedTag.remove("id");
-+
-+                                        return convertedTag.toString();
-+                                    };
-+                                }
-+                            })
-+                            .executes(commandContext -> Command.SINGLE_SUCCESS))))
-+        );
-+    }
-+
-+    private static CommandBuildContext makeDummyCommandBuildContext() {
-+        return Commands.createValidationContext(
-+            new HolderLookup.Provider() {
-+
-+                @Override
-+                public Stream<ResourceKey<? extends Registry<?>>> listRegistryKeys() {
-+                    return Stream.of();
-+                }
-+
-+                @Override
-+                public <T> Optional<HolderLookup.RegistryLookup<T>> lookup(
-+                    final ResourceKey<? extends Registry<? extends T>> registryRef
-+                ) {
-+                    return Optional.of(new HolderLookup.RegistryLookup<T>() {
-+                        @Override
-+                        public ResourceKey<? extends Registry<? extends T>> key() {
-+                            return registryRef;
-+                        }
-+
-+                        @Override
-+                        public Lifecycle registryLifecycle() {
-+                            return Lifecycle.stable();
-+                        }
-+
-+                        @Override
-+                        public Stream<Holder.Reference<T>> listElements() {
-+                            return Stream.of();
-+                        }
-+
-+                        @Override
-+                        public Stream<HolderSet.Named<T>> listTags() {
-+                            return Stream.of();
-+                        }
-+
-+                        @Override
-+                        public Optional<Holder.Reference<T>> get(final ResourceKey<T> key) {
-+                            return Optional.of(Holder.Reference.createStandAlone(this, key));
-+                        }
-+
-+                        @Override
-+                        public Optional<HolderSet.Named<T>> get(final TagKey<T> tag) {
-+                            return Optional.of(HolderSet.emptyNamed(this, tag));
-+                        }
-+                    });
-+                }
-+            }
-+        );
 +    }
 +}
 diff --git a/ca/spottedleaf/dataconverter/util/Int2IntArraySortedMap.java b/ca/spottedleaf/dataconverter/util/Int2IntArraySortedMap.java
