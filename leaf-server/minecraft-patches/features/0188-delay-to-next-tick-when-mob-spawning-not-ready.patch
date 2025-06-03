@@ -1,0 +1,81 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Wed, 4 Jun 2025 00:31:39 +0900
+Subject: [PATCH] delay to next tick when mob spawning not ready
+
+
+diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
+index d61da0fbe7f6c181e4084ce60bfe7dab86f361ad..d9f74ac79e67ed7b9619041cce763b60a8f9a929 100644
+--- a/net/minecraft/server/level/ServerChunkCache.java
++++ b/net/minecraft/server/level/ServerChunkCache.java
+@@ -70,7 +70,8 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+     private final Set<ChunkHolder> chunkHoldersToBroadcast = new ReferenceOpenHashSet<>();
+     @Nullable
+     @VisibleForDebug
+-    private NaturalSpawner.SpawnState lastSpawnState;
++    private volatile NaturalSpawner.SpawnState lastSpawnState; // Leaf
++    private final it.unimi.dsi.fastutil.longs.LongArrayList delaySpawn = new it.unimi.dsi.fastutil.longs.LongArrayList(); // Leaf
+     // Paper start
+     private final ca.spottedleaf.concurrentutil.map.ConcurrentLong2ReferenceChainedHashTable<net.minecraft.world.level.chunk.LevelChunk> fullChunks = new ca.spottedleaf.concurrentutil.map.ConcurrentLong2ReferenceChainedHashTable<>();
+     public int getFullChunksCount() {
+@@ -656,13 +657,30 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+             filteredSpawningCategories = List.of();
+         }
+ 
+-        for (LevelChunk levelChunk : chunks) {
+-            ChunkPos pos = levelChunk.getPos();
+-            levelChunk.incrementInhabitedTime(timeInhabited);
+-            if (!filteredSpawningCategories.isEmpty() && this.level.getWorldBorder().isWithinBounds(pos) && lastSpawnState != null && (!org.dreeam.leaf.config.modules.async.AsyncMobSpawning.enabled || _pufferfish_spawnCountsReady.get()) && this.chunkMap.anyPlayerCloseEnoughForSpawning(pos, true)) { // Spigot // Pufferfish // Leaf - Don't spawn if lastSpawnState is null
+-                NaturalSpawner.spawnForChunk(this.level, levelChunk, lastSpawnState, filteredSpawningCategories); // Pufferfish
++        // Leaf start
++        var lastSpawnState1 = this.lastSpawnState;
++        if (lastSpawnState1 != null && (!org.dreeam.leaf.config.modules.async.AsyncMobSpawning.enabled || _pufferfish_spawnCountsReady.get())) {
++            int delaySpawnSize = delaySpawn.size();
++            for (LevelChunk levelChunk : chunks) {
++                ChunkPos pos = levelChunk.getPos();
++                levelChunk.incrementInhabitedTime(timeInhabited);
++                if (!filteredSpawningCategories.isEmpty() && this.level.getWorldBorder().isWithinBounds(pos) && this.chunkMap.anyPlayerCloseEnoughForSpawning(pos, true)) { // Spigot
++                    for (int i = 0; i < delaySpawnSize; i++) {
++                        NaturalSpawner.spawnForChunk(this.level, levelChunk, lastSpawnState1, filteredSpawningCategories, delaySpawn.getLong(i));
++                    }
++                    NaturalSpawner.spawnForChunk(this.level, levelChunk, lastSpawnState1, filteredSpawningCategories); // Pufferfish
++                }
+             }
++            delaySpawn.clear();
++        } else {
++            for (LevelChunk levelChunk : chunks) {
++                levelChunk.incrementInhabitedTime(timeInhabited);
++            }
++            delaySpawn.add(level.getGameTime());
++        }
++        // Leaf end
+ 
++        for (LevelChunk levelChunk : chunks) { // Leaf
+             if (true) { // Paper - rewrite chunk system
+                 this.level.tickChunk(levelChunk, _int);
+             }
+diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
+index 8db4fd335e661111c52721be2f5ffc65a2c843d2..336bb6dd39a4678ea5d992b8857e79d69d673dd8 100644
+--- a/net/minecraft/world/level/NaturalSpawner.java
++++ b/net/minecraft/world/level/NaturalSpawner.java
+@@ -156,6 +156,11 @@ public final class NaturalSpawner {
+     }
+ 
+     public static void spawnForChunk(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, List<MobCategory> categories) {
++    // Leaf start
++        spawnForChunk(level, chunk, spawnState, categories, level.getGameTime());
++    }
++    public static void spawnForChunk(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, List<MobCategory> categories, long gameTime) {
++    // Leaf end
+         for (MobCategory mobCategory : categories) {
+             // Paper start - Optional per player mob spawns
+             final boolean canSpawn;
+@@ -186,7 +191,7 @@ public final class NaturalSpawner {
+                 }
+                 // Paper end - throttle failed spawn attempts
+                 if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
+-                    spawnThisTick = ticksPerSpawnTmp != 0 && level.getGameTime() % ticksPerSpawn == 0; // Paper - throttle failed spawn attempts
++                    spawnThisTick = ticksPerSpawnTmp != 0 && gameTime % ticksPerSpawn == 0; // Paper - throttle failed spawn attempts // Leaf
+                     limit = level.getWorld().getSpawnLimit(spawnCategory);
+                 }
+ 
