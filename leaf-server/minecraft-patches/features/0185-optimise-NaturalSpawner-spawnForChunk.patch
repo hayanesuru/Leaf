@@ -1,0 +1,130 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Tue, 3 Jun 2025 15:20:59 +0900
+Subject: [PATCH] optimise NaturalSpawner#spawnForChunk
+
+
+diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
+index ce2621a87dec1befb016b3437ceb2d02ed6d0b75..a6831e701a0ffbc91ea947c09c39ac7d919d1870 100644
+--- a/net/minecraft/world/level/NaturalSpawner.java
++++ b/net/minecraft/world/level/NaturalSpawner.java
+@@ -156,8 +156,15 @@ public final class NaturalSpawner {
+     }
+ 
+     public static void spawnForChunk(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, List<MobCategory> categories) {
++        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(); // Leaf
+         for (MobCategory mobCategory : categories) {
+             // Paper start - Optional per player mob spawns
++            // Leaf start - reduce 3/4 while failed 16 canSpawn attempts
++            if (chunk.failedSpawnAttempts[mobCategory.ordinal()] >= 16 && (level.random.nextInt(4)) != 0) {
++                continue;
++            }
++            // Leaf end - reduce 3/4 while failed 16 canSpawn attempts
++            // Paper start - Optional per player mob attempts
+             final boolean canSpawn;
+             int maxSpawns = Integer.MAX_VALUE;
+             if (level.paperConfig().entities.spawning.perPlayerMobSpawns) {
+@@ -197,9 +204,16 @@ public final class NaturalSpawner {
+                 canSpawn = spawnState.canSpawnForCategoryLocal(mobCategory, chunk.getPos());
+             }
+             if (canSpawn) {
++                // Leaf start
+                 // Paper start - throttle failed spawn attempts
+-                int spawnCount = spawnCategoryForChunk(mobCategory, level, chunk, spawnState::canSpawn, spawnState::afterSpawn,
+-                    maxSpawns, level.paperConfig().entities.spawning.perPlayerMobSpawns ? level.getChunkSource().chunkMap::updatePlayerMobTypeMap : null, false);
++                int spawnCount = 0;
++                final Consumer<Entity> trackEntity = level.paperConfig().entities.spawning.perPlayerMobSpawns ? level.getChunkSource().chunkMap::updatePlayerMobTypeMap : null;
++                // Paper end - Optional per player mob spawns
++                mutableRandomPosWithin(pos, level, chunk);
++                if (pos.getY() >= level.getMinY() + 1) {
++                    spawnCount = spawnCategoryForPosition(mobCategory, level, chunk, pos, spawnState::canSpawn, spawnState::afterSpawn, maxSpawns, trackEntity, false);// Paper - Optional per player mob spawns // Paper - throttle failed spawn attempts
++                } // Paper - throttle failed spawn attempts
++                // Leaf end
+                 if (spawnCount == 0) {
+                     chunk.failedSpawnAttempts[mobCategory.ordinal()]++;
+                 } else {
+@@ -275,24 +289,48 @@ public final class NaturalSpawner {
+         StructureManager structureManager = level.structureManager();
+         ChunkGenerator generator = level.getChunkSource().getGenerator();
+         int y = pos.getY();
++        int posX = pos.getX(); // Leaf
++        int posZ = pos.getZ(); // Leaf
+         int i = 0; // Paper - throttle failed spawn attempts
+         BlockState blockState = level.getBlockStateIfLoadedAndInBounds(pos); // Paper - don't load chunks for mob spawn
+         if (blockState != null && !blockState.isRedstoneConductor(chunk, pos)) { // Paper - don't load chunks for mob spawn
+-            BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
++            BlockPos.MutableBlockPos mutableBlockPos = pos instanceof BlockPos.MutableBlockPos pos2 ? pos2 : new BlockPos.MutableBlockPos(); // Leaf
+             //int i = 0; // Paper - throttle failed spawn attempts - move up
+ 
++            // Leaf start
++            long rand = level.random.nextLong();
++            int bits = 0;
+             for (int i1 = 0; i1 < 3; i1++) {
+-                int x = pos.getX();
+-                int z = pos.getZ();
+-                int i2 = 6;
++                int x = posX;
++                int z = posZ;
+                 MobSpawnSettings.SpawnerData spawnerData = null;
+                 SpawnGroupData spawnGroupData = null;
+-                int ceil = Mth.ceil(level.random.nextFloat() * 4.0F);
++                int ceil = (int) ((rand & 0x3L) + 1L);
++                bits += 2;
+                 int i3 = 0;
+ 
+                 for (int i4 = 0; i4 < ceil; i4++) {
+-                    x += level.random.nextInt(6) - level.random.nextInt(6);
+-                    z += level.random.nextInt(6) - level.random.nextInt(6);
++                    int rand1=0,rand2=0,rand3=0,rand4=0,valuesNeeded=4;
++                    while (valuesNeeded > 0) {
++                        if (bits > 61) {
++                            rand = level.random.nextLong();
++                            bits = 0;
++                        }
++                        int threeBits = (int) ((rand >>> bits) & 0x7L);
++                        bits += 3;
++                        if (threeBits != 7 && threeBits != 6) {
++                            switch (valuesNeeded) {
++                                case 1 -> rand4 = threeBits;
++                                case 2 -> rand3 = threeBits;
++                                case 3 -> rand2 = threeBits;
++                                case 4 -> rand1 = threeBits;
++                            }
++                            valuesNeeded--;
++                        }
++                    }
++                    x += rand1 - rand2;
++                    z += rand3 - rand4;
++                    // Leaf end
+                     mutableBlockPos.set(x, y, z);
+                     double d = x + 0.5;
+                     double d1 = z + 0.5;
+@@ -368,8 +406,8 @@ public final class NaturalSpawner {
+ 
+     private static boolean isRightDistanceToPlayerAndSpawnPoint(ServerLevel level, ChunkAccess chunk, BlockPos.MutableBlockPos pos, double distance) {
+         return !(distance <= 576.0)
+-            && !level.getSharedSpawnPos().closerToCenterThan(new Vec3(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5), 24.0)
+-            && (Objects.equals(new ChunkPos(pos), chunk.getPos()) || level.isNaturalSpawningAllowed(pos));
++            && !(level.getSharedSpawnPos().distToCenterSqr(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) < 576.0) // Leaf
++            && (ChunkPos.asLong(pos) == chunk.getPos().longKey || level.isNaturalSpawningAllowed(pos)); // Leaf
+     }
+ 
+     // Paper start - PreCreatureSpawnEvent
+@@ -474,6 +512,17 @@ public final class NaturalSpawner {
+         }
+     }
+ 
++    // Leaf start
++    private static void mutableRandomPosWithin(BlockPos.MutableBlockPos pos1, Level level, LevelChunk chunk) {
++        ChunkPos pos = chunk.getPos();
++        int i = pos.getMinBlockX() + level.random.nextInt(16);
++        int i1 = pos.getMinBlockZ() + level.random.nextInt(16);
++        int i2 = chunk.getHeight(Heightmap.Types.WORLD_SURFACE, i, i1) + 1;
++        int i3 = Mth.randomBetweenInclusive(level.random, level.getMinY(), i2);
++        pos1.set(i, i3, i1);
++    }
++    // Leaf end
++
+     private static BlockPos getRandomPosWithin(Level level, LevelChunk chunk) {
+         ChunkPos pos = chunk.getPos();
+         int i = pos.getMinBlockX() + level.random.nextInt(16);

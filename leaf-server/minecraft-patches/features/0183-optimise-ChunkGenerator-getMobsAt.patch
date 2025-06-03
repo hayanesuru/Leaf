@@ -1,0 +1,56 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Tue, 3 Jun 2025 15:16:32 +0900
+Subject: [PATCH] optimise ChunkGenerator#getMobsAt
+
+inline fillStartsForStructure
+
+diff --git a/net/minecraft/world/level/StructureManager.java b/net/minecraft/world/level/StructureManager.java
+index 8bc6a6c86cd8db53feefba7508b6031ba67e242e..0785bb41560aae7edd4a727fe2403a064c9b5d9f 100644
+--- a/net/minecraft/world/level/StructureManager.java
++++ b/net/minecraft/world/level/StructureManager.java
+@@ -78,7 +78,7 @@ public class StructureManager {
+ 
+     public void fillStartsForStructure(Structure structure, LongSet structureRefs, Consumer<StructureStart> startConsumer) {
+         for (long l : structureRefs) {
+-            SectionPos sectionPos = SectionPos.of(new ChunkPos(l), this.level.getMinSectionY());
++            SectionPos sectionPos = SectionPos.of(ChunkPos.getX(l), this.level.getMinSectionY(), ChunkPos.getZ(l)); // Leaf
+             StructureStart startForStructure = this.getStartForStructure(
+                 sectionPos, structure, this.level.getChunk(sectionPos.x(), sectionPos.z(), ChunkStatus.STRUCTURE_STARTS)
+             );
+diff --git a/net/minecraft/world/level/chunk/ChunkGenerator.java b/net/minecraft/world/level/chunk/ChunkGenerator.java
+index 176adfcaa0fc458043d4bc05ead1861864b63606..9cc9ba1f008635ab713a4547ca3cdbfafcee9ffc 100644
+--- a/net/minecraft/world/level/chunk/ChunkGenerator.java
++++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
+@@ -501,18 +501,21 @@ public abstract class ChunkGenerator {
+             Structure structure = entry.getKey();
+             StructureSpawnOverride structureSpawnOverride = structure.spawnOverrides().get(category);
+             if (structureSpawnOverride != null) {
+-                MutableBoolean mutableBoolean = new MutableBoolean(false);
+-                Predicate<StructureStart> predicate = structureSpawnOverride.boundingBox() == StructureSpawnOverride.BoundingBoxType.PIECE
+-                    ? structureStart -> structureManager.structureHasPieceAt(pos, structureStart)
+-                    : structureStart -> structureStart.getBoundingBox().isInside(pos);
+-                structureManager.fillStartsForStructure(structure, entry.getValue(), structureStart -> {
+-                    if (mutableBoolean.isFalse() && predicate.test(structureStart)) {
+-                        mutableBoolean.setTrue();
++                // Leaf start
++                for (long l : entry.getValue()) {
++                    SectionPos sectionPos = SectionPos.of(ChunkPos.getX(l), structureManager.level.getMinSectionY(), ChunkPos.getZ(l)); // Leaf
++                    StructureStart startForStructure = structureManager.getStartForStructure(
++                        sectionPos, structure, structureManager.level.getChunk(sectionPos.x(), sectionPos.z(), ChunkStatus.STRUCTURE_STARTS)
++                    );
++                    if (startForStructure != null && startForStructure.isValid()) {
++                        if (structureSpawnOverride.boundingBox() == StructureSpawnOverride.BoundingBoxType.PIECE
++                            ? structureManager.structureHasPieceAt(pos, startForStructure)
++                            : startForStructure.getBoundingBox().isInside(pos)) {
++                            return structureSpawnOverride.spawns();
++                        }
+                     }
+-                });
+-                if (mutableBoolean.isTrue()) {
+-                    return structureSpawnOverride.spawns();
+                 }
++                // Leaf end
+             }
+         }
+ 

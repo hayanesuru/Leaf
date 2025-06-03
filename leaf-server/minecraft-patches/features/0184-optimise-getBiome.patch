@@ -1,0 +1,102 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Tue, 3 Jun 2025 15:20:40 +0900
+Subject: [PATCH] optimise getBiome
+
+
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index eb849c57992658005e0f514c6f7923f8ca43bebf..c706f0dacd9c322d9b09d6ee073872c4229818b0 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -899,6 +899,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+             this.advanceWeatherCycle();
+         }
+ 
++        if (runsNormally && (getGameTime() & 7L) == 7L) this.getBiomeManager().recomputeCache(); // Leaf - cache getBiome
+         // Leaf start - SparklyPaper - parallel world ticking
+         if (!org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) {
+             this.moonrise$midTickTasks();
+diff --git a/net/minecraft/world/level/biome/BiomeManager.java b/net/minecraft/world/level/biome/BiomeManager.java
+index a48175a7ebb1788ace46395621ed78d910178a53..2ce1754e0cf854468791688752a7d16c76917d3b 100644
+--- a/net/minecraft/world/level/biome/BiomeManager.java
++++ b/net/minecraft/world/level/biome/BiomeManager.java
+@@ -15,6 +15,10 @@ public class BiomeManager {
+     private final BiomeManager.NoiseBiomeSource noiseBiomeSource;
+     private final long biomeZoomSeed;
+     private static final double maxOffset = 0.4500000001D; // Leaf - Carpet-Fixes - Optimized getBiome method
++    // Leaf start - cache getBiome
++    private final Holder<Biome>[] biomeCache = new Holder[65536];
++    private final long[] biomeCachePos = new long[65536];
++    // Leaf end - cache getBiome
+ 
+     public BiomeManager(BiomeManager.NoiseBiomeSource noiseBiomeSource, long biomeZoomSeed) {
+         this.noiseBiomeSource = noiseBiomeSource;
+@@ -29,7 +33,28 @@ public class BiomeManager {
+         return new BiomeManager(newSource, this.biomeZoomSeed);
+     }
+ 
++    // Leaf start - cache getBiome
++    public synchronized void recomputeCache() {
++        java.util.Arrays.fill(this.biomeCache, null);
++    }
++    // Leaf end - cache getBiome
++
+     public Holder<Biome> getBiome(BlockPos pos) {
++        // Leaf start - cache getBiome
++        long packedPos = pos.asLong();
++        long hash = packedPos;
++        hash = (hash ^ (hash >>> 32)) * 0xff51afd7ed558ccdL;
++        hash = (hash ^ (hash >>> 32)) * 0xc4ceb9fe1a85ec53L;
++        hash = (hash ^ (hash >>> 32)) & 65535L;
++        synchronized (this) {
++            if (biomeCachePos[(int) hash] == packedPos) {
++                Holder<Biome> biome = biomeCache[(int) hash];
++                if (biome != null) {
++                    return biome;
++                }
++            }
++        }
++        // Leaf end - cache getBiome
+         // Leaf start - Carpet-Fixes - Optimized getBiome method
+         int xMinus2 = pos.getX() - 2;
+         int yMinus2 = pos.getY() - 2;
+@@ -85,11 +110,18 @@ public class BiomeManager {
+                 smallestDist = biomeDist;
+             }
+         }
+-        return this.noiseBiomeSource.getNoiseBiome(
++        // Leaf start - cache getBiome
++        Holder<Biome> biome = this.noiseBiomeSource.getNoiseBiome(
+             (smallestX & 4) == 0 ? x : x + 1,
+             (smallestX & 2) == 0 ? y : y + 1,
+             (smallestX & 1) == 0 ? z : z + 1
+         );
++        synchronized (this) {
++            biomeCache[(int) hash] = biome;
++            biomeCachePos[(int) hash] = packedPos;
++        }
++        return biome;
++        // Leaf end - cache getBiome
+         // Leaf end - Carpet-Fixes - Optimized getBiome method
+     }
+ 
+@@ -126,9 +158,18 @@ public class BiomeManager {
+         return Mth.square(zNoise + fiddle2) + Mth.square(yNoise + fiddle1) + Mth.square(xNoise + fiddle);
+     }
+ 
++    // Leaf start
++    private static final double[] FIDDLE_TABLE = new double[1024];
++    static {
++        for (int i = 0; i < 1024; i++) {
++            FIDDLE_TABLE[i] = (i - 512) * (0.9 / 1024.0);
++        }
++    }
+     private static double getFiddle(long seed) {
+-        return (double)(((seed >> 24) & (1024 - 1)) - (1024/2)) * (0.9 / 1024.0); // Paper - avoid floorMod, fp division, and fp subtraction
++        return FIDDLE_TABLE[(int)(seed >>> 24) & 1023];
++        // return (double)(((seed >> 24) & (1024 - 1)) - (1024/2)) * (0.9 / 1024.0); // Paper - avoid floorMod, fp division, and fp subtraction
+     }
++    // Leaf end
+ 
+     public interface NoiseBiomeSource {
+         Holder<Biome> getNoiseBiome(int x, int y, int z);
