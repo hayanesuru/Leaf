@@ -22,7 +22,7 @@ and, in my opinion, worth the low risk of minor mob-spawning-related
 inconsistencies.
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 4ba85d704ffebae38f7a76a97a182e3674730c6f..d19e31d3b280325defcaf46e7168eafb3d6587d2 100644
+index 4ba85d704ffebae38f7a76a97a182e3674730c6f..48ca0ba4c18e596e0d122fdc533dfd65bde19db7 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -286,6 +286,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -33,21 +33,14 @@ index 4ba85d704ffebae38f7a76a97a182e3674730c6f..d19e31d3b280325defcaf46e7168eafb
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> threadFunction) {
          ca.spottedleaf.dataconverter.minecraft.datatypes.MCTypeRegistry.init(); // Paper - rewrite data converter system
-@@ -1055,6 +1056,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-         io.papermc.paper.log.CustomLogManager.forceReset(); // Paper - Reset loggers after shutdown
-         this.onServerExit();
-         // Paper end - Improved watchdog support - move final shutdown items here
-+        // Leaf start - Async mob spawning
-+        if (this.mobSpawnExecutor != null) {
-+            try {
-+                this.mobSpawnExecutor.kill();
-+            } catch (java.lang.InterruptedException ignored) {
-+            }
-+        }
-+        // Leaf end - Async mob spawning
-     }
- 
-     public String getLocalIp() {
+@@ -1048,6 +1049,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+         // Paper end - rewrite chunk system
+         // Paper start - Improved watchdog support - move final shutdown items here
+         Util.shutdownExecutors();
++        org.dreeam.leaf.async.ShutdownExecutors.shutdown(this); // Leaf
+         try {
+             net.minecrell.terminalconsole.TerminalConsoleAppender.close(); // Paper - Use TerminalConsoleAppender
+         } catch (final Exception ignored) {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
 index bd7f792c45059f0652e530608ef0c77c5caf7cfa..649403ef1d5d898052412d6d47783769f291b94f 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java

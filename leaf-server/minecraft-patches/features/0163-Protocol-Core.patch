@@ -22,10 +22,10 @@ index 7e19dfe90a63ff26f03b95891dacb7360bba5a3c..5d0961f06c23121883c4f0b889ccdf32
              }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 272204ae3f94f6f50454d0b5f5bcdd264971774e..52c4a93d0c1fd40e7a92d9ed6d2d8010569f8f2b 100644
+index f5f0e4f5d7a4b34514e102020d2a7be313292f7f..0baa48054beead8f187b56ea8d71916600ccea9f 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1853,6 +1853,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1832,6 +1832,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          }
  
          org.leavesmc.leaves.protocol.core.LeavesProtocolManager.handleTick(); // Leaves - protocol
