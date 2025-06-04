@@ -5,7 +5,7 @@ Subject: [PATCH] optimise getBiome
 
 
 diff --git a/net/minecraft/advancements/critereon/LocationPredicate.java b/net/minecraft/advancements/critereon/LocationPredicate.java
-index a26a5311f87873e0d4d26fda9cb8956a32ee81e8..9405f1f211db3fa2d313429866de454ede64d95b 100644
+index a26a5311f87873e0d4d26fda9cb8956a32ee81e8..65e4315cce35814c60b21bbd5baea2ffac82162c 100644
 --- a/net/minecraft/advancements/critereon/LocationPredicate.java
 +++ b/net/minecraft/advancements/critereon/LocationPredicate.java
 @@ -49,7 +49,7 @@ public record LocationPredicate(
@@ -13,7 +13,7 @@ index a26a5311f87873e0d4d26fda9cb8956a32ee81e8..9405f1f211db3fa2d313429866de454e
              BlockPos blockPos = BlockPos.containing(x, y, z);
              boolean isLoaded = level.isLoaded(blockPos);
 -            return (!this.biomes.isPresent() || isLoaded && this.biomes.get().contains(level.getBiome(blockPos)))
-+            return (!this.biomes.isPresent() || isLoaded && this.biomes.get().contains(level.getBiomeCached(blockPos))) // Leaf - cache getBiome
++            return (!this.biomes.isPresent() || isLoaded && this.biomes.get().contains(org.dreeam.leaf.config.modules.opt.OptimizeBiome.advancement ? level.getBiomeCached(blockPos) : level.getBiome(blockPos))) // Leaf - cache getBiome
                  && (!this.structures.isPresent() || isLoaded && level.structureManager().getStructureWithPieceAt(blockPos, this.structures.get()).isValid())
                  && (!this.smokey.isPresent() || isLoaded && this.smokey.get() == CampfireBlock.isSmokeyPos(level, blockPos))
                  && (!this.light.isPresent() || this.light.get().matches(level, blockPos))
@@ -35,7 +35,7 @@ index 26c8c1e5598daf3550aef05b12218c47bda6618b..91b2fc5b2da6566b05fef1111665b895
          int floor = Mth.floor(aabb.minX);
          int floor1 = Mth.floor(aabb.maxX);
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index ce2621a87dec1befb016b3437ceb2d02ed6d0b75..c0d941af10ffe8c158dab9db40c7c5767b6cfd6e 100644
+index ce2621a87dec1befb016b3437ceb2d02ed6d0b75..9b37b763c6555705f3e256010f508b5a0c2cdb66 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
 @@ -445,7 +445,7 @@ public final class NaturalSpawner {
@@ -43,7 +43,7 @@ index ce2621a87dec1befb016b3437ceb2d02ed6d0b75..c0d941af10ffe8c158dab9db40c7c576
          ServerLevel level, StructureManager structureManager, ChunkGenerator generator, MobCategory category, RandomSource random, BlockPos pos
      ) {
 -        Holder<Biome> biome = level.getBiome(pos);
-+        Holder<Biome> biome = level.getBiomeCached(pos); // Leaf - cache getBiome
++        Holder<Biome> biome = org.dreeam.leaf.config.modules.opt.OptimizeBiome.mobSpawn ? level.getBiomeCached(pos) : level.getBiome(pos); // Leaf - cache getBiome
          return category == MobCategory.WATER_AMBIENT && biome.is(BiomeTags.REDUCED_WATER_AMBIENT_SPAWNS) && random.nextFloat() < 0.98F
              ? Optional.empty()
              : mobsAt(level, structureManager, generator, category, pos, biome).getRandom(random);
@@ -52,7 +52,7 @@ index ce2621a87dec1befb016b3437ceb2d02ed6d0b75..c0d941af10ffe8c158dab9db40c7c576
          return isInNetherFortressBounds(pos, level, category, structureManager)
              ? NetherFortressStructure.FORTRESS_ENEMIES
 -            : generator.getMobsAt(biome != null ? biome : level.getBiome(pos), structureManager, category, pos);
-+            : generator.getMobsAt(biome != null ? biome : level.getBiomeCached(pos), structureManager, category, pos); // Leaf - cache getBiome
++            : generator.getMobsAt(biome != null ? biome : (org.dreeam.leaf.config.modules.opt.OptimizeBiome.mobSpawn ? level.getBiomeCached(pos) : level.getBiome(pos)), structureManager, category, pos); // Leaf - cache getBiome
      }
  
      public static boolean isInNetherFortressBounds(BlockPos pos, ServerLevel level, MobCategory category, StructureManager structureManager) {

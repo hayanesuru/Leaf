@@ -1,14 +1,95 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: hayanesuru <hayanesuru@outlook.jp>
 Date: Tue, 3 Jun 2025 15:20:59 +0900
-Subject: [PATCH] optimise NaturalSpawner#spawnForChunk
+Subject: [PATCH] optimize mob spawning
 
 
+diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
+index d61da0fbe7f6c181e4084ce60bfe7dab86f361ad..1ce1b21a77cd727b52bd937b65ce97517fed9c68 100644
+--- a/net/minecraft/server/level/ServerChunkCache.java
++++ b/net/minecraft/server/level/ServerChunkCache.java
+@@ -70,7 +70,9 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+     private final Set<ChunkHolder> chunkHoldersToBroadcast = new ReferenceOpenHashSet<>();
+     @Nullable
+     @VisibleForDebug
+-    private NaturalSpawner.SpawnState lastSpawnState;
++    private volatile NaturalSpawner.SpawnState lastSpawnState; // Leaf
++    private long delayTimeInhabited = 0L; // Leaf
++    private long delaySpawn = -1L; // Leaf
+     // Paper start
+     private final ca.spottedleaf.concurrentutil.map.ConcurrentLong2ReferenceChainedHashTable<net.minecraft.world.level.chunk.LevelChunk> fullChunks = new ca.spottedleaf.concurrentutil.map.ConcurrentLong2ReferenceChainedHashTable<>();
+     public int getFullChunksCount() {
+@@ -656,13 +658,37 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+             filteredSpawningCategories = List.of();
+         }
+ 
+-        for (LevelChunk levelChunk : chunks) {
+-            ChunkPos pos = levelChunk.getPos();
+-            levelChunk.incrementInhabitedTime(timeInhabited);
+-            if (!filteredSpawningCategories.isEmpty() && this.level.getWorldBorder().isWithinBounds(pos) && lastSpawnState != null && (!org.dreeam.leaf.config.modules.async.AsyncMobSpawning.enabled || _pufferfish_spawnCountsReady.get()) && this.chunkMap.anyPlayerCloseEnoughForSpawning(pos, true)) { // Spigot // Pufferfish // Leaf - Don't spawn if lastSpawnState is null
+-                NaturalSpawner.spawnForChunk(this.level, levelChunk, lastSpawnState, filteredSpawningCategories); // Pufferfish
++        // Leaf start
++        var lastSpawnState1 = this.lastSpawnState;
++        if (lastSpawnState1 != null && (!org.dreeam.leaf.config.modules.async.AsyncMobSpawning.enabled || _pufferfish_spawnCountsReady.get())) {
++            long sumTimeInhabited = timeInhabited + delayTimeInhabited;
++            long time = level.getGameTime();
++            for (LevelChunk levelChunk : chunks) {
++                ChunkPos pos = levelChunk.getPos();
++                levelChunk.incrementInhabitedTime(sumTimeInhabited);
++                if (!filteredSpawningCategories.isEmpty() && this.level.getWorldBorder().isWithinBounds(pos) && this.chunkMap.anyPlayerCloseEnoughForSpawning(pos, true)) { // Spigot
++                    NaturalSpawner.spawnForChunk(this.level, levelChunk, lastSpawnState1, filteredSpawningCategories, time); // Pufferfish
++                }
++            }
++            if (delaySpawn != -1L) {
++                time = delaySpawn;
++                for (LevelChunk levelChunk : chunks) {
++                    ChunkPos pos = levelChunk.getPos();
++                    if (!filteredSpawningCategories.isEmpty() && this.level.getWorldBorder().isWithinBounds(pos) && this.chunkMap.anyPlayerCloseEnoughForSpawning(pos, true)) { // Spigot
++                        NaturalSpawner.spawnForChunk(this.level, levelChunk, lastSpawnState1, filteredSpawningCategories, time); // Pufferfish
++                    }
++                }
+             }
++            delaySpawn = -1L;
++            delayTimeInhabited = 0L;
++        } else {
++            // unlikely
++            delayTimeInhabited += timeInhabited;
++            delaySpawn = level.getGameTime();
++        }
++        // Leaf end
+ 
++        for (LevelChunk levelChunk : chunks) { // Leaf - split to 2 loop
+             if (true) { // Paper - rewrite chunk system
+                 this.level.tickChunk(levelChunk, _int);
+             }
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index c0d941af10ffe8c158dab9db40c7c5767b6cfd6e..450f17badaa3f6c8f1cdb9e6dc76828b70afe6fc 100644
+index 9b37b763c6555705f3e256010f508b5a0c2cdb66..7bfc636fb442036f742903c4e69a8a9fcd0e6fc2 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -238,10 +238,13 @@ public final class NaturalSpawner {
+@@ -155,7 +155,13 @@ public final class NaturalSpawner {
+         return list;
+     }
+ 
++    @Deprecated(forRemoval = true) // Leaf
+     public static void spawnForChunk(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, List<MobCategory> categories) {
++    // Leaf start
++        spawnForChunk(level, chunk, spawnState, categories, level.getGameTime());
++    }
++    public static void spawnForChunk(ServerLevel level, LevelChunk chunk, NaturalSpawner.SpawnState spawnState, List<MobCategory> categories, long gameTime) {
++    // Leaf end
+         for (MobCategory mobCategory : categories) {
+             // Paper start - Optional per player mob spawns
+             final boolean canSpawn;
+@@ -174,7 +180,7 @@ public final class NaturalSpawner {
+                 }
+                 // Paper end - throttle failed spawn attempts
+                 if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
+-                    spawnThisTick = ticksPerSpawnTmp != 0 && level.getGameTime() % ticksPerSpawn == 0; // Paper - throttle failed spawn attempts
++                    spawnThisTick = ticksPerSpawnTmp != 0 && gameTime % ticksPerSpawn == 0; // Paper - throttle failed spawn attempts // Leaf
+                     limit = level.getWorld().getSpawnLimit(spawnCategory);
+                 }
+ 
+@@ -238,12 +244,14 @@ public final class NaturalSpawner {
          // Paper end - throttle failed spawn attempts
      ) {
          // Paper end - Optional per player mob spawns
@@ -18,27 +99,24 @@ index c0d941af10ffe8c158dab9db40c7c5767b6cfd6e..450f17badaa3f6c8f1cdb9e6dc76828b
 +        // Leaf start
 +        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
 +        mutableRandomPosWithin(pos, level, chunk);
-+        if (pos.getY() >= level.getMinY() + 1) {
-+            return spawnCategoryForPosition(category, level, chunk, pos, filter, callback, maxSpawns, trackEntity, false); // Paper - Optional per player mob spawns // Paper - throttle failed spawn attempts
++        if (pos.getY() < level.getMinY() + 1) {
++            return 0;
          }
+-
+-        return 0; // Paper - throttle failed spawn attempts
++        return spawnCategoryForPosition(category, level, chunk, pos, filter, callback, maxSpawns, trackEntity, false); // Paper - Optional per player mob spawns // Paper - throttle failed spawn attempts
 +        // Leaf end
- 
-         return 0; // Paper - throttle failed spawn attempts
      }
-@@ -275,31 +278,60 @@ public final class NaturalSpawner {
+ 
+     @VisibleForDebug
+@@ -275,31 +283,55 @@ public final class NaturalSpawner {
          StructureManager structureManager = level.structureManager();
          ChunkGenerator generator = level.getChunkSource().getGenerator();
          int y = pos.getY();
 +        int posX = pos.getX(); // Leaf
 +        int posZ = pos.getZ(); // Leaf
          int i = 0; // Paper - throttle failed spawn attempts
--        BlockState blockState = level.getBlockStateIfLoadedAndInBounds(pos); // Paper - don't load chunks for mob spawn
-+        // Leaf start
-+        if (!level.getWorldBorder().isWithinBounds(pos) || level.isOutsideBuildHeight(pos)) {
-+            return i;
-+        }
-+        BlockState blockState = chunk.getPos().longKey == ChunkPos.asLong(pos) ? chunk.getBlockState(posX, y, posZ) : level.getBlockStateIfLoaded(pos);
-+        // Leaf end
+         BlockState blockState = level.getBlockStateIfLoadedAndInBounds(pos); // Paper - don't load chunks for mob spawn
          if (blockState != null && !blockState.isRedstoneConductor(chunk, pos)) { // Paper - don't load chunks for mob spawn
 -            BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
 +            BlockPos.MutableBlockPos mutableBlockPos = pos instanceof BlockPos.MutableBlockPos pos2 ? pos2 : new BlockPos.MutableBlockPos(); // Leaf

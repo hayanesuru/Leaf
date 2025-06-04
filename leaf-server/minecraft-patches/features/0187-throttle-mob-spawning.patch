@@ -1,21 +1,21 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: hayanesuru <hayanesuru@outlook.jp>
-Date: Tue, 3 Jun 2025 21:34:25 +0900
+Date: Wed, 4 Jun 2025 20:54:03 +0900
 Subject: [PATCH] throttle mob spawning
 
 
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index 450f17badaa3f6c8f1cdb9e6dc76828b70afe6fc..2f709cca7180e2f4874a7f80ed32498aba6dcac0 100644
+index 7bfc636fb442036f742903c4e69a8a9fcd0e6fc2..762bdf1fe19546f89d34b9efdad66b00dab80006 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -160,6 +160,17 @@ public final class NaturalSpawner {
+@@ -166,6 +166,17 @@ public final class NaturalSpawner {
              // Paper start - Optional per player mob spawns
              final boolean canSpawn;
              int maxSpawns = Integer.MAX_VALUE;
 +            // Leaf start
-+            if (org.dreeam.leaf.config.modules.opt.ThrottleNaturalSpawnMob.enabled) {
-+                int spawnChance = org.dreeam.leaf.config.modules.opt.ThrottleNaturalSpawnMob.spawnChance[mobCategory.ordinal()];
-+                long failedAttempt = org.dreeam.leaf.config.modules.opt.ThrottleNaturalSpawnMob.failedAttempts[mobCategory.ordinal()];
++            if (org.dreeam.leaf.config.modules.opt.ThrottleNaturalMobSpawning.enabled) {
++                int spawnChance = org.dreeam.leaf.config.modules.opt.ThrottleNaturalMobSpawning.spawnChance[mobCategory.ordinal()];
++                long failedAttempt = org.dreeam.leaf.config.modules.opt.ThrottleNaturalMobSpawning.failedAttempts[mobCategory.ordinal()];
 +                if (failedAttempt >= 0L
 +                    && chunk.failedSpawnAttempts[mobCategory.ordinal()] >= failedAttempt
 +                    && (level.random.nextInt() & 1023) > spawnChance) {

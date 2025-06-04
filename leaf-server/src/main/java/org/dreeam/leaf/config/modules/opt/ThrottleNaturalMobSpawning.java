@@ -4,9 +4,9 @@ import net.minecraft.world.entity.MobCategory;
 import org.dreeam.leaf.config.ConfigModules;
 import org.dreeam.leaf.config.EnumConfigCategory;
 
-public class ThrottleNaturalSpawnMob extends ConfigModules {
+public class ThrottleNaturalMobSpawning extends ConfigModules {
     public String getBasePath() {
-        return EnumConfigCategory.PERF.getBaseKeyName() + ".throttled-mob-spawning";
+        return EnumConfigCategory.PERF.getBaseKeyName() + ".throttle-mob-spawning";
     }
 
     public static boolean enabled = false;
@@ -21,7 +21,7 @@ public class ThrottleNaturalSpawnMob extends ConfigModules {
         spawnChance = new int[categories.length];
         for (int i = 0; i < categories.length; i++) {
             String category = getBasePath() + "." + categories[i].getSerializedName();
-            long attempts = config.getLong(category + ".min-failed-attempts", 8);
+            long attempts = config.getLong(category + ".min-failed", 8);
             double chance = config.getDouble(category + ".spawn-chance", 25.0);
 
             failedAttempts[i] = Math.max(-1, attempts);
