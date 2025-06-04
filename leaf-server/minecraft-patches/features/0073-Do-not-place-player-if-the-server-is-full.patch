@@ -6,7 +6,7 @@ Subject: [PATCH] Do not place player if the server is full
 Fix https://github.com/PaperMC/Paper/issues/10668
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 4fa7952c30408e898cc2e3ce41d5b0f44f19ae31..6be59ddf2584455de0955b34d8ba1a053103f684 100644
+index 5c88d51920481235145bb7fd8cf148607b2dbed0..75fb49f1596f475278d12c8c7aea9ad4952b6056 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -341,6 +341,13 @@ public abstract class PlayerList {
@@ -23,7 +23,7 @@ index 4fa7952c30408e898cc2e3ce41d5b0f44f19ae31..6be59ddf2584455de0955b34d8ba1a05
  
          org.bukkit.Location loc = ev.getSpawnLocation();
          serverLevel = ((org.bukkit.craftbukkit.CraftWorld) loc.getWorld()).getHandle();
-@@ -836,7 +843,7 @@ public abstract class PlayerList {
+@@ -835,7 +842,7 @@ public abstract class PlayerList {
              // return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameProfile)
              //     ? Component.translatable("multiplayer.disconnect.server_full")
              //     : null;

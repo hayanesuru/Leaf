@@ -30,10 +30,10 @@ index 4f01b53bf801f99253efd27df6216912705d18af..82a1715fea41e6a41c4ff441ea89f424
                  level.addDuringTeleport(this);
                  this.triggerDimensionChangeTriggers(serverLevel);
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 6be59ddf2584455de0955b34d8ba1a053103f684..66cb015de63949ca5add9dc3456db9c638b78048 100644
+index 75fb49f1596f475278d12c8c7aea9ad4952b6056..b17c8a2f5294ac28cc05fb05c84a041b2c6c8721 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -956,11 +956,11 @@ public abstract class PlayerList {
+@@ -955,11 +955,11 @@ public abstract class PlayerList {
          byte b = (byte)(keepInventory ? 1 : 0);
          ServerLevel serverLevel = serverPlayer.serverLevel();
          LevelData levelData = serverLevel.getLevelData();

@@ -5,10 +5,10 @@ Subject: [PATCH] Cache player profileResult
 
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 069477e524a28b20a0289221858bdc802704a890..c25f5b92b16f45b960d9b405b2fe1c40ec4e1124 100644
+index 069477e524a28b20a0289221858bdc802704a890..114b25f933c6a1b011523581a5a02a5a2c1e827e 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -71,6 +71,12 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -71,6 +71,14 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      private net.minecraft.server.level.ServerPlayer player; // CraftBukkit
      public boolean iKnowThisMayNotBeTheBestIdeaButPleaseDisableUsernameValidation = false; // Paper - username validation overriding
      private int velocityLoginMessageId = -1; // Paper - Add Velocity IP Forwarding Support
@@ -16,12 +16,14 @@ index 069477e524a28b20a0289221858bdc802704a890..c25f5b92b16f45b960d9b405b2fe1c40
 +    private static final com.github.benmanes.caffeine.cache.Cache<String, ProfileResult> playerProfileResultCache = com.github.benmanes.caffeine.cache.Caffeine.newBuilder()
 +        .expireAfterWrite(org.dreeam.leaf.config.modules.misc.Cache.cachePlayerProfileResultTimeout, java.util.concurrent.TimeUnit.MINUTES)
 +        .build();
-+    public static final java.util.Map<String, InetAddress> playerSession = new java.util.concurrent.ConcurrentHashMap<>();
++    private static final com.github.benmanes.caffeine.cache.Cache<String, InetAddress> playerSession = com.github.benmanes.caffeine.cache.Caffeine.newBuilder()
++        .expireAfterWrite(org.dreeam.leaf.config.modules.misc.Cache.cachePlayerProfileResultTimeout, java.util.concurrent.TimeUnit.MINUTES)
++        .build();
 +    // Leaf end - Cache player profileResult
  
      public ServerLoginPacketListenerImpl(MinecraftServer server, Connection connection, boolean transferred) {
          this.server = server;
-@@ -304,9 +310,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -304,9 +312,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
                  String string1 = Objects.requireNonNull(ServerLoginPacketListenerImpl.this.requestedUsername, "Player name not initialized");
  
                  try {
@@ -34,14 +36,14 @@ index 069477e524a28b20a0289221858bdc802704a890..c25f5b92b16f45b960d9b405b2fe1c40
 +                        profileResult = playerProfileResultCache.getIfPresent(string1);
 +
 +                        InetAddress address = this.getAddress();
-+                        InetAddress lastAddress = playerSession.get(string1);
++                        InetAddress lastAddress = playerSession.getIfPresent(string1);
 +                        if (isInvalidSession(address, lastAddress)) {
 +                            // Send request to mojang server to verify session
 +                            // Result will be null if is invalid and will do disconnect logic below
 +                            profileResult = ServerLoginPacketListenerImpl.this.server
 +                                .getSessionService()
 +                                .hasJoinedServer(string1, string, address);
-+                            if (profileResult != null) {
++                            if (profileResult != null && address != null) {
 +                                playerProfileResultCache.put(string1, profileResult);
 +                                playerSession.put(string1, address);
 +                            }
@@ -55,7 +57,7 @@ index 069477e524a28b20a0289221858bdc802704a890..c25f5b92b16f45b960d9b405b2fe1c40
                      if (profileResult != null) {
                          GameProfile gameProfile = profileResult.profile();
                          // CraftBukkit start - fire PlayerPreLoginEvent
-@@ -351,6 +378,20 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -351,6 +380,20 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
          // Paper end - Cache authenticator threads
      }
  
@@ -76,15 +78,3 @@ index 069477e524a28b20a0289221858bdc802704a890..c25f5b92b16f45b960d9b405b2fe1c40
      // CraftBukkit start
      private GameProfile callPlayerPreLoginEvents(GameProfile gameprofile) throws Exception { // Paper - Add more fields to AsyncPlayerPreLoginEvent
          // Paper start - Add Velocity IP Forwarding Support
-diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index e8683f45823cac55e3e68ccc500f10f0632e72fd..f71debc88c1d16c09546c026817aa192faac8fc6 100644
---- a/net/minecraft/server/players/PlayerList.java
-+++ b/net/minecraft/server/players/PlayerList.java
-@@ -669,6 +669,7 @@ public abstract class PlayerList {
-         // Paper end - Fix kick event leave message not being sent
-         org.purpurmc.purpur.task.BossBarTask.removeFromAll(player.getBukkitEntity()); // Purpur - Implement TPSBar
-         net.minecraft.server.network.ServerGamePacketListenerImpl.afkCooldown.remove(player.getBukkitEntity().getUniqueId()); // Leaf - Improve Purpur AFK system
-+        net.minecraft.server.network.ServerLoginPacketListenerImpl.playerSession.remove(player.getBukkitEntity().getName()); // Leaf - Cache player profileResult
-         ServerLevel serverLevel = player.serverLevel();
-         player.awardStat(Stats.LEAVE_GAME);
-         // CraftBukkit start - Quitting must be before we do final save of data, in case plugins need to modify it
