@@ -118,10 +118,10 @@ index 2e9eb04c7c4342393c05339906c267bca9ff29b1..53b9daa909c2b89046d5af515e17afe0
          try {
              PlayerList playerList = this.server.getPlayerList();
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 49f1743db193be1f10bfe6419231eb682e1068f7..8cbfe4abca6a3962376f723b94de86b4cab9d9e2 100644
+index c25f5b92b16f45b960d9b405b2fe1c40ec4e1124..005fee891cdabc7105033be051389557631fb6d2 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -472,11 +472,31 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -492,11 +492,31 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
          this.disconnect(ServerCommonPacketListenerImpl.DISCONNECT_UNEXPECTED_QUERY);
      }
  

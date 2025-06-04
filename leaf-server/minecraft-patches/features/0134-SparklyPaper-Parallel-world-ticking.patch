@@ -867,7 +867,7 @@ index 8362def0dc61496a087bd859052bd80ebba83185..09f517059aa47ca67329bc913243d4fd
          // Paper end - Inventory close reason
          this.connection.send(new ClientboundContainerClosePacket(this.containerMenu.containerId));
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index b17c8a2f5294ac28cc05fb05c84a041b2c6c8721..3591de34443069f3f163f8d17df6372c3068611d 100644
+index 66cb015de63949ca5add9dc3456db9c638b78048..1009421bfd289734b50a528bfca8d957e4610159 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -252,6 +252,8 @@ public abstract class PlayerList {
@@ -879,7 +879,7 @@ index b17c8a2f5294ac28cc05fb05c84a041b2c6c8721..3591de34443069f3f163f8d17df6372c
          player.isRealPlayer = true; // Paper
          player.loginTime = System.currentTimeMillis(); // Paper - Replace OfflinePlayer#getLastPlayed
          GameProfile gameProfile = player.getGameProfile();
-@@ -891,6 +893,15 @@ public abstract class PlayerList {
+@@ -892,6 +894,15 @@ public abstract class PlayerList {
          return this.respawn(player, keepInventory, reason, eventReason, null);
      }
      public ServerPlayer respawn(ServerPlayer player, boolean keepInventory, Entity.RemovalReason reason, org.bukkit.event.player.PlayerRespawnEvent.RespawnReason eventReason, org.bukkit.Location location) {
@@ -895,7 +895,7 @@ index b17c8a2f5294ac28cc05fb05c84a041b2c6c8721..3591de34443069f3f163f8d17df6372c
          player.stopRiding(); // CraftBukkit
          this.players.remove(player);
          this.playersByName.remove(player.getScoreboardName().toLowerCase(java.util.Locale.ROOT)); // Spigot
-@@ -902,6 +913,7 @@ public abstract class PlayerList {
+@@ -903,6 +914,7 @@ public abstract class PlayerList {
          ServerPlayer serverPlayer = player;
          Level fromWorld = player.level();
          player.wonGame = false;
