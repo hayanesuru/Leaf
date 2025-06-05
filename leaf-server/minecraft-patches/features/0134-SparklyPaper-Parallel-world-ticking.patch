@@ -1111,79 +1111,30 @@ index 0b4c4707139c9c72929799818ec1a1b25575d70e..acf8059017f4e45c307a113abed36c59
              });
          }
 diff --git a/net/minecraft/world/entity/projectile/ThrownEnderpearl.java b/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
-index d212f57c8c0b2086f567fd30237b110203d9e8cb..ed4df82581b5411e54068ccc59ea85a78404fa2b 100644
+index d212f57c8c0b2086f567fd30237b110203d9e8cb..3712a2143efe82d41bd62dcec826aede03b6448b 100644
 --- a/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
 +++ b/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
-@@ -126,40 +126,48 @@ public class ThrownEnderpearl extends ThrowableItemProjectile {
+@@ -126,8 +126,10 @@ public class ThrownEnderpearl extends ThrowableItemProjectile {
                  Vec3 vec3 = this.oldPosition();
                  if (owner instanceof ServerPlayer serverPlayer) {
                      if (serverPlayer.connection.isAcceptingMessages()) {
--                        // CraftBukkit start
--                        ServerPlayer serverPlayer1 = serverPlayer.teleport(new TeleportTransition(serverLevel, vec3, Vec3.ZERO, 0.0F, 0.0F, Relative.union(Relative.ROTATION, Relative.DELTA), TeleportTransition.DO_NOTHING, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.ENDER_PEARL));
--                        if (serverPlayer1 == null) {
--                            this.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.HIT);
--                            return;
--                        }
--                        // CraftBukkit end
--                        if (this.random.nextFloat() < serverLevel.purpurConfig.enderPearlEndermiteChance && serverLevel.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) { // Purpur - Configurable Ender Pearl RNG
--                            Endermite endermite = EntityType.ENDERMITE.create(serverLevel, EntitySpawnReason.TRIGGERED);
--                            if (endermite != null) {
--                                endermite.setPlayerSpawned(true); // Purpur - Add back player spawned endermite API
--                                endermite.moveTo(owner.getX(), owner.getY(), owner.getZ(), owner.getYRot(), owner.getXRot());
--                                serverLevel.addFreshEntity(endermite, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.ENDER_PEARL);
 +                        // Leaf start - SparklyPaper - parallel world ticking mod (handling for pearl teleportation cross-dimension)
 +                        java.util.function.Consumer<ServerPlayer> teleportPlayerCrossDimensionTask = taskServerPlayer -> {
-+                            // CraftBukkit start
-+                            ServerPlayer serverPlayer1 = taskServerPlayer.teleport(new TeleportTransition(serverLevel, vec3, Vec3.ZERO, 0.0F, 0.0F, Relative.union(Relative.ROTATION, Relative.DELTA), TeleportTransition.DO_NOTHING, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.ENDER_PEARL));
-+                            if (serverPlayer1 == null) {
-+                                this.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.HIT);
-+                                return;
-+                            }
-+                            // CraftBukkit end
-+                            if (this.random.nextFloat() < serverLevel.purpurConfig.enderPearlEndermiteChance && serverLevel.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) { // Purpur - Configurable Ender Pearl RNG
-+                                Endermite endermite = EntityType.ENDERMITE.create(serverLevel, EntitySpawnReason.TRIGGERED);
-+                                if (endermite != null) {
-+                                    endermite.setPlayerSpawned(true); // Purpur - Add back player spawned endermite API
-+                                    endermite.moveTo(owner.getX(), owner.getY(), owner.getZ(), owner.getYRot(), owner.getXRot());
-+                                    serverLevel.addFreshEntity(endermite, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.ENDER_PEARL);
-+                                }
-                             }
--                        }
- 
--                        if (this.isOnPortalCooldown()) {
--                            owner.setPortalCooldown();
--                        }
-+                            if (this.isOnPortalCooldown()) {
-+                                owner.setPortalCooldown();
-+                            }
- 
--                        // CraftBukkit start - moved up
--                        // ServerPlayer serverPlayer1 = serverPlayer.teleport(
--                        //     new TeleportTransition(
--                        //         serverLevel, vec3, Vec3.ZERO, 0.0F, 0.0F, Relative.union(Relative.ROTATION, Relative.DELTA), TeleportTransition.DO_NOTHING
--                        //     )
--                        // );
--                        // CraftBukkit end - moved up
--                        if (serverPlayer1 != null) {
--                            serverPlayer1.resetFallDistance();
--                            serverPlayer1.resetCurrentImpulseContext();
+                         // CraftBukkit start
+-                        ServerPlayer serverPlayer1 = serverPlayer.teleport(new TeleportTransition(serverLevel, vec3, Vec3.ZERO, 0.0F, 0.0F, Relative.union(Relative.ROTATION, Relative.DELTA), TeleportTransition.DO_NOTHING, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.ENDER_PEARL));
++                        ServerPlayer serverPlayer1 = taskServerPlayer.teleport(new TeleportTransition(serverLevel, vec3, Vec3.ZERO, 0.0F, 0.0F, Relative.union(Relative.ROTATION, Relative.DELTA), TeleportTransition.DO_NOTHING, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.ENDER_PEARL));
+                         if (serverPlayer1 == null) {
+                             this.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.HIT);
+                             return;
+@@ -156,10 +158,16 @@ public class ThrownEnderpearl extends ThrowableItemProjectile {
+                         if (serverPlayer1 != null) {
+                             serverPlayer1.resetFallDistance();
+                             serverPlayer1.resetCurrentImpulseContext();
 -                            serverPlayer1.hurtServer(serverPlayer.serverLevel(), this.damageSources().enderPearl().eventEntityDamager(this), this.level().purpurConfig.enderPearlDamage); // CraftBukkit // Paper - fix DamageSource API // Purpur - Configurable Ender Pearl damage
--                        }
-+                            // CraftBukkit start - moved up
-+                            // ServerPlayer serverPlayer1 = serverPlayer.teleport(
-+                            //     new TeleportTransition(
-+                            //         serverLevel, vec3, Vec3.ZERO, 0.0F, 0.0F, Relative.union(Relative.ROTATION, Relative.DELTA), TeleportTransition.DO_NOTHING
-+                            //     )
-+                            // );
-+                            // CraftBukkit end - moved up
-+                            if (serverPlayer1 != null) {
-+                                serverPlayer1.resetFallDistance();
-+                                serverPlayer1.resetCurrentImpulseContext();
-+                                serverPlayer1.hurtServer(taskServerPlayer.serverLevel(), this.damageSources().enderPearl().eventEntityDamager(this), this.level().purpurConfig.enderPearlDamage); // CraftBukkit // Paper - fix DamageSource API // Purpur - Configurable Ender Pearl damage
-+                            }
++                            serverPlayer1.hurtServer(taskServerPlayer.serverLevel(), this.damageSources().enderPearl().eventEntityDamager(this), this.level().purpurConfig.enderPearlDamage); // CraftBukkit // Paper - fix DamageSource API // Purpur - Configurable Ender Pearl damage
+                         }
  
--                        this.playSound(serverLevel, vec3);
-+                            this.playSound(serverLevel, vec3);
+                         this.playSound(serverLevel, vec3);
 +                        };
 +                        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled)
 +                            serverPlayer.getBukkitEntity().taskScheduler.schedule(teleportPlayerCrossDimensionTask, entity -> {}, 0);

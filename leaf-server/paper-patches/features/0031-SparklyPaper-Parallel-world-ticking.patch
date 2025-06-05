@@ -315,7 +315,7 @@ index af33cab59932f4ec135caf94dc5828930833daf6..caa92e48d031cb54950e6613a82f407d
      }
      // Paper end
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911c39f80c0 100644
+index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..839cfe99c028c596e15ba63c8a6e4a515b0a5764 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 @@ -74,13 +74,98 @@ public class CraftBlock implements Block {
@@ -540,7 +540,7 @@ index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911
      }
  
      public Block getFace(final BlockFace face) {
-@@ -282,51 +422,37 @@ public class CraftBlock implements Block {
+@@ -282,51 +422,36 @@ public class CraftBlock implements Block {
  
      @Override
      public String toString() {
@@ -577,7 +577,6 @@ index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911
 +            case SOUTH -> BlockFace.SOUTH;
 +            case WEST -> BlockFace.WEST;
 +            case EAST -> BlockFace.EAST;
-+            default -> BlockFace.SELF;
 +        };
 +        // Leaf end - SparklyPaper - parallel world ticking - formatting
      }
@@ -617,7 +616,7 @@ index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911
      }
  
      @Override
-@@ -343,18 +469,65 @@ public class CraftBlock implements Block {
+@@ -343,18 +468,65 @@ public class CraftBlock implements Block {
  
      @Override
      public Biome getBiome() {
@@ -685,7 +684,7 @@ index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911
          this.getWorld().setBiome(this.getX(), this.getY(), this.getZ(), bio);
      }
  
-@@ -370,12 +543,50 @@ public class CraftBlock implements Block {
+@@ -370,12 +542,50 @@ public class CraftBlock implements Block {
  
      @Override
      public boolean isBlockPowered() {
@@ -738,7 +737,7 @@ index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911
      }
  
      @Override
-@@ -397,46 +608,102 @@ public class CraftBlock implements Block {
+@@ -397,46 +607,101 @@ public class CraftBlock implements Block {
  
      @Override
      public boolean isBlockFacePowered(BlockFace face) {
@@ -829,7 +828,6 @@ index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911
 +                // Requires Level for hasSignal and getBlockState
 +                if (this.world instanceof net.minecraft.world.level.Level nmsLevel) {
 +                    int power = 0;
-+                    int x = this.getX(); int y = this.getY(); int z = this.getZ();
 +                    BlockPos currentPos = this.position; // Use immutable position
 +
 +                    // Check neighbors using relative positions
@@ -868,7 +866,7 @@ index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911
  
      @Override
      public int getBlockPower() {
-@@ -479,105 +746,179 @@ public class CraftBlock implements Block {
+@@ -479,105 +744,179 @@ public class CraftBlock implements Block {
  
      @Override
      public PistonMoveReaction getPistonMoveReaction() {
@@ -1089,7 +1087,7 @@ index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911
      }
  
      @Override
-@@ -592,31 +933,70 @@ public class CraftBlock implements Block {
+@@ -592,31 +931,70 @@ public class CraftBlock implements Block {
  
      @Override
      public Collection<ItemStack> getDrops(ItemStack item, Entity entity) {
@@ -1170,7 +1168,7 @@ index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911
      @Override
      public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
          this.getCraftWorld().getBlockMetadata().setMetadata(this, metadataKey, newMetadataValue);
-@@ -639,57 +1019,147 @@ public class CraftBlock implements Block {
+@@ -639,57 +1017,147 @@ public class CraftBlock implements Block {
  
      @Override
      public boolean isPassable() {
@@ -1342,7 +1340,7 @@ index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911
      }
  
      @Override
-@@ -700,7 +1170,10 @@ public class CraftBlock implements Block {
+@@ -700,7 +1168,10 @@ public class CraftBlock implements Block {
      // Paper start
      @Override
      public com.destroystokyo.paper.block.BlockSoundGroup getSoundGroup() {
@@ -1354,7 +1352,7 @@ index 811823a1a7e24a19a7e37eb4c08efdfa19e839ed..ac45c5cbe547705e3e341011740cf911
      }
  
      @Override
-@@ -713,26 +1186,76 @@ public class CraftBlock implements Block {
+@@ -713,26 +1184,76 @@ public class CraftBlock implements Block {
          return this.getNMS().getBlock().getDescriptionId();
      }
  
