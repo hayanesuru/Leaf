@@ -5,7 +5,7 @@ Subject: [PATCH] optimize mob spawning
 
 
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index d61da0fbe7f6c181e4084ce60bfe7dab86f361ad..1ce1b21a77cd727b52bd937b65ce97517fed9c68 100644
+index 39a31abe25d2bb56b28462cf25d2d09f7722526c..2f927b422c2c4f2f65d822befe3cbfd9e3bb3708 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -70,7 +70,9 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -17,7 +17,7 @@ index d61da0fbe7f6c181e4084ce60bfe7dab86f361ad..1ce1b21a77cd727b52bd937b65ce9751
 +    private long delayTimeInhabited = 0L; // Leaf
 +    private long delaySpawn = -1L; // Leaf
      // Paper start
-     private final ca.spottedleaf.concurrentutil.map.ConcurrentLong2ReferenceChainedHashTable<net.minecraft.world.level.chunk.LevelChunk> fullChunks = new ca.spottedleaf.concurrentutil.map.ConcurrentLong2ReferenceChainedHashTable<>();
+     public final ca.spottedleaf.concurrentutil.map.ConcurrentLong2ReferenceChainedHashTable<net.minecraft.world.level.chunk.LevelChunk> fullChunks = new ca.spottedleaf.concurrentutil.map.ConcurrentLong2ReferenceChainedHashTable<>();
      public int getFullChunksCount() {
 @@ -656,13 +658,37 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
              filteredSpawningCategories = List.of();
