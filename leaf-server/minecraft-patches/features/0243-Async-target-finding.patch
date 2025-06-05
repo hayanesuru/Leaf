@@ -133,10 +133,10 @@ index 1dc599e28682b59c8389ff2ada100b405bf97240..c2c904565df5fb320b98307a4d451066
  
      public String getLocalIp() {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 72e871b8c7fee9b5cbd567e03baee80ee4b9c82e..41bdd0a3bb9c18f4eae3e2ca78c2946979da4f0b 100644
+index 72e871b8c7fee9b5cbd567e03baee80ee4b9c82e..574765713c194a6cf3eb7c125e78ed77c82aba2e 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -204,6 +204,10 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -204,6 +204,11 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
              DedicatedServer.LOGGER.info("Using " + serverLevelTickingSemaphore.availablePermits() + " permits for parallel world ticking"); // SparklyPaper - parallel world ticking
          }
          // Leaf end - SparklyPaper - parallel world ticking mod (make configurable)
@@ -144,6 +144,7 @@ index 72e871b8c7fee9b5cbd567e03baee80ee4b9c82e..41bdd0a3bb9c18f4eae3e2ca78c29469
 +        if (org.dreeam.leaf.config.modules.async.AsyncTargetFinding.enabled) {
 +            asyncGoalThread = new org.dreeam.leaf.async.ai.AsyncGoalThread(this);
 +        }
++        // Leaf end - Async target finding
          com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
  
          // Gale start - Pufferfish - SIMD support

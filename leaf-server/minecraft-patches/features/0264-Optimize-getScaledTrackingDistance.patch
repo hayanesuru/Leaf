@@ -5,10 +5,10 @@ Subject: [PATCH] Optimize getScaledTrackingDistance
 
 
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 41bdd0a3bb9c18f4eae3e2ca78c2946979da4f0b..8192031ab3d947bb67eb00eec0a95ea99dce47ad 100644
+index 574765713c194a6cf3eb7c125e78ed77c82aba2e..980d18434a79d1ff5e16b71aeaf34b486e665f9d 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -785,7 +785,13 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -786,7 +786,13 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
  
      @Override
      public int getScaledTrackingDistance(int trackingDistance) {

@@ -345,7 +345,7 @@ index 0d2cfaef1413a343bc03829730453b03f903d5ce..bf87e5dcda7deb8f9c36a3f6b64285a9
      }
      // Paper end
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index b00a82816784ea2f6422ca98c1f11597105cc177..04c8902bcf8d19e59c57ac013a33b0a2fb1190da 100644
+index b00a82816784ea2f6422ca98c1f11597105cc177..5c43785b891b8b6faf3f513510509ec3a1514b69 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 @@ -74,12 +74,97 @@ public class CraftBlock implements Block {
@@ -1071,7 +1071,7 @@ index b00a82816784ea2f6422ca98c1f11597105cc177..04c8902bcf8d19e59c57ac013a33b0a2
 -            world.capturedBlockStates.clear();
 +        level.captureTreeGeneration = false;
 +
-+        if (level.capturedBlockStates.isEmpty()) {
++        if (!level.capturedBlockStates.isEmpty()) {
 +            TreeType treeType = SaplingBlock.getTreeTypeRT(); // Use thread-local getter
 +            SaplingBlock.setTreeTypeRT(null); // Use thread-local setter
 +            // Need Bukkit BlockState list for events
