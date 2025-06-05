@@ -92,6 +92,7 @@ public class GaleGlobalConfiguration extends ConfigurationPart {
         public boolean legacyMaterialInitialization = false; // Gale - Purpur - do not log legacy Material initialization
         public boolean nullIdDisconnections = true; // Gale - Pufferfish - do not log disconnections with null id
         public boolean playerLoginLocations = true; // Gale - JettPack - make logging login location configurable
+        public boolean invalidLegacyTextComponent = false; // Leaf - do not log invalid flatten text component parse
 
         public Chat chat;
 
