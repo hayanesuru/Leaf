@@ -42,7 +42,7 @@ index 2d24d03bbdb5ee0d862cbfff2219f58afffafe12..11f4f2f3bc4c9f9f6a1f83b90f3de34c
  
      protected boolean addEntity(final Entity entity, final boolean fromDisk, final boolean event) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 95a15fa08a5bd2bb799a125e03844259038ef290..905ffdc8d9188c40dc86216c651e22dcbd14dc95 100644
+index 192d65bdc9fc9ae96d460e9b0832c20a209d2b0d..7961d8ff4fc13ca5274f6667181da5ce557ddc0f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -370,6 +370,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

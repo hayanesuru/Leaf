@@ -77,7 +77,7 @@ index 4535858701b2bb232b9d2feb2af6551526232ddc..e65c62dbe4c1560ae153e4c4344e9194
 -    // Paper end - detailed watchdog information
  }
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 0f9d18dd29e210ad656da211a3cb1cb25cd4efb1..d1c36cd17c83e7e0167046093c4a2b8427c8bae0 100644
+index b3acfc7e00797ea16cc2c1793452f3ed97b9c61a..17c1b05f520145b84e90fc359dca4523191f08cd 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -622,8 +622,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -94,10 +94,10 @@ index 0f9d18dd29e210ad656da211a3cb1cb25cd4efb1..d1c36cd17c83e7e0167046093c4a2b84
  
              for (LevelChunk levelChunk : list) {
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index e0fdf7205ff1dfab2c5cccd3d18c2b22deda686a..9df599e94e17da12a880df2f40a2117c5ec2a569 100644
+index c0044f4013520fd617ec365012b10862571744f3..14d23006d3ec15bb3ec6f976bff6c0975662c69d 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1373,13 +1373,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1518,13 +1518,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      // Paper end - log detailed entity tick information
  
      public void tickNonPassenger(Entity entity) {
@@ -111,7 +111,7 @@ index e0fdf7205ff1dfab2c5cccd3d18c2b22deda686a..9df599e94e17da12a880df2f40a2117c
          entity.setOldPosAndRot();
          entity.tickCount++;
          entity.totalEntityAge++; // Paper - age-like counter for all entities
-@@ -1392,13 +1386,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1537,13 +1531,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          for (Entity entity1 : entity.getPassengers()) {
              this.tickPassenger(entity, entity1, isActive); // Paper - EAR 2
          }
@@ -126,7 +126,7 @@ index e0fdf7205ff1dfab2c5cccd3d18c2b22deda686a..9df599e94e17da12a880df2f40a2117c
  
      private void tickPassenger(Entity ridingEntity, Entity passengerEntity, final boolean isActive) { // Paper - EAR 2
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ffb23578d5d7a2a821427dae9bab343ec3c45036..95a15fa08a5bd2bb799a125e03844259038ef290 100644
+index c377aef03861f2d860a7c6273f634248a6963f01..192d65bdc9fc9ae96d460e9b0832c20a209d2b0d 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1140,16 +1140,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -177,7 +177,7 @@ index ffb23578d5d7a2a821427dae9bab343ec3c45036..95a15fa08a5bd2bb799a125e03844259
      }
  
      private void applyMovementEmissionAndPlaySound(Entity.MovementEmission movementEmission, Vec3 movement, BlockPos pos, BlockState state) {
-@@ -4831,9 +4805,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4858,9 +4832,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public void setDeltaMovement(Vec3 deltaMovement) {
@@ -187,7 +187,7 @@ index ffb23578d5d7a2a821427dae9bab343ec3c45036..95a15fa08a5bd2bb799a125e03844259
      }
  
      public void addDeltaMovement(Vec3 addend) {
-@@ -4941,9 +4913,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4968,9 +4940,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
          // Paper end - Fix MC-4
          if (this.position.x != x || this.position.y != y || this.position.z != z) {

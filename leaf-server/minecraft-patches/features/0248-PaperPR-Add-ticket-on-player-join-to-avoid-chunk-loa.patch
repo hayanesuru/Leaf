@@ -27,10 +27,10 @@ index 3a78e7512772fd3f7cf8f221e3a72474def14bea..ba52af914e9e231caa0ac50562e9a692
      public static final int GENERATED_TICKET_LEVEL = ChunkHolderManager.FULL_LOADED_TICKET_LEVEL;
      public static final int LOADED_TICKET_LEVEL = ChunkTaskScheduler.getTicketLevel(ChunkStatus.EMPTY);
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 8b1652805a2ac9ebae9c99dd77e81c7a484a7abb..608d4612ed15ec04492b0137ec61e157161d792f 100644
+index e4bccc642abe15b0ec4b1cf2634801065a27e11a..6a9aa085956ddd27e8910dd524ecb79caf9ae0ba 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -432,6 +432,13 @@ public abstract class PlayerList {
+@@ -434,6 +434,13 @@ public abstract class PlayerList {
          // this.broadcastAll(ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(List.of(player))); // CraftBukkit - replaced with loop below
          // Paper start - Fire PlayerJoinEvent when Player is actually ready; correctly register player BEFORE PlayerJoinEvent, so the entity is valid and doesn't require tick delay hacks
          player.supressTrackerForLogin = true;

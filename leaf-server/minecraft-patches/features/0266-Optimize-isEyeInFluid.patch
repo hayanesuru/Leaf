@@ -5,7 +5,7 @@ Subject: [PATCH] Optimize isEyeInFluid
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 1b4aae603e965ae15d9b7e204a2ac5d31d045db0..ffb23578d5d7a2a821427dae9bab343ec3c45036 100644
+index d09a32288398d3ffa0fa6e9c6fd06f953b33688f..c377aef03861f2d860a7c6273f634248a6963f01 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -269,6 +269,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

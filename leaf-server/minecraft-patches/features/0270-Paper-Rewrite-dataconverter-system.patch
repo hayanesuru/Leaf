@@ -32327,10 +32327,10 @@ index 175647d57e59e838ea7b4680fbf22c161100c513..a7b772cfc89161414469cd7da374d6c7
          return structureTemplate.save(new CompoundTag());
      }
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 2ca484a6c3e75fd392ca953737bb548ab10f2121..1540b1a571c8f44c4163f4720a9279f87a8032c9 100644
+index 84b90f496e5ab59d43503301fe935627af123e3f..54e31a239d6563abe56435ee8de03e55548ead29 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -293,6 +293,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -294,6 +294,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      @Nullable public org.dreeam.leaf.async.ai.AsyncGoalThread asyncGoalThread; // Leaf - Async target finding
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> threadFunction) {

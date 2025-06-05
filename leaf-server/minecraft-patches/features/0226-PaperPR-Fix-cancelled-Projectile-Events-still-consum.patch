@@ -230,10 +230,10 @@ index fb5077450aa9f7b7a03dd20c27a68dfdaab5ef06..f37fd3b9ab725e5b8eb7fccf9b35bbc0
                  player.getInventory().removeItem(ammo);
              }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 22da84734462d09a55bc599db4374e1e4f4d6bd2..2f679f03360a2847ba3d98a6698b7c0210a0b67e 100644
+index c8219508cf94da71143b8672661592c66b341782..6278fe737a555f47625098828a03952cf9b859a7 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -170,6 +170,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -171,6 +171,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
      public final Map<ServerExplosion.CacheKey, Float> explosionDensityCache = new java.util.HashMap<>(); // Paper - Optimize explosions
      public java.util.ArrayDeque<net.minecraft.world.level.block.RedstoneTorchBlock.Toggle> redstoneUpdateInfos; // Paper - Faster redstone torch rapid clock removal; Move from Map in BlockRedstoneTorch to here
      public final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = org.dreeam.leaf.config.modules.opt.FastRNG.enabled ? new org.dreeam.leaf.util.math.random.FasterRandomSource(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed()) : new ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom(net.minecraft.world.level.levelgen.RandomSupport.generateUniqueSeed()); // Gale - Pufferfish - move random tick random // Leaf - Faster random generator

@@ -106,18 +106,18 @@ index 7b686d834e4eb36be5758b0e0a846a70d1e2294b..956d48fb7146b9eb2a5b5b4e23a83f60
          final EntityCollectionBySection byType = this.entitiesByType.get(entity.getType());
          byType.removeEntity(entity, sectionIndex);
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index bbd2b327c658b56a1fcf30c8b77cab987d688fcc..f8dba8be5774035744233c251c61abf572dd7d49 100644
+index 1dc599e28682b59c8389ff2ada100b405bf97240..c2c904565df5fb320b98307a4d451066286ad726 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -290,6 +290,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-     public boolean lagging = false; // Purpur - Lagging threshold
+@@ -291,6 +291,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      protected boolean upnp = false; // Purpur - UPnP Port Forwarding
      public final Set<net.minecraft.world.entity.Entity> entitiesWithScheduledTasks = java.util.concurrent.ConcurrentHashMap.newKeySet(); // SparklyPaper - skip EntityScheduler's executeTick checks if there isn't any tasks to be run (concurrent because plugins may schedule tasks async)
+     public java.util.concurrent.Semaphore serverLevelTickingSemaphore = null; // SparklyPaper - parallel world ticking
 +    @Nullable public org.dreeam.leaf.async.ai.AsyncGoalThread asyncGoalThread; // Leaf - Async target finding
  
      public static <S extends MinecraftServer> S spin(Function<Thread, S> threadFunction) {
          AtomicReference<S> atomicReference = new AtomicReference<>();
-@@ -1073,6 +1074,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1092,6 +1093,14 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              org.dreeam.leaf.async.AsyncPlayerDataSaving.IO_POOL.awaitTermination(30, java.util.concurrent.TimeUnit.SECONDS);
          } catch (java.lang.InterruptedException ignored) {}
          // Leaf end - Async playerdata saving
@@ -133,23 +133,22 @@ index bbd2b327c658b56a1fcf30c8b77cab987d688fcc..f8dba8be5774035744233c251c61abf5
  
      public String getLocalIp() {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 54910c2e1d6e6bb556e536fda060bd09402e04e8..747eb54f84650a9a507398e3d5352e001b042490 100644
+index 72e871b8c7fee9b5cbd567e03baee80ee4b9c82e..41bdd0a3bb9c18f4eae3e2ca78c2946979da4f0b 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -198,6 +198,11 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -204,6 +204,10 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+             DedicatedServer.LOGGER.info("Using " + serverLevelTickingSemaphore.availablePermits() + " permits for parallel world ticking"); // SparklyPaper - parallel world ticking
          }
-         org.purpurmc.purpur.PurpurConfig.registerCommands();
-         // Purpur end - Purpur config files
+         // Leaf end - SparklyPaper - parallel world ticking mod (make configurable)
 +        // Leaf start - Async target finding
 +        if (org.dreeam.leaf.config.modules.async.AsyncTargetFinding.enabled) {
 +            asyncGoalThread = new org.dreeam.leaf.async.ai.AsyncGoalThread(this);
 +        }
-+        // Leaf end - Async target finding
          com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
  
          // Gale start - Pufferfish - SIMD support
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 05173104db4c04823658930aa92645f6c2400109..e0fdf7205ff1dfab2c5cccd3d18c2b22deda686a 100644
+index 4948557d2faef1dff664cd18df7af4564a0431ff..c0044f4013520fd617ec365012b10862571744f3 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -173,7 +173,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -170,7 +169,7 @@ index 05173104db4c04823658930aa92645f6c2400109..e0fdf7205ff1dfab2c5cccd3d18c2b22
      public final ServerChunkCache chunkSource;
      private final MinecraftServer server;
      public final net.minecraft.world.level.storage.PrimaryLevelData serverLevelData; // CraftBukkit - type
-@@ -213,6 +222,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -216,6 +225,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      private final alternate.current.wire.WireHandler wireHandler = new alternate.current.wire.WireHandler(this); // Paper - optimize redstone (Alternate Current)
      public boolean hasRidableMoveEvent = false; // Purpur - Ridables
      final List<ServerPlayer> realPlayers; // Leaves - skip
@@ -178,7 +177,7 @@ index 05173104db4c04823658930aa92645f6c2400109..e0fdf7205ff1dfab2c5cccd3d18c2b22
  
      @Override
      public @Nullable LevelChunk getChunkIfLoaded(int x, int z) {
-@@ -331,6 +341,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -334,6 +344,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          ((ca.spottedleaf.moonrise.patches.chunk_system.server.ChunkSystemMinecraftServer)this.server).moonrise$executeMidTickTasks();
      }
  
@@ -191,10 +190,10 @@ index 05173104db4c04823658930aa92645f6c2400109..e0fdf7205ff1dfab2c5cccd3d18c2b22
      @Override
      public final ChunkAccess moonrise$syncLoadNonFull(final int chunkX, final int chunkZ, final net.minecraft.world.level.chunk.status.ChunkStatus status) {
          return this.moonrise$getChunkTaskScheduler().syncLoadNonFull(chunkX, chunkZ, status);
-@@ -693,6 +709,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-         this.getCraftServer().addWorld(this.getWorld()); // CraftBukkit
+@@ -703,6 +719,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          this.preciseTime = this.serverLevelData.getDayTime(); // Purpur - Configurable daylight cycle
          this.realPlayers = Lists.newArrayList(); // Leaves - skip
+         this.tickExecutor = java.util.concurrent.Executors.newSingleThreadExecutor(new org.dreeam.leaf.async.world.SparklyPaperServerLevelTickExecutorThreadFactory(getWorld().getName())); // SparklyPaper - parallel world ticking
 +        // Leaf start - Async target finding
 +        if (org.dreeam.leaf.config.modules.async.AsyncTargetFinding.enabled) {
 +            this.asyncGoalExecutor = new org.dreeam.leaf.async.ai.AsyncGoalExecutor(server.asyncGoalThread, this);
@@ -204,8 +203,8 @@ index 05173104db4c04823658930aa92645f6c2400109..e0fdf7205ff1dfab2c5cccd3d18c2b22
 +        // Leaf end - Async target finding
      }
  
-     // Paper start
-@@ -837,12 +860,14 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+     // Leaf start - SparklyPaper - parallel world ticking - Shutdown handling for async reads
+@@ -976,12 +999,14 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                                      }
                                      this.moonrise$midTickTasks(); // Paper - rewrite chunk system
                                      // Gale end - Airplane - remove lambda from ticking guard - copied from guardEntityTick
@@ -220,16 +219,16 @@ index 05173104db4c04823658930aa92645f6c2400109..e0fdf7205ff1dfab2c5cccd3d18c2b22
          }
          // Paper - rewrite chunk system
      }
-@@ -1318,6 +1343,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-         }
+@@ -1460,6 +1485,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         // Leaf end - SparklyPaper - parallel world ticking (only run mid-tick at the end of each tick / fixes concurrency bugs related to executeMidTickTasks)
          // Paper end - rewrite chunk system
  
 +        this.leafMidTickTasks(); // Leaf - Async target finding
      }
  
      private void tickBlock(BlockPos pos, Block block) {
-@@ -1331,6 +1357,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-         }
+@@ -1476,6 +1502,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         // Leaf end - SparklyPaper - parallel world ticking (only run mid-tick at the end of each tick / fixes concurrency bugs related to executeMidTickTasks)
          // Paper end - rewrite chunk system
  
 +        this.leafMidTickTasks(); // Leaf - Async target finding
@@ -2047,25 +2046,27 @@ index e1717b5c854aa81fdd7b7e715d7c3498d9f86072..3627e7479b4deea28e268245410ec4cd
  
      static class StriderPathNavigation extends GroundPathNavigation {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 309dbb3b7a485ef5e13f893e53bbdbec1401422e..1ef49db44e8dcfd944b600ef64dbcaee36546688 100644
+index 4158bbe0740fe2971a9e857cb4cad08ee465576a..e380cc68d0d88d983a1b7b1d9ef4ec8ef307761a 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1525,6 +1525,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
-                     ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemLevel)(Level)(Object)this).moonrise$midTickTasks();
+@@ -1531,6 +1531,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
                  }
+                 // Leaf end - SparklyPaper - parallel world ticking (only run mid-tick at the end of each tick / fixes concurrency bugs related to executeMidTickTasks) - do not bother with condition work / make configurable
                  // Paper end - rewrite chunk system
 +                ((ServerLevel) this).leafMidTickTasks(); // Leaf - Async target finding
              }
          }
          this.blockEntityTickers.removeMarkedEntries(); // SparklyPaper - optimize block entity removals
-@@ -1788,7 +1789,11 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -1799,9 +1800,11 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
  
      @Override
      public List<Entity> getEntities(@Nullable Entity entity, AABB boundingBox, Predicate<? super Entity> predicate) {
+-        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) // Leaf start - SparklyPaper - parallel world ticking mod (make configurable)
+-            ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread((ServerLevel)this, boundingBox, "Cannot getEntities asynchronously"); // SparklyPaper - parallel world ticking (additional concurrency issues logs)
 -        List<Entity> list = Lists.newArrayList();
 +        // Leaf start - Async target finding
-+        // if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) // Leaf start - SparklyPaper - parallel world ticking mod (make configurable)
-+        //     ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread((ServerLevel)this, boundingBox, "Cannot getEntities asynchronously"); // SparklyPaper - parallel world ticking (additional concurrency issues logs)
++        //if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) // Leaf start - SparklyPaper - parallel world ticking mod (make configurable)
++        //    ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread((ServerLevel)this, boundingBox, "Cannot getEntities asynchronously"); // SparklyPaper - parallel world ticking (additional concurrency issues logs)
 +        //List<Entity> list = Lists.newArrayList(); // Leaf - Async target finding - unused
 +        // Leaf end - Async target finding
  
