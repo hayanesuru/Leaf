@@ -867,7 +867,7 @@ index 8362def0dc61496a087bd859052bd80ebba83185..09f517059aa47ca67329bc913243d4fd
          // Paper end - Inventory close reason
          this.connection.send(new ClientboundContainerClosePacket(this.containerMenu.containerId));
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index b17c8a2f5294ac28cc05fb05c84a041b2c6c8721..3591de34443069f3f163f8d17df6372c3068611d 100644
+index b17c8a2f5294ac28cc05fb05c84a041b2c6c8721..6148d5c575f4cdf2d1920b9585a5b32732511301 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -252,6 +252,8 @@ public abstract class PlayerList {
@@ -884,12 +884,12 @@ index b17c8a2f5294ac28cc05fb05c84a041b2c6c8721..3591de34443069f3f163f8d17df6372c
      }
      public ServerPlayer respawn(ServerPlayer player, boolean keepInventory, Entity.RemovalReason reason, org.bukkit.event.player.PlayerRespawnEvent.RespawnReason eventReason, org.bukkit.Location location) {
 +        // Leaf start - SparklyPaper - parallel world ticking mod (make configurable)
-+        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) {
-+            if (location != null) // Leaf - THIS CAN BE NULL; see PlayerList::respawn(ServerPlayer, boolean, Entity.RemovalReason, PlayerRespawnEvent.RespawnReason)
-+                ca.spottedleaf.moonrise.common.util.TickThread.ensureOnlyTickThread("Cannot respawn player off-main, from world " + player.serverLevel().getWorld().getName() + " to world " + location.getWorld().getName());
-+            else
-+                ca.spottedleaf.moonrise.common.util.TickThread.ensureOnlyTickThread("Cannot respawn player off-main, respawning in world " + player.serverLevel().getWorld().getName());
-+            // SparklyPaper end - parallel world ticking (additional concurrency issues logs)
++        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled && !this.server.isSameThread()) {
++            // Respawning is a complex operation that modifies global player lists and can interact with multiple
++            // worlds. It must be executed on the main server thread to ensure thread safety. We block the
++            // calling (world) thread to wait for the result, preserving the synchronous API contract of this method.
++            org.bukkit.Location finalLocation = location;
++            return this.server.submit(() -> this.respawn(player, keepInventory, reason, eventReason, finalLocation)).join();
 +        }
 +        // Leaf end - SparklyPaper - parallel world ticking mod (make configurable)
          player.stopRiding(); // CraftBukkit
