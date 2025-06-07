@@ -834,7 +834,7 @@ index a66e5f6652d9633c856490de36d8d8fdf8a5298a..d6524d5c442555eaeb4d90f6a101262e
          // Paper start - extra debug info
          if (entity.valid) {
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 8362def0dc61496a087bd859052bd80ebba83185..09f517059aa47ca67329bc913243d4fdee09abe5 100644
+index 89df0f6893775df01e1470bb04f0059cec65ff70..941a73f32661dfa50dd381dc888bd3c04f3fad60 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -427,6 +427,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -862,7 +862,7 @@ index 8362def0dc61496a087bd859052bd80ebba83185..09f517059aa47ca67329bc913243d4fd
                  // CraftBukkit start
                  /*
                  this.isChangingDimension = true;
-@@ -1819,6 +1823,12 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1818,6 +1822,12 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  return OptionalInt.empty();
              } else {
                  // CraftBukkit start
@@ -875,7 +875,7 @@ index 8362def0dc61496a087bd859052bd80ebba83185..09f517059aa47ca67329bc913243d4fd
                  this.containerMenu = abstractContainerMenu; // Moved up
                  if (!this.isImmobile())
                  this.connection
-@@ -1883,6 +1893,11 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1882,6 +1892,11 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
      @Override
      public void closeContainer(org.bukkit.event.inventory.InventoryCloseEvent.Reason reason) {
@@ -888,7 +888,7 @@ index 8362def0dc61496a087bd859052bd80ebba83185..09f517059aa47ca67329bc913243d4fd
          // Paper end - Inventory close reason
          this.connection.send(new ClientboundContainerClosePacket(this.containerMenu.containerId));
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index b17c8a2f5294ac28cc05fb05c84a041b2c6c8721..6148d5c575f4cdf2d1920b9585a5b32732511301 100644
+index 75fb49f1596f475278d12c8c7aea9ad4952b6056..de601491b7ecb83f1bb64a95989d6ed4dd52ab40 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -252,6 +252,8 @@ public abstract class PlayerList {

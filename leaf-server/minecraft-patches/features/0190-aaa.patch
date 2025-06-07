@@ -5,10 +5,10 @@ Subject: [PATCH] aaa
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 8e693028ef9e512094dbb97d6088d95ead03487d..dc5900903589bc806b89df45ea4de361eed6a9ca 100644
+index e6414643d4c44bcf22d17bf185cc288d2a4f8399..d3889b644de4e9ee31c7a5896c99936287aff170 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1948,7 +1948,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1947,7 +1947,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      this.awardStat(Stats.SWIM_ONE_CM, rounded);
                      this.causeFoodExhaustion(this.level().spigotConfig.swimMultiplier * (float) rounded * 0.01F, org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.SWIM); // CraftBukkit - EntityExhaustionEvent // Spigot
                  }
