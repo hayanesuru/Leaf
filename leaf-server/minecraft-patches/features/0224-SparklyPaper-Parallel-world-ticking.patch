@@ -708,10 +708,10 @@ index 8b1652805a2ac9ebae9c99dd77e81c7a484a7abb..e4bccc642abe15b0ec4b1cf263480106
          serverPlayer.connection = player.connection;
          serverPlayer.restoreFrom(player, keepInventory);
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 309a31215cb63452215fd880590cffd569aee208..b89923a0b30a294c393716b666ff3377f0a835dc 100644
+index 69521086fca0c9fbc230817062b65c4269c575fd..82096e6b187e63ad3e848b9757ba2152e8c642b4 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -3317,15 +3317,40 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3321,15 +3321,40 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              if (this.portalProcess != null) {
                  if (this.portalProcess.processPortalTeleportation(serverLevel, this, this.canUsePortal(false))) {
                      this.setPortalCooldown();
@@ -759,7 +759,7 @@ index 309a31215cb63452215fd880590cffd569aee208..b89923a0b30a294c393716b666ff3377
                  } else if (this.portalProcess.hasExpired()) {
                      this.portalProcess = null;
                  }
-@@ -3890,6 +3915,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3894,6 +3919,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      private Entity teleportCrossDimension(ServerLevel level, TeleportTransition teleportTransition) {

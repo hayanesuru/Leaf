@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Minecraft Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: 5d3463aaa0472c7d3c2028ea4d0ad3fb128785d2
+Commit: 916df1a858c46e240fa966540cf1cc819cfb3c36
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "net/minecraft/CrashReport.java.patch"
@@ -912,7 +912,7 @@ index 074869245407abb32775b17140e1ffadabc5fcd5..e6730996dfd4c2422b6c13f10309fc58
                  }
                  // Paper end - Fix merchant inventory not closing on entity removal
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 7f18fb7f61e9219eb23073d9215f3bd6c57dc320..6bc6000c45f35ff85b36bede9d6010d8452b1f21 100644
+index b3ffb2afda9ea5cafbab9f775d526af1940cfdca..834829427f3388c6cd94b5ceadc18b234c579f26 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -419,6 +419,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -1888,7 +1888,7 @@ index 1fc9e1ad541c46124183a401b2a7d99aea69cecf..881271f0bc77a8a8a7d31daad9a8188b
      }
  
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c70d35d384 100644
+index 8370be95e4f0d1d3b99274fea415f77845ad5712..d8c83a449a1f33031aa671f3bbe366a504172a1e 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -139,6 +139,7 @@ import net.minecraft.world.scores.Team;
@@ -1929,7 +1929,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
  
      public void inactiveTick() {
      }
-@@ -513,10 +516,39 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -517,10 +520,39 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
      // Paper end - optimise entity tracker
  
@@ -1969,7 +1969,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
          this.position = Vec3.ZERO;
          this.blockPosition = BlockPos.ZERO;
          this.chunkPosition = ChunkPos.ZERO;
-@@ -888,6 +920,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -892,6 +924,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              && this.level.paperConfig().environment.netherCeilingVoidDamageHeight.test(v -> this.getY() >= v)
              && (!(this instanceof Player player) || !player.getAbilities().invulnerable))) {
              // Paper end - Configurable nether ceiling damage
@@ -1977,7 +1977,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
              this.onBelowWorld();
          }
      }
-@@ -1841,7 +1874,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1845,7 +1878,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public boolean fireImmune() {
@@ -1986,7 +1986,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
      }
  
      public boolean causeFallDamage(double fallDistance, float damageMultiplier, DamageSource damageSource) {
-@@ -1901,7 +1934,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1905,7 +1938,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.isInWater() || flag;
      }
  
@@ -1995,7 +1995,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
          if (this.getVehicle() instanceof AbstractBoat abstractBoat && !abstractBoat.isUnderWater()) {
              this.wasTouchingWater = false;
          } else if (this.updateFluidHeightAndDoFluidPushing(FluidTags.WATER, 0.014)) {
-@@ -2537,6 +2570,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2541,6 +2574,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                  compound.putBoolean("Paper.FreezeLock", true);
              }
              // Paper end
@@ -2009,7 +2009,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
              return compound;
          } catch (Throwable var8) {
              CrashReport crashReport = CrashReport.forThrowable(var8, "Saving entity NBT");
-@@ -2667,6 +2707,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2671,6 +2711,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                  freezeLocked = compound.getBooleanOr("Paper.FreezeLock", false);
              }
              // Paper end
@@ -2023,7 +2023,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
          } catch (Throwable var8) {
              CrashReport crashReport = CrashReport.forThrowable(var8, "Loading entity NBT");
              CrashReportCategory crashReportCategory = crashReport.addCategory("Entity being loaded");
-@@ -2895,6 +2942,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2899,6 +2946,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (this.isAlive() && this instanceof Leashable leashable) {
              if (leashable.getLeashHolder() == player) {
                  if (!this.level().isClientSide()) {
@@ -2031,7 +2031,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
                      // CraftBukkit start - fire PlayerUnleashEntityEvent
                      // Paper start - Expand EntityUnleashEvent
                      org.bukkit.event.player.PlayerUnleashEntityEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerUnleashEntityEvent(this, player, hand, !player.hasInfiniteMaterials());
-@@ -3101,6 +3149,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3105,6 +3153,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                  this.passengers = ImmutableList.copyOf(list);
              }
  
@@ -2045,7 +2045,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
              this.gameEvent(GameEvent.ENTITY_MOUNT, passenger);
          }
      }
-@@ -3142,6 +3197,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3146,6 +3201,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                  return false;
              }
              // CraftBukkit end
@@ -2060,7 +2060,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
              if (this.passengers.size() == 1 && this.passengers.get(0) == passenger) {
                  this.passengers = ImmutableList.of();
              } else {
-@@ -3211,15 +3274,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3215,15 +3278,18 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return Vec3.directionFromRotation(this.getRotationVector());
      }
  
@@ -2080,7 +2080,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
              }
          }
      }
-@@ -3421,7 +3487,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3425,7 +3491,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public int getMaxAirSupply() {
@@ -2089,7 +2089,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
      }
  
      public int getAirSupply() {
-@@ -3942,7 +4008,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3946,7 +4012,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      // CraftBukkit end
  
      public boolean canUsePortal(boolean allowPassengers) {
@@ -2098,7 +2098,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
      }
  
      public boolean canTeleport(Level fromLevel, Level toLevel) {
-@@ -4484,6 +4550,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4488,6 +4554,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return Mth.lerp(partialTick, this.yRotO, this.yRot);
      }
  
@@ -2111,7 +2111,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
      // Paper start - optimise collisions
      public boolean updateFluidHeightAndDoFluidPushing(final TagKey<Fluid> fluid, final double flowScale) {
          if (this.touchingUnloadedChunk()) {
-@@ -4902,7 +4974,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4906,7 +4978,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public float maxUpStep() {
@@ -2120,7 +2120,7 @@ index a65ba74904d7f573d95c39eeeec8ce0373e06821..b714c64a318d38e309351f34426406c7
      }
  
      public void onExplosionHit(@Nullable Entity entity) {
-@@ -5140,4 +5212,44 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -5144,4 +5216,44 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return ((ServerLevel) this.level()).isPositionEntityTicking(this.blockPosition());
      }
      // Paper end - Expose entity id counter
@@ -12065,7 +12065,7 @@ index 634c518c105c8dc50838a4a6690641d82fd637fb..0afdfdc07764a26316c171c2a6722caf
  
      protected boolean canReplaceCurrentItem(ItemStack candidate) {
 diff --git a/net/minecraft/world/entity/monster/piglin/PiglinAi.java b/net/minecraft/world/entity/monster/piglin/PiglinAi.java
-index 4b1a3772f9e6b9e4efcf11e14b0fb882512ec86d..df1ef03f584fcaa31bd8cfd2c7301c784e4270d8 100644
+index 4b1a3772f9e6b9e4efcf11e14b0fb882512ec86d..2841c765b2bd804f08bd0e603b4b29cf8a801fab 100644
 --- a/net/minecraft/world/entity/monster/piglin/PiglinAi.java
 +++ b/net/minecraft/world/entity/monster/piglin/PiglinAi.java
 @@ -661,7 +661,10 @@ public class PiglinAi {
@@ -12075,7 +12075,7 @@ index 4b1a3772f9e6b9e4efcf11e14b0fb882512ec86d..df1ef03f584fcaa31bd8cfd2c7301c78
 -            if (entity.getItemBySlot(equipmentSlot).is(ItemTags.PIGLIN_SAFE_ARMOR)) {
 +            // Purpur start - piglins ignore gold-trimmed armor
 +            net.minecraft.world.item.ItemStack itemStack = entity.getItemBySlot(equipmentSlot);
-+            if (itemStack.is(ItemTags.PIGLIN_SAFE_ARMOR) || (entity.level().purpurConfig.piglinIgnoresArmorWithGoldTrim && isWearingGoldTrim(itemStack.getItem()))) {
++            if (itemStack.is(ItemTags.PIGLIN_SAFE_ARMOR) || (entity.level().purpurConfig.piglinIgnoresArmorWithGoldTrim && isWearingGoldTrim(itemStack))) {
 +            // Purpur end - piglins ignore gold-trimmed armor
                  return true;
              }
@@ -12085,8 +12085,8 @@ index 4b1a3772f9e6b9e4efcf11e14b0fb882512ec86d..df1ef03f584fcaa31bd8cfd2c7301c78
      }
  
 +    // Purpur start - piglins ignore gold-trimmed armor
-+    private static boolean isWearingGoldTrim(Item itemstack) {
-+        net.minecraft.world.item.equipment.trim.ArmorTrim armorTrim = itemstack.components().get(net.minecraft.core.component.DataComponents.TRIM);
++    private static boolean isWearingGoldTrim(net.minecraft.world.item.ItemStack itemstack) {
++        net.minecraft.world.item.equipment.trim.ArmorTrim armorTrim = itemstack.getComponents().get(net.minecraft.core.component.DataComponents.TRIM);
 +        return armorTrim != null && armorTrim.material().is(net.minecraft.world.item.equipment.trim.TrimMaterials.GOLD);
 +    }
 +    // Purpur end - piglins ignore gold-trimmed armor
@@ -13049,7 +13049,7 @@ index 4541bb5233e986d9993d8593afef9b12c935d00a..4f61c17e0a4a82773834bc21e00cac6e
  
      public static enum Status {
 diff --git a/net/minecraft/world/entity/vehicle/AbstractMinecart.java b/net/minecraft/world/entity/vehicle/AbstractMinecart.java
-index 99617c08cbd989092ba357d8df928786fd04c89a..9d88b260528c3cea2c5fe8e2760094b0a8a35667 100644
+index 47490f6152cb1394a448ebc803c973b22da24149..41aac3b9985fbf76f3a4c4c3d4a7366d4759cfc4 100644
 --- a/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/AbstractMinecart.java
 @@ -103,6 +103,10 @@ public abstract class AbstractMinecart extends VehicleEntity {

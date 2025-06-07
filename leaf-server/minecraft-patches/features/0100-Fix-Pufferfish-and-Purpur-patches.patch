@@ -78,10 +78,10 @@ index 35ca166964e8436154891708f69ac010491b64aa..586c00610fdba178f27391820d623c3a
                  this.disconnectAsync(Component.literal("Book too large!"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION); // Paper - kick event cause // Paper - add proper async disconnect
                  return;
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index b714c64a318d38e309351f34426406c70d35d384..4e3b73bee5dae2b5921db86cc53b4cd9ebbd06f8 100644
+index d8c83a449a1f33031aa671f3bbe366a504172a1e..d4a7cabf25b3ba2b085c68a3a7ed73a072c5e7fa 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -522,23 +522,36 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -526,23 +526,36 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
      // Purpur end - Add canSaveToDisk to Entity
  

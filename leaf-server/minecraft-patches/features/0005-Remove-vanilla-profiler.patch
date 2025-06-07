@@ -1079,7 +1079,7 @@ index f66aca0b506390ca5c2f95aacb9495417de325e7..c130a4c61fed477f32be2d1b233ec129
              for (Entity entity : passengerEntity.getPassengers()) {
                  this.tickPassenger(passengerEntity, entity, isActive); // Paper - EAR 2
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 3781d9cc174b7aecacb9b9855d52c7b1ff05835c..eb61b2c6323d2b3dad8939e73d7b95450c09ef6c 100644
+index 580e1ce2eaab3a8f1c4ac59be73be2703f769741..6f60f5e92628e744a22b3d3f83c2010d8a4661be 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -103,8 +103,6 @@ import net.minecraft.util.HashOps;
@@ -1234,7 +1234,7 @@ index 64b0508ef21952c65b0b967b756b2a4c64d96899..b6b03fbbd669e6331b30255df5419611
  
      protected abstract T prepare(ResourceManager resourceManager, ProfilerFiller profiler);
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29fff3b6e9a 100644
+index 55f8ca326d52385c92a0b6ee49ee9652e86fa870..e84081f571190fc00db07bdc9da349b9cfae142a 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -82,8 +82,6 @@ import net.minecraft.tags.FluidTags;
@@ -1246,7 +1246,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
  import net.minecraft.world.Nameable;
-@@ -812,8 +810,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -816,8 +814,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      // CraftBukkit end
  
      public void baseTick() {
@@ -1255,7 +1255,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
          if (firstTick && this instanceof net.minecraft.world.entity.NeutralMob neutralMob) neutralMob.tickInitialPersistentAnger(level); // Paper - Prevent entity loading causing async lookups
          this.inBlockState = null;
          if (this.isPassenger() && this.getVehicle().isRemoved()) {
-@@ -870,8 +866,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -874,8 +870,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (this.level() instanceof ServerLevel serverLevelx && this instanceof Leashable) {
              Leashable.tickLeash(serverLevelx, (Entity & Leashable)this);
          }
@@ -1264,7 +1264,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
      }
  
      public void setSharedFlagOnFire(boolean isOnFire) {
-@@ -1091,8 +1085,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1095,8 +1089,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                  }
              }
  
@@ -1273,7 +1273,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
              if (this.stuckSpeedMultiplier.lengthSqr() > 1.0E-7) {
                  movement = movement.multiply(this.stuckSpeedMultiplier);
                  this.stuckSpeedMultiplier = Vec3.ZERO;
-@@ -1101,7 +1093,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1105,7 +1097,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              // Paper start - ignore movement changes while inactive.
              if (isTemporarilyActive && !(this instanceof ItemEntity) && movement == getDeltaMovement() && type == MoverType.SELF) {
                  setDeltaMovement(Vec3.ZERO);
@@ -1281,7 +1281,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
                  return;
              }
              // Paper end
-@@ -1136,8 +1127,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1140,8 +1131,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                  this.setPos(vec31);
              }
  
@@ -1290,7 +1290,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
              boolean flag = !Mth.equal(movement.x, vec3.x);
              boolean flag1 = !Mth.equal(movement.z, vec3.z);
              this.horizontalCollision = flag || flag1;
-@@ -1160,7 +1149,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1164,7 +1153,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              }
  
              if (this.isRemoved()) {
@@ -1298,7 +1298,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
              } else {
                  if (this.horizontalCollision) {
                      Vec3 deltaMovement = this.getDeltaMovement();
-@@ -1204,7 +1192,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1208,7 +1196,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
                  float blockSpeedFactor = this.getBlockSpeedFactor();
                  this.setDeltaMovement(this.getDeltaMovement().multiply(blockSpeedFactor, 1.0, blockSpeedFactor));
@@ -1306,7 +1306,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
              }
          }
          // Paper start - detailed watchdog information
-@@ -3208,8 +3195,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3212,8 +3199,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.processPortalCooldown();
              if (this.portalProcess != null) {
                  if (this.portalProcess.processPortalTeleportation(serverLevel, this, this.canUsePortal(false))) {
@@ -1315,7 +1315,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
                      this.setPortalCooldown();
                      TeleportTransition portalDestination = this.portalProcess.getPortalDestination(serverLevel, this);
                      if (portalDestination != null) {
-@@ -3220,7 +3205,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3224,7 +3209,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          }
                      }
  
@@ -1323,7 +1323,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
                  } else if (this.portalProcess.hasExpired()) {
                      this.portalProcess = null;
                  }
-@@ -3775,15 +3759,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3779,15 +3763,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              entity.teleport(this.calculatePassengerTransition(teleportTransition, entity));
          }
  
@@ -1339,7 +1339,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
          return this;
      }
  
-@@ -3799,11 +3780,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3803,11 +3784,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              }
          }
  
@@ -1351,7 +1351,7 @@ index af123cc567b5e53703f9555ea6f5ad322c679eb7..ad8e2e90940adbb5bb471833710ee29f
              return null;
          } else {
              // Paper start - Fix item duplication and teleport issues
-@@ -3822,7 +3800,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3826,7 +3804,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
              level.resetEmptyTime();
              teleportTransition.postTeleportTransition().onTransition(entityx);

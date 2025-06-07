@@ -6,10 +6,10 @@ Subject: [PATCH] Sakura: Optimise check inside blocks and traverse blocks
 Dreeam TODO: refactor checkinsideblcoks
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index cfd01993160bcc4a8a5b80c82df7c0c82b70f229..f866fd8a7c37b94d24d6d1e41ed0a6106a82a4ac 100644
+index e0db9281f023a09d69479f28a7c8f681641f642f..cc6b6b442d72b4a974cedd8ceef710304e52ab18 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1697,6 +1697,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1701,6 +1701,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      private void checkInsideBlocks(List<Entity.Movement> movements, InsideBlockEffectApplier.StepBasedCollector stepBasedCollector) {
          if (this.isAffectedByBlocks()) {
              LongSet set = this.visitedBlocks;
@@ -17,7 +17,7 @@ index cfd01993160bcc4a8a5b80c82df7c0c82b70f229..f866fd8a7c37b94d24d6d1e41ed0a610
  
              for (Entity.Movement movement : movements) {
                  Vec3 vec3 = movement.from();
-@@ -1708,7 +1709,20 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1712,7 +1713,20 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                      aabb,
                      (pos, step) -> {
                          if (this.isAlive()) {
