@@ -138,10 +138,10 @@ index 75fb49f1596f475278d12c8c7aea9ad4952b6056..52a0fa425a30caa2e592c0fdda44800d
          }
  
 diff --git a/net/minecraft/stats/ServerStatsCounter.java b/net/minecraft/stats/ServerStatsCounter.java
-index b26dbe807e5cb0a42f6c06b933397902310e5616..35ad7f249cfb6f5c779136d96f3698ea4de1eb7c 100644
+index b26dbe807e5cb0a42f6c06b933397902310e5616..a682ae890850a5e62acd54029f2a4eb1e69d200a 100644
 --- a/net/minecraft/stats/ServerStatsCounter.java
 +++ b/net/minecraft/stats/ServerStatsCounter.java
-@@ -39,12 +39,23 @@ public class ServerStatsCounter extends StatsCounter {
+@@ -39,12 +39,31 @@ public class ServerStatsCounter extends StatsCounter {
      private final File file;
      private final Set<Stat<?>> dirty = Sets.newHashSet();
  
@@ -150,7 +150,15 @@ index b26dbe807e5cb0a42f6c06b933397902310e5616..35ad7f249cfb6f5c779136d96f3698ea
 +    private final java.util.UUID uuid;
 +    @Deprecated(forRemoval = true)
      public ServerStatsCounter(MinecraftServer server, File file) {
-+        throw new UnsupportedOperationException();
++        this(server, file, "UNKNOWN", parseUUID(file));
++    }
++    private static java.util.UUID parseUUID(File file) {
++        try {
++            return java.util.UUID.fromString(org.apache.commons.io.FilenameUtils.getBaseName(file.toString()));
++        } catch (IllegalArgumentException e) {
++            LOGGER.error("failed parse uuid {}", file, e);
++            return net.minecraft.Util.NIL_UUID;
++        }
 +    }
 +    public ServerStatsCounter(MinecraftServer server, File file, String name, java.util.UUID uuid) {
 +        this.name = name;
@@ -166,7 +174,7 @@ index b26dbe807e5cb0a42f6c06b933397902310e5616..35ad7f249cfb6f5c779136d96f3698ea
              } catch (IOException var4) {
                  LOGGER.error("Couldn't read statistics file {}", file, var4);
              } catch (JsonParseException var5) {
-@@ -66,11 +77,37 @@ public class ServerStatsCounter extends StatsCounter {
+@@ -66,11 +85,37 @@ public class ServerStatsCounter extends StatsCounter {
  
      public void save() {
          if (org.spigotmc.SpigotConfig.disableStatSaving) return; // Spigot
