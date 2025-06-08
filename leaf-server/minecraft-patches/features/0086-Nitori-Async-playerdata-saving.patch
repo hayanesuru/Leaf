@@ -212,49 +212,6 @@ index b26dbe807e5cb0a42f6c06b933397902310e5616..a682ae890850a5e62acd54029f2a4eb1
      }
  
      @Override
-diff --git a/net/minecraft/world/level/storage/LevelStorageSource.java b/net/minecraft/world/level/storage/LevelStorageSource.java
-index de43e54698125ce9f319d4889dd49f7029fe95e0..360e54b87db68fad60cdec63af466765baae0a07 100644
---- a/net/minecraft/world/level/storage/LevelStorageSource.java
-+++ b/net/minecraft/world/level/storage/LevelStorageSource.java
-@@ -520,15 +520,24 @@ public class LevelStorageSource {
-         private void saveLevelData(CompoundTag tag) {
-             Path path = this.levelDirectory.path();
- 
-+            // Leaf start - Async player IO
-+            // Save level.dat asynchronously
-+            var nbtBytes = new it.unimi.dsi.fastutil.io.FastByteArrayOutputStream(65536);
-             try {
--                Path path1 = Files.createTempFile(path, "level", ".dat");
--                NbtIo.writeCompressed(tag, path1);
--                Path path2 = this.levelDirectory.oldDataFile();
--                Path path3 = this.levelDirectory.dataFile();
--                Util.safeReplaceFile(path3, path1, path2);
-+                NbtIo.writeCompressed(tag, nbtBytes);
-             } catch (Exception var6) {
--                LevelStorageSource.LOGGER.error("Failed to save level {}", path, var6);
-+                LevelStorageSource.LOGGER.error("Failed to encode level {}", path, var6);
-             }
-+            org.dreeam.leaf.async.storage.AsyncPlayerDataSaving.INSTANCE.saveLevelData(path, () -> {
-+                try {
-+                    Path old = this.levelDirectory.oldDataFile();
-+                    Path current = this.levelDirectory.dataFile();
-+                    org.dreeam.leaf.async.storage.AsyncPlayerDataSaving.safeReplaceBackup(current, old, nbtBytes.array, 0, nbtBytes.length);
-+                } catch (Exception var6) {
-+                    LevelStorageSource.LOGGER.error("Failed to save level.dat {}", path, var6);
-+                }
-+            });
-+            // Leaf end - Async player IO
-         }
- 
-         public Optional<Path> getIconFile() {
-@@ -645,6 +654,7 @@ public class LevelStorageSource {
- 
-         @Override
-         public void close() throws IOException {
-+            org.dreeam.leaf.async.storage.AsyncPlayerDataSaving.INSTANCE.saveLevelData(this.levelDirectory.path(), null); // Leaf - Async player IO
-             this.lock.close();
-         }
- 
 diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
 index c44110b123ba5912af18faf0065e9ded780da9b7..2eae5ccb37b942b94964c28391b96989ae85b072 100644
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java
