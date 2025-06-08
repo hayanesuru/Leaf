@@ -458,7 +458,7 @@ index 63ff20f467c7508486a8f274442269b90faea108..15de8904a43c0ee1e6d55d511ebd84df
      }
      // CraftBukkit end
 diff --git a/net/minecraft/server/PlayerAdvancements.java b/net/minecraft/server/PlayerAdvancements.java
-index d5196b181a0a633cb04ce18b0471cda2dcaa8816..46433f0e6b37d31ec5468b3f4a5b2524d3cb29ed 100644
+index d2159a747fe42aa95cfc6bca0e55e3f4485847bb..abe7ffd48766c48fab091947f34db436b3c883d0 100644
 --- a/net/minecraft/server/PlayerAdvancements.java
 +++ b/net/minecraft/server/PlayerAdvancements.java
 @@ -53,8 +53,11 @@ public class PlayerAdvancements {
@@ -483,7 +483,7 @@ index d5196b181a0a633cb04ce18b0471cda2dcaa8816..46433f0e6b37d31ec5468b3f4a5b2524
          this.isFirstPacket = true;
          this.lastSelectedTab = null;
          this.tree = manager.tree();
-@@ -158,7 +162,7 @@ public class PlayerAdvancements {
+@@ -151,7 +155,7 @@ public class PlayerAdvancements {
                  if (org.galemc.gale.configuration.GaleGlobalConfiguration.get().logToConsole.ignoredAdvancements) LOGGER.warn("Ignored advancement '{}' in progress file {} - it doesn't exist anymore?", path, this.playerSavePath); // Gale - Purpur - do not log ignored advancements
              } else {
                  this.startProgress(advancementHolder, progress);
@@ -492,7 +492,7 @@ index d5196b181a0a633cb04ce18b0471cda2dcaa8816..46433f0e6b37d31ec5468b3f4a5b2524
                  this.markForVisibilityUpdate(advancementHolder);
              }
          });
-@@ -190,10 +194,12 @@ public class PlayerAdvancements {
+@@ -183,10 +187,12 @@ public class PlayerAdvancements {
                  return false;
              }
              // Paper end - Add PlayerAdvancementCriterionGrantEvent
@@ -509,7 +509,7 @@ index d5196b181a0a633cb04ce18b0471cda2dcaa8816..46433f0e6b37d31ec5468b3f4a5b2524
                  // Paper start - Add Adventure message to PlayerAdvancementDoneEvent
                  final net.kyori.adventure.text.Component message = advancement.value().display().flatMap(info -> {
                      return java.util.Optional.ofNullable(
-@@ -227,12 +233,14 @@ public class PlayerAdvancements {
+@@ -220,12 +226,14 @@ public class PlayerAdvancements {
          AdvancementProgress orStartProgress = this.getOrStartProgress(advancement);
          boolean isDone = orStartProgress.isDone();
          if (orStartProgress.revokeProgress(criterionKey)) {
@@ -527,7 +527,7 @@ index d5196b181a0a633cb04ce18b0471cda2dcaa8816..46433f0e6b37d31ec5468b3f4a5b2524
              this.markForVisibilityUpdate(advancement);
          }
  
-@@ -278,7 +286,10 @@ public class PlayerAdvancements {
+@@ -271,7 +279,10 @@ public class PlayerAdvancements {
      }
  
      public void flushDirty(ServerPlayer serverPlayer) {
@@ -539,7 +539,7 @@ index d5196b181a0a633cb04ce18b0471cda2dcaa8816..46433f0e6b37d31ec5468b3f4a5b2524
              Map<ResourceLocation, AdvancementProgress> map = new HashMap<>();
              Set<AdvancementHolder> set = new java.util.TreeSet<>(java.util.Comparator.comparing(adv -> adv.id().toString())); // Paper - Changed from HashSet to TreeSet ordered alphabetically.
              Set<ResourceLocation> set1 = new HashSet<>();
-@@ -286,16 +297,24 @@ public class PlayerAdvancements {
+@@ -279,16 +290,24 @@ public class PlayerAdvancements {
              for (AdvancementNode advancementNode : this.rootsToUpdate) {
                  this.updateTreeVisibility(advancementNode, set, set1);
              }
@@ -568,7 +568,7 @@ index d5196b181a0a633cb04ce18b0471cda2dcaa8816..46433f0e6b37d31ec5468b3f4a5b2524
              if (!map.isEmpty() || !set.isEmpty() || !set1.isEmpty()) {
                  serverPlayer.connection.send(new ClientboundUpdateAdvancementsPacket(this.isFirstPacket, set, set1, map));
              }
-@@ -338,10 +357,13 @@ public class PlayerAdvancements {
+@@ -331,10 +350,13 @@ public class PlayerAdvancements {
                  AdvancementHolder advancementHolder = node.holder();
                  if (visible) {
                      if (this.visible.add(advancementHolder)) {
@@ -900,7 +900,7 @@ index 75fb49f1596f475278d12c8c7aea9ad4952b6056..de601491b7ecb83f1bb64a95989d6ed4
          player.isRealPlayer = true; // Paper
          player.loginTime = System.currentTimeMillis(); // Paper - Replace OfflinePlayer#getLastPlayed
          GameProfile gameProfile = player.getGameProfile();
-@@ -933,6 +935,15 @@ public abstract class PlayerList {
+@@ -891,6 +893,15 @@ public abstract class PlayerList {
          return this.respawn(player, keepInventory, reason, eventReason, null);
      }
      public ServerPlayer respawn(ServerPlayer player, boolean keepInventory, Entity.RemovalReason reason, org.bukkit.event.player.PlayerRespawnEvent.RespawnReason eventReason, org.bukkit.Location location) {
@@ -916,7 +916,7 @@ index 75fb49f1596f475278d12c8c7aea9ad4952b6056..de601491b7ecb83f1bb64a95989d6ed4
          player.stopRiding(); // CraftBukkit
          this.players.remove(player);
          this.playersByName.remove(player.getScoreboardName().toLowerCase(java.util.Locale.ROOT)); // Spigot
-@@ -944,6 +955,7 @@ public abstract class PlayerList {
+@@ -902,6 +913,7 @@ public abstract class PlayerList {
          ServerPlayer serverPlayer = player;
          Level fromWorld = player.level();
          player.wonGame = false;
