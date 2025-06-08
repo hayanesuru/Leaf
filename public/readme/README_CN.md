@@ -9,7 +9,7 @@
 **Leaf** 是一个基于 [Paper](https://papermc.io/) 的分支，专为高自定义和高性能而设计，基于 [Gale](https://github.com/Dreeam-qwq/Gale) 之上，并融合了其他核心的优化和修复。
 </div>
 
-> [!WARNING]  
+> [!WARNING]
 > Leaf 是一个面向性能的分支。在迁移到 Leaf 之前，请务必**提前备份**。欢迎任何人贡献优化或报告问题来帮助我们改进。
 
 [English](../../README.md) | **中文**
