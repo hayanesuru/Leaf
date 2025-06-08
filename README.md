@@ -12,6 +12,8 @@
 > [!WARNING]  
 > Leaf is a performance-oriented fork. Make sure to take backups **before** switching to it. Everyone is welcome to contribute optimizations or report issues to help us improve.
 
+**English** | [中文](public/readme/README_CN.md)
+
 ## 🍃 Features
 - **Based on [Gale](https://github.com/Dreeam-qwq/Gale)** for better performance
 - **Async** pathfinding, mob spawning and entity tracker
