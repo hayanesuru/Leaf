@@ -19,6 +19,10 @@ public final class RandomTickSystem {
     private final WyRand rand = new WyRand(RandomSupport.generateUniqueSeed());
     private static final long SCALE = 0x100000L;
     private static final long MASK = 0xfffffL;
+    private static final long MASK_ONE_FOURTH = 0x300000L;
+    private static final long CHUNK_BLOCKS = 4096L;
+    private static final long CHUNK_BLOCKS_HALF = 2048L;
+
     private long cache = rand.next();
     private int cacheIdx = 0;
 
@@ -60,7 +64,7 @@ public final class RandomTickSystem {
             return 0L;
         }
         long product = tickSpeed * tickingCount;
-        long chance = ((product + 2048L) * SCALE) / 4096L;
+        long chance = ((product + CHUNK_BLOCKS_HALF) * SCALE) / CHUNK_BLOCKS;
         chunk.leaf$setRandomTickChance(chance);
         return chance;
     }
@@ -121,6 +125,7 @@ public final class RandomTickSystem {
         LevelChunk chunk,
         long tickSpeed
     ) {
+        // reuse the random number one time
         long a;
         if (cacheIdx == 0) {
             a = cache;
@@ -132,32 +137,83 @@ public final class RandomTickSystem {
             a = cache = rand.next();
             cacheIdx = 0;
         }
-        if ((a & 0x300000L) != 0L) {
+
+        // 25% chance tick
+        if ((a & MASK_ONE_FOURTH) != 0L) {
             return;
         }
+        // tick speed mul 4
         tickSpeed = tickSpeed * 4;
+
         long chance = chunk.leaf$randomTickChance();
+
+        // the chunk not exists random tickable block
         if (chance == 0L && (chance = recompute(chunk, tickSpeed)) == 0) {
             return;
         }
+
+        // this is correct, don't modify
+        //
+        // when chance eq 0.1
+        // - skip: 0.1 >= 0.1..1.0
+        // - tick: 0.1 < 0.0..0.1
+        //
+        // (chance not newest)
         if (chance >= (a & MASK)) {
             return;
         }
+
+        // recompute tickable block and chance.
+        //
+        // chance for next randomTickChunk
+        // tickingCount used this tick
+        //
+        // chance != 0
+        //
+        // always tick block when chance > 1
         if ((chance = recompute(chunk, tickSpeed)) == 0) {
             return;
         }
-
         long tickingCount = chunk.leaf$countTickingBlocks();
-        long shouldTick = rand.next() & MASK;
+
+        // tick one block base on chance
+        // fairly pick a random tickable block
+        // vanilla may do more tick
+        // recompute computed chance for that part
+        // so the tick count should same as vanilla
         int randPos = (int) ((rand.next() & Integer.MAX_VALUE) % tickingCount);
         OptionalLong pos = chunk.leaf$tickingPos(randPos);
+        // always true
         if (pos.isPresent()) {
             tickPos.add(pos.getAsLong());
         }
-        while (shouldTick <= chance) {
+
+        // chance less than one
+        // most case
+        if (chance < SCALE) {
+            return;
+        }
+
+        // attempt to do more tick
+        //
+        // chance == 1.5
+        // - loop 1: 50% tick
+        // - loop 2: never
+        //
+        // chance == 2.5
+        // - loop 1: always
+        // - loop 2: 50%
+        // - loop 3: never
+
+        chance -= SCALE;
+        long last = rand.next() & MASK;
+        while (last < chance) {
             randPos = (int) ((rand.next() & Integer.MAX_VALUE) % tickingCount);
             pos = chunk.leaf$tickingPos(randPos);
-            if (pos.isPresent()) tickPos.add(pos.getAsLong());
+            // always true
+            if (pos.isPresent()) {
+                tickPos.add(pos.getAsLong());
+            }
             chance -= SCALE;
         }
     }
