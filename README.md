@@ -17,7 +17,7 @@
 ## 🍃 Features
 - **Based on [Gale](https://github.com/Dreeam-qwq/Gale)** for better performance
 - **Async** pathfinding, mob spawning and entity tracker
-- **Various optimizations** blending from [other forks](https://github.com/Winds-Studio/Leaf#-credits) and our own
+- **Various optimizations** blending from [other forks](#-credits) and our own
 - **Fully compatible** with Spigot and Paper plugins
 - **Latest dependencies**, keeping all dependencies up-to-date
 - **Allows all characters in usernames**, including Chinese and other characters
