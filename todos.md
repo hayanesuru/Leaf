@@ -8,9 +8,8 @@
 
 # 1.21.5
 - [ ] Check beacon issues fix
-- [ ] Update README.md
 - [ ] Remove stream in Inventory and check new changes
 - [ ] Check Purpur's Projectile offset config, in BowItem shoot
 - [ ] Remove Gale's attribute patch
 - [ ] Check SparklyPaper's mapitem update skip
-- [ ] Update from Leaf 1.21.4 (curr commit: `12711630d4ca8788366f8abd47275c4c262ff13f`)
+- [ ] Update from Leaf 1.21.4 (curr commit: `ccab3256c296857eeacd4d0c23f2e1b8aae3b36c`)

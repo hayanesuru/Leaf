@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Tue, 3 Jun 2025 18:51:44 +0900
+Subject: [PATCH] cache getBiome
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/DelegatedGeneratorAccess.java b/src/main/java/org/bukkit/craftbukkit/util/DelegatedGeneratorAccess.java
+index 0e14f962b26823e49b192a4f97ec6c1f477ef0ff..cb6cd899fd8af069534f45a4a9e81137f941e250 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/DelegatedGeneratorAccess.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/DelegatedGeneratorAccess.java
+@@ -285,6 +285,13 @@ public abstract class DelegatedGeneratorAccess implements WorldGenLevel {
+         return this.delegate.getBiome(pos);
+     }
+ 
++    // Leaf start - cache getBiome
++    @Override
++    public Holder<Biome> getBiomeCached(BlockPos pos) {
++        return this.delegate.getBiomeCached(pos);
++    }
++    // Leaf end - cache getBiome
++
+     @Override
+     public Stream<BlockState> getBlockStatesIfLoaded(AABB box) {
+         return this.delegate.getBlockStatesIfLoaded(box);

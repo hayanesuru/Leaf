@@ -6,23 +6,6 @@ Subject: [PATCH] Nitori: Async playerdata saving
 Original license: GPL v3
 Original project: https://github.com/Gensokyo-Reimagined/Nitori
 
-diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 3ca7405318a4076000250203be4b91dbde95191b..2aed6f594c73bea5e8919e65cf04bc7eb6775c3e 100644
---- a/net/minecraft/server/MinecraftServer.java
-+++ b/net/minecraft/server/MinecraftServer.java
-@@ -1067,6 +1067,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-         io.papermc.paper.log.CustomLogManager.forceReset(); // Paper - Reset loggers after shutdown
-         this.onServerExit();
-         // Paper end - Improved watchdog support - move final shutdown items here
-+        // Leaf start - Async playerdata saving
-+        org.dreeam.leaf.async.AsyncPlayerDataSaving.IO_POOL.shutdown();
-+        try {
-+            org.dreeam.leaf.async.AsyncPlayerDataSaving.IO_POOL.awaitTermination(30, java.util.concurrent.TimeUnit.SECONDS);
-+        } catch (java.lang.InterruptedException ignored) {}
-+        // Leaf end - Async playerdata saving
-     }
- 
-     public String getLocalIp() {
 diff --git a/net/minecraft/world/level/storage/LevelStorageSource.java b/net/minecraft/world/level/storage/LevelStorageSource.java
 index 8104f71c30c1fa46c83acdf0b2e58483df9d89cc..169b4544ab3d0e8515a2d7020a23ae0e2e0c952d 100644
 --- a/net/minecraft/world/level/storage/LevelStorageSource.java
