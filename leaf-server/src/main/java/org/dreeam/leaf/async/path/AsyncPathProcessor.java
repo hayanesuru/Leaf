@@ -28,7 +28,7 @@ public class AsyncPathProcessor {
     private static final String THREAD_PREFIX = "Leaf Async Pathfinding";
     private static final Logger LOGGER = LogManager.getLogger(THREAD_PREFIX);
     private static long lastWarnMillis = System.currentTimeMillis();
-    private static final ThreadPoolExecutor pathProcessingExecutor = new ThreadPoolExecutor(
+    public static final ThreadPoolExecutor pathProcessingExecutor = new ThreadPoolExecutor(
         1,
         AsyncPathfinding.asyncPathfindingMaxThreads,
         AsyncPathfinding.asyncPathfindingKeepalive, TimeUnit.SECONDS,
