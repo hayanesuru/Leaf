@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur API Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: 916df1a858c46e240fa966540cf1cc819cfb3c36
+Commit: aa289e2c6ff801551fb2f585269ccffed3a154fa
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "co/aikar/timings/TimedEventExecutor.java.patch"
@@ -1170,13 +1170,13 @@ index 7fbfdb07585c7b28acea1f0c1f58ada0cc744441..21fcca092e2e31baa5ece0de9e44e3fa
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Villager.java b/src/main/java/org/bukkit/entity/Villager.java
-index 02b86d9615f8150b13ff0beefd5ca502c0494f99..dcf836b6db1a9b17e5e7aa945318e4b60012112b 100644
+index 4d88bb2eaa43709fb6103a6f77d8c01e83bfe743..bb3773e002ebcfd8eced792bf0236c4cfbae8663 100644
 --- a/src/main/java/org/bukkit/entity/Villager.java
 +++ b/src/main/java/org/bukkit/entity/Villager.java
-@@ -391,4 +391,13 @@ public interface Villager extends AbstractVillager {
-      * reputation regardless of its impact and the player associated.
+@@ -408,4 +408,13 @@ public interface Villager extends AbstractVillager {
+      * Demand is still updated even if all events are canceled.
       */
-     public void clearReputations();
+     public void restock();
 +
 +    // Purpur start
 +    /**

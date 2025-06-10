@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Minecraft Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: 916df1a858c46e240fa966540cf1cc819cfb3c36
+Commit: aa289e2c6ff801551fb2f585269ccffed3a154fa
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "net/minecraft/CrashReport.java.patch"
@@ -465,7 +465,7 @@ index c44cdbbdc06b25bd20a208386545a10af9b96df8..a88b8f999b181071ebb492bc1afa2d72
  
          for (ServerPlayer serverPlayer : players) {
 diff --git a/net/minecraft/server/commands/GiveCommand.java b/net/minecraft/server/commands/GiveCommand.java
-index b81f98738ef166336e4cc3092b6ba63f385b68e3..ca4bad763602f202423409ffb16f797f91a5dadc 100644
+index f04bc30a836b6eec80b0e2cf76831b0fdccd8149..5e48519f1669ddecaca479126270012373879752 100644
 --- a/net/minecraft/server/commands/GiveCommand.java
 +++ b/net/minecraft/server/commands/GiveCommand.java
 @@ -66,6 +66,7 @@ public class GiveCommand {
@@ -474,7 +474,7 @@ index b81f98738ef166336e4cc3092b6ba63f385b68e3..ca4bad763602f202423409ffb16f797f
                      boolean flag = serverPlayer.getInventory().add(itemStack1);
 +                    if (org.purpurmc.purpur.PurpurConfig.disableGiveCommandDrops) continue; // Purpur - add config option for toggling give command dropping
                      if (flag && itemStack1.isEmpty()) {
-                         ItemEntity itemEntity = serverPlayer.drop(itemStack, false);
+                         ItemEntity itemEntity = serverPlayer.drop(itemStack, false, false, false, null); // Paper - do not fire PlayerDropItemEvent for /give command
                          if (itemEntity != null) {
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
 index 349eafa321c955c6bda7a5aa6931311d85867565..cdfb9004dd4f4ea1bbb77895b7fc020d628c485d 100644
@@ -12253,7 +12253,7 @@ index e282b6ab6d0d1c11ee40f5f436bd50fa90ddc88b..d6ae13c19481ce33bfa0b6c9db632830
              this.spawnCat(pos, level, true);
          }
 diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
-index cb9c722251e01cbbd827af9aff5f5942c62d2011..530a7873a0796bb5e8e25b91586d6c4cfa00a08c 100644
+index 202bcb28218b0d9a2a5e211fee173ecd5f625896..acb0789b3e791cbb81c23efb9bbeae736db5f48c 100644
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
 @@ -178,6 +178,8 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
@@ -12436,7 +12436,7 @@ index cb9c722251e01cbbd827af9aff5f5942c62d2011..530a7873a0796bb5e8e25b91586d6c4c
  
 @@ -506,7 +616,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
  
-     private void updateDemand() {
+     public void updateDemand() {
          for (MerchantOffer merchantOffer : this.getOffers()) {
 -            merchantOffer.updateDemand();
 +            merchantOffer.updateDemand(this.level().purpurConfig.villagerMinimumDemand); // Purpur - Configurable minimum demand for trades
@@ -15903,7 +15903,7 @@ index e8d7b6adbcb84e8d89067b54318e0feb3c3276a6..2076474168410f376beebc072af4959e
              int i = 15 + level.random.nextInt(15) + level.random.nextInt(15);
              // this.popExperience(level, pos, i);
 diff --git a/net/minecraft/world/level/block/SpongeBlock.java b/net/minecraft/world/level/block/SpongeBlock.java
-index 5d1b8c55bffc42924c4a95b1b4bd2e1e0b064af3..69822d21d0e71f4b29349af0bee2d80fa0802a3b 100644
+index ad5daac30b85fead93637c83fb9d96e02c6df216..8661443ed346cfb193138b5f37c3dd931a6d6644 100644
 --- a/net/minecraft/world/level/block/SpongeBlock.java
 +++ b/net/minecraft/world/level/block/SpongeBlock.java
 @@ -53,8 +53,8 @@ public class SpongeBlock extends Block {
@@ -15925,7 +15925,7 @@ index 5d1b8c55bffc42924c4a95b1b4bd2e1e0b064af3..69822d21d0e71f4b29349af0bee2d80f
 +                        if (!fluidState.is(FluidTags.WATER) && (!level.purpurConfig.spongeAbsorbsLava || !fluidState.is(FluidTags.LAVA)) && (!level.purpurConfig.spongeAbsorbsWaterFromMud || !blockState.is(Blocks.MUD))) { // Purpur - Option for sponges to work on lava and mud
                              return BlockPos.TraversalNodeStatus.SKIP;
                          } else if (blockState.getBlock() instanceof BucketPickup bucketPickup
-                             && !bucketPickup.pickupBlock(null, blockList, blockPos, blockState).isEmpty()) { // CraftBukkit
+                             && !bucketPickup.pickupBlock(null, level, blockPos, blockState).isEmpty()) {
 @@ -76,6 +76,10 @@ public class SpongeBlock extends Block {
                          } else {
                              if (blockState.getBlock() instanceof LiquidBlock) {

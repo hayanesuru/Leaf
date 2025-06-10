@@ -3,6 +3,8 @@ From: Spottedleaf <Spottedleaf@users.noreply.github.com>
 Date: Mon, 9 Jun 2025 02:46:34 -0700
 Subject: [PATCH] Paper: Fix infinite loop in RegionFile IO
 
+Removed since Leaf 1.21.5/Paper 1.21.4, added on Paper
+
 Original license: GPLv3
 Original project: https://github.com/PaperMC/Paper
 

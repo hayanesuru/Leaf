@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Paper Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: 916df1a858c46e240fa966540cf1cc819cfb3c36
+Commit: aa289e2c6ff801551fb2f585269ccffed3a154fa
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "Rebrand.patch"
@@ -1233,14 +1233,13 @@ index f03f9f94c51ef2f2eb24e4f65ec69b542b1c0a07..af60e3ef00ce1e98708d9963d466e72b
 +    // Purpur end - Summoner API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
-index 258e149a4c239328f4b068ac4617ca63b788dab3..a69b1b56a0e34673005e5da700943c656d2ec724 100644
+index 8523cadccc67fa172041be0316b979a34fac6b26..61e983c425ceec2bbd470f36497e616b4cb94ed2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
-@@ -380,4 +380,12 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
-     public void clearReputations() {
-         getHandle().getGossips().gossips.clear();
+@@ -390,4 +390,11 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
+     public void restock() {
+         getHandle().restock();
      }
-+    // Paper end
 +
 +    // Purpur start - Lobotomize stuck villagers
 +    @Override
