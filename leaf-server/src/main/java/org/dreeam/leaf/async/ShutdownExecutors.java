@@ -10,6 +10,7 @@ import org.dreeam.leaf.async.tracker.MultithreadedTracker;
 import java.util.concurrent.TimeUnit;
 
 public class ShutdownExecutors {
+
     public static final Logger LOGGER = LogManager.getLogger("Leaf");
 
     public static void shutdown(MinecraftServer server) {
@@ -48,11 +49,11 @@ public class ShutdownExecutors {
             }
         }
 
-        if (AsyncPathProcessor.pathProcessingExecutor != null) {
+        if (AsyncPathProcessor.PATH_PROCESSING_EXECUTOR != null) {
             LOGGER.info("Waiting for mob pathfinding executor to shutdown...");
-            AsyncPathProcessor.pathProcessingExecutor.shutdown();
+            AsyncPathProcessor.PATH_PROCESSING_EXECUTOR.shutdown();
             try {
-                AsyncPathProcessor.pathProcessingExecutor.awaitTermination(10L, TimeUnit.SECONDS);
+                AsyncPathProcessor.PATH_PROCESSING_EXECUTOR.awaitTermination(10L, TimeUnit.SECONDS);
             } catch (InterruptedException ignored) {
             }
         }
