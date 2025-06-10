@@ -8,6 +8,7 @@ import java.util.OptionalInt;
 import java.util.concurrent.locks.LockSupport;
 
 public class AsyncGoalThread extends Thread {
+
     public static volatile boolean RUNNING = true;
     public AsyncGoalThread(final MinecraftServer server) {
         super(() -> run(server), "Leaf Async Goal Thread");
