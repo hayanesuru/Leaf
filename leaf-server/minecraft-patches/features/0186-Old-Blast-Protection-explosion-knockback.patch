@@ -17,7 +17,7 @@ index 0a5611b1ece4dbe2887e7fbdef45f58e7f4d53ad..9f6fc274525f2fe4e4e35e0feaa410bf
      public static final StringRepresentable.EnumCodec<EquipmentSlot> CODEC = StringRepresentable.fromEnum(EquipmentSlot::values);
      public static final StreamCodec<ByteBuf, EquipmentSlot> STREAM_CODEC = ByteBufCodecs.idMapper(BY_ID, equipmentSlot -> equipmentSlot.id);
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index ea9c641fe9a9685307b6de2999ea4ff5342269b7..ae0dab1f8470cf53031a2ba776fa70d8ae074a87 100644
+index a43192a4c0b89cf9436e1e3144037420005d85d9..6ca263eead9b1fe527cc16a659eb9f55496a180a 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
 @@ -532,7 +532,7 @@ public class ServerExplosion implements Explosion {

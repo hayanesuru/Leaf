@@ -100,7 +100,7 @@ index 4535858701b2bb232b9d2feb2af6551526232ddc..e65c62dbe4c1560ae153e4c4344e9194
 -    // Paper end - detailed watchdog information
  }
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 55f20122732e88037d24be311469b6cab72c37ad..2f927b422c2c4f2f65d822befe3cbfd9e3bb3708 100644
+index c1efd558cfbfd2200295ef5755aa496e95deb7d7..15bbd1f7f2a90b4b5427026d622764bb1c92d465 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -506,9 +506,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -149,7 +149,7 @@ index 7955a8fa9c4de139b24c9d53018b055ff4008e02..eb849c57992658005e0f514c6f7923f8
  
      private void tickPassenger(Entity ridingEntity, Entity passengerEntity, final boolean isActive) { // Paper - EAR 2
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 80baa2dff5c1034a72271fc727fdb2acc1b69488..9f581d5bdc3f658694bbd8c80abbce4e27e568d3 100644
+index 5ea5ff08c8e22b8a4aeef06ab0fc7a60255c27ee..02cd62b29f17307d82101bc4e0104afc813536c1 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1147,31 +1147,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
