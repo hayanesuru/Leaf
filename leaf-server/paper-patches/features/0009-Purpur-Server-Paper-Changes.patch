@@ -1233,10 +1233,10 @@ index f03f9f94c51ef2f2eb24e4f65ec69b542b1c0a07..af60e3ef00ce1e98708d9963d466e72b
 +    // Purpur end - Summoner API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
-index 8523cadccc67fa172041be0316b979a34fac6b26..61e983c425ceec2bbd470f36497e616b4cb94ed2 100644
+index 66f0089ee33c36b9d13fb0b87303d33f08021ed1..26f056294e19f509bfd4986b9650e13f92a8feaf 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftVillager.java
-@@ -390,4 +390,11 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
+@@ -258,4 +258,11 @@ public class CraftVillager extends CraftAbstractVillager implements Villager {
      public void restock() {
          getHandle().restock();
      }
@@ -1272,11 +1272,11 @@ index 2e11df97e5c8ff5fbf22ba87946d6018ac8bbbed..83b779eb0adcaf2e6d5658cddc2607f6
 +    // Purpur end - Summoner API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftWolf.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftWolf.java
-index c3bd4cc1458bf62639d43854c2fdd0b479993b22..52a492ed8651e2ecb8b47cc3394fa4c722f99b71 100644
+index 33866c5a5591150de4c1d8f4c175122db3bd5bd4..5fd656f43985e3972c9f572d5b05bf5c81da2678 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftWolf.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftWolf.java
-@@ -228,4 +228,15 @@ public class CraftWolf extends CraftTameableAnimal implements Wolf {
-             return this.getKey().hashCode();
+@@ -135,4 +135,15 @@ public class CraftWolf extends CraftTameableAnimal implements Wolf {
+             super(holder);
          }
      }
 +    // Purpur start - Configurable chance for wolves to spawn rabid
@@ -1415,7 +1415,7 @@ index 792cb6adf0c7a6335cc5985fce8bed2e0f1149af..5734c5caffda79383ae30df20c3defb5
 +    // Purpur end - Anvil API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 02109a3ca53796fa4733e98eefd5829f71681daa..9f30b3d8f457301a552440afc2e48d52179d6abb 100644
+index 4a7b4b603c2c555c320911e618a4392628c2c754..0a3ad330e1d40cbe9e03fc3585ee309fe9f5c930 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -667,4 +667,285 @@ public final class CraftItemStack extends ItemStack {
