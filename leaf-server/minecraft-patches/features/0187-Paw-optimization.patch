@@ -149,10 +149,10 @@ index 7955a8fa9c4de139b24c9d53018b055ff4008e02..eb849c57992658005e0f514c6f7923f8
  
      private void tickPassenger(Entity ridingEntity, Entity passengerEntity, final boolean isActive) { // Paper - EAR 2
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 5ea5ff08c8e22b8a4aeef06ab0fc7a60255c27ee..02cd62b29f17307d82101bc4e0104afc813536c1 100644
+index 64f24d3e0ecb91e0b4df6229354aeac549234f1b..df23d80d6b18e900414aa02e5c1812f0a10f0fb7 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1147,31 +1147,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1145,31 +1145,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.onGround;
      }
  
@@ -184,7 +184,7 @@ index 5ea5ff08c8e22b8a4aeef06ab0fc7a60255c27ee..02cd62b29f17307d82101bc4e0104afc
      public void move(MoverType type, Vec3 movement) {
          // Gale start - VMP - skip entity move if movement is zero
          if (!this.boundingBoxChanged && movement.equals(Vec3.ZERO)) {
-@@ -1179,16 +1154,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1177,16 +1152,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
          // Gale end - VMP - skip entity move if movement is zero
          final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
@@ -201,7 +201,7 @@ index 5ea5ff08c8e22b8a4aeef06ab0fc7a60255c27ee..02cd62b29f17307d82101bc4e0104afc
          if (this.noPhysics) {
              this.setPos(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
          } else {
-@@ -1309,13 +1275,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1307,13 +1273,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                  // Gale end - skip negligible planar movement multiplication
              }
          }
@@ -215,7 +215,7 @@ index 5ea5ff08c8e22b8a4aeef06ab0fc7a60255c27ee..02cd62b29f17307d82101bc4e0104afc
      }
  
      private void applyMovementEmissionAndPlaySound(Entity.MovementEmission movementEmission, Vec3 movement, BlockPos pos, BlockState state) {
-@@ -4881,9 +4840,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4879,9 +4838,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public void setDeltaMovement(Vec3 deltaMovement) {
@@ -225,7 +225,7 @@ index 5ea5ff08c8e22b8a4aeef06ab0fc7a60255c27ee..02cd62b29f17307d82101bc4e0104afc
      }
  
      public void addDeltaMovement(Vec3 addend) {
-@@ -4989,9 +4946,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4987,9 +4944,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
          // Paper end - Fix MC-4
          if (this.position.x != x || this.position.y != y || this.position.z != z) {
