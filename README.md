@@ -87,11 +87,9 @@ java {
 ```
 
 ## ⚖️ License
-Paperweight files are licensed under [MIT](licenses/MIT.txt).
-Patches are licensed under [MIT](licenses/MIT.txt), unless indicated differently in their header.
-Binaries are licensed under [GPL-3.0](licenses/GPL-3.0.txt).
+Leaf is licensed under multiple open source licenses depending on upstream projects and other materials,
 
-Also see [PaperMC/Paper](https://github.com/PaperMC/Paper) and [PaperMC/paperweight](https://github.com/PaperMC/paperweight) for the licenses of some materials used by this project.
+see [LICENSE.md](LICENSE.md) for full license information.
 
 ## 📜 Credits
 Thanks to these projects below. Leaf includes some patches taken from them.<br>
