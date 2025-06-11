@@ -13,27 +13,8 @@ Moves the deactivate event call into the onRemove method for the beacon block it
 
 The field I added feels a bit wrong but it works, it's to prevent the activation event being called immediately after loading, can't see any better way to differentiate between a newly placed beacon and a newly loaded one.
 
-diff --git a/net/minecraft/world/level/block/BeaconBlock.java b/net/minecraft/world/level/block/BeaconBlock.java
-index 66eee067b4ffdd72393ca813de995062be5b7a90..52b24df965202a80e409d60484cff1a288d55bbd 100644
---- a/net/minecraft/world/level/block/BeaconBlock.java
-+++ b/net/minecraft/world/level/block/BeaconBlock.java
-@@ -52,4 +52,14 @@ public class BeaconBlock extends BaseEntityBlock implements BeaconBeamBlock {
- 
-         return InteractionResult.SUCCESS;
-     }
-+
-+    // Paper start - BeaconDeactivatedEvent
-+    @Override
-+    protected void affectNeighborsAfterRemoval(BlockState state, net.minecraft.server.level.ServerLevel level, BlockPos pos, boolean movedByPiston) {
-+        if (level.getBlockEntity(pos) instanceof BeaconBlockEntity beacon && beacon.levels > 0 && !beacon.getBeamSections().isEmpty()) {
-+            org.bukkit.block.Block block = org.bukkit.craftbukkit.block.CraftBlock.at(level, pos);
-+            new io.papermc.paper.event.block.BeaconDeactivatedEvent(block).callEvent();
-+        }
-+    }
-+    // Paper end
- }
 diff --git a/net/minecraft/world/level/block/entity/BeaconBlockEntity.java b/net/minecraft/world/level/block/entity/BeaconBlockEntity.java
-index bc7b9d6faded66e95c38cfc5571b09c05af30deb..dc5e21981394c5607dabbc8afaa8f6097f94d90f 100644
+index bc7b9d6faded66e95c38cfc5571b09c05af30deb..0714dd9d0136dc254687fcfe3ce56b92bbfeb676 100644
 --- a/net/minecraft/world/level/block/entity/BeaconBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/BeaconBlockEntity.java
 @@ -172,6 +172,8 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
@@ -95,3 +76,19 @@ index bc7b9d6faded66e95c38cfc5571b09c05af30deb..dc5e21981394c5607dabbc8afaa8f609
          this.name = parseCustomNameSafe(tag.get("CustomName"), registries);
          this.lockKey = LockCode.fromTag(tag, registries);
          this.effectRange = tag.getDoubleOr(PAPER_RANGE_TAG, -1); // Paper - Custom beacon ranges
+@@ -497,4 +501,15 @@ public class BeaconBlockEntity extends BlockEntity implements MenuProvider, Name
+         super.setLevel(level);
+         this.lastCheckY = level.getMinY() - 1;
+     }
++
++    // Paper start - BeaconDeactivatedEvent
++    @Override
++    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
++        BeaconBlockEntity beacon = this;
++        if (true /*beacon.levels > 0 && !beacon.getBeamSections().isEmpty()*/) { // Calling deactive everytime on remove to keep consistent with Paper's behavior
++            org.bukkit.block.Block block = org.bukkit.craftbukkit.block.CraftBlock.at(this.level, pos);
++            new io.papermc.paper.event.block.BeaconDeactivatedEvent(block).callEvent();
++        }
++    }
++    // Paper end
+ }
