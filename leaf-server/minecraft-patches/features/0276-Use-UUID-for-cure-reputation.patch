@@ -3,6 +3,7 @@ From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Tue, 9 Nov 2077 00:00:00 +0800
 Subject: [PATCH] Use UUID for cure reputation
 
+Related MC issue: https://bugs.mojang.com/browse/MC/issues/MC-247647
 
 diff --git a/net/minecraft/world/entity/monster/ZombieVillager.java b/net/minecraft/world/entity/monster/ZombieVillager.java
 index 70e68d56f2d781930d877f40818d9aeb377dc8af..2afe1c0a7670b52cf4ae13949b4f8c67449b6490 100644
