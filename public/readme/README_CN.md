@@ -87,16 +87,13 @@ java {
 ```
 
 ## ⚖️ 许可证
-Paperweight 文件基于 [MIT](licenses/MIT.txt) 许可证。
-补丁基于 [MIT](licenses/MIT.txt) 许可证，除非在补丁顶部注释中另有说明。
-二进制文件基于 [GPL-3.0](licenses/GPL-3.0.txt) 许可证。
-
-另请参阅 [PaperMC/Paper](https://github.com/PaperMC/Paper) 和 [PaperMC/paperweight](https://github.com/PaperMC/paperweight) 了解本项目使用的一些材料的许可证。
-
-## 📜 致谢
 Leaf 根据其上游项目及其他材料，采用多种开源许可证授权，
 
 请参阅 [LICENSE.md](../../LICENSE.md) 获取完整的许可信息。
+
+## 📜 致谢
+感谢以下项目。Leaf 包含了一些取自这些项目的补丁。<br>
+如果没有这些优秀的项目，Leaf 就不会变得如此出色。
 
 - [Gale](https://github.com/Dreeam-qwq/Gale) ([原始仓库](https://github.com/GaleMC/Gale))
 - [Pufferfish](https://github.com/pufferfish-gg/Pufferfish)

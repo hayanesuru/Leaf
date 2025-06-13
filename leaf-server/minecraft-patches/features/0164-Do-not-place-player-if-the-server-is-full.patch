@@ -6,7 +6,7 @@ Subject: [PATCH] Do not place player if the server is full
 Fix https://github.com/PaperMC/Paper/issues/10668
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index fae3c65d7411cd2c279dde27f8b8eafd45b657cf..34c5c2e3d6b0706cb91ec0171969cf81e94741a4 100644
+index fae3c65d7411cd2c279dde27f8b8eafd45b657cf..e11bc2fb26d259f0b35cbd94b4a3aed1a33ca0bc 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -342,6 +342,13 @@ public abstract class PlayerList {
@@ -14,7 +14,7 @@ index fae3c65d7411cd2c279dde27f8b8eafd45b657cf..34c5c2e3d6b0706cb91ec0171969cf81
          }
          // Gale end - MultiPaper - do not place player in world if kicked before being spawned in
 +        // Leaf start - Do not place player if the server is full - copied from canPlayerLogin
-+        if (org.dreeam.leaf.config.modules.fixes.DontPlacePlayerIfFull.enabled && this.realPlayers.size() >= this.maxPlayers && !(player.getBukkitEntity().hasPermission("purpur.joinfullserver") || this.canBypassPlayerLimit(gameProfile))) { // Purpur - Allow player join full server by permission
++        if (org.dreeam.leaf.config.modules.fixes.DontPlacePlayerIfFull.enabled && this.realPlayers.size() >= this.maxPlayers && !(player.getBukkitEntity().hasPermission("purpur.joinfullserver") || this.canBypassPlayerLimit(gameProfile))) { // Purpur - Allow player join full server by permission // Leaves - only real player
 +            connection.disconnect(io.papermc.paper.adventure.PaperAdventure.asVanilla(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(org.spigotmc.SpigotConfig.serverFullMessage)));
 +            //playerconnection.disconnect(io.papermc.paper.adventure.PaperAdventure.asVanilla(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(org.spigotmc.SpigotConfig.serverFullMessage)), org.bukkit.event.player.PlayerKickEvent.Cause.TIMEOUT);
 +            return;

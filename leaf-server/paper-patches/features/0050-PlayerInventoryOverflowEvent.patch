@@ -5,10 +5,10 @@ Subject: [PATCH] PlayerInventoryOverflowEvent
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
-index 19180c08f41db939c1a9f0caeb62e5beb1117f69..9b5c8c4c39657c18e67ad654bd0e5a30c09232c6 100644
+index 19180c08f41db939c1a9f0caeb62e5beb1117f69..aff8d16b17992f3228eb9fe8f2bd01d2d7aeea54 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
-@@ -340,9 +340,49 @@ public class CraftInventory implements Inventory {
+@@ -340,9 +340,48 @@ public class CraftInventory implements Inventory {
                  }
              }
          }
@@ -46,7 +46,6 @@ index 19180c08f41db939c1a9f0caeb62e5beb1117f69..9b5c8c4c39657c18e67ad654bd0e5a30
 +                        org.dreeam.leaf.event.player.PlayerInventoryOverflowEvent.isListeningInvOverflowCached = 1;
 +                        return true;
 +                    }
-+                    ;
 +                }
 +            }
 +        }
