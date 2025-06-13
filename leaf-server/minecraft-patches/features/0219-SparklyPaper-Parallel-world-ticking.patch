@@ -992,10 +992,10 @@ index c4721eb0efe34f5e313bc890b4e960144eca4fe1..9dd3187fd968ab95e9d55b4c8cc74e78
          this.containerId = containerId;
      }
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index d1c8b4a2a32d49d90f2f2aa460915d319a781535..aed9baa4e0f01e8844a774ab8d0bc08acd3c5271 100644
+index 07f1b27116baf2a06e6cd4eeaa8639e166fb362d..1a5f65a32882aa43828305113f35a9cdb0bdb870 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -411,8 +411,8 @@ public final class ItemStack implements DataComponentHolder, net.caffeinemc.mods
+@@ -406,8 +406,8 @@ public final class ItemStack implements DataComponentHolder {
              if (interactionResult.consumesAction() && serverLevel.captureTreeGeneration && !serverLevel.capturedBlockStates.isEmpty()) {
                  serverLevel.captureTreeGeneration = false;
                  org.bukkit.Location location = org.bukkit.craftbukkit.util.CraftLocation.toBukkit(clickedPos, serverLevel.getWorld());

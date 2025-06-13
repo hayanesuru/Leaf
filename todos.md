@@ -9,4 +9,4 @@
 # 1.21.5
 - [ ] Remove stream in Inventory and check new changes
 - [ ] Check SparklyPaper's mapitem update skip
-- [ ] Update from Leaf 1.21.4 (curr commit: `ccab3256c296857eeacd4d0c23f2e1b8aae3b36c`)
+- [ ] Update from Leaf 1.21.4 (curr commit: `03de21f0f4c0aa696d052113990ca9ee6884be0e`)

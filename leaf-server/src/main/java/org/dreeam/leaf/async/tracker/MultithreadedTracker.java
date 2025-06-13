@@ -46,7 +46,8 @@ public class MultithreadedTracker {
                 getRejectedPolicy()
             );
         } else {
-            throw new IllegalStateException();
+            // Temp no-op
+            //throw new IllegalStateException();
         }
     }
 
@@ -129,13 +130,13 @@ public class MultithreadedTracker {
     // Original ChunkMap#newTrackerTick of Paper
     // Just for diff usage for future update
     private static void tickOriginal(ServerLevel level) {
-        final ServerEntityLookup entityLookup = (ServerEntityLookup) ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemServerLevel) level).moonrise$getEntityLookup();
+        final ca.spottedleaf.moonrise.patches.chunk_system.level.entity.server.ServerEntityLookup entityLookup = (ca.spottedleaf.moonrise.patches.chunk_system.level.entity.server.ServerEntityLookup) ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemServerLevel) level).moonrise$getEntityLookup();
 
-        final ReferenceList<Entity> trackerEntities = entityLookup.trackerEntities;
+        final ca.spottedleaf.moonrise.common.list.ReferenceList<net.minecraft.world.entity.Entity> trackerEntities = entityLookup.trackerEntities;
         final Entity[] trackerEntitiesRaw = trackerEntities.getRawDataUnchecked();
         for (int i = 0, len = trackerEntities.size(); i < len; ++i) {
             final Entity entity = trackerEntitiesRaw[i];
-            final ChunkMap.TrackedEntity tracker = ((EntityTrackerEntity) entity).moonrise$getTrackedEntity();
+            final ChunkMap.TrackedEntity tracker = ((ca.spottedleaf.moonrise.patches.entity_tracker.EntityTrackerEntity) entity).moonrise$getTrackedEntity();
             if (tracker == null) {
                 continue;
             }

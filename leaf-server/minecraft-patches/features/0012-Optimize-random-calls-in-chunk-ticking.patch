@@ -49,10 +49,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 4167b46148fc370f20b35c2a261e38c0698855d4..52cef9fed4a68d16d89eabacbad073ead0685972 100644
+index 5005ad97fe4830c6563bca50a77a6abd36c984df..3d7d336c2043b533012ee390e6da02ac4f64e1f2 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -499,6 +499,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -64,7 +64,7 @@ index 4167b46148fc370f20b35c2a261e38c0698855d4..52cef9fed4a68d16d89eabacbad073ea
                  this.tickChunks(l); // Gale - Purpur - remove vanilla profiler
              }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 3941d15753aef952ad1fd5b5f96cb810f4f251e3..06439db58ecec0ead6c0a4e30357a9a3b3ebd120 100644
+index 28377b1d568e70f4ff1e5a6eea39e7fb9e1233e7..606dee544c669dcaa0eb02808c5786545b5519eb 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -879,13 +879,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

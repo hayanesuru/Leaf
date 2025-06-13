@@ -41,23 +41,3 @@ index 2d24d03bbdb5ee0d862cbfff2219f58afffafe12..703bf9c2a56b262e2719a1787584de53
      }
  
      protected boolean addEntity(final Entity entity, final boolean fromDisk, final boolean event) {
-diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index e1a722c3ec74c0967d089ad469d7b3305bf66195..74794efea55ce1874730c8a2de5fdd9277065d10 100644
---- a/net/minecraft/world/entity/Entity.java
-+++ b/net/minecraft/world/entity/Entity.java
-@@ -374,6 +374,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
-     // Paper end
-     // Paper start - rewrite chunk system
-     private final boolean isHardColliding = this.moonrise$isHardCollidingUncached();
-+    @org.jetbrains.annotations.Nullable // Leaf - optimize getEntityStatus
-     private net.minecraft.server.level.FullChunkStatus chunkStatus;
-     private ca.spottedleaf.moonrise.patches.chunk_system.level.chunk.ChunkData chunkData;
-     private int sectionX = Integer.MIN_VALUE;
-@@ -387,6 +388,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
-     }
- 
-     @Override
-+    @org.jetbrains.annotations.Nullable // Leaf - optimize getEntityStatus
-     public final net.minecraft.server.level.FullChunkStatus moonrise$getChunkStatus() {
-         return this.chunkStatus;
-     }

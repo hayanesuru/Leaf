@@ -28,10 +28,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 diff --git a/net/minecraft/world/entity/monster/EnderMan.java b/net/minecraft/world/entity/monster/EnderMan.java
-index ab7f7846d3fc0252c6f71277b3e67d7a785a96b5..6c2bfad0ad7a5c20cd6eeba9fdc713c85c357ef4 100644
+index 5ae08be75ca01924fc78bdd8d6bb6747ddc21aea..84a9dbf5898fb519fad5fdc3ea1d9a2054d1e0eb 100644
 --- a/net/minecraft/world/entity/monster/EnderMan.java
 +++ b/net/minecraft/world/entity/monster/EnderMan.java
 @@ -300,11 +300,19 @@ public class EnderMan extends Monster implements NeutralMob {

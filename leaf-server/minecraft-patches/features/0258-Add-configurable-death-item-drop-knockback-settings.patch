@@ -18,10 +18,10 @@ index 0c81dca5905c2d4c166661dc3473b0c1e9aa5265..373059fcccdab0a918aa1d1a4a613fb6
              }
          }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 0f717ee9e977ece4f30e66d9d1caf6bb7beecda7..620ddc31b4ff91713aaa6f4c54998ea66670951d 100644
+index d19d253ce100aee5e2a12eeb4ea50065760ed702..ae4d93515a28fb97e7abdfc06ce9ae31ec986fa8 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -4088,9 +4088,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -4083,9 +4083,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
              }
  
              if (randomizeMotion) {

@@ -28,7 +28,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
 index 2ebee223085fe7926c7f3e555df19ae69f36157e..602ed4c5556723e54a80ccc3481af31109d5a0a6 100644
@@ -44,7 +44,7 @@ index 2ebee223085fe7926c7f3e555df19ae69f36157e..602ed4c5556723e54a80ccc3481af311
              }
              if (entity instanceof final Mob mob && mob.getTarget() != null) {
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 07df62b79a4ee9c9da77cac8615fad5463628204..bb687f048be9edfde75d13354dd3265593e83e9f 100644
+index 79f499fea47a9c675da1aed718c713290bc008d0..f019571b4b6b5e2d1953030911449a02e459591c 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -2083,6 +2083,21 @@ public abstract class LivingEntity extends Entity implements Attackable {
