@@ -23,7 +23,7 @@ and, in my opinion, worth the low risk of minor mob-spawning-related
 inconsistencies.
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java b/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
-index ece6db7b9a0dfd535141c0c756947c4898140503..13df153d7b63a5c36a2fd14d3292e7eb32a394df 100644
+index ece6db7b9a0dfd535141c0c756947c4898140503..82b84d72bf1b3c43d734fe381b67377de5f30187 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
 @@ -11,7 +11,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
@@ -88,7 +88,7 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..13df153d7b63a5c36a2fd14d3292e7eb
                  this.defrag();
              }
              //this.check();
-@@ -169,14 +172,16 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -169,14 +172,17 @@ public final class IteratorSafeOrderedReferenceSet<E> {
      }
  
      private void defrag() {
@@ -98,6 +98,7 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..13df153d7b63a5c36a2fd14d3292e7eb
 +        if (firstInvalidIndex < 0) {
              return; // nothing to do
          }
++        // Leaf end - Pufferfish - Async mob spawning
  
          if (this.indexMap.isEmpty()) {
              Arrays.fill(this.listElements, 0, this.listSize, null);
@@ -107,7 +108,7 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..13df153d7b63a5c36a2fd14d3292e7eb
              //this.check();
              return;
          }
-@@ -186,11 +191,11 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -186,11 +192,11 @@ public final class IteratorSafeOrderedReferenceSet<E> {
          int lastValidIndex;
          java.util.Iterator<Reference2IntMap.Entry<E>> iterator;
  
@@ -121,7 +122,7 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..13df153d7b63a5c36a2fd14d3292e7eb
              final E key = backingArray[lastValidIndex - 1];
              iterator = this.indexMap.reference2IntEntrySet().fastIterator(new Reference2IntMap.Entry<E>() {
                  @Override
-@@ -221,7 +226,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -221,7 +227,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
          // cleanup end
          Arrays.fill(backingArray, lastValidIndex, this.listSize, null);
          this.listSize = lastValidIndex;
@@ -130,7 +131,7 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..13df153d7b63a5c36a2fd14d3292e7eb
          //this.check();
      }
  
-@@ -235,7 +240,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -235,7 +241,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
      }
  
      public IteratorSafeOrderedReferenceSet.Iterator<E> iterator(final int flags) {
@@ -139,7 +140,7 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..13df153d7b63a5c36a2fd14d3292e7eb
          return new BaseIterator<>(this, true, (flags & ITERATOR_FLAG_SEE_ADDITIONS) != 0 ? Integer.MAX_VALUE : this.listSize);
      }
  
-@@ -322,7 +327,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -322,7 +328,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
              }
              this.lastReturned = null;
              this.finished = true;
