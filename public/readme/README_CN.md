@@ -2,11 +2,11 @@
 <div align="center">
 
 [![下载](https://img.shields.io/badge/releases-blue?label=%e4%b8%8b%e8%bd%bd&style=for-the-badge&colorA=19201a&colorB=298046)](https://www.leafmc.one/zh/download)⠀
-[![Github Actions 构建](https://img.shields.io/github/actions/workflow/status/Winds-Studio/Leaf/build-1214.yml?label=%e6%9e%84%e5%bb%ba&style=for-the-badge&colorA=19201a&colorB=298046)](https://github.com/Winds-Studio/Leaf/actions)⠀
+[![Github Actions 构建](https://img.shields.io/github/actions/workflow/status/Winds-Studio/Leaf/build-1215.yml?label=%e6%9e%84%e5%bb%ba&style=for-the-badge&colorA=19201a&colorB=298046)](https://github.com/Winds-Studio/Leaf/actions)⠀
 ![QQ](https://img.shields.io/badge/619278377-blue?label=QQ%e7%be%a4&style=for-the-badge&colorA=19201a&colorB=298046)
 [![文档](https://img.shields.io/badge/leafmc.one/zh/docs-blue?label=%e6%96%87%e6%a1%a3&style=for-the-badge&colorA=19201a&colorB=298046)](https://www.leafmc.one/zh/docs)
 
-**Leaf** 是一个基于 [Paper](https://papermc.io/) 的分支，专为高自定义和高性能而设计，基于 [Gale](https://github.com/Dreeam-qwq/Gale) 之上，并融合了其他核心的优化和修复。
+**Leaf** 是一个基于 [Paper](https://papermc.io/) 的分支，专为高自定义和高性能而设计。
 </div>
 
 > [!WARNING]
@@ -15,7 +15,7 @@
 [English](../../README.md) | **中文**
 
 ## 🍃 特点
-- **基于 [Gale](https://github.com/Dreeam-qwq/Gale)**，以获得更好的性能
+- **基于 [Paper](https://papermc.io/)**，以获得更好的性能和灵活的 API
 - **异步**寻路、生物生成和实体追踪
 - **大量优化**融合自 [其他核心](#-致谢) 和我们自己的的补丁
 - **完全兼容** Spigot 和 Paper 插件
@@ -65,7 +65,7 @@
 <dependency>
     <groupId>cn.dreeam.leaf</groupId>
     <artifactId>leaf-api</artifactId>
-    <version>1.21.4-R0.1-SNAPSHOT</version>
+    <version>1.21.5-R0.1-SNAPSHOT</version>
     <scope>provided</scope>
 </dependency>
 ```
@@ -78,7 +78,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("cn.dreeam.leaf:leaf-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly("cn.dreeam.leaf:leaf-api:1.21.5-R0.1-SNAPSHOT")
 }
 
 java {
