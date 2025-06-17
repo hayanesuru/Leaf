@@ -45,6 +45,40 @@ index 2723d5377567241921fef61952e474c1c0ee9bbf..548a33b857aef542279255368031a095
          Pair<BlockPos, Holder<Structure>> pair = level.getChunkSource().getGenerator().findNearestMapStructure(level, holderSet, blockPos, 100, false);
          stopwatch.stop();
          if (pair == null) {
+diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
+index 6d5a15122079f2d1568ceb7086db21ad454f58e6..ecab2befa1f2f993ea4b4d088529745c2a37b73d 100644
+--- a/net/minecraft/server/level/ServerChunkCache.java
++++ b/net/minecraft/server/level/ServerChunkCache.java
+@@ -848,14 +848,25 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+ 
+         @Override
+         public boolean pollTask() {
++            // Leaf start - Async Locator
+             // Paper start - rewrite chunk system
+-            final ServerChunkCache serverChunkCache = ServerChunkCache.this;
+-            if (serverChunkCache.runDistanceManagerUpdates()) {
+-                return true;
++            java.util.function.Supplier<Boolean> supplier = () -> {
++                final ServerChunkCache serverChunkCache = ServerChunkCache.this;
++                if (serverChunkCache.runDistanceManagerUpdates()) {
++                    return true;
++                } else {
++                    return super.pollTask() | ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemServerLevel) serverChunkCache.level).moonrise$getChunkTaskScheduler().executeMainThreadTask();
++                }
++            };
++            if (org.dreeam.leaf.config.modules.async.AsyncLocator.enabled && Thread.currentThread() instanceof org.dreeam.leaf.async.locate.AsyncLocator.AsyncLocatorThread) {
++                return MinecraftServer.getServer().scheduleWithResult((java.util.concurrent.CompletableFuture<Boolean> future) -> {
++                    future.complete(supplier.get());
++                }).join();
+             } else {
+-                return super.pollTask() | ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemServerLevel)serverChunkCache.level).moonrise$getChunkTaskScheduler().executeMainThreadTask();
++                return supplier.get();
+             }
+             // Paper end - rewrite chunk system
++            // Leaf end - Async Locator
+         }
+     }
+ }
 diff --git a/net/minecraft/world/entity/animal/Dolphin.java b/net/minecraft/world/entity/animal/Dolphin.java
 index 87ba416479df56bad5d13c01e96e92e45b7802a3..2508645b62e7f935dee00fe87b3a6446dbd22cf2 100644
 --- a/net/minecraft/world/entity/animal/Dolphin.java
