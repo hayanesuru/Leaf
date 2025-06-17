@@ -123,15 +123,23 @@ Leaf 根据其上游项目及其他材料，采用多种开源许可证授权，
 </details>
 
 ## 🔥 特别感谢
-<a href="https://cloud.swordsman.com.cn/"><img src="../image/JiankeServer.jpg" alt="Jianke Cloud Host" align="left" hspace="8"></a>
-剑客云 | cloud of swordsman
+[![Jianke Cloud Host](../image/JiankeServer.jpg)](https://cloud.swordsman.com.cn/?i8ab42c) \
+cloud of swordsman | 剑客云
 
 如果你想找一个低价高性能、低延迟的云服务商，剑客云是个不错的选择！你可以在 [这里](https://cloud.swordsman.com.cn/?i8ab42c) 注册。
 
 If you want to find a cheaper, high performance, stable, lower latency host, then cloud of swordsman is a good choice! Registers and purchases in [here](https://cloud.swordsman.com.cn/?i8ab42c).
 
 ---
-![YourKit](https://www.yourkit.com/images/yklogo.png)
+[![雨云](../image/RainYun.jpg)](https://www.rainyun.com/NzE2NTc1_) \
+雨云
+
+国际多线路选择，配套云存储 — 购买服务后七天内不满意可以申请退订，强大的技术支持团队和高在线率客服。雨云云服务器，用稳定和性价比，助力您快速上云。点击前往 [雨云](https://www.rainyun.com/NzE2NTc1_)。
+
+Global multi-line routing with cloud storage. Refund available within 7 days. Reliable uptime and expert support. RainYun — stable, cost-effective, and ready for fast cloud deployment. Visit [RainYun]([雨云](https://www.rainyun.com/NzE2NTc1_))
+
+---
+![YourKit](https://www.yourkit.com/images/yklogo.png) \
 
 YourKit 通过创新和智能的工具支持开源项目，用于监控和分析 Java 和 .NET 应用程序。
 YourKit 是 [YourKit Java Profiler](https://www.yourkit.com/java/profiler/)、
