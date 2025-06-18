@@ -100,7 +100,7 @@ index 4535858701b2bb232b9d2feb2af6551526232ddc..e65c62dbe4c1560ae153e4c4344e9194
 -    // Paper end - detailed watchdog information
  }
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index fc86e900e41305287a6cc6d766184c6e28d6189b..6fd7e881bcfc7df2e4ac7abb99504c8194470e96 100644
+index 9286312e11b98e4873f1ca13cf210feadcd6a2d7..014fb76ad0e57048d036659bd89e628fd81a0190 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -622,8 +622,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -117,10 +117,10 @@ index fc86e900e41305287a6cc6d766184c6e28d6189b..6fd7e881bcfc7df2e4ac7abb99504c81
  
              for (LevelChunk levelChunk : list) {
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 224a032e8992f104ad9380182ed67c316c93274e..7d34862d15360940e12b9c0f131ecffdb2a0a146 100644
+index 07f6da45a88e1630ca4249bb134fce1f95d2c39c..9fbaafaf5df6e003742cdea55da732cc7e602866 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1508,13 +1508,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1510,13 +1510,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      // Paper end - log detailed entity tick information
  
      public void tickNonPassenger(Entity entity) {
@@ -134,7 +134,7 @@ index 224a032e8992f104ad9380182ed67c316c93274e..7d34862d15360940e12b9c0f131ecffd
          entity.setOldPosAndRot();
          entity.tickCount++;
          entity.totalEntityAge++; // Paper - age-like counter for all entities
-@@ -1527,13 +1521,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1529,13 +1523,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          for (Entity entity1 : entity.getPassengers()) {
              this.tickPassenger(entity, entity1, isActive); // Paper - EAR 2
          }
