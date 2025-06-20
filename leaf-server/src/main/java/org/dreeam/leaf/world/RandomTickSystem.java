@@ -85,7 +85,7 @@ public final class RandomTickSystem {
             if (chunk4 != null) tickBlock(world, chunk4, random);
         }
         for (k = queue.size(); j < k; j++) {
-            LevelChunk chunk = getChunk(world, queueRaw[j]);
+            final LevelChunk chunk = getChunk(world, queueRaw[j]);
             if (chunk != null) tickBlock(world, chunk, random);
         }
 
@@ -100,7 +100,11 @@ public final class RandomTickSystem {
     }
 
     private static void tickBlock(ServerLevel world, LevelChunk chunk, RandomSource random) {
-        OptionalLong optionalPos = chunk.leaf$getTickingPos(random.nextInt(chunk.leaf$tickingBlocksCount()));
+        int count = chunk.leaf$tickingBlocksCount();
+        if (count == 0) {
+            return;
+        }
+        OptionalLong optionalPos = chunk.leaf$getTickingPos(random.nextInt(count));
         if (optionalPos.isEmpty()) {
             return;
         }
