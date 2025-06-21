@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Minecraft Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: aa289e2c6ff801551fb2f585269ccffed3a154fa
+Commit: 61d7f5590e79909caba55e9f00cefdd51006d015
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "net/minecraft/CrashReport.java.patch"
@@ -38,6 +38,8 @@ Patches listed below are removed in this patch, They exists in Gale or Leaf:
     - MC-238526 - Fix spawner not spawning water animals correctly
 * "net/minecraft/world/entity/projectile/AbstractArrow.java.patch"
     - Arrows should not reset despawn counter
+* "net/minecraft/world/inventory/AbstractContainerMenu.java.patch"
+    - PaperPR#12654
 * "net/minecraft/world/level/chunk/storage/RegionFileStorage.java.patch"
     - Rebrand
 
@@ -264,6 +266,19 @@ index fafbc8a9229432c4fb290a54cf453cd0c0c7b3b6..b0a86aac9603e72062f59dbe67c88ed8
              @Override
              public boolean isClientAuthoritative() {
                  return false;
+diff --git a/net/minecraft/gametest/framework/TestCommand.java b/net/minecraft/gametest/framework/TestCommand.java
+index 1709f81a3d5fba97ca0e0a5ce9774bf151d7cb7d..5c2b36b316c5c1ec2332551ac134b9ab67f2f223 100644
+--- a/net/minecraft/gametest/framework/TestCommand.java
++++ b/net/minecraft/gametest/framework/TestCommand.java
+@@ -455,7 +455,7 @@ public class TestCommand {
+                             )
+                     )
+             );
+-        if (SharedConstants.IS_RUNNING_IN_IDE) {
++        if (org.purpurmc.purpur.PurpurConfig.registerMinecraftDebugCommands || SharedConstants.IS_RUNNING_IN_IDE) { // Purpur - register minecraft debug commands
+             literalArgumentBuilder = literalArgumentBuilder.then(
+                     Commands.literal("export")
+                         .then(
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
 index 4ed9611994c5c8da01fede690197527c5b3a5731..00a82873d226f113278632a53c0faca420dd67d4 100644
 --- a/net/minecraft/network/Connection.java
@@ -21810,14 +21825,15 @@ index 0000000000000000000000000000000000000000..922e48799c43ca322a8f550c98a26e1e
 +}
 diff --git a/org/purpurmc/purpur/entity/PurpurStoredBee.java b/org/purpurmc/purpur/entity/PurpurStoredBee.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..1cd79edbe87d9109bc132e64f6840981aaaab110
+index 0000000000000000000000000000000000000000..800cc8b2204c0ef885ff65005f6850749aaf445b
 --- /dev/null
 +++ b/org/purpurmc/purpur/entity/PurpurStoredBee.java
-@@ -0,0 +1,104 @@
+@@ -0,0 +1,105 @@
 +package org.purpurmc.purpur.entity;
 +
 +import io.papermc.paper.adventure.PaperAdventure;
 +import net.kyori.adventure.text.Component;
++import net.minecraft.core.RegistryAccess;
 +import net.minecraft.nbt.CompoundTag;
 +import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 +import net.minecraft.world.level.block.entity.BlockEntity;
@@ -21847,7 +21863,7 @@ index 0000000000000000000000000000000000000000..1cd79edbe87d9109bc132e64f6840981
 +        this.blockStorage = blockStorage;
 +
 +        CompoundTag customData = handle.occupant.entityData().copyTag();
-+        net.minecraft.network.chat.Component customNameMinecraft = BlockEntity.parseCustomNameSafe(customData.get("CustomName"), ((CraftWorld) blockStorage.getWorld()).getHandle().registryAccess());
++        net.minecraft.network.chat.Component customNameMinecraft = BlockEntity.parseCustomNameSafe(customData.get("CustomName"), RegistryAccess.EMPTY);
 +        this.customName = customNameMinecraft == null ? null : PaperAdventure.asAdventure(customNameMinecraft);
 +
 +        if (customData.get("BukkitValues") instanceof CompoundTag compoundTag) {
@@ -21914,7 +21930,7 @@ index 0000000000000000000000000000000000000000..1cd79edbe87d9109bc132e64f6840981
 +        if(customName == null) {
 +            handle.occupant.entityData().copyTag().remove("CustomName");
 +        } else {
-+            handle.occupant.entityData().copyTag().putString("CustomName", net.minecraft.network.chat.Component.Serializer.toJson(PaperAdventure.asVanilla(customName), ((CraftWorld) blockStorage.getWorld()).getHandle().registryAccess()));
++            handle.occupant.entityData().copyTag().putString("CustomName", net.minecraft.network.chat.Component.Serializer.toJson(PaperAdventure.asVanilla(customName), RegistryAccess.EMPTY));
 +        }
 +    }
 +}

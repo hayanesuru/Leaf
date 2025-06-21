@@ -22,14 +22,14 @@ index 107705db2d82b7c191e5e625ec888e0bc3b03831..77a58fc7c173b1724d44b0eeaf23b4a1
  
      /**
 diff --git a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
-index cfe41c0a67c8d729b6bd23b0cfa32db3c9db9f74..9f167a9cb4a93a79b8ed709b61214ce0138a875d 100644
+index 23e3fcc8c2d6e0555448295199eee186de619042..502c51b3ae0a05569540c09b4c51dad1438da36e 100644
 --- a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
-@@ -74,7 +74,19 @@ public class LibraryLoader {
+@@ -88,7 +88,19 @@ public class LibraryLoader {
          session.setSystemProperties(System.getProperties());
          session.setReadOnly();
  
--        this.repositories = repository.newResolutionRepositories(session, Arrays.asList(new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2").build()));
+-        this.repositories = repository.newResolutionRepositories(session, getRepositories());
 +        // Leaf start - Configurable LibraryLoader maven repos
 +        this.repositories = repository.newResolutionRepositories(
 +                session,
