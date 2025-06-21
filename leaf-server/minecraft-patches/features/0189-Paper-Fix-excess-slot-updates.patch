@@ -1,12 +1,16 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Taiyou06 <kaandindar21@gmail.com>
-Date: Wed, 11 Jun 2025 20:51:36 +0200
-Subject: [PATCH] Paper: Fix excess slot updates / inventory state id desync
+From: AJ Ferguson <fergusonjva@gmail.com>
+Date: Mon, 6 Jan 2025 20:31:00 +1100
+Subject: [PATCH] Paper: Fix excess slot updates
 
-Original Patch: https://github.com/PaperMC/Paper/pull/12654
+Original license: GPLv3
+Original project: https://github.com/PaperMC/Paper
+Paper pull request: https://github.com/PaperMC/Paper/pull/12654
+
+https://github.com/PaperMC/Paper/commit/e714de636543d61fcd3682705484c8a15f4f3ca6
 
 diff --git a/net/minecraft/world/inventory/AbstractContainerMenu.java b/net/minecraft/world/inventory/AbstractContainerMenu.java
-index ff2ff95ec9d94e2e31e8174196b384c37d56f38a..2a49a0bdeb61c4fadddc241c8ebca908959d7e9c 100644
+index ff2ff95ec9d94e2e31e8174196b384c37d56f38a..3ffc454609adc82c6a4daba68efac129bee38eb5 100644
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
 @@ -553,7 +553,7 @@ public abstract class AbstractContainerMenu {
@@ -14,7 +18,7 @@ index ff2ff95ec9d94e2e31e8174196b384c37d56f38a..2a49a0bdeb61c4fadddc241c8ebca908
                  slot.setChanged();
                  // CraftBukkit start - Make sure the client has the right slot contents
 -                if (player instanceof ServerPlayer serverPlayer && slot.getMaxStackSize() != 64) {
-+                if (player instanceof ServerPlayer serverPlayer && slot.getMaxStackSize() != net.minecraft.world.Container.MAX_STACK) {
++                if (player instanceof ServerPlayer serverPlayer && slot.getMaxStackSize() != Container.MAX_STACK) { // Paper - craftbukkkit - Fix excess slot updates
                      serverPlayer.connection.send(new ClientboundContainerSetSlotPacket(this.containerId, this.incrementStateId(), slot.index, slot.getItem()));
                      // Updating a crafting inventory makes the client reset the result slot, have to send it again
                      if (this.getBukkitView().getType() == org.bukkit.event.inventory.InventoryType.WORKBENCH || this.getBukkitView().getType() == org.bukkit.event.inventory.InventoryType.CRAFTING) {
