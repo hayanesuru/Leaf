@@ -1295,18 +1295,10 @@ index 16ec032d84f128fc44a836843fafef303f52b699..e3bb4c5850e25405a243aaf57e2e8b1c
 +    // Leaf end - Async target finding
  }
 diff --git a/net/minecraft/world/entity/ai/goal/TemptGoal.java b/net/minecraft/world/entity/ai/goal/TemptGoal.java
-index f88f618d34fb343b31de3af1a875d6633703df71..dc90441edfa1cdd5c5e218811b0dc595e63f4e9c 100644
+index f88f618d34fb343b31de3af1a875d6633703df71..4725e5da804e6a796611c8203d08bc171ef1c344 100644
 --- a/net/minecraft/world/entity/ai/goal/TemptGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/TemptGoal.java
-@@ -7,6 +7,7 @@ import net.minecraft.world.entity.LivingEntity;
- import net.minecraft.world.entity.PathfinderMob;
- import net.minecraft.world.entity.ai.attributes.Attributes;
- import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-+import net.minecraft.world.entity.animal.horse.Llama;
- import net.minecraft.world.entity.player.Player;
- import net.minecraft.world.item.ItemStack;
- 
-@@ -36,14 +37,43 @@ public class TemptGoal extends Goal {
+@@ -36,14 +36,43 @@ public class TemptGoal extends Goal {
          this.targetingConditions = TEMPT_TARGETING.copy().selector((entity, level) -> this.shouldFollow(entity));
      }
  
