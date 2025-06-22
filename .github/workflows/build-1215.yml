@@ -134,7 +134,7 @@ jobs:
             BRANCH="${{ github.ref_name }}"
             REPO_DIR="/root/Leaf-${BRANCH//\//-}"  # Replace slashes with dashes to avoid directory issues
 
-            [ -d "$REPO_DIR/.git" ] && cd "$REPO_DIR" && git fetch origin && git checkout "$BRANCH" && git reset --hard "origin/$BRANCH" || git clone --branch "$BRANCH" https://github.com/Winds-Studio/Leaf "$REPO_DIR"
+            [ -d "$REPO_DIR/.git" ] && cd "$REPO_DIR" && git fetch origin && git checkout "$BRANCH" && git reset --hard "origin/$BRANCH" || git clone --branch "$BRANCH" --depth 1 https://github.com/Winds-Studio/Leaf "$REPO_DIR"
 
             # Proceed to insert the build into the API
             cd ~/api/cli
