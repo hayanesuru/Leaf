@@ -124,7 +124,7 @@ Leaf 根据其上游项目及其他材料，采用多种开源许可证授权，
 
 ## 🔥 特别感谢
 [![Jianke Cloud Host](../image/JiankeServer.jpg)](https://cloud.swordsman.com.cn/?i8ab42c) \
-cloud of swordsman | 剑客云
+剑客云 | cloud of swordsman
 
 如果你想找一个低价高性能、低延迟的云服务商，剑客云是个不错的选择！你可以在 [这里](https://cloud.swordsman.com.cn/?i8ab42c) 注册。
 
@@ -132,7 +132,7 @@ If you want to find a cheaper, high performance, stable, lower latency host, the
 
 ---
 [![雨云](../image/RainYun.jpg)](https://www.rainyun.com/NzE2NTc1_) \
-雨云
+雨云 | RainYun
 
 国际多线路选择，配套云存储 — 购买服务后七天内不满意可以申请退订，强大的技术支持团队和高在线率客服。雨云云服务器，用稳定和性价比，助力您快速上云。点击前往 [雨云](https://www.rainyun.com/NzE2NTc1_)。
 
