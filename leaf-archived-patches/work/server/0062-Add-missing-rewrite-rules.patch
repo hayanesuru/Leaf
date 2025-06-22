@@ -3,6 +3,15 @@ From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Tue, 9 Nov 2077 00:00:00 +0800
 Subject: [PATCH] Add missing rewrite rules
 
+TODO: needs to check and fix it.
+The new added rewriting rules cause incompatible with Nova plugin (The call Registry<*>::freeze in RegistryEventsPatch#transform)
+It breaks kotlin reflection, makes it can't get all members of Registry class and its parent interfaces.
+to validate using Nova plugin:
+```
+println(net.minecraft.core.Registry::class.members.size)
+println(net.minecraft.core.Registry::class.java.methods.size)
+```
+
 Tracking PR: https://github.com/PaperMC/asm-utils/pull/48
 
 diff --git a/src/main/java/io/papermc/paper/pluginremap/reflect/ReflectionRemapper.java b/src/main/java/io/papermc/paper/pluginremap/reflect/ReflectionRemapper.java
