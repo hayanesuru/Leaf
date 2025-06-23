@@ -5,17 +5,17 @@ Subject: [PATCH] optimize random tick
 
 
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index fc86e900e41305287a6cc6d766184c6e28d6189b..9286312e11b98e4873f1ca13cf210feadcd6a2d7 100644
+index fc86e900e41305287a6cc6d766184c6e28d6189b..3f3450e79f768f9c9fa4f2c0fe485b7179419680 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -632,6 +632,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-         } finally {
-             list.clear();
+@@ -634,6 +634,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
          }
-+        this.level.randomTickSystem.tick(this.level); // Leaf - optimize random tick
  
          this.iterateTickingChunksFaster(); // Paper - chunk tick iteration optimisations
++        this.level.randomTickSystem.tick(this.level); // Leaf - optimize random tick
          if (_boolean) {
+             this.level.tickCustomSpawners(this.spawnEnemies, this.spawnFriendlies);
+         }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
 index 224a032e8992f104ad9380182ed67c316c93274e..07f6da45a88e1630ca4249bb134fce1f95d2c39c 100644
 --- a/net/minecraft/server/level/ServerLevel.java
