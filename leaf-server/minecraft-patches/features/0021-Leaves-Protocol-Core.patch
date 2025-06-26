@@ -3,13 +3,10 @@ From: violetc <58360096+s-yh-china@users.noreply.github.com>
 Date: Tue, 26 Sep 2023 19:00:41 +0800
 Subject: [PATCH] Leaves: Protocol Core
 
-TODO: Check whether Leaves's Return-nether-portal-fix.patch improves performance
-and change store way to sql maybe?
-
 Original license: GPLv3
 Original project: https://github.com/LeavesMC/Leaves
 
-Commit: 99b3aafce1f162c68a771fe56d77f33648636b7d
+Commit: f553c53e4230aa032e54a69b6479f1959ed24a60
 
 diff --git a/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java b/net/minecraft/network/protocol/common/custom/CustomPacketPayload.java
 index fb263fa1f30a7dfcb7ec2656abfb38e5fe88eac9..7e19dfe90a63ff26f03b95891dacb7360bba5a3c 100644
