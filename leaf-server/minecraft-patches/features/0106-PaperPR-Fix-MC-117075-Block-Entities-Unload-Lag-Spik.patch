@@ -12,7 +12,7 @@ We replaced the `blockEntityTickers` list with a custom list based on fastutil's
 This is WAY FASTER than using `removeAll` with a list of entries to be removed, because we don't need to calculate the identity of each block entity to be removed, and we can jump directly to where the search should begin, giving a performance boost for small removals (because we don't need to loop thru the entire list to find what element should be removed) and a performance boost for big removals (no need to calculate the identity of each block entity).
 
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 53cabe7dabc83618c8941c95e95c5b7e23ee694e..7d3163802640449b6bdaa93595518d7d0f62488b 100644
+index 53cabe7dabc83618c8941c95e95c5b7e23ee694e..859c9cc198c3e17be7b761a91a7426f3a3a53c1c 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -113,7 +113,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -20,7 +20,7 @@ index 53cabe7dabc83618c8941c95e95c5b7e23ee694e..7d3163802640449b6bdaa93595518d7d
      public static final int MAX_ENTITY_SPAWN_Y = 20000000;
      public static final int MIN_ENTITY_SPAWN_Y = -20000000;
 -    public final List<TickingBlockEntity> blockEntityTickers = Lists.newArrayList(); // Paper - public
-+    public final org.dreeam.leaf.util.list.BlockEntityTickersList blockEntityTickers = new org.dreeam.leaf.util.list.BlockEntityTickersList(); // Paper - public // SparklyPaper - optimize block entity removals
++    public final List<TickingBlockEntity> blockEntityTickers = new org.dreeam.leaf.util.list.BlockEntityTickersList(); // Paper - public // SparklyPaper - optimize block entity removals
      protected final NeighborUpdater neighborUpdater;
      private final List<TickingBlockEntity> pendingBlockEntityTickers = Lists.newArrayList();
      private boolean tickingBlockEntities;
@@ -36,7 +36,7 @@ index 53cabe7dabc83618c8941c95e95c5b7e23ee694e..7d3163802640449b6bdaa93595518d7d
              // Spigot end
              if (tickingBlockEntity.isRemoved()) {
 -                toRemove.add(tickingBlockEntity); // Paper - Fix MC-117075; use removeAll
-+                this.blockEntityTickers.markAsRemoved(this.tileTickPosition); // toRemove.add(tickingBlockEntity); // SparklyPaper - optimize block entity removals // Paper - Fix MC-117075; use removeAll
++                ((org.dreeam.leaf.util.list.BlockEntityTickersList) this.blockEntityTickers).markAsRemoved(this.tileTickPosition); // toRemove.add(tickingBlockEntity); // SparklyPaper - optimize block entity removals // Paper - Fix MC-117075; use removeAll
              } else if (runsNormally && this.shouldTickBlocksAt(tickingBlockEntity.getPos())) {
                  tickingBlockEntity.tick();
                  // Paper start - rewrite chunk system
@@ -45,7 +45,7 @@ index 53cabe7dabc83618c8941c95e95c5b7e23ee694e..7d3163802640449b6bdaa93595518d7d
              }
          }
 -        this.blockEntityTickers.removeAll(toRemove); // Paper - Fix MC-117075
-+        this.blockEntityTickers.removeMarkedEntries(); // SparklyPaper - optimize block entity removals
++        ((org.dreeam.leaf.util.list.BlockEntityTickersList) this.blockEntityTickers).removeMarkedEntries(); // SparklyPaper - optimize block entity removals
  
          this.tickingBlockEntities = false;
          this.spigotConfig.currentPrimedTnt = 0; // Spigot
