@@ -20,7 +20,7 @@ subprojects {
     }
 
     repositories {
-        maven("https://maven.aliyun.com/repository/public")
+        mavenCentral()
         maven(paperMavenPublicUrl)
         maven(leafMavenPublicUrl)
         maven("https://repo.bsdevelopment.org/releases/") // Leaf - Leaf config - ConfigurationMaster-API
