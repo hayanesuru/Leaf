@@ -396,7 +396,7 @@ index 54910c2e1d6e6bb556e536fda060bd09402e04e8..72e871b8c7fee9b5cbd567e03baee80e
  
          // Gale start - Pufferfish - SIMD support
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 6d5a15122079f2d1568ceb7086db21ad454f58e6..9dd6205e1cdd2124ab9d91f0a1e344eb6aa1fb2e 100644
+index ecab2befa1f2f993ea4b4d088529745c2a37b73d..fc86e900e41305287a6cc6d766184c6e28d6189b 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -175,7 +175,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -694,7 +694,7 @@ index d507544efafe74ecaffd6a063eff152d349ec76a..bc955da0dff79262dace84d255f27b32
          // Paper end - Inventory close reason
          this.connection.send(new ClientboundContainerClosePacket(this.containerMenu.containerId));
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 411ccee65f5658347839ca7d0fffeedc1f2814ce..f581fe86fea41bb5ff8f93e3422548ae7693a868 100644
+index 75393b9cdd564e55ba173828c2f7b40498e8ecd7..96202ffdb73cb9d8c63351b4538c64645b91d21c 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -252,6 +252,8 @@ public abstract class PlayerList {

@@ -184,7 +184,7 @@
  }
 +// Leaf start - Bump Dependencies
 +repositories {
-+    mavenCentral()
++    maven("https://maven.aliyun.com/repository/public")
 +}
 +// Leaf end - Bump Dependencies
  tasks.check {

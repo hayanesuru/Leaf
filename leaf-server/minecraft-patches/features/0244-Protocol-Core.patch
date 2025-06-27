@@ -59,7 +59,7 @@ index 18f0d486c478087f404d8bb6cd840079e2c8d239..1a6f1c5f4cf13ee50bc8445845cbb973
          final byte[] data = discardedPayload.data();
          try {
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 08d956368ced372d5a5e03b74a7fff4c9dc43283..978f9c5c54278d3d2bbb51461ab4ae6fcdd14d26 100644
+index 65857e4799186b7166fb0023694dc2749a492546..1c1f24902575233109ea4122d68e1bb0bc0ace40 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -687,6 +687,7 @@ public abstract class PlayerList {
