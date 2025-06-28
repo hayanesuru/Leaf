@@ -92,7 +92,7 @@ index 373059fcccdab0a918aa1d1a4a613fb62fef8a18..7d0a1181ac64eabd54395cff8e1b9356
                  if (rounded > 0) {
                      this.awardStat(Stats.WALK_UNDER_WATER_ONE_CM, rounded);
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 3bba6cd29f85bec2e98ce97313f1158e2836c6b9..0cad980ff4198615621a4dacf07127be822cd935 100644
+index 3bba6cd29f85bec2e98ce97313f1158e2836c6b9..069a3a46bf2f699210234a4096642d1b6e82b5f1 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -268,7 +268,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -111,17 +111,18 @@ index 3bba6cd29f85bec2e98ce97313f1158e2836c6b9..0cad980ff4198615621a4dacf07127be
      public int invulnerableTime;
      protected boolean firstTick = true;
      protected final SynchedEntityData entityData;
-@@ -2014,8 +2021,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2014,8 +2021,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      private void updateFluidOnEyes() {
 -        this.wasEyeInWater = this.isEyeInFluid(FluidTags.WATER);
 -        this.fluidOnEyes.clear();
 +        this.wasEyeInWater = this.isInWaterOrLava == 1; // Leaf - Optimize isEyeInFluid
++        this.isInWaterOrLava = 0; // Leaf - Optimize isEyeInFluid - reset cache
          double eyeY = this.getEyeY();
          if (!(
              this.getVehicle() instanceof AbstractBoat abstractBoat
-@@ -2027,7 +2033,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2027,7 +2034,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              FluidState fluidState = this.level().getFluidState(blockPos);
              double d = blockPos.getY() + fluidState.getHeight(this.level(), blockPos);
              if (d > eyeY) {
@@ -133,7 +134,7 @@ index 3bba6cd29f85bec2e98ce97313f1158e2836c6b9..0cad980ff4198615621a4dacf07127be
              }
          }
      }
-@@ -2107,9 +2116,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2107,9 +2117,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
      }
  
