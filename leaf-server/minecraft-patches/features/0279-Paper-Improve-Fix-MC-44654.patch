@@ -15,10 +15,10 @@ Currently, this is not an issue for (all) hanging blocks since they have a fix i
 Note however the client does not nicely support moving these entities anyways.
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 5fda5eadd37ec52ca6470d4aeb18a20c192811be..8ef27db6cefdf63ee87b0fb3cc019803ed056b0f 100644
+index 5bdc73dd410877a7d84cb6c01323b44bfd4978d5..eaec674d1059916943fe4d810b91990df106ef55 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4957,6 +4957,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4951,6 +4951,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              }
  
              this.levelCallback.onMove();

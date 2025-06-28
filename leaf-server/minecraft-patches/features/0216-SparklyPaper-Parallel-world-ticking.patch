@@ -731,7 +731,7 @@ index 75393b9cdd564e55ba173828c2f7b40498e8ecd7..96202ffdb73cb9d8c63351b4538c6464
          serverPlayer.connection = player.connection;
          serverPlayer.restoreFrom(player, keepInventory);
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 69521086fca0c9fbc230817062b65c4269c575fd..82096e6b187e63ad3e848b9757ba2152e8c642b4 100644
+index 4cb3e182702d8fd69f880d00fa0c228cb1302ea0..757ac420fb46042e707d05c343d8fa71e086c634 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -3321,15 +3321,40 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

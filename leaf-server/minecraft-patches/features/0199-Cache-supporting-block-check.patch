@@ -5,7 +5,7 @@ Subject: [PATCH] Cache supporting block check
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 21dbc78baae89093ef9bc3a0620ab9e557e22910..69521086fca0c9fbc230817062b65c4269c575fd 100644
+index a3299cf2f1ac3e8794303b92a3662d3002846e96..4cb3e182702d8fd69f880d00fa0c228cb1302ea0 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1082,12 +1082,36 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
