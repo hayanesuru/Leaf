@@ -25,7 +25,7 @@ index a660bad3dfdb442c6aca5eb939ee103e14d37b4b..7e4cfe12312e0e36a6a19210cd76858a
      }
  
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index e0d9d7075b2c10f686c8c144c9869fa574cd19d3..ac7729d1caa80155697bfe0e8646e4eda5d1780e 100644
+index 4ccffc5db803dac847dcaccc53681161dc15827d..41b67fda739ca98383f9f795d97b01969e85e609 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1191,6 +1191,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

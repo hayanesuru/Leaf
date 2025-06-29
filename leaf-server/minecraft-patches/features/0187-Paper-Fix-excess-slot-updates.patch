@@ -10,7 +10,7 @@ Paper pull request: https://github.com/PaperMC/Paper/pull/12654
 https://github.com/PaperMC/Paper/commit/e714de636543d61fcd3682705484c8a15f4f3ca6
 
 diff --git a/net/minecraft/world/inventory/AbstractContainerMenu.java b/net/minecraft/world/inventory/AbstractContainerMenu.java
-index ff2ff95ec9d94e2e31e8174196b384c37d56f38a..3ffc454609adc82c6a4daba68efac129bee38eb5 100644
+index ff2ff95ec9d94e2e31e8174196b384c37d56f38a..59ab331604096427fd0c2bbe920782c291363f3a 100644
 --- a/net/minecraft/world/inventory/AbstractContainerMenu.java
 +++ b/net/minecraft/world/inventory/AbstractContainerMenu.java
 @@ -553,7 +553,7 @@ public abstract class AbstractContainerMenu {

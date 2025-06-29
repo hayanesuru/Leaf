@@ -1202,7 +1202,7 @@ index aa2c00be86f42a6674694a20545399e441b75199..c098fe283e74ca77e7a47c898cd39a2d
                  serverLevel.capturedBlockStates.clear();
                  org.bukkit.event.world.StructureGrowEvent structureEvent = null;
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 7d3163802640449b6bdaa93595518d7d0f62488b..4821ab14c6a7d5738f0fc93523aede5ea904aa84 100644
+index 859c9cc198c3e17be7b761a91a7426f3a3a53c1c..33c016d44f0318ceba5bb622623fba9f620d98a7 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -175,6 +175,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

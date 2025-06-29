@@ -229,7 +229,7 @@ index f20c38c1ff978d00dc0c9810c050506deed44ebd..e58a40623c3a259c80d0f96686797445
                  player.getInventory().removeItem(ammo);
              }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 4821ab14c6a7d5738f0fc93523aede5ea904aa84..e0d9d7075b2c10f686c8c144c9869fa574cd19d3 100644
+index 33c016d44f0318ceba5bb622623fba9f620d98a7..4ccffc5db803dac847dcaccc53681161dc15827d 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -182,6 +182,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
