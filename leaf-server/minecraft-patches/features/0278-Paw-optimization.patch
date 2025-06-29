@@ -99,25 +99,8 @@ index 4535858701b2bb232b9d2feb2af6551526232ddc..e65c62dbe4c1560ae153e4c4344e9194
 -    }
 -    // Paper end - detailed watchdog information
  }
-diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 3f3450e79f768f9c9fa4f2c0fe485b7179419680..f16760c8817d0220f0a44ed620859ba910bf63a9 100644
---- a/net/minecraft/server/level/ServerChunkCache.java
-+++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -622,8 +622,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-         try {
-             this.chunkMap.collectSpawningChunks(list);
-             // Paper start - chunk tick iteration optimisation
--            this.shuffleRandom.setSeed(this.level.random.nextLong());
--            if (!this.level.paperConfig().entities.spawning.perPlayerMobSpawns) Util.shuffle(list, this.shuffleRandom); // Paper - Optional per player mob spawns; do not need this when per-player is enabled
-+            if (!this.level.paperConfig().entities.spawning.perPlayerMobSpawns) {
-+                this.shuffleRandom.setSeed(this.level.random.nextLong()); // Leaf - paw optimization - Only set seed if is really used
-+                Util.shuffle(list, this.shuffleRandom); // Paper - Optional per player mob spawns; do not need this when per-player is enabled
-+            }
-             // Paper end - chunk tick iteration optimisation
- 
-             for (LevelChunk levelChunk : list) {
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 07f6da45a88e1630ca4249bb134fce1f95d2c39c..9fbaafaf5df6e003742cdea55da732cc7e602866 100644
+index 4bd5e0268d52d63e160ccfe3d1509bbda421bc0f..36138a2fc86f5e0fe0ea3d40061c54f8a6096c4d 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1510,13 +1510,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
