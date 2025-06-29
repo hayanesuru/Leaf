@@ -7,10 +7,10 @@ Add JVM flag `-DLeaf.library-download-repo=link` to choose library download repo
 e.g. `-DLeaf.library-download-repo=https://maven.aliyun.com/repository/public`
 
 diff --git a/src/main/java/io/papermc/paper/plugin/loader/library/impl/MavenLibraryResolver.java b/src/main/java/io/papermc/paper/plugin/loader/library/impl/MavenLibraryResolver.java
-index f12c25f35f3d26dc69e05c7965385e66a3d3d545..f5fb8c3214a421c4d4f681176335dc92cf59834a 100644
+index b0069a05c322e058f0df668908f0918c0b85a814..b899e9cbb2658c7f08343b2e6500fb34427fc238 100644
 --- a/src/main/java/io/papermc/paper/plugin/loader/library/impl/MavenLibraryResolver.java
 +++ b/src/main/java/io/papermc/paper/plugin/loader/library/impl/MavenLibraryResolver.java
-@@ -60,12 +60,25 @@ public class MavenLibraryResolver implements ClassPathLibrary {
+@@ -59,12 +59,25 @@ public class MavenLibraryResolver implements ClassPathLibrary {
       * <p>This repository is also used by the legacy {@link org.bukkit.plugin.java.LibraryLoader}.</p>
       */
      public static final String MAVEN_CENTRAL_DEFAULT_MIRROR = getDefaultMavenCentralMirror();
@@ -35,18 +35,19 @@ index f12c25f35f3d26dc69e05c7965385e66a3d3d545..f5fb8c3214a421c4d4f681176335dc92
 +        "http://maven-central-asia.storage-download.googleapis.com/maven2"
 +    };
 +    // Leaf end - Configurable LibraryLoader maven repos
-     // Paper end - Avoid and discourage use of Maven Central as a CDN
- 
      private static final Logger LOGGER = LoggerFactory.getLogger("MavenLibraryResolver");
-@@ -124,13 +137,32 @@ public class MavenLibraryResolver implements ClassPathLibrary {
+ 
+     private final RepositorySystem repository;
+@@ -120,15 +133,34 @@ public class MavenLibraryResolver implements ClassPathLibrary {
+      * dependencies from
       */
      public void addRepository(final RemoteRepository remoteRepository) {
-         // Paper start - Avoid and discourage use of Maven Central as a CDN
 -        if (MAVEN_CENTRAL_URLS.stream().anyMatch(remoteRepository.getUrl()::startsWith)) {
+-            // Leaf start - Use warning instead of direct throw
 -            try {
 -                throw new RuntimeException("Plugin used Maven Central for library resolution");
 -            } catch (RuntimeException e) {
--                LOGGER.error("Use of Maven Central as a CDN is against the Maven Central Terms of Service. Use MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR instead.", e);
+-                LOGGER.error("Use of Maven Central as a CDN is against the Maven Central Terms of Service. Use MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR instead. Please contact plugin's support for help.", e);
 +        // Leaf start - Configurable LibraryLoader maven repos
 +        for (String url : MAVEN_CENTRAL_URLS) {
 +            if (remoteRepository.getUrl().startsWith(url)) {
@@ -55,12 +56,15 @@ index f12c25f35f3d26dc69e05c7965385e66a3d3d545..f5fb8c3214a421c4d4f681176335dc92
 +                    this.repositories.add(mirrorRepo);
 +                    return;
 +                }
++                // Leaf start - Use warning instead of direct throw
 +                try {
 +                    throw new RuntimeException("Plugin used Maven Central for library resolution");
 +                } catch (RuntimeException e) {
-+                    LOGGER.error("Use of Maven Central as a CDN is against the Maven Central Terms of Service. Use MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR instead.", e);
++                    LOGGER.error("Use of Maven Central as a CDN is against the Maven Central Terms of Service. Use MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR instead. Please contact plugin's support for help.", e);
 +                }
++                // Leaf end - Use warning instead of direct throw
              }
+-            // Leaf end - Use warning instead of direct throw
          }
 +        // Match google api maven central mirror urls
 +        for (String url : MAVEN_CENTRAL_GOOGLE_MIRROR_URLS) {
@@ -73,13 +77,13 @@ index f12c25f35f3d26dc69e05c7965385e66a3d3d545..f5fb8c3214a421c4d4f681176335dc92
 +            }
 +        }
 +        // Leaf end - Configurable LibraryLoader maven repos
-         // Paper end - Avoid and discourage use of Maven Central as a CDN
          this.repositories.add(remoteRepository);
      }
-@@ -170,4 +202,15 @@ public class MavenLibraryResolver implements ClassPathLibrary {
+ 
+@@ -165,4 +197,15 @@ public class MavenLibraryResolver implements ClassPathLibrary {
+         }
          return central;
      }
-     // Paper end - Avoid and discourage use of Maven Central as a CDN
 +
 +    // Leaf start - Configurable LibraryLoader maven repos
 +    @org.jspecify.annotations.Nullable
@@ -93,14 +97,14 @@ index f12c25f35f3d26dc69e05c7965385e66a3d3d545..f5fb8c3214a421c4d4f681176335dc92
 +    // Leaf end - Configurable LibraryLoader maven repos
  }
 diff --git a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
-index 1f2e86e9a830b990bbba3704889671465816ea1c..fce316374a0ae06a34acbce0907dfde52b7905e8 100644
+index 70d57e6abbd876d7f3087905d5277777162d317c..15992c275ae143af5b140a787f921658de58e05a 100644
 --- a/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/LibraryLoader.java
-@@ -49,6 +49,7 @@ public class LibraryLoader {
+@@ -47,6 +47,7 @@ public class LibraryLoader {
+     public static java.util.function.Function<List<java.nio.file.Path>, List<java.nio.file.Path>> REMAPPER; // Paper - remap libraries
  
-     // Paper start - Avoid and discourage use of Maven Central as a CDN
      private static List<RemoteRepository> getRepositories() {
-+        if (io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver.CUSTOM_MAVEN_CENTRAL_MIRROR_REPO != null) return List.of(io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver.CUSTOM_MAVEN_CENTRAL_MIRROR_REPO); // Leaf - Configurable LibraryLoader maven repos
-         return List.of(new RemoteRepository.Builder("central", "default", io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR).build());
++        if (io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver.CUSTOM_MAVEN_CENTRAL_MIRROR_REPO  != null) return List.of(io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver.CUSTOM_MAVEN_CENTRAL_MIRROR_REPO ); // Leaf - Configurable LibraryLoader maven repos
+         return List.of(new RemoteRepository.Builder("central", "default", MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR).build());
      }
-     // Paper end - Avoid and discourage use of Maven Central as a CDN
+ 

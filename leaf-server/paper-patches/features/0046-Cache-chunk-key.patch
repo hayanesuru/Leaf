@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
+Date: Sat, 2 Nov 2024 04:15:20 -0400
+Subject: [PATCH] Cache chunk key
+
+Cache convert process between ChunkPos < - > chunkKey
+This patch didn't cahce SectionPos or BlockPos to chunkKey, since it needs to consider the mutable blockpos siutation.
+
+TODO: Cache block pos and section pos, whether need?
+
+diff --git a/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java b/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
+index bb5b9c9cb0c73edce1dbe3758ee2db0fcc8f4e40..7e3ec4b74406e040ae79d63845fc57bfa3d78a80 100644
+--- a/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
++++ b/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
+@@ -21,7 +21,7 @@ public final class CoordinateUtils {
+     }
+ 
+     public static long getChunkKey(final ChunkPos pos) {
+-        return ((long)pos.z << 32) | (pos.x & 0xFFFFFFFFL);
++        return ((long)pos.z << 32) | (pos.x & 0xFFFFFFFFL); // Leaf - Cache chunk key
+     }
+ 
+     public static long getChunkKey(final SectionPos pos) {

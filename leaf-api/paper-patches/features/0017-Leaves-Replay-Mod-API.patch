@@ -11,10 +11,10 @@ Original project: https://github.com/LeavesMC/Leaves
 This patch is Powered by ReplayMod(https://github.com/ReplayMod)
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 98cfd68226494dbb1a2eaa6680e23a76c2129a62..0f8a1b82dc9d3f4911a0aaa092ef06388ace5108 100644
+index f04f42832a098836bf41e98787c2db35d154c892..b7782de2fb8e636e82a6ef89a62edeec902b367e 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -3202,4 +3202,10 @@ public final class Bukkit {
+@@ -3211,4 +3211,10 @@ public final class Bukkit {
          server.clearBlockHighlights();
      }
      // Purpur end - Debug Marker API
@@ -26,10 +26,10 @@ index 98cfd68226494dbb1a2eaa6680e23a76c2129a62..0f8a1b82dc9d3f4911a0aaa092ef0638
 +    // Leaves end - Photographer API
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index b4d8bc92cf99dbc470e259f569be20e2d0ce00c8..64a94b228fe70ff81b2b9af337339bc7ea15b958 100644
+index cc12db46d30c2499dea87f953ef6bf1fa18900c9..0d8463905bc15382c284fc31a1be6fbb7ee0a46b 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2928,4 +2928,8 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2925,4 +2925,8 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
       */
      void clearBlockHighlights();
      // Purpur end - Debug Marker API

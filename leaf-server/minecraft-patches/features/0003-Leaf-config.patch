@@ -13,10 +13,10 @@ Update config reload:
     (Or sync reload)
 
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index 9c9b601a3f903bebb0dd1bda0e24745587229727..6c65122fe15e08c352885c7dfd3ddf496f0c00c4 100644
+index fd3553bdc1c3cdbf6aa3dc00e0a4987f8eaa4fb8..b16f3f515a76ddbbd74d73464396cf094cb30599 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
-@@ -108,10 +108,12 @@ public class Main {
+@@ -109,10 +109,12 @@ public class Main {
                  JvmProfiler.INSTANCE.start(Environment.SERVER);
              }
  
@@ -30,10 +30,10 @@ index 9c9b601a3f903bebb0dd1bda0e24745587229727..6c65122fe15e08c352885c7dfd3ddf49
              DedicatedServerSettings dedicatedServerSettings = new DedicatedServerSettings(optionSet); // CraftBukkit - CLI argument support
              dedicatedServerSettings.forceSave();
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 96d34149b1009b1522335784bc1858f61bb59cd1..d8179f1b7441679a96ac8ccbd67c2cb1c4fc4fd6 100644
+index 54a9c4b14a51b3480d634703d4936b15330fba53..991833bfa8d6cb6ab3faccc94199b7105523583f 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1182,6 +1182,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1185,6 +1185,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              org.spigotmc.WatchdogThread.tick();
              // Paper end
              org.spigotmc.WatchdogThread.hasStarted = true; // Paper

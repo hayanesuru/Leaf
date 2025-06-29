@@ -56,10 +56,10 @@ index 62b9d9486c15a1ec6527f786df4e9fc483390bcb..5384bbc6bb3dbe5481f9d8cb10282551
              int i = buffer.readableBytes();
              if (i >= 0 && i <= maxSize) {
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index cf958bb871137dc88a8c36be867f2192acba2687..2c50bde56da7174dcea828feedecb92c98347a45 100644
+index 54bb75a2a128e7747ab01cb0d40c81fb4340ffd1..0fed0f181c4d1f31d01bdaa5dc9417ccd68b3f03 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1736,6 +1736,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1737,6 +1737,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              GameTestTicker.SINGLETON.tick();
          }
  
@@ -69,10 +69,10 @@ index cf958bb871137dc88a8c36be867f2192acba2687..2c50bde56da7174dcea828feedecb92c
              this.tickables.get(i).run();
          }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 5775a39220bb5f48e2ce01c51402ac8b194a8d9d..f3fb661e2cbf8119264d113a06bcb7bb5150be91 100644
+index 799aa6e869a9e471a2aa415904efb7e29be213c6..e2edd7b6c6f4c9bb0e42ea9332b96d7537bc801a 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -429,6 +429,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -440,6 +440,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
      private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();
  
@@ -82,10 +82,10 @@ index 5775a39220bb5f48e2ce01c51402ac8b194a8d9d..f3fb661e2cbf8119264d113a06bcb7bb
      public final boolean moonrise$isRealPlayer() {
          return this.isRealPlayer;
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index d2e8adccf33c6b842fac615006b782b09cfa7a1a..4d48ffeecba7fc4b53dad5f0a4d9c1bb8eac50c1 100644
+index 8a4c8e2fb86274b5bf95bda510029f4c5077d836..169d039a00339fc8eeb697ba03808f321ed4ad4c 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -151,6 +151,18 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -183,6 +183,18 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
@@ -104,7 +104,7 @@ index d2e8adccf33c6b842fac615006b782b09cfa7a1a..4d48ffeecba7fc4b53dad5f0a4d9c1bb
          // Paper start
          if (packet.payload() instanceof net.minecraft.network.protocol.common.custom.BrandPayload(String brand)) {
              this.player.clientBrandName = brand;
-@@ -210,6 +222,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -242,6 +254,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          final String channel = new String(data, from, length, java.nio.charset.StandardCharsets.US_ASCII);
          if (register) {
              this.getCraftPlayer().addChannel(channel);
@@ -113,36 +113,36 @@ index d2e8adccf33c6b842fac615006b782b09cfa7a1a..4d48ffeecba7fc4b53dad5f0a4d9c1bb
              this.getCraftPlayer().removeChannel(channel);
          }
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index d7d68dbdd39ff6e61531d2edeafdd923f0573c89..88ee35fffd6ae3183c23891ab22ec5c45e3c711f 100644
+index fe44069de549acc81a6037426a405d6fddb87897..0ed45220ce029e5ef538b86f89509f2d2156cbb9 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -345,6 +345,9 @@ public abstract class PlayerList {
+@@ -346,6 +346,9 @@ public abstract class PlayerList {
  
-         player.didPlayerJoinEvent = true; // Gale - EMC - do not process chat/commands before player has joined
+             player.didPlayerJoinEvent = true; // Gale - EMC - do not process chat/commands before player has joined
  
-+        if (player.internalConnection == null) player.internalConnection = connection; // Leaf - Leaves - protocol
-+        org.leavesmc.leaves.protocol.core.LeavesProtocolManager.handlePlayerJoin(player); // Leaves - protocol
++            if (player.internalConnection == null) player.internalConnection = connection; // Leaf - Leaves - protocol
++            org.leavesmc.leaves.protocol.core.LeavesProtocolManager.handlePlayerJoin(player); // Leaves - protocol
 +
-         final net.kyori.adventure.text.Component jm = playerJoinEvent.joinMessage();
+             final net.kyori.adventure.text.Component jm = playerJoinEvent.joinMessage();
  
-         if (jm != null && !jm.equals(net.kyori.adventure.text.Component.empty())) { // Paper - Adventure
-@@ -522,6 +525,7 @@ public abstract class PlayerList {
+             if (jm != null && !jm.equals(net.kyori.adventure.text.Component.empty())) { // Paper - Adventure
+@@ -525,6 +528,7 @@ public abstract class PlayerList {
          return this.remove(player, net.kyori.adventure.text.Component.translatable("multiplayer.player.left", net.kyori.adventure.text.format.NamedTextColor.YELLOW, io.papermc.paper.configuration.GlobalConfiguration.get().messages.useDisplayNameInQuitMessage ? player.getBukkitEntity().displayName() : io.papermc.paper.adventure.PaperAdventure.asAdventure(player.getDisplayName())));
      }
      public @Nullable net.kyori.adventure.text.Component remove(ServerPlayer player, net.kyori.adventure.text.Component leaveMessage) {
 +        org.leavesmc.leaves.protocol.core.LeavesProtocolManager.handlePlayerLeave(player); // Leaves - protocol
          // Paper end - Fix kick event leave message not being sent
          org.purpurmc.purpur.task.BossBarTask.removeFromAll(player.getBukkitEntity()); // Purpur - Implement TPSBar
-         ServerLevel serverLevel = player.serverLevel();
-@@ -648,6 +652,7 @@ public abstract class PlayerList {
+         ServerLevel serverLevel = player.level();
+@@ -651,6 +655,7 @@ public abstract class PlayerList {
          SocketAddress socketAddress = loginlistener.connection.getRemoteAddress();
  
-         ServerPlayer entity = new ServerPlayer(this.server, this.server.getLevel(Level.OVERWORLD), gameProfile, ClientInformation.createDefault());
+         ServerPlayer entity = new ServerPlayer(this.server, this.server.getLevel(Level.OVERWORLD), gameProfile, net.minecraft.server.level.ClientInformation.createDefault());
 +        entity.internalConnection = loginlistener.connection; // Leaves - protocol core
          entity.transferCookieConnection = loginlistener;
          org.bukkit.entity.Player player = entity.getBukkitEntity();
          org.bukkit.event.player.PlayerLoginEvent event = new org.bukkit.event.player.PlayerLoginEvent(player, loginlistener.connection.hostname, ((java.net.InetSocketAddress) socketAddress).getAddress(), ((java.net.InetSocketAddress) loginlistener.connection.channel.remoteAddress()).getAddress());
-@@ -1527,6 +1532,7 @@ public abstract class PlayerList {
+@@ -1523,6 +1528,7 @@ public abstract class PlayerList {
              serverPlayer.connection.send(clientboundUpdateRecipesPacket);
              serverPlayer.getRecipeBook().sendInitialRecipeBook(serverPlayer);
          }
