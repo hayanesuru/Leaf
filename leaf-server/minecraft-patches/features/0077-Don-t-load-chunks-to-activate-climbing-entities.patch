@@ -7,7 +7,7 @@ License: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 Gale - https://galemc.org
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ffdeaab1fa7540eddea5997d9ab1eb6faddb7128..cf13f3956ddcf350e6b2ea3b34d9a2bae214cb22 100644
+index 8fcc1223942114f46c36028326e9c7daf4f0d9e0..41279a276622062338bef685491cc2959ecb2ff4 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4874,6 +4874,16 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -28,7 +28,7 @@ index ffdeaab1fa7540eddea5997d9ab1eb6faddb7128..cf13f3956ddcf350e6b2ea3b34d9a2ba
          return this.chunkPosition;
      }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 586b79bc844b098336c6d3bf342b570396e6af88..af6633b8b3efceeb3bf101e069ddc1c65c7f6bfb 100644
+index 586b79bc844b098336c6d3bf342b570396e6af88..bc284bbd3d601b1e7c15f663cb65b85c24d85a41 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -2129,8 +2129,17 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -65,8 +65,9 @@ index 586b79bc844b098336c6d3bf342b570396e6af88..af6633b8b3efceeb3bf101e069ddc1c6
              return false;
          } else {
              BlockPos blockPos = this.blockPosition();
-             BlockState inBlockState = this.getInBlockState();
-+            // Gale start - don't load chunks to activate climbing entities
+-            BlockState inBlockState = this.getInBlockState();
++            // Gale start - don't load chunks to activate climbing
++            BlockState inBlockState;
 +            if (loadChunk) {
 +                inBlockState = this.getInBlockState();
 +            } else {
