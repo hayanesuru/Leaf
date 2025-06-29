@@ -16,7 +16,6 @@ Also see `Configurable LibraryLoader maven repos` patch,
 able to match googleapi mirror urls, to replace to repo url we custom defined.
 This able to switch back to maven central repo, to prevent
 situation that dependencies exist in maven central, but not in mirror.
----
 
 Default LibraryLoader to Google's Maven Central mirror, add MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR, and warn on use of Maven Central with MavenLibraryResolver
 

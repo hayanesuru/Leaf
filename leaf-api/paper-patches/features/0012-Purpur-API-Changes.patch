@@ -443,10 +443,10 @@ index 6f83097b1097d0ffa81a95e6f0300cb410dfee2b..c1f19d5c1b819873fce1185b4fbf4c72
 +    // Purpur end - OfflinePlayer API
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index e8f192bad2ffa3cb1c5217293420a863d57b5377..002c998368dea33872d65beb79eb4931ce1158d2 100644
+index db8c2d3ded812e8d96b8752d4890006d022e72a6..b4d8bc92cf99dbc470e259f569be20e2d0ce00c8 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2432,6 +2432,18 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2438,6 +2438,18 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
  
          // Paper end
  
@@ -462,10 +462,10 @@ index e8f192bad2ffa3cb1c5217293420a863d57b5377..002c998368dea33872d65beb79eb4931
 +        }
 +        // Purpur end
 +
-         // Leaf start - Leaf config - API
-         @NotNull
-         public org.bukkit.configuration.file.YamlConfiguration getLeafConfig()
-@@ -2801,4 +2813,121 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+         /**
+          * Sends the component to the player
+          *
+@@ -2799,4 +2811,121 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
       */
      long getLastTickOversleepTime();
      // Gale end - YAPFA - last tick time - API

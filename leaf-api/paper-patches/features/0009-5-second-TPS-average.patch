@@ -72,7 +72,7 @@ index 1e810d7f61e07cddd99d3f827673b724ac93b6b5..f998208e0b26132d29d79fc2653d9f55
       * Gets the average server TPS over the last 1 minute
       *
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index cfe600ed503994376284d71d6754d1a736048401..d57a77ff531e8bc5c0fa41e66c64c28f9a4a1515 100644
+index 7eaeb956ca9ce223a3e2d24caa258ae57d59a476..65e2a97096f6f625ad347678ebac1c3b912cb862 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -2126,7 +2126,27 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi

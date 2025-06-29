@@ -47,7 +47,7 @@ index c9ea6559f809a6732588b8908001807be3d91196..1e810d7f61e07cddd99d3f827673b724
       * Get a sample of the servers last tick times (in nanos)
       *
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index c1e4f01dbec2a796025ef35b6fdd68a82fa319d1..cfe600ed503994376284d71d6754d1a736048401 100644
+index 618287712f3504a50dd8a5987629523fc9f17a88..7eaeb956ca9ce223a3e2d24caa258ae57d59a476 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -2126,6 +2126,29 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
