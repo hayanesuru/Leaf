@@ -2,7 +2,7 @@
 set -e
 
 IS_EOL=false
-IS_UNSUPPORTED=false
+IS_UNSUPPORTED=true
 IS_DEV=false
 
 JAR_NAME="leaf-1.21.5"
