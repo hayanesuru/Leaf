@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Minecraft Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: dfd8a7ad14f436ea9c4704a758305e7145923c2d
+Commit: a112b6aca718e4500a6d48ca9d7158faf0f4adf9
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "net/minecraft/CrashReport.java.patch"
@@ -38,8 +38,6 @@ Patches listed below are removed in this patch, They exists in Gale or Leaf:
     - MC-238526 - Fix spawner not spawning water animals correctly
 * "net/minecraft/world/entity/projectile/AbstractArrow.java.patch"
     - Arrows should not reset despawn counter
-* "net/minecraft/world/inventory/AbstractContainerMenu.java.patch"
-    - PaperPR#12654
 * "net/minecraft/world/level/chunk/storage/RegionFileStorage.java.patch"
     - Rebrand
 
@@ -1299,7 +1297,7 @@ index ddc89e8960f7dc2f75f0e03ccbe6eda96a0499e2..8a4c8e2fb86274b5bf95bda510029f4c
                  this.player.clientBrandName = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.wrappedBuffer(data)).readUtf(256);
              }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a07310aebd8406af27864358e15715fcc7694329..72292ee9620ee369ccee00dd0280bf6041d3afca 100644
+index a07310aebd8406af27864358e15715fcc7694329..acb1eda4a4b10006e1dd641ee41ee77ebf11d142 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -324,6 +324,20 @@ public class ServerGamePacketListenerImpl
@@ -1533,6 +1531,15 @@ index a07310aebd8406af27864358e15715fcc7694329..72292ee9620ee369ccee00dd0280bf60
                                      // Entity in bucket - SPIGOT-4048 and SPIGOT-6859a
                                      if ((target instanceof net.minecraft.world.entity.animal.Bucketable && target instanceof LivingEntity && origItem != null && origItem == Items.WATER_BUCKET) && (event.isCancelled() || ServerGamePacketListenerImpl.this.player.getInventory().getSelectedItem().isEmpty() || !ServerGamePacketListenerImpl.this.player.getInventory().getSelectedItem().is(origItem))) {
                                          target.resendPossiblyDesyncedEntityData(ServerGamePacketListenerImpl.this.player); // Paper - The entire mob gets deleted, so resend it
+@@ -3543,7 +3627,7 @@ public class ServerGamePacketListenerImpl
+     @Override
+     public void handleChangeGameMode(ServerboundChangeGameModePacket packet) {
+         PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
+-        if (!this.player.hasPermissions(2)) {
++        if (!this.player.hasPermissions(2) && !player.getBukkitEntity().hasPermission("purpur.debug.f3n")) { // Purpur - Add permission for F3+N debug
+             LOGGER.warn(
+                 "Player {} tried to change game mode to {} without required permissions",
+                 this.player.getGameProfile().getName(),
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 index dc225eaa0daf238e091a0cf63a42158a30ecb7f0..c61a94a08486cdeba84ccfbc58ef3cabd4a461d8 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
@@ -2304,7 +2311,7 @@ index aab9adb8313c4b18279c7fd7500ef04bda09c6c1..86a694b94045b47f6e98c480645f7573
      protected ParticleOptions getInkParticle() {
          return ParticleTypes.GLOW_SQUID_INK;
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 5025e1eb7be566c21b6228038fd6596f4ac53e9a..d7d6e0543dc26694891e4a9049b8162caadbf5e6 100644
+index fd775ce9a6ca84ce348d929f75f019581a437ea4..dd5343287503e2818e083696a17362091d94e652 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -236,9 +236,9 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -2523,7 +2530,29 @@ index 5025e1eb7be566c21b6228038fd6596f4ac53e9a..d7d6e0543dc26694891e4a9049b8162c
          }
  
          // CraftBukkit start - Call death event // Paper start - call advancement triggers with correct entity equipment
-@@ -3153,6 +3214,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3013,6 +3074,21 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+             this.move(MoverType.SELF, this.getDeltaMovement());
+             this.setDeltaMovement(this.getDeltaMovement().scale(0.5));
+         } else {
++            // Purpur start - Ridables
++            if (this.getRider() != null && this.isControllable()) {
++                float friction = 0.91F;
++                if (this.onGround()) {
++                    friction = this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).getBlock().getFriction() * 0.91F;
++                }
++
++                float frictionCompensation = 0.16277137F / (friction * friction * friction);
++                this.moveRelative(this.onGround() ? 0.1F * frictionCompensation : 0.02F, relative);
++                this.move(MoverType.SELF, this.getDeltaMovement());
++                this.setDeltaMovement(this.getDeltaMovement().scale(friction));
++                return;
++            }
++            // Purpur end - Ridables
++
+             this.moveRelative(amount, relative);
+             this.move(MoverType.SELF, this.getDeltaMovement());
+             this.setDeltaMovement(this.getDeltaMovement().scale(0.91F));
+@@ -3153,6 +3229,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              float f = (float)(d * 10.0 - 3.0);
              if (f > 0.0F) {
                  this.playSound(this.getFallDamageSound((int)f), 1.0F, 1.0F);
@@ -2531,7 +2560,7 @@ index 5025e1eb7be566c21b6228038fd6596f4ac53e9a..d7d6e0543dc26694891e4a9049b8162c
                  this.hurt(this.damageSources().flyIntoWall(), f);
              }
          }
-@@ -3596,8 +3658,10 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3596,8 +3673,10 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
  
          this.pushEntities();
          // Paper start - Add EntityMoveEvent
@@ -2544,7 +2573,7 @@ index 5025e1eb7be566c21b6228038fd6596f4ac53e9a..d7d6e0543dc26694891e4a9049b8162c
                  Location from = new Location(this.level().getWorld(), this.xo, this.yo, this.zo, this.yRotO, this.xRotO);
                  Location to = new Location(this.level().getWorld(), this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
                  io.papermc.paper.event.entity.EntityMoveEvent event = new io.papermc.paper.event.entity.EntityMoveEvent(this.getBukkitLivingEntity(), from, to.clone());
-@@ -3607,11 +3671,52 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3607,11 +3686,52 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
                      this.absSnapTo(event.getTo().getX(), event.getTo().getY(), event.getTo().getZ(), event.getTo().getYaw(), event.getTo().getPitch());
                  }
              }
@@ -2597,7 +2626,7 @@ index 5025e1eb7be566c21b6228038fd6596f4ac53e9a..d7d6e0543dc26694891e4a9049b8162c
      }
  
      protected void applyInput() {
-@@ -3645,7 +3750,18 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3645,7 +3765,18 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
                          .filter(equipmentSlot1 -> canGlideUsing(this.getItemBySlot(equipmentSlot1), equipmentSlot1))
                          .toList();
                      EquipmentSlot equipmentSlot = Util.getRandom(list, this.random);
@@ -2617,7 +2646,7 @@ index 5025e1eb7be566c21b6228038fd6596f4ac53e9a..d7d6e0543dc26694891e4a9049b8162c
                  }
  
                  this.gameEvent(GameEvent.ELYTRA_GLIDE);
-@@ -4533,6 +4649,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -4533,6 +4664,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              : slot == equippable.slot() && this.canUseSlot(equippable.slot()) && equippable.canBeEquippedBy(this.getType());
      }
  
@@ -6788,10 +6817,10 @@ index 2a1d720557c0bd4895a32723e34512c0a557e4f2..f1080a40f759b30b921b88b4f6edd35f
      protected void randomizeAttributes(RandomSource random) {
          this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(generateMaxHealth(random::nextInt));
 diff --git a/net/minecraft/world/entity/animal/horse/Llama.java b/net/minecraft/world/entity/animal/horse/Llama.java
-index 1e2b629641e5fa1040307461dbbf03ad2d75ba00..1bef43f42aee02a0a00556318607072ce9814860 100644
+index 1e2b629641e5fa1040307461dbbf03ad2d75ba00..455a84ffa16152137409777e1fddbab5a21bd57d 100644
 --- a/net/minecraft/world/entity/animal/horse/Llama.java
 +++ b/net/minecraft/world/entity/animal/horse/Llama.java
-@@ -78,12 +78,95 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
+@@ -78,12 +78,102 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
      private Llama caravanHead;
      @Nullable
      public Llama caravanTail; // Paper
@@ -6843,7 +6872,14 @@ index 1e2b629641e5fa1040307461dbbf03ad2d75ba00..1bef43f42aee02a0a00556318607072c
 +
 +    @Override
 +    public boolean isSaddled() {
-+        return super.isSaddled() || (isTamed());
++        return super.isWearingBodyArmor() || this.isTamed();
++    }
++
++    @Nullable
++    @Override
++    public LivingEntity getControllingPassenger() {
++        Entity firstPassenger = this.getFirstPassenger();
++        return !this.isNoAi() && firstPassenger instanceof net.minecraft.world.entity.Mob mob && firstPassenger.canControlVehicle() ? mob : null;
 +    }
 +    // Purpur end - Ridables
 +
@@ -6887,7 +6923,7 @@ index 1e2b629641e5fa1040307461dbbf03ad2d75ba00..1bef43f42aee02a0a00556318607072c
  
      public boolean isTraderLlama() {
          return false;
-@@ -112,6 +195,7 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
+@@ -112,6 +202,7 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
          super.addAdditionalSaveData(output);
          output.store("Variant", Llama.Variant.LEGACY_CODEC, this.getVariant());
          output.putInt("Strength", this.getStrength());
@@ -6895,7 +6931,7 @@ index 1e2b629641e5fa1040307461dbbf03ad2d75ba00..1bef43f42aee02a0a00556318607072c
      }
  
      @Override
-@@ -119,11 +203,13 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
+@@ -119,11 +210,13 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
          this.setStrength(input.getIntOr("Strength", 0));
          super.readAdditionalSaveData(input);
          this.setVariant(input.read("Variant", Llama.Variant.LEGACY_CODEC).orElse(Llama.Variant.DEFAULT));
@@ -6909,7 +6945,7 @@ index 1e2b629641e5fa1040307461dbbf03ad2d75ba00..1bef43f42aee02a0a00556318607072c
          this.goalSelector.addGoal(1, new RunAroundLikeCrazyGoal(this, 1.2));
          this.goalSelector.addGoal(2, new LlamaFollowCaravanGoal(this, 2.1F));
          this.goalSelector.addGoal(3, new RangedAttackGoal(this, 1.25, 40, 20.0F));
-@@ -134,6 +220,7 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
+@@ -134,6 +227,7 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
          this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.7));
          this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 6.0F));
          this.goalSelector.addGoal(9, new RandomLookAroundGoal(this));
@@ -6917,7 +6953,7 @@ index 1e2b629641e5fa1040307461dbbf03ad2d75ba00..1bef43f42aee02a0a00556318607072c
          this.targetSelector.addGoal(1, new Llama.LlamaHurtByTargetGoal(this));
          this.targetSelector.addGoal(2, new Llama.LlamaAttackWolfGoal(this));
      }
-@@ -400,6 +487,7 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
+@@ -400,6 +494,7 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
  
      public void leaveCaravan() {
          if (this.caravanHead != null) {
@@ -6925,7 +6961,7 @@ index 1e2b629641e5fa1040307461dbbf03ad2d75ba00..1bef43f42aee02a0a00556318607072c
              this.caravanHead.caravanTail = null;
          }
  
-@@ -407,6 +495,7 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
+@@ -407,6 +502,7 @@ public class Llama extends AbstractChestedHorse implements RangedAttackMob {
      }
  
      public void joinCaravan(Llama caravanHead) {
@@ -9846,7 +9882,7 @@ index 5ef9566b16a4d0300ee45a993c46e734db156416..04d5910d736dee2a88a2602f4a984954
              return false;
          } else {
 diff --git a/net/minecraft/world/entity/monster/Phantom.java b/net/minecraft/world/entity/monster/Phantom.java
-index ffcfdbc80df2a9e6c546348b86e7615e6109eb49..d25392babee8cb8eea9f5d6fef4529a952644e52 100644
+index ffcfdbc80df2a9e6c546348b86e7615e6109eb49..3b812e0860e37d30d5d12f97410ed5fd2babadf6 100644
 --- a/net/minecraft/world/entity/monster/Phantom.java
 +++ b/net/minecraft/world/entity/monster/Phantom.java
 @@ -49,19 +49,111 @@ public class Phantom extends Mob implements Enemy {
@@ -10041,7 +10077,7 @@ index ffcfdbc80df2a9e6c546348b86e7615e6109eb49..d25392babee8cb8eea9f5d6fef4529a9
 +            this.setSpeed(speed);
 +            Vec3 mot = this.getDeltaMovement();
 +            this.move(net.minecraft.world.entity.MoverType.SELF, mot.multiply(speed, speed, speed));
-+            this.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
++            this.setDeltaMovement(mot.scale(0.9D));
 +        }
 +        // Purpur end - Ridables
      }
@@ -14540,20 +14576,21 @@ index 6040b73a5351c3eb166250566b5c2385cee39ee0..29619b87fe19c66934fe5aaee8a96419
          }
  
 diff --git a/net/minecraft/world/item/trading/MerchantOffer.java b/net/minecraft/world/item/trading/MerchantOffer.java
-index 9333c63f217e1207eced37c5be150e192f2fcc3e..156cee58134ada34d249aab948c02adac4f6745a 100644
+index 64c99df8ff305fa28c75dc03fc5ef8c61634ad84..e1452d0694cad3db1800f8610fc095bf98f5f15f 100644
 --- a/net/minecraft/world/item/trading/MerchantOffer.java
 +++ b/net/minecraft/world/item/trading/MerchantOffer.java
-@@ -143,7 +143,12 @@ public class MerchantOffer {
+@@ -143,8 +143,13 @@ public class MerchantOffer {
      }
  
      public void updateDemand() {
--        this.demand = Math.max(0, this.demand + this.uses - (this.maxUses - this.uses)); // Paper - Fix MC-163962
 +        // Purpur start - Configurable minimum demand for trades
 +        this.updateDemand(0);
 +    }
 +    public void updateDemand(int minimumDemand) {
-+        this.demand = Math.max(minimumDemand, this.demand + this.uses - (this.maxUses - this.uses)); // Paper - Fix MC-163962
 +        // Purpur end - Configurable minimum demand for trades
+         this.demand = this.demand + this.uses - (this.maxUses - this.uses);
+-        if (io.papermc.paper.configuration.GlobalConfiguration.get().misc.preventNegativeVillagerDemand) this.demand = Math.max(0, this.demand); // Paper - Fix MC-163962
++        if (io.papermc.paper.configuration.GlobalConfiguration.get().misc.preventNegativeVillagerDemand) this.demand = Math.max(minimumDemand, this.demand); // Paper - Fix MC-163962 // Purpur - Configurable minimum demand for trades
      }
  
      public ItemStack assemble() {
