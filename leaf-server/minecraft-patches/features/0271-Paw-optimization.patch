@@ -11,7 +11,7 @@ Some random optimizations
 - Secret patches (WIP)
 
 diff --git a/net/minecraft/Util.java b/net/minecraft/Util.java
-index 1f4208388a923f9a1667dc13d937955ac233d88e..6e3bd3944b56010c3eabcdcd11424518bbb980fa 100644
+index 9f7288223bc1f13e3664d82d2e883336f527e5e2..ed51fd7c4c9f26dbcc348e6aefcafd367b1dd7bc 100644
 --- a/net/minecraft/Util.java
 +++ b/net/minecraft/Util.java
 @@ -96,7 +96,7 @@ public class Util {
@@ -33,10 +33,10 @@ index 1f4208388a923f9a1667dc13d937955ac233d88e..6e3bd3944b56010c3eabcdcd11424518
  
      public static void shutdownExecutors() {
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index df012a4c67d474125fafa01b1677d9220fc817ae..7992df93f4eebb9ca41b9bca2784aec718d4efb8 100644
+index a6077984e139be5cbcc00f8f0828f1992d3604a6..4142ef85071b13427f99808482a1f1344ee976d3 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -644,13 +644,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -645,13 +645,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
              if (!(this.packetListener instanceof net.minecraft.server.network.ServerLoginPacketListenerImpl loginPacketListener)
                  || loginPacketListener.state != net.minecraft.server.network.ServerLoginPacketListenerImpl.State.VERIFYING
                  || Connection.joinAttemptsThisTick++ < MAX_PER_TICK) {
@@ -100,7 +100,7 @@ index 4535858701b2bb232b9d2feb2af6551526232ddc..e65c62dbe4c1560ae153e4c4344e9194
 -    // Paper end - detailed watchdog information
  }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index c49d2f7314a35763831285d7d46d34dade2f0085..79f2b26bc466238ec83cd049f38d257b0000028d 100644
+index 08c6f93bcc028c876e17870681382aa9fa2ba3ee..58a77b5aa49cb56eea33757e982ba1852bbfb679 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1518,13 +1518,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

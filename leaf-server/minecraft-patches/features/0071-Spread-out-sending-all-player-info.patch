@@ -37,7 +37,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 186e0a6e565d29572f5d4771a68e4a9cb2bd45de..91d4a5f7685296e397c1c341813542fd13eaf168 100644
+index edefdd4be2b3af69c416ad32e2574865fa27da34..537d433dd7c301444b15327104b0c605d5833448 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -113,6 +113,7 @@ public abstract class PlayerList {
@@ -64,7 +64,7 @@ index 186e0a6e565d29572f5d4771a68e4a9cb2bd45de..91d4a5f7685296e397c1c341813542fd
          this.server.getCustomBossEvents().onPlayerDisconnect(player);
          UUID uuid = player.getUUID();
          ServerPlayer serverPlayer = this.playersByUUID.get(uuid);
-@@ -720,6 +723,7 @@ public abstract class PlayerList {
+@@ -687,6 +690,7 @@ public abstract class PlayerList {
          player.stopRiding(); // CraftBukkit
          this.players.remove(player);
          this.playersByName.remove(player.getScoreboardName().toLowerCase(java.util.Locale.ROOT)); // Spigot
@@ -72,7 +72,7 @@ index 186e0a6e565d29572f5d4771a68e4a9cb2bd45de..91d4a5f7685296e397c1c341813542fd
          player.level().removePlayerImmediately(player, reason);
          // TeleportTransition teleportTransition = player.findRespawnPositionAndUseSpawnBlock(!keepInventory, TeleportTransition.DO_NOTHING);
          // ServerLevel level = teleportTransition.newLevel();
-@@ -798,6 +802,7 @@ public abstract class PlayerList {
+@@ -765,6 +769,7 @@ public abstract class PlayerList {
              this.players.add(serverPlayer);
              this.playersByName.put(serverPlayer.getScoreboardName().toLowerCase(java.util.Locale.ROOT), serverPlayer); // Spigot
              this.playersByUUID.put(serverPlayer.getUUID(), serverPlayer);
@@ -80,7 +80,7 @@ index 186e0a6e565d29572f5d4771a68e4a9cb2bd45de..91d4a5f7685296e397c1c341813542fd
          }
          // serverPlayer.initInventoryMenu();
          serverPlayer.setHealth(serverPlayer.getHealth());
-@@ -900,18 +905,58 @@ public abstract class PlayerList {
+@@ -867,18 +872,58 @@ public abstract class PlayerList {
      }
  
      public void tick() {

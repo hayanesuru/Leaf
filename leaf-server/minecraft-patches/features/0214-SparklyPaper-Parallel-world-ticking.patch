@@ -651,27 +651,19 @@ index 3a31f9132a7271ea476cc85c5a10ea7f327256bf..58ec5cfb21d4834c3aaa74f76ca8a536
          // Paper start - extra debug info
          if (entity.valid) {
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 4c1786201a4044db61e99c148fca4714e2b172ad..163ac7b4b6fefb0c4594548dfffc0ea6f24f0765 100644
+index df8732fc451d8aafa46a7980c5e51b6347f0f1ad..f9664926de5706eda918b457301174734b0b0300 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -467,6 +467,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
-         return this.viewDistanceHolder;
+@@ -466,6 +466,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
      // Paper end - rewrite chunk system
-+
-     // Paper start - improve keepalives
-     public long lastKeepAliveTx = System.nanoTime();
-     public static final record KeepAliveResponse(long txTimeNS, long rxTimeNS) {
-@@ -532,6 +533,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
-     }
-     // Paper end - improve keepalives
  
 +    public boolean hasTickedAtLeastOnceInNewWorld = false; // SparklyPaper - parallel world ticking (fixes bug in DreamResourceReset where the inventory is opened AFTER the player has changed worlds, if you click with the quick tp torch in a chest, because the inventory is opened AFTER the player has teleported)
 +
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
          super(level, gameProfile);
          this.textFilter = server.createTextFilterForPlayer(this);
-@@ -818,6 +821,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -752,6 +754,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
      @Override
      public void tick() {
@@ -679,7 +671,7 @@ index 4c1786201a4044db61e99c148fca4714e2b172ad..163ac7b4b6fefb0c4594548dfffc0ea6
          // CraftBukkit start
          if (this.joining) {
              this.joining = false;
-@@ -1494,6 +1498,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1428,6 +1431,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  teleportTransition.postTeleportTransition().onTransition(this);
                  return this;
              } else {
@@ -688,7 +680,7 @@ index 4c1786201a4044db61e99c148fca4714e2b172ad..163ac7b4b6fefb0c4594548dfffc0ea6
                  // CraftBukkit start
                  /*
                  this.isChangingDimension = true;
-@@ -1847,6 +1853,12 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1781,6 +1786,12 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  return OptionalInt.empty();
              } else {
                  // CraftBukkit start
@@ -701,7 +693,7 @@ index 4c1786201a4044db61e99c148fca4714e2b172ad..163ac7b4b6fefb0c4594548dfffc0ea6
                  this.containerMenu = abstractContainerMenu; // Moved up
                  if (!this.isImmobile())
                  this.connection
-@@ -1911,6 +1923,11 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1845,6 +1856,11 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
      @Override
      public void closeContainer(org.bukkit.event.inventory.InventoryCloseEvent.Reason reason) {
@@ -714,7 +706,7 @@ index 4c1786201a4044db61e99c148fca4714e2b172ad..163ac7b4b6fefb0c4594548dfffc0ea6
          // Paper end - Inventory close reason
          this.connection.send(new ClientboundContainerClosePacket(this.containerMenu.containerId));
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 3cd9b0df617715d0b3e70a6096e52bb5d22ab426..f1002643589f67adce26667b1750a1296c1fb67d 100644
+index ef283ec7934d143eeab482d99bf6fa8f327d2fe9..1b3a21ef16426234e782b1a297cd2e5c2505c666 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -251,6 +251,8 @@ public abstract class PlayerList {
@@ -726,7 +718,7 @@ index 3cd9b0df617715d0b3e70a6096e52bb5d22ab426..f1002643589f67adce26667b1750a129
          player.isRealPlayer = true; // Paper
          player.loginTime = System.currentTimeMillis(); // Paper - Replace OfflinePlayer#getLastPlayed
          GameProfile gameProfile = player.getGameProfile();
-@@ -888,6 +890,15 @@ public abstract class PlayerList {
+@@ -854,6 +856,15 @@ public abstract class PlayerList {
      }
  
      public ServerPlayer respawn(ServerPlayer player, boolean keepInventory, Entity.RemovalReason reason, @Nullable org.bukkit.event.player.PlayerRespawnEvent.RespawnReason eventReason, @Nullable org.bukkit.Location location) {
@@ -742,7 +734,7 @@ index 3cd9b0df617715d0b3e70a6096e52bb5d22ab426..f1002643589f67adce26667b1750a129
          player.stopRiding(); // CraftBukkit
          this.players.remove(player);
          this.playersByName.remove(player.getScoreboardName().toLowerCase(java.util.Locale.ROOT)); // Spigot
-@@ -899,6 +910,7 @@ public abstract class PlayerList {
+@@ -865,6 +876,7 @@ public abstract class PlayerList {
          ServerPlayer serverPlayer = player;
          Level fromWorld = player.level();
          player.wonGame = false;
@@ -1018,10 +1010,10 @@ index 3614551856c594f3c0cfee984fcf03fad672b007..f4577f908ca9f279b72d89e5b0822d34
          });
          entity.getBrain().eraseMemory(MemoryModuleType.POTENTIAL_JOB_SITE);
 diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
-index 377e98469328f08db751c0f6a6f434b03f63c225..743c0c956ddd9e35d3c9c7b45fa8d36490d648dd 100644
+index a3040736384e54f26794db2bc938d63734f9614d..f456a44deac3645c44366ca1704ae25419baf52c 100644
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
-@@ -797,13 +797,21 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -796,13 +796,21 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
              this.brain.getMemory(moduleType).ifPresent(pos -> {
                  ServerLevel level = server.getLevel(pos.dimension());
                  if (level != null) {

@@ -69,10 +69,10 @@ index 54bb75a2a128e7747ab01cb0d40c81fb4340ffd1..0fed0f181c4d1f31d01bdaa5dc9417cc
              this.tickables.get(i).run();
          }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 799aa6e869a9e471a2aa415904efb7e29be213c6..e2edd7b6c6f4c9bb0e42ea9332b96d7537bc801a 100644
+index 1096bd9f5561f3bedd7939345844b03bbc895938..900075e85f2085378389a974e500fc8acd25747e 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -440,6 +440,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -438,6 +438,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
      private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();
  
@@ -81,11 +81,11 @@ index 799aa6e869a9e471a2aa415904efb7e29be213c6..e2edd7b6c6f4c9bb0e42ea9332b96d75
      @Override
      public final boolean moonrise$isRealPlayer() {
          return this.isRealPlayer;
-diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 8a4c8e2fb86274b5bf95bda510029f4c5077d836..169d039a00339fc8eeb697ba03808f321ed4ad4c 100644
---- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-+++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -183,6 +183,18 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 6f7094004e2d38d3471c3582b3a10dfc7fce3b32..76ad04e021b840b1595bfe01d07f1d7943937281 100644
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -3809,6 +3809,18 @@ public class ServerGamePacketListenerImpl
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
@@ -103,8 +103,8 @@ index 8a4c8e2fb86274b5bf95bda510029f4c5077d836..169d039a00339fc8eeb697ba03808f32
 +
          // Paper start
          if (packet.payload() instanceof net.minecraft.network.protocol.common.custom.BrandPayload(String brand)) {
-             this.player.clientBrandName = brand;
-@@ -242,6 +254,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+             this.playerBrand = brand;
+@@ -3868,6 +3880,7 @@ public class ServerGamePacketListenerImpl
          final String channel = new String(data, from, length, java.nio.charset.StandardCharsets.US_ASCII);
          if (register) {
              this.getCraftPlayer().addChannel(channel);
@@ -113,7 +113,7 @@ index 8a4c8e2fb86274b5bf95bda510029f4c5077d836..169d039a00339fc8eeb697ba03808f32
              this.getCraftPlayer().removeChannel(channel);
          }
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index fe44069de549acc81a6037426a405d6fddb87897..0ed45220ce029e5ef538b86f89509f2d2156cbb9 100644
+index bdc912f5330896e967cbef4e3e545ff5182e591e..e3898b41c2d19940e08b60cdac28ab07161d3c50 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -346,6 +346,9 @@ public abstract class PlayerList {
@@ -134,15 +134,7 @@ index fe44069de549acc81a6037426a405d6fddb87897..0ed45220ce029e5ef538b86f89509f2d
          // Paper end - Fix kick event leave message not being sent
          org.purpurmc.purpur.task.BossBarTask.removeFromAll(player.getBukkitEntity()); // Purpur - Implement TPSBar
          ServerLevel serverLevel = player.level();
-@@ -651,6 +655,7 @@ public abstract class PlayerList {
-         SocketAddress socketAddress = loginlistener.connection.getRemoteAddress();
- 
-         ServerPlayer entity = new ServerPlayer(this.server, this.server.getLevel(Level.OVERWORLD), gameProfile, net.minecraft.server.level.ClientInformation.createDefault());
-+        entity.internalConnection = loginlistener.connection; // Leaves - protocol core
-         entity.transferCookieConnection = loginlistener;
-         org.bukkit.entity.Player player = entity.getBukkitEntity();
-         org.bukkit.event.player.PlayerLoginEvent event = new org.bukkit.event.player.PlayerLoginEvent(player, loginlistener.connection.hostname, ((java.net.InetSocketAddress) socketAddress).getAddress(), ((java.net.InetSocketAddress) loginlistener.connection.channel.remoteAddress()).getAddress());
-@@ -1523,6 +1528,7 @@ public abstract class PlayerList {
+@@ -1507,6 +1511,7 @@ public abstract class PlayerList {
              serverPlayer.connection.send(clientboundUpdateRecipesPacket);
              serverPlayer.getRecipeBook().sendInitialRecipeBook(serverPlayer);
          }

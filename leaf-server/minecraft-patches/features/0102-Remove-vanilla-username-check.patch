@@ -5,10 +5,10 @@ Subject: [PATCH] Remove vanilla username check
 
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index c61a94a08486cdeba84ccfbc58ef3cabd4a461d8..37bc11ba3746808307bc6a8c87cea392146c55b1 100644
+index 6d320ed179393e47398c44f2ba2b2285016f349e..79534beb5f4a3427078541fda287d9c950999c96 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -184,7 +184,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -163,7 +163,8 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
      public void handleHello(ServerboundHelloPacket packet) {
          Validate.validState(this.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
          // Paper start - Validate usernames

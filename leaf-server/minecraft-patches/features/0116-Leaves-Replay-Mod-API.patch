@@ -92,7 +92,7 @@ index b305ba9bab617bf4e52d0e6ddf160bacc5751a94..bbaf1a29f86a9bfc13795249d545b6f7
                              if (players.size() >= resultLimit) {
                                  return players;
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 3a1822e0f37c86dfad56ae06c14fffb960ff99ec..32c934a489df7a06892265c6d762e88c3716a5c6 100644
+index 0fed0f181c4d1f31d01bdaa5dc9417ccd68b3f03..534082a0441dcde9115652cb67dbc8310529ecee 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1642,7 +1642,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -178,7 +178,7 @@ index 95c128f028c3cce7d0b37821a6e75208323fb4e9..2cf0fa70ae3d7675cac3cf7a0002097b
                  ServerLevel.this.updateSleepingPlayerList();
              }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 4210089d6ba271ef9d68e18699b1122f07e1946a..8d1571f3db4e7f6c4309b8a46ed0359ecdee85a5 100644
+index 900075e85f2085378389a974e500fc8acd25747e..b53b989bd6efd747d1ee93dedfc59cbc758fcda3 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -216,7 +216,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -191,7 +191,7 @@ index 4210089d6ba271ef9d68e18699b1122f07e1946a..8d1571f3db4e7f6c4309b8a46ed0359e
      private final PlayerAdvancements advancements;
      private final ServerStatsCounter stats;
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 418d6970d46b3b592c17f7721ca3ecfd1edce8ad..70d394d8a257390af20bdea5895f7d8a74b16dec 100644
+index 22c551e8cfc6ab5822d4e6610033cc2d1aafd6c3..1920e0ce0c70f4bf10635754819bbdf6a4d275ff 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -131,6 +131,7 @@ public abstract class PlayerList {
@@ -382,12 +382,12 @@ index 418d6970d46b3b592c17f7721ca3ecfd1edce8ad..70d394d8a257390af20bdea5895f7d8a
          this.playersByName.remove(player.getScoreboardName().toLowerCase(java.util.Locale.ROOT)); // Spigot
          this.removeFromSendAllPlayerInfoBuckets(player); // Gale - Purpur - spread out sending all player info
          this.server.getCustomBossEvents().onPlayerDisconnect(player);
-@@ -691,7 +837,7 @@ public abstract class PlayerList {
-             // return this.players.size() >= this.maxPlayers && !this.canBypassPlayerLimit(gameProfile)
-             //     ? Component.translatable("multiplayer.disconnect.server_full")
-             //     : null;
--            if (this.players.size() >= this.maxPlayers && !(player.hasPermission("purpur.joinfullserver") || this.canBypassPlayerLimit(gameProfile))) { // Purpur - Allow player join full server by permission
-+            if (this.realPlayers.size() >= this.maxPlayers && !(player.hasPermission("purpur.joinfullserver") || this.canBypassPlayerLimit(gameProfile))) { // Purpur - Allow player join full server by permission // Leaves - only real player
-                 event.disallow(org.bukkit.event.player.PlayerLoginEvent.Result.KICK_FULL, net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().deserialize(org.spigotmc.SpigotConfig.serverFullMessage)); // Spigot // Paper - Adventure
-             }
-         }
+@@ -1104,7 +1250,7 @@ public abstract class PlayerList {
+ 
+     // Paper start - whitelist verify event / login event
+     public LoginResult canBypassFullServerLogin(final GameProfile profile, final LoginResult currentResult) {
+-        final boolean shouldKick = this.players.size() >= this.maxPlayers && !(/*player.hasPermission("purpur.joinfullserver") || */this.canBypassPlayerLimit(profile)); // Purpur - Allow player join full server by permission TODO: this hasn't worked for a while, so comment it out until we can reliably check perms of the player joining
++        final boolean shouldKick = this.realPlayers.size() >= this.maxPlayers && !(/*player.hasPermission("purpur.joinfullserver") || */this.canBypassPlayerLimit(profile)); // Purpur - Allow player join full server by permission TODO: this hasn't worked for a while, so comment it out until we can reliably check perms of the player joining // Leaves - only real player
+         final io.papermc.paper.event.player.PlayerServerFullCheckEvent fullCheckEvent = new io.papermc.paper.event.player.PlayerServerFullCheckEvent(
+             com.destroystokyo.paper.profile.CraftPlayerProfile.asBukkitMirror(profile),
+             io.papermc.paper.adventure.PaperAdventure.asAdventure(currentResult.message),

@@ -19,10 +19,10 @@ index 1dc009e85403fe0b6a68daefecfe5cb25ad263cd..de450f9ef03944b101b483126af6a778
              org.purpurmc.purpur.command.DemoCommand.register(this.dispatcher); // Purpur - Add demo command
              org.purpurmc.purpur.command.PingCommand.register(this.dispatcher); // Purpur - Add ping command
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 8dabe3ca6f5c5b0cd5f5a3801e1cbd853520738e..b71b4db16ac8b42c0061f15db05d4315dd7fecb4 100644
+index b53b989bd6efd747d1ee93dedfc59cbc758fcda3..0df36e136fb0ce928a207f8f58dfe10839be8507 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -2490,6 +2490,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2424,6 +2424,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
      // Purpur start - AFK API
      private boolean isAfk = false;
@@ -33,7 +33,7 @@ index 8dabe3ca6f5c5b0cd5f5a3801e1cbd853520738e..b71b4db16ac8b42c0061f15db05d4315
  
      @Override
      public void setAfk(boolean afk) {
-@@ -2527,6 +2531,18 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2461,6 +2465,18 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              String prefix = (split.length > 0 ? split[0] : "").replace(org.purpurmc.purpur.PurpurConfig.afkTabListPrefix, "");
              String suffix = (split.length > 1 ? split[1] : "").replace(org.purpurmc.purpur.PurpurConfig.afkTabListSuffix, "");
              if (afk) {
@@ -53,10 +53,10 @@ index 8dabe3ca6f5c5b0cd5f5a3801e1cbd853520738e..b71b4db16ac8b42c0061f15db05d4315
              } else {
                  getBukkitEntity().setPlayerListName(prefix + scoreboardName + suffix, true);
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 2eecf924618192e1b8cf3971ac6cc3c95ec7f235..1306f920b5908731d04004e1b180c3ac4ad0745d 100644
+index f8572720e4bf7b2b0b64fbe39a5a068d715b6e01..c038ceb441897157a0c240a9970e676a297e40c3 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2361,6 +2361,7 @@ public class ServerGamePacketListenerImpl
+@@ -2359,6 +2359,7 @@ public class ServerGamePacketListenerImpl
  
      @Override
      public void handleChatCommand(ServerboundChatCommandPacket packet) {
@@ -64,7 +64,7 @@ index 2eecf924618192e1b8cf3971ac6cc3c95ec7f235..1306f920b5908731d04004e1b180c3ac
          this.tryHandleChat(packet.command(), () -> {
              // CraftBukkit start - SPIGOT-7346: Prevent disconnected players from executing commands
              if (this.player.hasDisconnected()) {
-@@ -2369,7 +2370,7 @@ public class ServerGamePacketListenerImpl
+@@ -2367,7 +2368,7 @@ public class ServerGamePacketListenerImpl
              // CraftBukkit end
              this.performUnsignedChatCommand(packet.command());
              this.detectRateSpam("/" + packet.command()); // Spigot
@@ -73,7 +73,7 @@ index 2eecf924618192e1b8cf3971ac6cc3c95ec7f235..1306f920b5908731d04004e1b180c3ac
      }
  
      private void performUnsignedChatCommand(String command) {
-@@ -2402,6 +2403,7 @@ public class ServerGamePacketListenerImpl
+@@ -2400,6 +2401,7 @@ public class ServerGamePacketListenerImpl
      public void handleSignedChatCommand(ServerboundChatCommandSignedPacket packet) {
          Optional<LastSeenMessages> optional = this.unpackAndApplyLastSeen(packet.lastSeenMessages());
          if (!optional.isEmpty()) {
@@ -81,7 +81,7 @@ index 2eecf924618192e1b8cf3971ac6cc3c95ec7f235..1306f920b5908731d04004e1b180c3ac
              this.tryHandleChat(packet.command(), () -> {
                  // CraftBukkit start - SPIGOT-7346: Prevent disconnected players from executing commands
                  if (this.player.hasDisconnected()) {
-@@ -2410,7 +2412,7 @@ public class ServerGamePacketListenerImpl
+@@ -2408,7 +2410,7 @@ public class ServerGamePacketListenerImpl
                  // CraftBukkit end
                  this.performSignedChatCommand(packet, optional.get());
                  this.detectRateSpam("/" + packet.command()); // Spigot
@@ -90,7 +90,7 @@ index 2eecf924618192e1b8cf3971ac6cc3c95ec7f235..1306f920b5908731d04004e1b180c3ac
          }
      }
  
-@@ -2517,12 +2519,17 @@ public class ServerGamePacketListenerImpl
+@@ -2515,12 +2517,17 @@ public class ServerGamePacketListenerImpl
          return dispatcher.parse(command, this.player.createCommandSourceStack());
      }
  
@@ -110,7 +110,7 @@ index 2eecf924618192e1b8cf3971ac6cc3c95ec7f235..1306f920b5908731d04004e1b180c3ac
              this.player.resetLastActionTime();
              // CraftBukkit start
              if (sync) {
-@@ -2534,6 +2541,40 @@ public class ServerGamePacketListenerImpl
+@@ -2532,6 +2539,40 @@ public class ServerGamePacketListenerImpl
          }
      }
  
@@ -152,7 +152,7 @@ index 2eecf924618192e1b8cf3971ac6cc3c95ec7f235..1306f920b5908731d04004e1b180c3ac
          synchronized (this.lastSeenMessages) {
              Optional var10000;
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index f0c66fce913af9433d53572a3dd3fc31d512346b..84914c3245de053ba07b105e44f9d838fa3efc4c 100644
+index 430c5f02cb0f52a7a655a1b8bd23db8bf93fb43d..56876236505d17663900857e4b6777f1778538a6 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -676,6 +676,7 @@ public abstract class PlayerList {

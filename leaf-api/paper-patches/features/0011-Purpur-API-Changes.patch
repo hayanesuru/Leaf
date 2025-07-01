@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur API Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: a112b6aca718e4500a6d48ca9d7158faf0f4adf9
+Commit: 591baf2648d0f75ffecc52f1d169348af35246dd
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "co/aikar/timings/TimedEventExecutor.java.patch"
@@ -21,7 +21,7 @@ Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "org/spigotmc/CustomTimingsHandler.java.patch"
 
 diff --git a/src/generated/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java b/src/generated/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java
-index e4729256f444168dc8cb7121f66cae0df054692b..0db0e11f4e18a280f699004dc660ce211b7f895f 100644
+index b7fae62ca1807031c62148505ae54c0fb7b87780..3b6580c3679e9c325dd8deb302dbfe6a062bd291 100644
 --- a/src/generated/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java
 +++ b/src/generated/java/com/destroystokyo/paper/entity/ai/VanillaGoal.java
 @@ -446,6 +446,26 @@ public interface VanillaGoal<T extends Mob> extends Goal<T> {
@@ -290,10 +290,10 @@ index 918a045165cdcde264bc24082b7afebb407271de..f283bcabff7fe6eede6cf4344537e430
 +    // Purpur end - ChatColor conveniences
  }
 diff --git a/src/main/java/org/bukkit/Material.java b/src/main/java/org/bukkit/Material.java
-index ac8d14010940d55e2d885e75ce6ff436c46e2d69..8f45823ea89c8208374115f8ed9c5a535a64c017 100644
+index 899c288e12b423b9f8fe84e113fd4d996a98de94..7f488cc432ded1ec0e99c65bea5fd9897c8efbb4 100644
 --- a/src/main/java/org/bukkit/Material.java
 +++ b/src/main/java/org/bukkit/Material.java
-@@ -3636,4 +3636,40 @@ public enum Material implements Keyed, Translatable, net.kyori.adventure.transla
+@@ -3633,4 +3633,40 @@ public enum Material implements Keyed, Translatable, net.kyori.adventure.transla
          return this.asItemType().getDefaultDataTypes();
      }
      // Paper end - data component API
@@ -700,10 +700,10 @@ index 739911cda33b373f99df627a3a378b37d7d461aa..58e16c12b06fa11d30b67f5038844ff9
       * Add an entity to the block.
       *
 diff --git a/src/main/java/org/bukkit/command/SimpleCommandMap.java b/src/main/java/org/bukkit/command/SimpleCommandMap.java
-index 4acda947b7d69ab4133b4cc94e76d945e4d148d5..613a0bad5c07cf14098218652eba1f4deaf77c6d 100644
+index ad1330d87223dfcf3c9da40aa5ece8c21141f0d6..e3f0605d375dcbb43ae40dac48acdeb2bd458e54 100644
 --- a/src/main/java/org/bukkit/command/SimpleCommandMap.java
 +++ b/src/main/java/org/bukkit/command/SimpleCommandMap.java
-@@ -146,6 +146,19 @@ public class SimpleCommandMap implements CommandMap {
+@@ -148,6 +148,19 @@ public class SimpleCommandMap implements CommandMap {
              return false;
          }
  
@@ -723,7 +723,7 @@ index 4acda947b7d69ab4133b4cc94e76d945e4d148d5..613a0bad5c07cf14098218652eba1f4d
          // Paper start - Plugins do weird things to workaround normal registration
          if (target.timings == null) {
              target.timings = co.aikar.timings.TimingsManager.getCommandTiming(null, target);
-@@ -155,7 +168,7 @@ public class SimpleCommandMap implements CommandMap {
+@@ -157,7 +170,7 @@ public class SimpleCommandMap implements CommandMap {
          try {
              try (co.aikar.timings.Timing ignored = target.timings.startTiming()) { // Paper - use try with resources
              // Note: we don't return the result of target.execute as thats success / failure, we return handled (true) or not handled (false)
@@ -1008,13 +1008,13 @@ index bc84b892cae5fe7019a3ad481e9da79956efa1fe..48eb5b00c460cccde29d327cef1d63fc
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index c44453789834c544b0e78b52bb9b09ffbd5958fb..d4082cd6dae07958ace3b9e9769ccb7da4c2a828 100644
+index cc663ca87a6f64ea891984c72554796f25bb308f..747e943d98a385346b79897a5261d41cfc9572df 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -3935,4 +3935,123 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
-      * @param score New death screen score of player
+@@ -3942,4 +3942,123 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
       */
-     void setDeathScreenScore(int score);
+     @ApiStatus.Experimental
+     PlayerGameConnection getConnection();
 +
 +    // Purpur start
 +    /**
@@ -1161,7 +1161,7 @@ index 7fbfdb07585c7b28acea1f0c1f58ada0cc744441..21fcca092e2e31baa5ece0de9e44e3fa
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Villager.java b/src/main/java/org/bukkit/entity/Villager.java
-index 1be07639143cd80bd4fb304d6f3bbced58887617..120159852cae3b1a71c6c7ce949cadb386023095 100644
+index 4048add2433ebe39d3df995296daaff4bfadce47..8da18f023f6b18f6be58e08f37c2d873bc0c97d2 100644
 --- a/src/main/java/org/bukkit/entity/Villager.java
 +++ b/src/main/java/org/bukkit/entity/Villager.java
 @@ -408,4 +408,13 @@ public interface Villager extends AbstractVillager {
@@ -1204,7 +1204,7 @@ index 11ae1b3ad8c215f9245945d223c52f4a62ac47d9..7f23eb5a60ff08fb31e8ba3731a43bd7
 +    // Purpur end
  }
 diff --git a/src/main/java/org/bukkit/entity/Wolf.java b/src/main/java/org/bukkit/entity/Wolf.java
-index d0a64457e4bf40f2a78ffe90c2d402adc154e327..ea51840e4f40733a48ca34f7a8fcf17dc963d659 100644
+index 98ed584f801a35253a9a5a2af3c73dbbc49bcb06..8708ab27e38e3906b13d103ad45224c89e239117 100644
 --- a/src/main/java/org/bukkit/entity/Wolf.java
 +++ b/src/main/java/org/bukkit/entity/Wolf.java
 @@ -163,4 +163,20 @@ public interface Wolf extends Tameable, Sittable, io.papermc.paper.entity.Collar
@@ -1260,10 +1260,10 @@ index 22e14ba522510d659c191d72536cde895458d9ed..d45d781975a6026022712a217c154e31
           * When a player gets bad omen after killing a patrol captain.
           *
 diff --git a/src/main/java/org/bukkit/event/inventory/InventoryType.java b/src/main/java/org/bukkit/event/inventory/InventoryType.java
-index 81118a91c2e22e02a1f774d1cc4d3e97064087ce..6640df827e354cc32cea5fc71b9e464443202708 100644
+index 54ff294e64abd692c0f64ba2db7341c9c71436d0..49e458e453486dcf48d1ab920da176723d7ef3f4 100644
 --- a/src/main/java/org/bukkit/event/inventory/InventoryType.java
 +++ b/src/main/java/org/bukkit/event/inventory/InventoryType.java
-@@ -164,7 +164,7 @@ public enum InventoryType {
+@@ -166,7 +166,7 @@ public enum InventoryType {
      SMITHING_NEW(4, "Upgrade Gear", MenuType.SMITHING),
      ;
  

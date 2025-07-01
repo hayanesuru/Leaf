@@ -1079,7 +1079,7 @@ index b4c983216cd839d793a09e327bb2f15ab90cbff8..1413511500ce8ae25cc4af1d54fc33c8
              for (Entity entity : passengerEntity.getPassengers()) {
                  this.tickPassenger(passengerEntity, entity, isActive); // Paper - EAR 2
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index b1fba7be059247bc4ba4e652f730e026e837b608..5a4b6005de28f62c98ac8172890689d3150fd4da 100644
+index 21ae237a94232090029539652310f7d1e4aba381..4132ebc316af92aedd3b5f21d291e7d57560e985 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -106,8 +106,6 @@ import net.minecraft.util.HashOps;
@@ -1091,7 +1091,7 @@ index b1fba7be059247bc4ba4e652f730e026e837b608..5a4b6005de28f62c98ac8172890689d3
  import net.minecraft.world.Container;
  import net.minecraft.world.Difficulty;
  import net.minecraft.world.InteractionHand;
-@@ -1471,14 +1469,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1405,14 +1403,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  this.unsetRemoved();
                  */
                  // CraftBukkit end
@@ -1106,7 +1106,7 @@ index b1fba7be059247bc4ba4e652f730e026e837b608..5a4b6005de28f62c98ac8172890689d3
                  // CraftBukkit start
                  this.isChangingDimension = true; // CraftBukkit - Set teleport invulnerability only if player changing worlds
                  LevelData worlddata = level.getLevelData();
-@@ -1495,7 +1489,6 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1429,7 +1423,6 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  this.connection.internalTeleport(PositionMoveRotation.of(teleportTransition), teleportTransition.relatives()); // CraftBukkit - use internal teleport without event
                  this.connection.resetPosition();
                  level.addDuringTeleport(this);
@@ -1115,7 +1115,7 @@ index b1fba7be059247bc4ba4e652f730e026e837b608..5a4b6005de28f62c98ac8172890689d3
                  this.stopUsingItem();
                  this.connection.send(new ClientboundPlayerAbilitiesPacket(this.getAbilities()));
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 43f70a5561d6cc62aaeba6d1e39598ecb382e369..ccbf60f546974692c2c840f4bce87e2c95d1866c 100644
+index 16962ccab91d0941e428a2e53aa37e9ca975f62f..911ce7fcdb7b60880e5502b1a6c9f5bd07c04fd1 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -26,7 +26,6 @@ import net.minecraft.network.protocol.cookie.ServerboundCookieResponsePacket;
@@ -1125,8 +1125,8 @@ index 43f70a5561d6cc62aaeba6d1e39598ecb382e369..ccbf60f546974692c2c840f4bce87e2c
 -import net.minecraft.util.profiling.Profiler;
  import org.slf4j.Logger;
  
- public abstract class ServerCommonPacketListenerImpl implements ServerCommonPacketListener, org.bukkit.craftbukkit.entity.CraftPlayer.TransferCookieConnection { // CraftBukkit
-@@ -273,7 +272,6 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPacketListener {
+@@ -176,7 +175,6 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
      }
  
      protected void keepConnectionAlive() {
@@ -1134,7 +1134,7 @@ index 43f70a5561d6cc62aaeba6d1e39598ecb382e369..ccbf60f546974692c2c840f4bce87e2c
          long millis = Util.getMillis();
          // Paper start - improve keepalives
          if (this.checkIfClosed(millis) && !this.processedDisconnect) {
-@@ -294,8 +292,6 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -197,8 +195,6 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
                  // Paper end - improve keepalives
              }
          }
@@ -1664,10 +1664,10 @@ index c569074403b1d8b443aaa98ba9cf9bbd0e98bd2d..b1aa7294f9479f45fcde77c5ea46db9f
                  this.seen.add(id);
              } else {
 diff --git a/net/minecraft/world/entity/animal/HappyGhast.java b/net/minecraft/world/entity/animal/HappyGhast.java
-index 24fdfda487bf5348c32707022719ec9907debc80..4e74d5b3076f50f9294553b453f5903ef32f1e8a 100644
+index 272f57aca640e045efca64dd018b221335c667ee..f07dcf7d45b1b717faeae0c4129fb00a22fb7d57 100644
 --- a/net/minecraft/world/entity/animal/HappyGhast.java
 +++ b/net/minecraft/world/entity/animal/HappyGhast.java
-@@ -13,8 +13,6 @@ import net.minecraft.sounds.SoundEvents;
+@@ -14,8 +14,6 @@ import net.minecraft.sounds.SoundEvents;
  import net.minecraft.sounds.SoundSource;
  import net.minecraft.tags.ItemTags;
  import net.minecraft.util.Mth;
@@ -1676,7 +1676,7 @@ index 24fdfda487bf5348c32707022719ec9907debc80..4e74d5b3076f50f9294553b453f5903e
  import net.minecraft.world.InteractionHand;
  import net.minecraft.world.InteractionResult;
  import net.minecraft.world.damagesource.DamageSource;
-@@ -379,13 +377,8 @@ public class HappyGhast extends Animal {
+@@ -385,13 +383,8 @@ public class HappyGhast extends Animal {
      @Override
      protected void customServerAiStep(ServerLevel level) {
          if (this.isBaby()) {
@@ -2077,7 +2077,7 @@ index 4a4cc7f9c95d4f4b6ad4948e3ed3504efbbcef15..dd6666bd8b8df4148a1557627ce2a6dd
          if ((this.tickCount + this.getId()) % 120 == 0) {
              applyDarknessAround(level, this.position(), this, 20);
 diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
-index 43f16df230f87a43e249a58fc10ef2da517f22ee..532618ae4acd548129006a6c42c62a5b046dbd7e 100644
+index e1e2bdb35866a8f32a41f6efd24ad77cf916b2e9..6cf2af33d22d3df8374746f5926f3f2d5093431d 100644
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
 @@ -35,8 +35,6 @@ import net.minecraft.stats.Stats;
@@ -2089,7 +2089,7 @@ index 43f16df230f87a43e249a58fc10ef2da517f22ee..532618ae4acd548129006a6c42c62a5b
  import net.minecraft.world.Difficulty;
  import net.minecraft.world.DifficultyInstance;
  import net.minecraft.world.InteractionHand;
-@@ -295,10 +293,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -294,10 +292,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
      }
      protected void customServerAiStep(ServerLevel level, final boolean inactive) {
          // Paper end - EAR 2

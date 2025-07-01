@@ -1,7 +1,8 @@
 name: Publish API
+
 on:
   push:
-    branches: [ "ver/1.21.6" ]
+    branches: [ "ver/1.21.7" ]
 
 jobs:
   build:
@@ -11,12 +12,12 @@ jobs:
       GRADLE_MEMORY: "-Xmx4g -XX:MaxMetaspaceSize=2g"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@main
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Set up GraalVM JDK 21
-        uses: graalvm/setup-graalvm@main
+        uses: graalvm/setup-graalvm@v1
         with:
           java-version: 21
           github-token: "${{ secrets.GITHUB_TOKEN }}"

@@ -79,10 +79,10 @@ index 6c7edbbf3935c40ccb78bee680ea75431718b9bd..fd2f79d976c9587b00380f8b8f784b32
          public String toString() {
              return "Reference{" + this.key + "=" + this.value + "}";
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index cc015575efcb0c3d56d33510a1f43f40996eab1a..672301fcfe89dda6fb20bc0cd18d18fc26cd2efa 100644
+index 9c84df53473a58a182a544fd9dd27491c0dc3638..02e02aaa81921802ff61c35505acf7bb39f733c3 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1979,7 +1979,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1912,7 +1912,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      this.awardStat(Stats.SWIM_ONE_CM, rounded);
                      this.causeFoodExhaustion(this.level().spigotConfig.swimMultiplier * (float) rounded * 0.01F, org.bukkit.event.entity.EntityExhaustionEvent.ExhaustionReason.SWIM); // CraftBukkit - EntityExhaustionEvent // Spigot
                  }
@@ -175,7 +175,7 @@ index c8354d46ed909090f7c15f396863bf7d73afcefa..3ee788b172240ccf38cb31385dff1336
              } else if (!flag) {
                  this.applyGravity();
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index f95792b8642dc86a4d88e1d756de65d6cae2fa98..be8cc4aceafc183808a6d0f7278ef8378c4265e0 100644
+index f1975e5ab19da6dd1d8b94503924471e3efab921..6f57a8de40a398312e14282ff6764a633a949049 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -463,7 +463,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

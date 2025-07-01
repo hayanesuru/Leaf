@@ -23,10 +23,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 1306f920b5908731d04004e1b180c3ac4ad0745d..faa135c3eb1bfc8f52c90e6f88411fdf48ed9ee1 100644
+index c038ceb441897157a0c240a9970e676a297e40c3..3173922dbb478e46f892304fb17b0f662fe62b40 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -328,17 +328,12 @@ public class ServerGamePacketListenerImpl
+@@ -330,17 +330,12 @@ public class ServerGamePacketListenerImpl
      public final org.leavesmc.leaves.protocol.syncmatica.exchange.ExchangeTarget exchangeTarget; // Leaves - Syncmatica Protocol
  
      // Purpur start - AFK API
@@ -48,7 +48,7 @@ index 1306f920b5908731d04004e1b180c3ac4ad0745d..faa135c3eb1bfc8f52c90e6f88411fdf
      // Purpur end - AFK API
  
      @Override
-@@ -401,7 +396,7 @@ public class ServerGamePacketListenerImpl
+@@ -403,7 +398,7 @@ public class ServerGamePacketListenerImpl
              && Util.getMillis() - this.player.getLastActionTime() > this.server.getPlayerIdleTimeout() * 1000L * 60L && !this.player.wonGame) { // Paper - Prevent AFK kick while watching end credits
              // Purpur start - AFK API
              this.player.setAfk(true);

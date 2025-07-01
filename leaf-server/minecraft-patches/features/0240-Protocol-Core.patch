@@ -34,10 +34,10 @@ index 42dbd6d9e82130cfc5ae4669c460373631061451..b3356ad173027afafba931f31952c5b5
          for (int i = 0; i < this.tickables.size(); i++) {
              this.tickables.get(i).run();
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 163ac7b4b6fefb0c4594548dfffc0ea6f24f0765..479884c829a7550d39508bf37a2551f2ef52fcd1 100644
+index f9664926de5706eda918b457301174734b0b0300..8423a1cacf23e86eeb9b277b11e21c84bc298ab6 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -876,6 +876,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -809,6 +809,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              }
          }
          // Purpur end - Ridables
@@ -45,11 +45,11 @@ index 163ac7b4b6fefb0c4594548dfffc0ea6f24f0765..479884c829a7550d39508bf37a2551f2
      }
  
      private void updatePlayerAttributes() {
-diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 23fefdc7122ff8e195c27651dc3a83000f62a95e..f90fc120d448ed2e3978682b189d4c955bc37051 100644
---- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-+++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -206,6 +206,8 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index baa703a89583f72fab0ebbc40c85399022185c29..983f2b1c12d2e64c099ba7c717b9d2bc7f1770ce 100644
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -3871,6 +3871,8 @@ public class ServerGamePacketListenerImpl
  
          PacketUtils.ensureRunningOnSameThread(packet, this, this.player.level());
  
@@ -59,7 +59,7 @@ index 23fefdc7122ff8e195c27651dc3a83000f62a95e..f90fc120d448ed2e3978682b189d4c95
          final byte[] data = discardedPayload.data();
          try {
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 1a03bf5184b1b85d4cea97dc73795e8725bf2613..58e1b90132898e30aa15ed08c76b53165473999a 100644
+index 6c61c11f655002359fe8791b9a1704d354b8f993..daf2410db29adad3751da1b08fa1774d84190aff 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -690,6 +690,7 @@ public abstract class PlayerList {

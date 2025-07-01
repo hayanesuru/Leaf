@@ -152,10 +152,10 @@ index a9c2f419200483673f6743ed94af110a8e875e71..617eb1b9d30d499124576c5d7cb51525
          return ret;
      }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 45e4a7356e51e9c50d440782b55d1cbfc4b76f96..f752dceea48ed8264ae4cb60fdf2390f0e5019e1 100644
+index 8df0dbadca1dc72ac8d267654414044eb988ee43..784a08d0aed30fd0362e408aaa5772003021c0ad 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1166,7 +1166,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1100,7 +1100,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      this.getInventory().getNonEquipmentItems().set(i, net.minecraft.world.item.ItemStack.EMPTY);
                  }
              }
@@ -165,10 +165,10 @@ index 45e4a7356e51e9c50d440782b55d1cbfc4b76f96..f752dceea48ed8264ae4cb60fdf2390f
                      this.getInventory().equipment.set(value, net.minecraft.world.item.ItemStack.EMPTY);
                  }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index f953fa6adb112bc9da34cfb72045975f87c5f021..a07310aebd8406af27864358e15715fcc7694329 100644
+index 5dba2bdd91e5dc775e0727b99aff02c892eff733..38376506f8b886ed66ec48b1a78dede2a7cabe99 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2784,7 +2784,7 @@ public class ServerGamePacketListenerImpl
+@@ -2782,7 +2782,7 @@ public class ServerGamePacketListenerImpl
                                          // SPIGOT-7136 - Allays
                                          if (target instanceof net.minecraft.world.entity.animal.allay.Allay || target instanceof net.minecraft.world.entity.animal.horse.AbstractHorse) { // Paper - Fix horse armor desync
                                              ServerGamePacketListenerImpl.this.send(new net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket(

@@ -26,18 +26,18 @@ Locally this patch drops the entity tracker tick by a full 1.5x.
 Co-authored-by: Quang Tran <3d7777456@gmail.com>
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 1014ab2aeb5e496124c99c938538e88d75561cd5..2fda4bf1aeecba183ba6301f83f582ae34f5a3da 100644
+index e72eda830644851656fae3118c513d7bd701be45..01fb1bf0eba70b740b12731c79feadefc8fe96f0 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -147,6 +147,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-     @Nullable public SocketAddress haProxyAddress; // Paper - Add API to get player's proxy address
+@@ -148,6 +148,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+     public @Nullable net.minecraft.server.level.ServerPlayer savedPlayerForLoginEventLegacy; // Paper - playerloginevent
      // Paper start - Optimize network
      public boolean isPending = true;
 +    private io.netty.channel.SingleThreadEventLoop eventLoop; // Paper - optimise packets that are not flushed
      public boolean queueImmunity;
      // Paper end - Optimize network
  
-@@ -158,6 +159,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -159,6 +160,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      public void channelActive(ChannelHandlerContext context) throws Exception {
          super.channelActive(context);
          this.channel = context.channel();
@@ -45,7 +45,7 @@ index 1014ab2aeb5e496124c99c938538e88d75561cd5..2fda4bf1aeecba183ba6301f83f582ae
          this.address = this.channel.remoteAddress();
          this.preparing = false; // Spigot
          if (this.delayedDisconnect != null) {
-@@ -472,6 +474,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -473,6 +475,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          if (this.channel.eventLoop().inEventLoop()) {
              this.doSendPacket(packet, channelFutureListener, flag);
          } else {

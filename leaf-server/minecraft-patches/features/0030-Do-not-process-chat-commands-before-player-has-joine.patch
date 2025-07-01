@@ -13,22 +13,22 @@ As part of: EmpireCraft (https://github.com/starlis/empirecraft)
 Licensed under: MIT (https://opensource.org/licenses/MIT)
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index ffae3e45ba88e8b733e77b87a45cc27b9ecf8c19..684a15babe984c84703e2c6af7a461f75959312d 100644
+index 4132ebc316af92aedd3b5f21d291e7d57560e985..8df0dbadca1dc72ac8d267654414044eb988ee43 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -425,6 +425,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -424,6 +424,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      public boolean sentListPacket = false;
      public boolean supressTrackerForLogin = false; // Paper - Fire PlayerJoinEvent when Player is actually ready
      // CraftBukkit end
 +    public boolean didPlayerJoinEvent = false; // Gale - EMC - do not process chat/commands before player has joined
      public boolean isRealPlayer; // Paper
      public @Nullable com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent playerNaturallySpawnedEvent; // Paper - PlayerNaturallySpawnCreaturesEvent
-     public @Nullable String clientBrandName = null; // Paper - Brand support
+     public @Nullable org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - Add API for quit reason; there are a lot of changes to do if we change all methods leading to the event
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 383652f0bd32fca3551db85fb6ac42a0e326836e..29466047936ed44f57cb4bcb8f1bff0bdad81827 100644
+index 128fd9c5a44f05d3556f280f43151695da0665b8..ab0598fffccaf1ea628ab38c68d75399d73d897e 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2433,7 +2433,7 @@ public class ServerGamePacketListenerImpl
+@@ -2431,7 +2431,7 @@ public class ServerGamePacketListenerImpl
              this.disconnectAsync(Component.translatable("multiplayer.disconnect.illegal_characters"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_CHARACTERS); // Paper - add proper async disconnect
          } else if (this.player.isRemoved() || this.player.getChatVisibility() == ChatVisiblity.HIDDEN) { // CraftBukkit - dead men tell no tales
              this.send(new ClientboundSystemChatPacket(Component.translatable("chat.disabled.options").withStyle(ChatFormatting.RED), false));
@@ -38,7 +38,7 @@ index 383652f0bd32fca3551db85fb6ac42a0e326836e..29466047936ed44f57cb4bcb8f1bff0b
              // CraftBukkit start
              if (sync) {
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 898d9ab963a6cf1db8edf4657a65335d15f271c4..77dbd115d99d8f8e2c01ea69ca297ced06b19c12 100644
+index b09c1735acb57b6230225f88e0fc710ad61af119..39b977927a22956634b7c31818df0544814004fc 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -335,6 +335,8 @@ public abstract class PlayerList {

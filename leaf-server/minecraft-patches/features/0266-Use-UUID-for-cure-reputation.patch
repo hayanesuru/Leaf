@@ -22,10 +22,10 @@ index 22c1545a0329d56e0ec41ae4da1e1922aa1f9737..e89e4c26c40cbb3ef002022f22886d5f
                  }
  
 diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
-index 743c0c956ddd9e35d3c9c7b45fa8d36490d648dd..c029256175b27bb5f0d30e3fa7371f04c2069fd6 100644
+index f456a44deac3645c44366ca1704ae25419baf52c..db23240fed3fb8b9bc2a7f670d7bfd8ab80ffcd6 100644
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
-@@ -1095,6 +1095,21 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -1094,6 +1094,21 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          }
      }
  

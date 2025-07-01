@@ -5,10 +5,10 @@ Subject: [PATCH] Reduce PlayerChunk Updates
 
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 0dec7852a4f225b9e9e94debf9259faea625028f..c5b2033c323695f71009d765b64e7ed8f94b9258 100644
+index 983f2b1c12d2e64c099ba7c717b9d2bc7f1770ce..6dc940aa6ee513e5c87b6058ccaa90bba91bade9 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1455,6 +1455,8 @@ public class ServerGamePacketListenerImpl
+@@ -1457,6 +1457,8 @@ public class ServerGamePacketListenerImpl
                      this.resetPosition();
                  }
  
@@ -17,7 +17,7 @@ index 0dec7852a4f225b9e9e94debf9259faea625028f..c5b2033c323695f71009d765b64e7ed8
                  if (this.player.hasClientLoaded()) {
                      float f = Mth.wrapDegrees(packet.getYRot(this.player.getYRot())); final float toYaw = f; // Paper - OBFHELPER
                      float f1 = Mth.wrapDegrees(packet.getXRot(this.player.getXRot())); final float toPitch = f1; // Paper - OBFHELPER
-@@ -1732,7 +1734,7 @@ public class ServerGamePacketListenerImpl
+@@ -1734,7 +1736,7 @@ public class ServerGamePacketListenerImpl
                                          && !isFallFlying
                                          && !isAutoSpinAttack
                                          && this.noBlocksAround(this.player);

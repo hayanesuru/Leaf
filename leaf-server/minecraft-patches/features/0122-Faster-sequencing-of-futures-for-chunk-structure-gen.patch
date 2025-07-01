@@ -7,10 +7,10 @@ Replace `thenApply` with `thenCompose`. Once one task is completed then the next
 to prevent blocking threads while waiting to complete all tasks. But may cause the sequence of future compose disorder.
 
 diff --git a/net/minecraft/Util.java b/net/minecraft/Util.java
-index 0a69469c79aaa2466cda04f6acefed18e421d555..82ee6c27ebc2718ad88b640775d949ec6d7cfed2 100644
+index 138a58c5e5698b926b01e0170733dc3dbc5589ec..64372e0fd4eb7018fc36d0feb667c296ea48f927 100644
 --- a/net/minecraft/Util.java
 +++ b/net/minecraft/Util.java
-@@ -620,17 +620,39 @@ public class Util {
+@@ -625,17 +625,39 @@ public class Util {
          return Maps.transformValues(map, mapper);
      }
  

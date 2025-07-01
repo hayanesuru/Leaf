@@ -24,10 +24,10 @@ index a6be753d1284167e090c40e6dcfbaa56b4e3d774..867353500482247bbec79f407246902c
          if (this.goalSelector.inactiveTick(this.activatedPriority, true) && !isThrottled) { // Pufferfish - pass activated priroity // Pufferfish - throttle inactive goal selector ticking
              this.goalSelector.tick();
 diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
-index 165d0f50e7818b6daf834507033feaa2fabcaf19..5106013430c17d4a55f666163d0cb1e4c0497302 100644
+index 014bb5b6e82bb11b756430999522f4b8f9356d9f..174c37fca6b2b03a6eb36d8c7c17b6e8ec49f1cd 100644
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
-@@ -375,7 +375,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -374,7 +374,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          if (this.getUnhappyCounter() > 0) {
              this.setUnhappyCounter(this.getUnhappyCounter() - 1);
          }

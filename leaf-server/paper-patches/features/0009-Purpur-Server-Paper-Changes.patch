@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Paper Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: a112b6aca718e4500a6d48ca9d7158faf0f4adf9
+Commit: 591baf2648d0f75ffecc52f1d169348af35246dd
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "Rebrand.patch"
@@ -127,7 +127,7 @@ index 0000000000000000000000000000000000000000..15a226e3854d731f7724025ea3459c8a
 +    }
 +}
 diff --git a/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java b/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
-index 94bf04bb1c646ec5ba1d42f4b7b3e6c200707beb..3e41a308cf92b841b5375250d1380d16af3d0309 100644
+index e6ad63a56dc0fc969dbf3ed5bdc36b4187331e30..f99ee5383bb9f33c1ebdbc74a640c2f7dc20a046 100644
 --- a/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
 +++ b/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
 @@ -142,6 +142,10 @@ public class MobGoalHelper {
@@ -1068,10 +1068,10 @@ index 02deb9c37250144be9afa0fe55df2a49017a7070..dfb597fcb8d01ed6cf20eae57e260949
 +    // Purpur end - Llama API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 3e18819ae23ab5ecd866d61cd0fd62ce1324109e..7f17c5025f25e44a917f5d6a65b8d958a982b301 100644
+index 3ea6d207b2189fa6bebe101bfc98093c2c6b19c7..7f5eca8f32ae1afe3e6d2544b76cf0bbe131109f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -625,10 +625,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -575,10 +575,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public void setPlayerListName(String name) {
@@ -1088,7 +1088,7 @@ index 3e18819ae23ab5ecd866d61cd0fd62ce1324109e..7f17c5025f25e44a917f5d6a65b8d958
          if (this.getHandle().connection == null) return; // Paper - Updates are possible before the player has fully joined
          for (ServerPlayer player : (List<ServerPlayer>) this.server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
-@@ -1442,6 +1447,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1392,6 +1397,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          // Paper start - Teleport passenger API
          // Don't allow teleporting between worlds while keeping passengers
          if (ignorePassengers && entity.isVehicle() && location.getWorld() != this.getWorld()) {
@@ -1096,7 +1096,7 @@ index 3e18819ae23ab5ecd866d61cd0fd62ce1324109e..7f17c5025f25e44a917f5d6a65b8d958
              return false;
          }
  
-@@ -1463,6 +1469,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1413,6 +1419,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
  
          if (entity.isVehicle() && !ignorePassengers) { // Paper - Teleport API
@@ -1104,7 +1104,7 @@ index 3e18819ae23ab5ecd866d61cd0fd62ce1324109e..7f17c5025f25e44a917f5d6a65b8d958
              return false;
          }
  
-@@ -2726,6 +2733,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2676,6 +2683,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.getHandle().getAbilities().walkingSpeed * 2f;
      }
  
@@ -1133,9 +1133,9 @@ index 3e18819ae23ab5ecd866d61cd0fd62ce1324109e..7f17c5025f25e44a917f5d6a65b8d958
      private void validateSpeed(float value) {
          Preconditions.checkArgument(value <= 1f && value >= -1f, "Speed value (%s) need to be between -1f and 1f", value);
      }
-@@ -3569,4 +3598,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
-     public void setDeathScreenScore(final int score) {
-         getHandle().setScore(score);
+@@ -3524,4 +3553,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     public PlayerGameConnection getConnection() {
+         return this.getHandle().connection.playerGameConnection;
      }
 +
 +    // Purpur start - Purpur client support
@@ -1292,10 +1292,10 @@ index 33866c5a5591150de4c1d8f4c175122db3bd5bd4..5fd656f43985e3972c9f572d5b05bf5c
 +    // Purpur end - Configurable chance for wolves to spawn rabid
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index c5daefa56597bd13fe227fa014ca5225c00a2a2d..98b766d115856dbf3ea11a983c1304591032f1b0 100644
+index 1d112510093d5eb5117adf16b92dd3411a610a4a..a162440a583801671787163d998d6b9546ef7e61 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -515,6 +515,15 @@ public class CraftEventFactory {
+@@ -525,6 +525,15 @@ public class CraftEventFactory {
          }
          craftServer.getPluginManager().callEvent(event);
  
@@ -1311,7 +1311,7 @@ index c5daefa56597bd13fe227fa014ca5225c00a2a2d..98b766d115856dbf3ea11a983c130459
          return event;
      }
  
-@@ -1047,6 +1056,7 @@ public class CraftEventFactory {
+@@ -1057,6 +1066,7 @@ public class CraftEventFactory {
          EntityDamageEvent event;
          if (damager != null) {
              event = new EntityDamageByEntityEvent(damager.getBukkitEntity(), damagee.getBukkitEntity(), cause, bukkitDamageSource, modifiers, modifierFunctions, critical);
@@ -1320,10 +1320,10 @@ index c5daefa56597bd13fe227fa014ca5225c00a2a2d..98b766d115856dbf3ea11a983c130459
              event = new EntityDamageEvent(damagee.getBukkitEntity(), cause, bukkitDamageSource, modifiers, modifierFunctions);
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
-index c00ddfe41439954fa0fd87c0933f274c8a752eb6..5fde4c71915f55f100cd30406803d6fca5b573dc 100644
+index 2f41a92465b9da28e026297cc3528898bb1c8412..83ae4b40e33e0dc58e0fd6aacf22e22ae0cd3684 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
-@@ -150,8 +150,19 @@ public class CraftContainer extends AbstractContainerMenu {
+@@ -148,8 +148,19 @@ public class CraftContainer extends AbstractContainerMenu {
              case PLAYER:
              case CHEST:
              case ENDER_CHEST:

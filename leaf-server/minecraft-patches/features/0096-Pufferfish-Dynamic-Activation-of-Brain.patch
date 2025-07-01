@@ -85,7 +85,7 @@ index ad114ca013e0d09d40755acbe916586868a519ed..3f70fca36f67fa421314ff92d372a971
                              if (!tickRateManager.isEntityFrozen(entity)) {
                                  entity.checkDespawn();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index e457dc20f76d813c32225733af0b29646d501202..57e669eeb2a05805b8ed81311344bc27292608f3 100644
+index 96341ee17591135d77d78c94814313b66eed4c3d..28e2ad1238651b8adb47b77763b0c8ae8172fe8a 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -364,6 +364,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -98,7 +98,7 @@ index e457dc20f76d813c32225733af0b29646d501202..57e669eeb2a05805b8ed81311344bc27
      // Paper start - EAR 2
      public final boolean defaultActivationState;
 diff --git a/net/minecraft/world/entity/EntityType.java b/net/minecraft/world/entity/EntityType.java
-index b87c6da5272becfa1159e8352f5be5491824f66f..9dc5a7e9fdb83d98c3554fea064b06f022da4496 100644
+index 96e1f8f40a0af4350155f192ac2126b523c9f0f5..388689c44cf63ade939e271d490051c9b3fe8034 100644
 --- a/net/minecraft/world/entity/EntityType.java
 +++ b/net/minecraft/world/entity/EntityType.java
 @@ -1085,6 +1085,7 @@ public class EntityType<T extends Entity> implements FeatureElement, EntityTypeT
@@ -299,10 +299,10 @@ index dd6666bd8b8df4148a1557627ce2a6ddab245ed6..6a9d3b749e251d3dac6fda13318bf5a0
          super.customServerAiStep(level);
          if ((this.tickCount + this.getId()) % 120 == 0) {
 diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
-index 73214ccad93ccd186c149e8ce8913eb0e3fa324a..9b9514362f32ab79816678ce4be25a4a87fe49aa 100644
+index 6cf2af33d22d3df8374746f5926f3f2d5093431d..f37759161b2a682612c6676cdd0d15908259776c 100644
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
-@@ -178,6 +178,8 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -177,6 +177,8 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
          (villager, poiType) -> poiType.is(PoiTypes.MEETING)
      );
  
@@ -311,7 +311,7 @@ index 73214ccad93ccd186c149e8ce8913eb0e3fa324a..9b9514362f32ab79816678ce4be25a4a
      public Villager(EntityType<? extends Villager> entityType, Level level) {
          this(entityType, level, VillagerType.PLAINS);
      }
-@@ -286,6 +288,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -285,6 +287,7 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
      }
      // Paper end - EAR 2
  
@@ -319,7 +319,7 @@ index 73214ccad93ccd186c149e8ce8913eb0e3fa324a..9b9514362f32ab79816678ce4be25a4a
      @Override
      protected void customServerAiStep(ServerLevel level) {
          // Paper start - EAR 2
-@@ -293,7 +296,11 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
+@@ -292,7 +295,11 @@ public class Villager extends AbstractVillager implements ReputationEventHandler
      }
      protected void customServerAiStep(ServerLevel level, final boolean inactive) {
          // Paper end - EAR 2

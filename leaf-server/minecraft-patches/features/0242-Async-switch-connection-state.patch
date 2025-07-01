@@ -5,10 +5,10 @@ Subject: [PATCH] Async switch connection state
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 2fda4bf1aeecba183ba6301f83f582ae34f5a3da..df012a4c67d474125fafa01b1677d9220fc817ae 100644
+index 01fb1bf0eba70b740b12731c79feadefc8fe96f0..a6077984e139be5cbcc00f8f0828f1992d3604a6 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -342,6 +342,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -343,6 +343,11 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          if (protocolInfo.flow() != this.getReceiving()) {
              throw new IllegalStateException("Invalid inbound protocol: " + protocolInfo.id());
          } else {
@@ -20,7 +20,7 @@ index 2fda4bf1aeecba183ba6301f83f582ae34f5a3da..df012a4c67d474125fafa01b1677d922
              this.packetListener = packetInfo;
              this.disconnectListener = null;
              UnconfiguredPipelineHandler.InboundConfigurationTask inboundConfigurationTask = UnconfiguredPipelineHandler.setupInboundProtocol(protocolInfo);
-@@ -351,7 +356,14 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -352,7 +357,14 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
                  inboundConfigurationTask = inboundConfigurationTask.andThen(context -> context.pipeline().addAfter("decoder", "bundler", packetBundlePacker));
              }
  
@@ -36,7 +36,7 @@ index 2fda4bf1aeecba183ba6301f83f582ae34f5a3da..df012a4c67d474125fafa01b1677d922
          }
      }
  
-@@ -373,6 +385,31 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -374,6 +386,31 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          }
      }
  
@@ -69,7 +69,7 @@ index 2fda4bf1aeecba183ba6301f83f582ae34f5a3da..df012a4c67d474125fafa01b1677d922
          if (this.packetListener != null) {
              throw new IllegalStateException("Listener already set");
 diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index b57f4e2528d73c3ba949cb7e5dce73871049968c..6b6a51af0198db0e157ee4cf5bd6b7751b69d3e5 100644
+index 91ca446e6e1d895d818fc7f844375101be6af5e8..8e24d76e24ad9788868934909a3c5e53823a5b13 100644
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 @@ -140,11 +140,34 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
@@ -110,10 +110,10 @@ index b57f4e2528d73c3ba949cb7e5dce73871049968c..6b6a51af0198db0e157ee4cf5bd6b775
          try {
              PlayerList playerList = this.server.getPlayerList();
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 6b0b0ccc18a5da05685867656705e1fcf94b5891..889bab9613fb32d239bb0613db4a900a442116a3 100644
+index 2e014cd543a6a790a0023835199b0e956e49fd1f..72115a4d2c54834f9edef02c83ed79f0fe380e78 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -493,11 +493,31 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -459,11 +459,31 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
          this.disconnect(ServerCommonPacketListenerImpl.DISCONNECT_UNEXPECTED_QUERY);
      }
  
@@ -145,4 +145,4 @@ index 6b0b0ccc18a5da05685867656705e1fcf94b5891..889bab9613fb32d239bb0613db4a900a
 +        if (!org.dreeam.leaf.config.modules.network.AlternativeJoin.enabled) this.connection.setupOutboundProtocol(ConfigurationProtocols.CLIENTBOUND); // Leaf - Async switch connection state
          CommonListenerCookie commonListenerCookie = CommonListenerCookie.createInitial(Objects.requireNonNull(this.authenticatedProfile), this.transferred);
          ServerConfigurationPacketListenerImpl serverConfigurationPacketListenerImpl = new ServerConfigurationPacketListenerImpl(
-             this.server, this.connection, commonListenerCookie, this.player // CraftBukkit
+             this.server, this.connection, commonListenerCookie

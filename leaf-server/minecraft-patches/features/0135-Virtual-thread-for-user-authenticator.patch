@@ -5,11 +5,11 @@ Subject: [PATCH] Virtual thread for user authenticator
 
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 37bc11ba3746808307bc6a8c87cea392146c55b1..9dce1d22c7de3a3dd0e0e8f117cfbb54d1b15042 100644
+index 79534beb5f4a3427078541fda287d9c950999c96..f68923c5f6fbecd8f1c10a30dbd06ed0dfee8b84 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -54,7 +54,7 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
-     // CraftBukkit end
+@@ -53,7 +53,7 @@ import org.bukkit.event.player.PlayerPreLoginEvent;
+ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener, TickablePacketListener {
      private static final AtomicInteger UNIQUE_THREAD_ID = new AtomicInteger(0);
      static final Logger LOGGER = LogUtils.getLogger();
 -    private static final java.util.concurrent.ExecutorService authenticatorPool = java.util.concurrent.Executors.newCachedThreadPool(new com.google.common.util.concurrent.ThreadFactoryBuilder().setNameFormat("User Authenticator #%d").setUncaughtExceptionHandler(new DefaultUncaughtExceptionHandler(LOGGER)).build()); // Paper - Cache authenticator threads

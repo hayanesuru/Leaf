@@ -26,10 +26,10 @@ index 92a820d48057ffe2ef35919341b6cdf605ca939e..b9b1bf351070cd2a744cdb683974fb2a
              double d1 = center.y - maxRange;
              double d2 = center.x + maxRange;
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 9b715b5848b33dd023feccfa93c08924c92fbe13..99eaa04bfcd2d37d3e49513e20bb5037119ef84d 100644
+index bbe123fd18fe97ae93bf562f32af73cdde722f70..feb4f7c70220e9c48a17a815631298bcb8366ded 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -562,7 +562,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -496,7 +496,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              long l1 = l * l;
              int i = l1 > 2147483647L ? Integer.MAX_VALUE : (int)l1;
              int coprime = this.getCoprime(i);

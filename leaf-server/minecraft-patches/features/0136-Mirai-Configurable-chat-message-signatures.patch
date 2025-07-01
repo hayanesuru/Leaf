@@ -103,10 +103,10 @@ index 87fc8861948b50361ec04c5a23406d3abdec6eac..77f11179836636424927843f5f10c3fd
          // Paper start - Add setting for proxy online mode status
          return properties.enforceSecureProfile
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 169d039a00339fc8eeb697ba03808f321ed4ad4c..23fefdc7122ff8e195c27651dc3a83000f62a95e 100644
+index eb725c1b6da0c5ef48fa07d79070950f2b45e30e..5f7bd65caf9ea8707674e243e9fedf84adde5913 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -371,10 +371,30 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -255,10 +255,30 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
      }
  
      public void send(Packet<?> packet) {
@@ -138,10 +138,10 @@ index 169d039a00339fc8eeb697ba03808f321ed4ad4c..23fefdc7122ff8e195c27651dc3a8300
          if (packet == null || this.processedDisconnect) { // Spigot
              return;
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 84914c3245de053ba07b105e44f9d838fa3efc4c..e4543611016a648314459144e43565300153f0fe 100644
+index 56876236505d17663900857e4b6777f1778538a6..f439712ec2cc021360583b2ae70f837e2a9417ac 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -1534,7 +1534,7 @@ public abstract class PlayerList {
+@@ -1517,7 +1517,7 @@ public abstract class PlayerList {
      public void broadcastChatMessage(PlayerChatMessage message, Predicate<ServerPlayer> shouldFilterMessageTo, @Nullable ServerPlayer sender, ChatType.Bound boundChatType, @Nullable Function<net.kyori.adventure.audience.Audience, Component> unsignedFunction) {
          // Paper end
          boolean flag = this.verifyChatTrusted(message);
@@ -150,7 +150,7 @@ index 84914c3245de053ba07b105e44f9d838fa3efc4c..e4543611016a648314459144e4356530
          OutgoingChatMessage outgoingChatMessage = OutgoingChatMessage.create(message);
          boolean flag1 = false;
  
-@@ -1559,6 +1559,7 @@ public abstract class PlayerList {
+@@ -1542,6 +1542,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(PlayerChatMessage message) {

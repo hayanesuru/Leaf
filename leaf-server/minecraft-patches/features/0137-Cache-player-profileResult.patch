@@ -22,13 +22,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 9dce1d22c7de3a3dd0e0e8f117cfbb54d1b15042..6b0b0ccc18a5da05685867656705e1fcf94b5891 100644
+index f68923c5f6fbecd8f1c10a30dbd06ed0dfee8b84..2e014cd543a6a790a0023835199b0e956e49fd1f 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-@@ -70,6 +70,14 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
-     private net.minecraft.server.level.ServerPlayer player; // CraftBukkit
-     public boolean iKnowThisMayNotBeTheBestIdeaButPleaseDisableUsernameValidation = false; // Paper - username validation overriding
-     private int velocityLoginMessageId = -1; // Paper - Add Velocity IP Forwarding Support
+@@ -71,6 +71,14 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+     public @Nullable java.util.UUID requestedUuid; // Paper
+     private final io.papermc.paper.connection.PaperPlayerLoginConnection paperLoginConnection; // Paper - Config API
+     private volatile boolean disconnecting = false; // Paper - Fix disconnect still ticking login
 +    // Leaf start - Cache player profileResult
 +    private static final com.github.benmanes.caffeine.cache.Cache<String, ProfileResult> playerProfileResultCache = com.github.benmanes.caffeine.cache.Caffeine.newBuilder()
 +        .expireAfterWrite(org.dreeam.leaf.config.modules.misc.Cache.cachePlayerProfileResultTimeout, java.util.concurrent.TimeUnit.MINUTES)
@@ -40,7 +40,7 @@ index 9dce1d22c7de3a3dd0e0e8f117cfbb54d1b15042..6b0b0ccc18a5da05685867656705e1fc
  
      public ServerLoginPacketListenerImpl(MinecraftServer server, Connection connection, boolean transferred) {
          this.server = server;
-@@ -303,9 +311,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -269,9 +277,30 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
                  String string1 = Objects.requireNonNull(ServerLoginPacketListenerImpl.this.requestedUsername, "Player name not initialized");
  
                  try {
@@ -74,7 +74,7 @@ index 9dce1d22c7de3a3dd0e0e8f117cfbb54d1b15042..6b0b0ccc18a5da05685867656705e1fc
                      if (profileResult != null) {
                          GameProfile gameProfile = profileResult.profile();
                          // CraftBukkit start - fire PlayerPreLoginEvent
-@@ -350,6 +379,20 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
+@@ -316,6 +345,20 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
          // Paper end - Cache authenticator threads
      }
  

@@ -5,7 +5,7 @@ Subject: [PATCH] Fix Pufferfish and Purpur patches
 
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index db1f0031a6ae6ba1b9ea265043b87817e2c746f8..1aab4d41054f8e780e6c0ccdb96affee19068311 100644
+index f05fa801f35f4afcc93fcace6a98cee0fa3ec531..b567eed9e07e281c56ff707ad938661f37f4ee3f 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -277,7 +277,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -65,10 +65,10 @@ index 35fd539eb2bfe60ad17ab1e558a01273666acc54..445bbdc8da7f1fdbddfc4d8787d78fea
          this.values[this.vp++ & 0xFF] = (int)(l * 100L / Runtime.getRuntime().maxMemory());
          this.repaint();
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 5031e4e9b59a1e013152f788b20c58646b30770f..1aaa94a2800687faa4d86698a4e1ad72bdaf15f3 100644
+index e4114d44d089f8434461f2653a787ff0d3595a04..4674760a18926e2e83c481defccf1a06df358b7d 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1319,7 +1319,7 @@ public class ServerGamePacketListenerImpl
+@@ -1321,7 +1321,7 @@ public class ServerGamePacketListenerImpl
              }
  
              if (byteTotal > byteAllowed) {
@@ -78,7 +78,7 @@ index 5031e4e9b59a1e013152f788b20c58646b30770f..1aaa94a2800687faa4d86698a4e1ad72
                  this.disconnectAsync(Component.literal("Book too large!"), org.bukkit.event.player.PlayerKickEvent.Cause.ILLEGAL_ACTION); // Paper - kick event cause // Paper - add proper async disconnect
                  return;
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index d8209037e988bc7a68f634a6650930bd1082c4d1..a2a4ad515a4ef0fa24948d0f47c5bd78ec7e6555 100644
+index fb387919e51504beafd2e7947faa41795df18100..0cdd3eb97e74aa3955f014a1f8f6a7d1580d323f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -543,23 +543,36 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -128,7 +128,7 @@ index d8209037e988bc7a68f634a6650930bd1082c4d1..a2a4ad515a4ef0fa24948d0f47c5bd78
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index d7d6e0543dc26694891e4a9049b8162caadbf5e6..d59caf13e9066f2171c360e07a26122a540380a0 100644
+index dd5343287503e2818e083696a17362091d94e652..b536461c672c608aeeb690f41ea457fc57768e4f 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -1049,13 +1049,13 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
