@@ -1115,7 +1115,7 @@ index 21ae237a94232090029539652310f7d1e4aba381..4132ebc316af92aedd3b5f21d291e7d5
                  this.stopUsingItem();
                  this.connection.send(new ClientboundPlayerAbilitiesPacket(this.getAbilities()));
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 16962ccab91d0941e428a2e53aa37e9ca975f62f..911ce7fcdb7b60880e5502b1a6c9f5bd07c04fd1 100644
+index 2e7c4c74818befd25e296b58ef9f20319544c2fb..29f19fef7fdefa345b862cd2d5776c2655085c1f 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -26,7 +26,6 @@ import net.minecraft.network.protocol.cookie.ServerboundCookieResponsePacket;
@@ -1126,7 +1126,7 @@ index 16962ccab91d0941e428a2e53aa37e9ca975f62f..911ce7fcdb7b60880e5502b1a6c9f5bd
  import org.slf4j.Logger;
  
  public abstract class ServerCommonPacketListenerImpl implements ServerCommonPacketListener {
-@@ -176,7 +175,6 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -248,7 +247,6 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
      }
  
      protected void keepConnectionAlive() {
@@ -1134,7 +1134,7 @@ index 16962ccab91d0941e428a2e53aa37e9ca975f62f..911ce7fcdb7b60880e5502b1a6c9f5bd
          long millis = Util.getMillis();
          // Paper start - improve keepalives
          if (this.checkIfClosed(millis) && !this.processedDisconnect) {
-@@ -197,8 +195,6 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -269,8 +267,6 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
                  // Paper end - improve keepalives
              }
          }

@@ -69,10 +69,10 @@ index 54bb75a2a128e7747ab01cb0d40c81fb4340ffd1..0fed0f181c4d1f31d01bdaa5dc9417cc
              this.tickables.get(i).run();
          }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 1096bd9f5561f3bedd7939345844b03bbc895938..900075e85f2085378389a974e500fc8acd25747e 100644
+index c746d86439d45e60903248438a23cc1463154645..849428f5ad870ac93f29cec8bc7d3d335550cf14 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -438,6 +438,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -437,6 +437,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
      private final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder viewDistanceHolder = new ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.ViewDistanceHolder();
  
@@ -81,11 +81,23 @@ index 1096bd9f5561f3bedd7939345844b03bbc895938..900075e85f2085378389a974e500fc8a
      @Override
      public final boolean moonrise$isRealPlayer() {
          return this.isRealPlayer;
+diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+index 52408680113135ff019d09b90fbe80b8187941fd..87f5e88ff6e557d51d7ce4942413215e371b6b29 100644
+--- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+@@ -228,6 +228,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+         final String channel = new String(data, from, length, java.nio.charset.StandardCharsets.US_ASCII);
+         if (register) {
+             bridge.addChannel(channel);
++            org.leavesmc.leaves.protocol.core.LeavesProtocolManager.handleMinecraftRegister(channel, bridge); // Leaves - protocol
+         } else {
+             bridge.removeChannel(channel);
+         }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 6f7094004e2d38d3471c3582b3a10dfc7fce3b32..76ad04e021b840b1595bfe01d07f1d7943937281 100644
+index de74a5e6c3bcc26617ad0bb8bc387d4a740cb4a6..1ba09787d768c36d590c5b39f1367cd07e051c62 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3809,6 +3809,18 @@ public class ServerGamePacketListenerImpl
+@@ -3723,6 +3723,17 @@ public class ServerGamePacketListenerImpl
  
      @Override
      public void handleCustomPayload(ServerboundCustomPayloadPacket packet) {
@@ -100,18 +112,9 @@ index 6f7094004e2d38d3471c3582b3a10dfc7fce3b32..76ad04e021b840b1595bfe01d07f1d79
 +            }
 +        }
 +        // Leaves end - protocol
-+
-         // Paper start
-         if (packet.payload() instanceof net.minecraft.network.protocol.common.custom.BrandPayload(String brand)) {
-             this.playerBrand = brand;
-@@ -3868,6 +3880,7 @@ public class ServerGamePacketListenerImpl
-         final String channel = new String(data, from, length, java.nio.charset.StandardCharsets.US_ASCII);
-         if (register) {
-             this.getCraftPlayer().addChannel(channel);
-+            org.leavesmc.leaves.protocol.core.LeavesProtocolManager.handleMinecraftRegister(channel, player); // Leaves - protocol
-         } else {
-             this.getCraftPlayer().removeChannel(channel);
-         }
+         super.handleCustomPayload(packet); // Paper
+     }
+ 
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
 index bdc912f5330896e967cbef4e3e545ff5182e591e..e3898b41c2d19940e08b60cdac28ab07161d3c50 100644
 --- a/net/minecraft/server/players/PlayerList.java

@@ -1,6 +1,7 @@
 package org.leavesmc.leaves.protocol.core;
 
 import io.netty.buffer.ByteBuf;
+import io.papermc.paper.connection.PluginMessageBridgeImpl;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -13,6 +14,9 @@ import org.leavesmc.leaves.protocol.core.invoker.InitInvokerHolder;
 import org.leavesmc.leaves.protocol.core.invoker.MinecraftRegisterInvokerHolder;
 import org.leavesmc.leaves.protocol.core.invoker.PayloadReceiverInvokerHolder;
 import org.leavesmc.leaves.protocol.core.invoker.PlayerInvokerHolder;
+
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 import java.io.File;
 import java.io.IOException;
@@ -294,7 +298,16 @@ public class LeavesProtocolManager {
         }
     }
 
-    public static void handleMinecraftRegister(String channelId, ServerPlayer player) {
+    public static void handleMinecraftRegister(String channelId, PluginMessageBridgeImpl bridge) {
+        ServerPlayer player = null;
+        if (bridge instanceof CraftPlayer craftPlayer) {
+            player = craftPlayer.getHandle();
+        }
+
+        if (player == null) {
+            return;
+        }
+
         ResourceLocation location = ResourceLocation.tryParse(channelId);
         if (location == null) {
             return;

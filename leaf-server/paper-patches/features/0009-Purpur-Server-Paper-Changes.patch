@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Paper Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: 591baf2648d0f75ffecc52f1d169348af35246dd
+Commit: 2d8cdd15c79fce29455eaf8bedfc203bd16ca4d7
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "Rebrand.patch"
@@ -142,11 +142,11 @@ index e6ad63a56dc0fc969dbf3ed5bdc36b4187331e30..f99ee5383bb9f33c1ebdbc74a640c2f7
          // remove duplicate
          map.put("TraderLlama$TraderLlamaDefendWanderingTraderGoal", "TraderLlamaDefendWanderingTraderGoal");
 diff --git a/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java b/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
-index 41c95f00b4b2bea6d31f85e268c33d7f6184823e..2eaf27ddf0bddb23b8850310c332b202b1d7e69c 100644
+index d0a4e1642d1be33cd9e832f961301ab267e216bc..9f1f32c22f3a3d9a5ec0714caf47597a5f2339d5 100644
 --- a/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
 +++ b/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
-@@ -70,10 +70,10 @@ public class PaperPluginsCommand extends BukkitCommand {
-         this.setAliases(List.of("pl"));
+@@ -74,10 +74,10 @@ public class PaperPluginsCommand {
+             .build();
      }
  
 -    private static <T> List<Component> formatProviders(final TreeMap<String, PluginProvider<T>> plugins) {
@@ -158,7 +158,7 @@ index 41c95f00b4b2bea6d31f85e268c33d7f6184823e..2eaf27ddf0bddb23b8850310c332b202
          }
  
          boolean isFirst = true;
-@@ -100,15 +100,49 @@ public class PaperPluginsCommand extends BukkitCommand {
+@@ -104,15 +104,49 @@ public class PaperPluginsCommand {
          return formattedSubLists;
      }
  
@@ -211,7 +211,7 @@ index 41c95f00b4b2bea6d31f85e268c33d7f6184823e..2eaf27ddf0bddb23b8850310c332b202
  
          builder.append(pluginName);
  
-@@ -126,6 +160,23 @@ public class PaperPluginsCommand extends BukkitCommand {
+@@ -130,6 +164,23 @@ public class PaperPluginsCommand {
          return componentHeader.append(Component.text(":")).build();
      }
  
@@ -235,7 +235,7 @@ index 41c95f00b4b2bea6d31f85e268c33d7f6184823e..2eaf27ddf0bddb23b8850310c332b202
      private static Component asPlainComponents(final String strings) {
          final net.kyori.adventure.text.TextComponent.Builder builder = Component.text();
          for (final String string : strings.split("\n")) {
-@@ -186,25 +237,25 @@ public class PaperPluginsCommand extends BukkitCommand {
+@@ -188,25 +239,25 @@ public class PaperPluginsCommand {
          final int sizePaperPlugins = paperPlugins.size();
          final int sizeSpigotPlugins = spigotPlugins.size();
          final int sizePlugins = sizePaperPlugins + sizeSpigotPlugins;
@@ -1068,10 +1068,10 @@ index 02deb9c37250144be9afa0fe55df2a49017a7070..dfb597fcb8d01ed6cf20eae57e260949
 +    // Purpur end - Llama API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 3ea6d207b2189fa6bebe101bfc98093c2c6b19c7..7f5eca8f32ae1afe3e6d2544b76cf0bbe131109f 100644
+index 1e2e8d81e6d05b9e94fdb40dcdc4a7e0e4ceb0ac..1c5128b0d2984ce47e2fce200790d4b87bcf94c9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -575,10 +575,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -562,10 +562,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      @Override
      public void setPlayerListName(String name) {
@@ -1088,7 +1088,7 @@ index 3ea6d207b2189fa6bebe101bfc98093c2c6b19c7..7f5eca8f32ae1afe3e6d2544b76cf0bb
          if (this.getHandle().connection == null) return; // Paper - Updates are possible before the player has fully joined
          for (ServerPlayer player : (List<ServerPlayer>) this.server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
-@@ -1392,6 +1397,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1379,6 +1384,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          // Paper start - Teleport passenger API
          // Don't allow teleporting between worlds while keeping passengers
          if (ignorePassengers && entity.isVehicle() && location.getWorld() != this.getWorld()) {
@@ -1096,7 +1096,7 @@ index 3ea6d207b2189fa6bebe101bfc98093c2c6b19c7..7f5eca8f32ae1afe3e6d2544b76cf0bb
              return false;
          }
  
-@@ -1413,6 +1419,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1400,6 +1406,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          }
  
          if (entity.isVehicle() && !ignorePassengers) { // Paper - Teleport API
@@ -1104,7 +1104,7 @@ index 3ea6d207b2189fa6bebe101bfc98093c2c6b19c7..7f5eca8f32ae1afe3e6d2544b76cf0bb
              return false;
          }
  
-@@ -2676,6 +2683,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2655,6 +2662,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          return this.getHandle().getAbilities().walkingSpeed * 2f;
      }
  
@@ -1133,7 +1133,7 @@ index 3ea6d207b2189fa6bebe101bfc98093c2c6b19c7..7f5eca8f32ae1afe3e6d2544b76cf0bb
      private void validateSpeed(float value) {
          Preconditions.checkArgument(value <= 1f && value >= -1f, "Speed value (%s) need to be between -1f and 1f", value);
      }
-@@ -3524,4 +3553,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3503,4 +3532,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
      public PlayerGameConnection getConnection() {
          return this.getHandle().connection.playerGameConnection;
      }

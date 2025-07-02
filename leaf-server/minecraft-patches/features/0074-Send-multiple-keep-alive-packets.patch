@@ -37,7 +37,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 911ce7fcdb7b60880e5502b1a6c9f5bd07c04fd1..31091dd52172d447f98497097d8dabdfef720362 100644
+index 29f19fef7fdefa345b862cd2d5776c2655085c1f..3d14ca26938d8b74a456ab4b27849a992bbf8b74 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -38,10 +38,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -63,9 +63,9 @@ index 911ce7fcdb7b60880e5502b1a6c9f5bd07c04fd1..31091dd52172d447f98497097d8dabdf
 +    private static final long KEEPALIVE_LIMIT = KEEPALIVE_LIMIT_IN_SECONDS * 1000;
 +    // Gale end - Purpur - send multiple keep-alive packets
      protected static final net.minecraft.resources.ResourceLocation MINECRAFT_BRAND = net.minecraft.resources.ResourceLocation.withDefaultNamespace("brand"); // Paper - Brand support
-     public @Nullable String playerBrand; // Paper
- 
-@@ -93,6 +97,18 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+     // Paper start - retain certain values
+     public @Nullable String playerBrand;
+@@ -97,6 +101,18 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          // Paper start - improve keepalives
          long now = System.nanoTime();
          io.papermc.paper.util.KeepAlive.PendingKeepAlive pending = this.keepAlive.pendingKeepAlives.peek();
@@ -84,7 +84,7 @@ index 911ce7fcdb7b60880e5502b1a6c9f5bd07c04fd1..31091dd52172d447f98497097d8dabdf
          if (pending != null && pending.challengeId() == packet.getId()) {
              this.keepAlive.pendingKeepAlives.remove(pending);
  
-@@ -104,6 +120,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -108,6 +124,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
              this.latency = this.keepAlive.pingCalculator5s.getAvgLatencyMS();
              return;
          }
@@ -92,7 +92,7 @@ index 911ce7fcdb7b60880e5502b1a6c9f5bd07c04fd1..31091dd52172d447f98497097d8dabdf
  
          for (java.util.Iterator<io.papermc.paper.util.KeepAlive.PendingKeepAlive> itr = this.keepAlive.pendingKeepAlives.iterator(); itr.hasNext();) {
              io.papermc.paper.util.KeepAlive.PendingKeepAlive ka = itr.next();
-@@ -177,6 +194,23 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -249,6 +266,23 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
      protected void keepConnectionAlive() {
          long millis = Util.getMillis();
          // Paper start - improve keepalives
@@ -116,7 +116,7 @@ index 911ce7fcdb7b60880e5502b1a6c9f5bd07c04fd1..31091dd52172d447f98497097d8dabdf
          if (this.checkIfClosed(millis) && !this.processedDisconnect) {
              long currTime = System.nanoTime();
  
-@@ -195,6 +229,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -267,6 +301,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
                  // Paper end - improve keepalives
              }
          }
@@ -124,10 +124,3 @@ index 911ce7fcdb7b60880e5502b1a6c9f5bd07c04fd1..31091dd52172d447f98497097d8dabdf
      }
  
      private boolean checkIfClosed(long time) {
-@@ -372,4 +407,4 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
-     protected CommonListenerCookie createCookie(ClientInformation clientInformation) {
-         return new CommonListenerCookie(this.playerProfile(), this.latency, clientInformation, this.transferred, this.playerBrand, this.keepAlive); // Paper
-     }
--}
-\ No newline at end of file
-+}

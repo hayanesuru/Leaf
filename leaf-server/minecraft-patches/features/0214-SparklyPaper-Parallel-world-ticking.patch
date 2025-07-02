@@ -651,10 +651,10 @@ index 3a31f9132a7271ea476cc85c5a10ea7f327256bf..58ec5cfb21d4834c3aaa74f76ca8a536
          // Paper start - extra debug info
          if (entity.valid) {
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index df8732fc451d8aafa46a7980c5e51b6347f0f1ad..f9664926de5706eda918b457301174734b0b0300 100644
+index b77c545788ade614d7ae0b29ccfcd4d50c4ddf55..9906244ab2e447de25546f25ec5f6ef6c4b221ab 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -466,6 +466,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -465,6 +465,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
      // Paper end - rewrite chunk system
  
@@ -663,7 +663,7 @@ index df8732fc451d8aafa46a7980c5e51b6347f0f1ad..f9664926de5706eda918b45730117473
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
          super(level, gameProfile);
          this.textFilter = server.createTextFilterForPlayer(this);
-@@ -752,6 +754,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -751,6 +753,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
      @Override
      public void tick() {
@@ -671,7 +671,7 @@ index df8732fc451d8aafa46a7980c5e51b6347f0f1ad..f9664926de5706eda918b45730117473
          // CraftBukkit start
          if (this.joining) {
              this.joining = false;
-@@ -1428,6 +1431,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1427,6 +1430,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  teleportTransition.postTeleportTransition().onTransition(this);
                  return this;
              } else {
@@ -680,7 +680,7 @@ index df8732fc451d8aafa46a7980c5e51b6347f0f1ad..f9664926de5706eda918b45730117473
                  // CraftBukkit start
                  /*
                  this.isChangingDimension = true;
-@@ -1781,6 +1786,12 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1780,6 +1785,12 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  return OptionalInt.empty();
              } else {
                  // CraftBukkit start
@@ -693,7 +693,7 @@ index df8732fc451d8aafa46a7980c5e51b6347f0f1ad..f9664926de5706eda918b45730117473
                  this.containerMenu = abstractContainerMenu; // Moved up
                  if (!this.isImmobile())
                  this.connection
-@@ -1845,6 +1856,11 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1844,6 +1855,11 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
      @Override
      public void closeContainer(org.bukkit.event.inventory.InventoryCloseEvent.Reason reason) {

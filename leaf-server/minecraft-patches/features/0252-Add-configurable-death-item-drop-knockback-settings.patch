@@ -5,10 +5,10 @@ Subject: [PATCH] Add configurable death item drop knockback settings
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index fcd6d892b96d3e82ebb1aecf9a7a595f7dbd757c..9c84df53473a58a182a544fd9dd27491c0dc3638 100644
+index 905a532f22b1155641c5a7c66f8cd18ab6447e99..89751b2651f85eefeca7c782460297fbb2ddbcff 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1066,7 +1066,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1065,7 +1065,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          if (!keepInventory) {
              for (ItemStack item : this.getInventory().getContents()) {
                  if (!item.isEmpty() && !EnchantmentHelper.has(item, net.minecraft.world.item.enchantment.EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {

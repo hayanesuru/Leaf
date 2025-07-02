@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur Server Minecraft Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: 591baf2648d0f75ffecc52f1d169348af35246dd
+Commit: 2d8cdd15c79fce29455eaf8bedfc203bd16ca4d7
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "net/minecraft/CrashReport.java.patch"
@@ -925,21 +925,20 @@ index 3f70fca36f67fa421314ff92d372a97112a19025..95c128f028c3cce7d0b37821a6e75208
                  }
                  // Paper end - Fix merchant inventory not closing on entity removal
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d576a20326 100644
+index feb4f7c70220e9c48a17a815631298bcb8366ded..e181134e654a32aef9174dcc5d1a163858f7f143 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -428,6 +428,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -428,6 +428,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      public boolean isRealPlayer; // Paper
      public @Nullable com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent playerNaturallySpawnedEvent; // Paper - PlayerNaturallySpawnCreaturesEvent
      public @Nullable org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - Add API for quit reason; there are a lot of changes to do if we change all methods leading to the event
-+    public boolean purpurClient = false; // Purpur - Purpur client support
 +    private boolean tpsBar = false; // Purpur - Implement TPSBar
 +    private boolean compassBar = false; // Purpur - Add compass command
 +    private boolean ramBar = false; // Purpur - Implement rambar commands
  
      // Paper start - rewrite chunk system
      private ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData chunkLoader;
-@@ -561,6 +565,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -561,6 +564,10 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.respawnConfig = input.read("respawn", ServerPlayer.RespawnConfig.CODEC).orElse(null);
          this.spawnExtraParticlesOnFall = input.getBooleanOr("spawn_extra_particles_on_fall", false);
          this.raidOmenPosition = input.read("raid_omen_position", BlockPos.CODEC).orElse(null);
@@ -950,7 +949,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
      }
  
      @Override
-@@ -578,6 +586,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -578,6 +585,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          output.storeNullable("raid_omen_position", BlockPos.CODEC, this.raidOmenPosition);
          this.saveEnderPearls(output);
          this.getBukkitEntity().setExtraData(output); // CraftBukkit
@@ -960,7 +959,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
      }
  
      private void saveParentVehicle(ValueOutput output) {
-@@ -783,6 +794,15 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -783,6 +793,15 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.trackEnteredOrExitedLavaOnVehicle();
          this.updatePlayerAttributes();
          this.advancements.flushDirty(this, true);
@@ -976,7 +975,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
      }
  
      private void updatePlayerAttributes() {
-@@ -1074,6 +1094,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1074,6 +1093,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              // Paper - moved up to sendClientboundPlayerCombatKillPacket()
              sendClientboundPlayerCombatKillPacket(event.getShowDeathMessages(), deathScreenMessage); // Paper - Expand PlayerDeathEvent
              Team team = this.getTeam();
@@ -984,7 +983,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
              if (team == null || team.getDeathMessageVisibility() == Team.Visibility.ALWAYS) {
                  this.server.getPlayerList().broadcastSystemMessage(deathMessage, false);
              } else if (team.getDeathMessageVisibility() == Team.Visibility.HIDE_FOR_OTHER_TEAMS) {
-@@ -1180,6 +1201,18 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1180,6 +1200,18 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          if (this.isInvulnerableTo(level, damageSource)) {
              return false;
          } else {
@@ -1003,7 +1002,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
              Entity entity = damageSource.getEntity();
              if (!( // Paper - split the if statement. If below statement is false, hurtServer would not have been evaluated. Return false.
               !(entity instanceof Player player && !this.canHarmPlayer(player))
-@@ -1420,6 +1453,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1420,6 +1452,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  serverLevel.removePlayerImmediately(this, Entity.RemovalReason.CHANGED_DIMENSION);
                  this.unsetRemoved();
                  // CraftBukkit end
@@ -1011,7 +1010,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
                  this.setServerLevel(level);
                  this.connection.internalTeleport(PositionMoveRotation.of(teleportTransition), teleportTransition.relatives()); // CraftBukkit - use internal teleport without event
                  this.connection.resetPosition();
-@@ -1535,7 +1569,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1535,7 +1568,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                              new AABB(vec3.x() - 8.0, vec3.y() - 5.0, vec3.z() - 8.0, vec3.x() + 8.0, vec3.y() + 5.0, vec3.z() + 8.0),
                              monster -> monster.isPreventingPlayerRest(this.level(), this)
                          );
@@ -1020,7 +1019,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
                          return Either.left(Player.BedSleepingProblem.NOT_SAFE);
                      }
                  }
-@@ -1572,7 +1606,19 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1572,7 +1605,19 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                      CriteriaTriggers.SLEPT_IN_BED.trigger(this);
                  });
                  if (!this.level().canSleepThroughNights()) {
@@ -1041,7 +1040,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
                  }
  
                  this.level().updateSleepingPlayerList();
-@@ -1664,6 +1710,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1664,6 +1709,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
      @Override
      public void openTextEdit(SignBlockEntity signEntity, boolean isFrontText) {
@@ -1049,7 +1048,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
          this.connection.send(new ClientboundBlockUpdatePacket(this.level(), signEntity.getBlockPos()));
          this.connection.send(new ClientboundOpenSignEditorPacket(signEntity.getBlockPos(), isFrontText));
      }
-@@ -1973,6 +2020,26 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1973,6 +2019,26 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          this.lastSentExp = -1; // CraftBukkit - Added to reset
      }
  
@@ -1076,7 +1075,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
      @Override
      public void displayClientMessage(Component chatComponent, boolean actionBar) {
          this.sendSystemMessage(chatComponent, actionBar);
-@@ -2197,6 +2264,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2197,6 +2263,20 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          );
      }
  
@@ -1097,7 +1096,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
      public void sendSystemMessage(Component mesage) {
          this.sendSystemMessage(mesage, false);
      }
-@@ -2335,8 +2416,68 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2335,8 +2415,68 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
      public void resetLastActionTime() {
          this.lastActionTime = Util.getMillis();
@@ -1166,7 +1165,7 @@ index feb4f7c70220e9c48a17a815631298bcb8366ded..e217410145f7889ab4141947fc32d9d5
      public ServerStatsCounter getStats() {
          return this.stats;
      }
-@@ -2963,4 +3104,56 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2963,4 +3103,56 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          return (org.bukkit.craftbukkit.entity.CraftPlayer) super.getBukkitEntity();
      }
      // CraftBukkit end
@@ -1272,19 +1271,35 @@ index 6734756d7a51e635a50a47577f9e6b6f8111db51..c4a4f08272b34f72dea4feaaeb66d153
 +    // Purpur end - Shift right click to use exp for mending
  }
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 31091dd52172d447f98497097d8dabdfef720362..eb725c1b6da0c5ef48fa07d79070950f2b45e30e 100644
+index 3d14ca26938d8b74a456ab4b27849a992bbf8b74..52408680113135ff019d09b90fbe80b8187941fd 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -57,6 +57,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -56,6 +56,10 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+     private static final long KEEPALIVE_LIMIT = KEEPALIVE_LIMIT_IN_SECONDS * 1000;
      // Gale end - Purpur - send multiple keep-alive packets
      protected static final net.minecraft.resources.ResourceLocation MINECRAFT_BRAND = net.minecraft.resources.ResourceLocation.withDefaultNamespace("brand"); // Paper - Brand support
-     public @Nullable String playerBrand; // Paper
-+    protected static final net.minecraft.resources.ResourceLocation PURPUR_CLIENT = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("purpur", "client"); // Purpur - Purpur client support
++    // Purpur start - Purpur client support
++    protected static final net.minecraft.resources.ResourceLocation PURPUR_CLIENT = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("purpur", "client");
++    public boolean purpurClient;
++    // Purpur end - Purpur client support
+     // Paper start - retain certain values
+     public @Nullable String playerBrand;
+     public final java.util.Set<String> pluginMessagerChannels;
+@@ -188,6 +192,12 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+                 return;
+             }
  
-     public ServerCommonPacketListenerImpl(MinecraftServer server, Connection connection, CommonListenerCookie cookie) {
-         this.server = server;
++            // Purpur start - Purpur client support
++            if (identifier.equals(PURPUR_CLIENT)) {
++                this.purpurClient = true;
++            }
++            // Purpur end - Purpur client support
++
+             if (identifier.equals(MINECRAFT_BRAND)) {
+                 this.playerBrand = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.wrappedBuffer(data)).readUtf(256);
+             }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 38376506f8b886ed66ec48b1a78dede2a7cabe99..e4114d44d089f8434461f2653a787ff0d3595a04 100644
+index b23a8a69902a04cbfc389b779e0cf5de1dc89523..a22038bb3e78f7308ba2ae00a71deac4db56ddfa 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -326,6 +326,20 @@ public class ServerGamePacketListenerImpl
@@ -1527,19 +1542,6 @@ index 38376506f8b886ed66ec48b1a78dede2a7cabe99..e4114d44d089f8434461f2653a787ff0
              LOGGER.warn(
                  "Player {} tried to change game mode to {} without required permissions",
                  this.player.getGameProfile().getName(),
-@@ -3753,6 +3837,12 @@ public class ServerGamePacketListenerImpl
-                 return;
-             }
- 
-+            // Purpur start - Purpur client support
-+            if (identifier.equals(PURPUR_CLIENT)) {
-+                this.player.purpurClient = true;
-+            }
-+            // Purpur end - Purpur client support
-+
-             if (identifier.equals(MINECRAFT_BRAND)) {
-                 this.player.connection.playerBrand = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.wrappedBuffer(data)).readUtf(256);
-             }
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 index f9fad100d3e5e4b44a5b0f88e288e6fac7a250f7..6d320ed179393e47398c44f2ba2b2285016f349e 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
