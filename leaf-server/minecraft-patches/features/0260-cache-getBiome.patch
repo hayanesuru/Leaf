@@ -57,7 +57,7 @@ index a2da4fce50f31d56036d04041c4f80ed90c18b27..81e176d17fb072f9ee531639abfe4213
  
      public static boolean isInNetherFortressBounds(BlockPos pos, ServerLevel level, MobCategory category, StructureManager structureManager) {
 diff --git a/net/minecraft/world/level/biome/BiomeManager.java b/net/minecraft/world/level/biome/BiomeManager.java
-index a48175a7ebb1788ace46395621ed78d910178a53..bda44479d1537d9fa2d23f519049aeb96685fbe6 100644
+index a48175a7ebb1788ace46395621ed78d910178a53..b8a0fa20101fa3831e34494fd56690343ff8d57e 100644
 --- a/net/minecraft/world/level/biome/BiomeManager.java
 +++ b/net/minecraft/world/level/biome/BiomeManager.java
 @@ -15,10 +15,23 @@ public class BiomeManager {
@@ -73,7 +73,7 @@ index a48175a7ebb1788ace46395621ed78d910178a53..bda44479d1537d9fa2d23f519049aeb9
          this.noiseBiomeSource = noiseBiomeSource;
          this.biomeZoomSeed = biomeZoomSeed;
 +        // Leaf start - cache getBiome
-+        if (org.dreeam.leaf.config.modules.opt.OptimizeBiome.enabled) {
++        if (org.dreeam.leaf.config.modules.opt.OptimizeBiome.enabled && noiseBiomeSource instanceof net.minecraft.world.level.Level) {
 +            biomeCache = new Holder[65536];
 +            biomeCachePos = new long[65536];
 +        } else {
