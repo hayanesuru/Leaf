@@ -1527,12 +1527,12 @@ index 65442f9ab1528fd1b736963bc51f21fd6a0781a0..7538f9c84e8463502f4fa1b4a84a4ac8
          LevelChunkSection section = this.getSection(this.getSectionIndex(y));
          boolean hasOnlyAir = section.hasOnlyAir();
 diff --git a/net/minecraft/world/level/entity/EntityTickList.java b/net/minecraft/world/level/entity/EntityTickList.java
-index dec51066fc3f57b7bdc56195313c219f45a7fbee..359ead3bd32862206bccb4504ad5b4d027dba7a9 100644
+index 0d64c990730af37abaca10b7c9f840342a0ee7bd..5a90b3bffeeb08a168b370e49d18c5f8b257a980 100644
 --- a/net/minecraft/world/level/entity/EntityTickList.java
 +++ b/net/minecraft/world/level/entity/EntityTickList.java
 @@ -11,16 +11,36 @@ import net.minecraft.world.entity.Entity;
  public class EntityTickList {
-     public final ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet<net.minecraft.world.entity.Entity> entities = new ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet<>(); // Paper - rewrite chunk system // Pufferfish - private->public
+     public final ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet<net.minecraft.world.entity.Entity> entities = new ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet<>(org.dreeam.leaf.config.modules.async.AsyncMobSpawning.enabled); // Paper - rewrite chunk system // Pufferfish - private->public and do thread check
  
 +    // Leaf start - SparklyPaper - parallel world ticking mod
 +    // preserve original constructor

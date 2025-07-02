@@ -142,7 +142,7 @@ index e6ad63a56dc0fc969dbf3ed5bdc36b4187331e30..f99ee5383bb9f33c1ebdbc74a640c2f7
          // remove duplicate
          map.put("TraderLlama$TraderLlamaDefendWanderingTraderGoal", "TraderLlamaDefendWanderingTraderGoal");
 diff --git a/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java b/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
-index d0a4e1642d1be33cd9e832f961301ab267e216bc..9f1f32c22f3a3d9a5ec0714caf47597a5f2339d5 100644
+index d0a4e1642d1be33cd9e832f961301ab267e216bc..4a693643a3c51670c3425b8e9c2ab1f0a8e77e48 100644
 --- a/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
 +++ b/src/main/java/io/papermc/paper/command/PaperPluginsCommand.java
 @@ -74,10 +74,10 @@ public class PaperPluginsCommand {
@@ -150,7 +150,7 @@ index d0a4e1642d1be33cd9e832f961301ab267e216bc..9f1f32c22f3a3d9a5ec0714caf47597a
      }
  
 -    private static <T> List<Component> formatProviders(final TreeMap<String, PluginProvider<T>> plugins) {
-+    private static <T> List<Component> formatProviders(final TreeMap<String, PluginProvider<T>> plugins, CommandSender sender) { // Purpur - Improve output of plugins command
++    private static <T> List<Component> formatProviders(final TreeMap<String, PluginProvider<T>> plugins, final CommandSender sender) { // Purpur - Improve output of plugins command
          final List<Component> components = new ArrayList<>(plugins.size());
          for (final PluginProvider<T> entry : plugins.values()) {
 -            components.add(formatProvider(entry));
