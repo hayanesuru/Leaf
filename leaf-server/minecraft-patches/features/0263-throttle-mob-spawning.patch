@@ -5,7 +5,7 @@ Subject: [PATCH] throttle mob spawning
 
 
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index ab6fa7ed111ef16a0b6774c21988589ee2110c66..f3bed4b372f858656dbf51fb0140260bad4a41be 100644
+index ab6fa7ed111ef16a0b6774c21988589ee2110c66..b1220364424db2e0dce58c5a0f6334e2e9f06dec 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
 @@ -215,6 +215,17 @@ public final class NaturalSpawner {
@@ -18,7 +18,7 @@ index ab6fa7ed111ef16a0b6774c21988589ee2110c66..f3bed4b372f858656dbf51fb0140260b
 +                long failedAttempt = org.dreeam.leaf.config.modules.opt.ThrottleNaturalMobSpawning.failedAttempts[mobCategory.ordinal()];
 +                if (failedAttempt >= 0L
 +                    && chunk.failedSpawnAttempts[mobCategory.ordinal()] >= failedAttempt
-+                    && (level.random.nextInt() & 1023) > spawnChance) {
++                    && (level.random.nextInt() & Integer.MAX_VALUE) >= spawnChance) {
 +                    continue;
 +                }
 +            }
