@@ -14,7 +14,7 @@ public class OptimizeBiome extends ConfigModules {
 
     @Override
     public void onLoaded() {
-        enabled = config().getBoolean(getBasePath() + ".enabled", enabled);
+        enabled = config.getBoolean(getBasePath() + ".enabled", enabled);
         mobSpawn = config.getBoolean(getBasePath() + ".mob-spawning", false);
         advancement = config.getBoolean(getBasePath() + ".advancements", false);
     }
