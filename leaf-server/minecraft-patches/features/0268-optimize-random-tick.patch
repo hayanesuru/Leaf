@@ -24,12 +24,12 @@ index 1c7e2e5124c7d4c1b86039b0327bfd92c49df9b1..976fcc96f8f0a10338c5b98bd3908e6d
              this.level.tickCustomSpawners(this.spawnEnemies, this.spawnFriendlies);
          }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index d319e4d7e12c4bae63893ad25dcdc3ed59c88d97..08c6f93bcc028c876e17870681382aa9fa2ba3ee 100644
+index 4ec5142e233c87d2bb1ebe883cf10a5a1e5100b3..307738d09dc4eb5918cbfb1153feb739fbc1cc68 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1115,6 +1115,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-     private int currentIceAndSnowTick = 0; protected void resetIceAndSnowTick() { this.currentIceAndSnowTick = this.simpleRandom.nextInt(16); } // Gale - Airplane - optimize random calls in chunk ticking
+@@ -1104,6 +1104,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
+     public final org.dreeam.leaf.world.DespawnMap despawnMap = new org.dreeam.leaf.world.DespawnMap(); // Leaf - optimize despawn
      public final org.dreeam.leaf.world.NatureSpawnChunkMap natureSpawnChunkMap = new org.dreeam.leaf.world.NatureSpawnChunkMap(); // Leaf - optimize mob spawning
 +    public final org.dreeam.leaf.world.RandomTickSystem randomTickSystem = new org.dreeam.leaf.world.RandomTickSystem(); // Leaf - optimize random tick
      public void tickChunk(LevelChunk chunk, int randomTickSpeed) {

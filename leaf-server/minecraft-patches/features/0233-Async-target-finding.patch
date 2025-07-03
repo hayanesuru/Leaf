@@ -134,7 +134,7 @@ index 9b8d119116b0c3a51d3fe2ff7efb33cc39627cc4..436e73086678e4afbf94f1b7bca9b0c7
  
          // Gale start - Pufferfish - SIMD support
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 478e8fa7955b3a084a7b519c0b4cddb399f72758..fc61a7083232148397a0b330ce2a4d70ba38543d 100644
+index a9f33e705b3c0abfa3dcc01647a57c06bb614e1c..02c2b9c1978959e1ee0be5c72a5f7b98aa282fc2 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -175,7 +175,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -178,7 +178,7 @@ index 478e8fa7955b3a084a7b519c0b4cddb399f72758..fc61a7083232148397a0b330ce2a4d70
  
      // Leaf start - SparklyPaper - parallel world ticking - Shutdown handling for async reads
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 4a1a336914eff8a178dcd992bd1bfea25a8be76b..7e3b35df01b63735fd4d5202788477a1342708a5 100644
+index 173ec6919cef2aa90c40d3bf33d927a2db7b4922..e99fd3cd5ca6863facd189bf9cd4a3d5c102424a 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -138,6 +138,12 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
@@ -206,7 +206,7 @@ index 4a1a336914eff8a178dcd992bd1bfea25a8be76b..7e3b35df01b63735fd4d5202788477a1
      }
      // Paper end
  
-@@ -793,6 +804,11 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -782,6 +793,11 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
              if (this.goalSelector.inactiveTick(this.activatedPriority, false)) // Pufferfish - use this to alternate ticking
              this.goalSelector.tick();
          }
