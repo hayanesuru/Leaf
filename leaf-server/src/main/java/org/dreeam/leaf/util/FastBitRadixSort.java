@@ -7,7 +7,7 @@ import java.util.List;
 
 public class FastBitRadixSort {
 
-    private static final int SMALL_ARRAY_THRESHOLD = 2;
+    private static final int SMALL_ARRAY_THRESHOLD = 6;
     private Entity[] entityBuffer = new Entity[0];
     private long[] bitsBuffer = new long[0];
 
