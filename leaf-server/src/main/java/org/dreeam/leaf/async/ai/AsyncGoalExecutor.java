@@ -52,8 +52,8 @@ public class AsyncGoalExecutor {
         if (entity == null || entity.isRemoved() || !(entity instanceof Mob mob)) {
             return;
         }
-        mob.goalSelector.ctx.wake();
-        mob.targetSelector.ctx.wake();
+        mob.goalSelector.ctx.wake(this.world);
+        mob.targetSelector.ctx.wake(this.world);
     }
 
     private boolean poll(Mob mob) {

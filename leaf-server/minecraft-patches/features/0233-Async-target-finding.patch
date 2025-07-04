@@ -219,7 +219,7 @@ index 173ec6919cef2aa90c40d3bf33d927a2db7b4922..e99fd3cd5ca6863facd189bf9cd4a3d5
          this.navigation.tick();
          this.customServerAiStep((ServerLevel)this.level());
 diff --git a/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java b/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
-index 7651676e72fcec52d7c1f9f7d7b6f9e585015c4d..7b668d3bc679239668642a6d1d124bab67a26000 100644
+index 7651676e72fcec52d7c1f9f7d7b6f9e585015c4d..df1fcc24878ce6623f605140ac4b5850bc79bf28 100644
 --- a/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
 @@ -67,15 +67,24 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
@@ -248,7 +248,7 @@ index 7651676e72fcec52d7c1f9f7d7b6f9e585015c4d..7b668d3bc679239668642a6d1d124bab
          if (this.toAvoid == null) {
              return false;
          } else {
-@@ -91,6 +100,36 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
+@@ -91,6 +100,35 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
          }
      }
  
@@ -268,11 +268,10 @@ index 7651676e72fcec52d7c1f9f7d7b6f9e585015c4d..7b668d3bc679239668642a6d1d124bab
 +        final double x = mob.getX();
 +        final double y = mob.getEyeY();
 +        final double z = mob.getZ();
-+        final var serverLevel = getServerLevel(mob);
 +        final var avoidClass = this.avoidClass;
 +        final var bound = mob.getBoundingBox().inflate(this.maxDist, 3.0, this.maxDist);
-+        ctx.wake = () -> serverLevel.getNearestEntity(
-+            serverLevel.getEntitiesOfClass(avoidClass, bound, livingEntity -> true),
++        ctx.wake = world -> world.getNearestEntity(
++            world.getEntitiesOfClass(avoidClass, bound, livingEntity -> true),
 +            avoidEntityTargeting,
 +            mob,
 +            x,
@@ -286,10 +285,10 @@ index 7651676e72fcec52d7c1f9f7d7b6f9e585015c4d..7b668d3bc679239668642a6d1d124bab
      public boolean canContinueToUse() {
          return !this.pathNav.isDone();
 diff --git a/net/minecraft/world/entity/ai/goal/BegGoal.java b/net/minecraft/world/entity/ai/goal/BegGoal.java
-index 6f7767d1ef5ee20338a334d85ad58dab9f8c4d1b..75dfa51d350bf767b269670c78d9a6253491acc7 100644
+index 6f7767d1ef5ee20338a334d85ad58dab9f8c4d1b..bc60bd9605a657f9f8de8c78100b8130a9f4b6ff 100644
 --- a/net/minecraft/world/entity/ai/goal/BegGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/BegGoal.java
-@@ -27,8 +27,43 @@ public class BegGoal extends Goal {
+@@ -27,8 +27,42 @@ public class BegGoal extends Goal {
          this.setFlags(EnumSet.of(Goal.Flag.LOOK));
      }
  
@@ -307,10 +306,9 @@ index 6f7767d1ef5ee20338a334d85ad58dab9f8c4d1b..75dfa51d350bf767b269670c78d9a625
 +        final Wolf wolf = this.wolf;
 +        final var ctx = wolf.getGoalCtx();
 +        if (!ctx.state) return;
-+        final ServerLevel serverLevel = getServerLevel(wolf);
 +        final TargetingConditions begTargeting = this.begTargeting;
-+        ctx.wake = () -> {
-+            var player = serverLevel.getNearestPlayer(begTargeting, wolf);
++        ctx.wake = world -> {
++            var player = world.getNearestPlayer(begTargeting, wolf);
 +            if (player != null && playerHoldingInteresting(player)) {
 +                return player;
 +            }
@@ -333,7 +331,7 @@ index 6f7767d1ef5ee20338a334d85ad58dab9f8c4d1b..75dfa51d350bf767b269670c78d9a625
          this.player = this.level.getNearestPlayer(this.begTargeting, this.wolf);
          return this.player != null && this.playerHoldingInteresting(this.player);
      }
-@@ -59,10 +94,10 @@ public class BegGoal extends Goal {
+@@ -59,10 +93,10 @@ public class BegGoal extends Goal {
          this.lookTime--;
      }
  
@@ -394,10 +392,10 @@ index 9954f49bc364969c7ccb37f4186fa2ab8710f6ae..79e71a41245028042b8ac5a56cd39bd0
 +    // Leaf end - Async target finding
  }
 diff --git a/net/minecraft/world/entity/ai/goal/FollowBoatGoal.java b/net/minecraft/world/entity/ai/goal/FollowBoatGoal.java
-index f7dcd341444059f8fb9708e9a21b5d8ace6b9cf9..dc2f0105b1f368e01bbbfc7c68a58e0012dd8736 100644
+index f7dcd341444059f8fb9708e9a21b5d8ace6b9cf9..dff33b2d10104ce5e9741141dc72e8bf5b8226cf 100644
 --- a/net/minecraft/world/entity/ai/goal/FollowBoatGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/FollowBoatGoal.java
-@@ -23,8 +23,47 @@ public class FollowBoatGoal extends Goal {
+@@ -23,8 +23,46 @@ public class FollowBoatGoal extends Goal {
          this.mob = mob;
      }
  
@@ -413,9 +411,8 @@ index f7dcd341444059f8fb9708e9a21b5d8ace6b9cf9..dc2f0105b1f368e01bbbfc7c68a58e00
 +        final var ctx = mob.getGoalCtx();
 +        if (!ctx.state) return;
 +        final var bound = mob.getBoundingBox().inflate(5.0);
-+        final var serverLevel = getServerLevel(mob);
-+        ctx.wake = () -> {
-+            List<AbstractBoat> entitiesOfClass = serverLevel.getEntitiesOfClass(AbstractBoat.class, bound);
++        ctx.wake = world -> {
++            List<AbstractBoat> entitiesOfClass = world.getEntitiesOfClass(AbstractBoat.class, bound);
 +            for (AbstractBoat abstractBoat : entitiesOfClass) {
 +                Entity controllingPassenger = abstractBoat.getControllingPassenger();
 +                if (controllingPassenger instanceof Player player
@@ -445,7 +442,7 @@ index f7dcd341444059f8fb9708e9a21b5d8ace6b9cf9..dc2f0105b1f368e01bbbfc7c68a58e00
          List<AbstractBoat> entitiesOfClass = this.mob.level().getEntitiesOfClass(AbstractBoat.class, this.mob.getBoundingBox().inflate(5.0));
          boolean flag = false;
  
-@@ -36,7 +75,7 @@ public class FollowBoatGoal extends Goal {
+@@ -36,7 +74,7 @@ public class FollowBoatGoal extends Goal {
              }
          }
  
@@ -455,7 +452,7 @@ index f7dcd341444059f8fb9708e9a21b5d8ace6b9cf9..dc2f0105b1f368e01bbbfc7c68a58e00
  
      @Override
 diff --git a/net/minecraft/world/entity/ai/goal/FollowMobGoal.java b/net/minecraft/world/entity/ai/goal/FollowMobGoal.java
-index c9cf985173d3da9e84ce178f161e2fd5fb8ce472..66f69163ed8d36dcd0dec5603e72a88e8812d3e5 100644
+index c9cf985173d3da9e84ce178f161e2fd5fb8ce472..5396c98d0e691ecefd6cf482c2a1944c317ecec7 100644
 --- a/net/minecraft/world/entity/ai/goal/FollowMobGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/FollowMobGoal.java
 @@ -38,6 +38,15 @@ public class FollowMobGoal extends Goal {
@@ -474,7 +471,7 @@ index c9cf985173d3da9e84ce178f161e2fd5fb8ce472..66f69163ed8d36dcd0dec5603e72a88e
          List<Mob> entitiesOfClass = this.mob.level().getEntitiesOfClass(Mob.class, this.mob.getBoundingBox().inflate(this.areaSize), this.followPredicate);
          if (!entitiesOfClass.isEmpty()) {
              for (Mob mob : entitiesOfClass) {
-@@ -51,6 +60,36 @@ public class FollowMobGoal extends Goal {
+@@ -51,6 +60,35 @@ public class FollowMobGoal extends Goal {
          return false;
      }
  
@@ -491,11 +488,10 @@ index c9cf985173d3da9e84ce178f161e2fd5fb8ce472..66f69163ed8d36dcd0dec5603e72a88e
 +        final var mob = this.mob;
 +        final var ctx = this.mob.getGoalCtx();
 +        if (!ctx.state) return;
-+        final var serverLevel = getServerLevel(mob);
 +        final var bound = this.mob.getBoundingBox().inflate(this.areaSize);
 +        final var followPredicate = this.followPredicate;
-+        ctx.wake = () -> {
-+            List<Mob> entitiesOfClass = serverLevel.getEntitiesOfClass(Mob.class, bound, followPredicate);
++        ctx.wake = world -> {
++            List<Mob> entitiesOfClass = world.getEntitiesOfClass(Mob.class, bound, followPredicate);
 +            if (!entitiesOfClass.isEmpty()) {
 +                for (final Mob follow : entitiesOfClass) {
 +                    if (!follow.isInvisible()) {
@@ -512,10 +508,10 @@ index c9cf985173d3da9e84ce178f161e2fd5fb8ce472..66f69163ed8d36dcd0dec5603e72a88e
      public boolean canContinueToUse() {
          return this.followingMob != null && !this.navigation.isDone() && this.mob.distanceToSqr(this.followingMob) > this.stopDistance * this.stopDistance;
 diff --git a/net/minecraft/world/entity/ai/goal/FollowParentGoal.java b/net/minecraft/world/entity/ai/goal/FollowParentGoal.java
-index 3093f03d4f298bf39fec8bad2b6c22518774aea8..4eec8eda6ea1698529e0392bc75c07be5980f5fc 100644
+index 3093f03d4f298bf39fec8bad2b6c22518774aea8..ea5633edfd53b593b0772a43cca28a9e6f379439 100644
 --- a/net/minecraft/world/entity/ai/goal/FollowParentGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/FollowParentGoal.java
-@@ -19,11 +19,56 @@ public class FollowParentGoal extends Goal {
+@@ -19,11 +19,55 @@ public class FollowParentGoal extends Goal {
          this.speedModifier = speedModifier;
      }
  
@@ -534,10 +530,9 @@ index 3093f03d4f298bf39fec8bad2b6c22518774aea8..4eec8eda6ea1698529e0392bc75c07be
 +        if (!ctx.state) return;
 +        final var targetType = animal.getClass();
 +        final var bound = animal.getBoundingBox().inflate(8.0, 4.0, 8.0);
-+        final var serverLevel = getServerLevel(animal);
 +        final var pos = animal.position();
-+        ctx.wake = () -> {
-+            List<? extends Animal> entitiesOfClass = serverLevel.getEntitiesOfClass(targetType, bound);
++        ctx.wake = world -> {
++            List<? extends Animal> entitiesOfClass = world.getEntitiesOfClass(targetType, bound);
 +            Animal target = null;
 +            double d = Double.MAX_VALUE;
 +
@@ -572,7 +567,7 @@ index 3093f03d4f298bf39fec8bad2b6c22518774aea8..4eec8eda6ea1698529e0392bc75c07be
              List<? extends Animal> entitiesOfClass = this.animal
                  .level()
                  .getEntitiesOfClass((Class<? extends Animal>)this.animal.getClass(), this.animal.getBoundingBox().inflate(8.0, 4.0, 8.0));
-@@ -43,6 +88,7 @@ public class FollowParentGoal extends Goal {
+@@ -43,6 +87,7 @@ public class FollowParentGoal extends Goal {
              if (animal == null) {
                  return false;
              } else if (d < 9.0) {
@@ -792,10 +787,10 @@ index 55f1c138039b80894f655d180192f5cb95e32778..1afc0a13ff7f64e453b272c1d94b7e4c
              if (wrappedGoal.isRunning() && (tickAllRunning || wrappedGoal.requiresUpdateEveryTick())) {
                  wrappedGoal.tick();
 diff --git a/net/minecraft/world/entity/ai/goal/LlamaFollowCaravanGoal.java b/net/minecraft/world/entity/ai/goal/LlamaFollowCaravanGoal.java
-index be59d0c27a83b329ec3f97c029cfb9c114e22472..83a0e5ffad44a628b60a6a2cc136559b0a0377f3 100644
+index be59d0c27a83b329ec3f97c029cfb9c114e22472..28e4c81ba8411147fe326bcf331d9ac1247d94c5 100644
 --- a/net/minecraft/world/entity/ai/goal/LlamaFollowCaravanGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/LlamaFollowCaravanGoal.java
-@@ -20,20 +20,83 @@ public class LlamaFollowCaravanGoal extends Goal {
+@@ -20,20 +20,82 @@ public class LlamaFollowCaravanGoal extends Goal {
          this.setFlags(EnumSet.of(Goal.Flag.MOVE));
      }
  
@@ -812,10 +807,9 @@ index be59d0c27a83b329ec3f97c029cfb9c114e22472..83a0e5ffad44a628b60a6a2cc136559b
 +        final var ctx = llama.getGoalCtx();
 +        if (!ctx.state) return;
 +        final var bound = llama.getBoundingBox().inflate(9.0, 4.0, 9.0);
-+        final var serverLevel = getServerLevel(llama);
 +        final var pos = llama.position();
-+        ctx.wake = () -> {
-+            List<Entity> entities = serverLevel.getEntities(llama, bound, entity1 -> {
++        ctx.wake = world -> {
++            List<Entity> entities = world.getEntities(llama, bound, entity1 -> {
 +                EntityType<?> type = entity1.getType();
 +                return type == EntityType.LLAMA || type == EntityType.TRADER_LLAMA;
 +            });
@@ -882,7 +876,7 @@ index be59d0c27a83b329ec3f97c029cfb9c114e22472..83a0e5ffad44a628b60a6a2cc136559b
                      double d1 = this.llama.distanceToSqr(llama1);
                      if (!(d1 > d)) {
                          d = d1;
-@@ -45,7 +108,7 @@ public class LlamaFollowCaravanGoal extends Goal {
+@@ -45,7 +107,7 @@ public class LlamaFollowCaravanGoal extends Goal {
              if (llama == null) {
                  for (Entity entityx : entities) {
                      Llama llama1 = (Llama)entityx;
@@ -891,7 +885,7 @@ index be59d0c27a83b329ec3f97c029cfb9c114e22472..83a0e5ffad44a628b60a6a2cc136559b
                          double d1 = this.llama.distanceToSqr(llama1);
                          if (!(d1 > d)) {
                              d = d1;
-@@ -54,6 +117,7 @@ public class LlamaFollowCaravanGoal extends Goal {
+@@ -54,6 +116,7 @@ public class LlamaFollowCaravanGoal extends Goal {
                      }
                  }
              }
@@ -900,10 +894,10 @@ index be59d0c27a83b329ec3f97c029cfb9c114e22472..83a0e5ffad44a628b60a6a2cc136559b
              if (llama == null) {
                  return false;
 diff --git a/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java b/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
-index 6463c3c9b08d6058f2843c225b08a40fc30a960b..126bd98bc5980a2f1177bd7c74918b86a1f5bdce 100644
+index 6463c3c9b08d6058f2843c225b08a40fc30a960b..1b9729d3ecf7ab5b364cab26f940ac77da880014 100644
 --- a/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
-@@ -48,32 +48,79 @@ public class LookAtPlayerGoal extends Goal {
+@@ -48,32 +48,78 @@ public class LookAtPlayerGoal extends Goal {
  
      @Override
      public boolean canUse() {
@@ -965,13 +959,12 @@ index 6463c3c9b08d6058f2843c225b08a40fc30a960b..126bd98bc5980a2f1177bd7c74918b86
 +        final double x = mob.getX();
 +        final double y = mob.getEyeY();
 +        final double z = mob.getZ();
-+        final var serverLevel = getServerLevel(mob);
 +        final var bound = mob.getBoundingBox().inflate(this.lookDistance, 3.0, this.lookDistance);
 +        final var lookAtContext = this.lookAtContext;
 +        final var lookAtType = this.lookAtType;
-+        ctx.wake = () -> {
++        ctx.wake = world -> {
 +            if (lookAtType == Player.class) {
-+                return serverLevel.getNearestPlayer(lookAtContext, mob, x, y, z);
++                return world.getNearestPlayer(lookAtContext, mob, x, y, z);
              } else {
 -                this.lookAt = serverLevel.getNearestEntity(
 -                    this.mob
@@ -982,8 +975,8 @@ index 6463c3c9b08d6058f2843c225b08a40fc30a960b..126bd98bc5980a2f1177bd7c74918b86
 -                    this.mob.getX(),
 -                    this.mob.getEyeY(),
 -                    this.mob.getZ()
-+                return serverLevel.getNearestEntity(
-+                    serverLevel
++                return world.getNearestEntity(
++                    world
 +                        .getEntitiesOfClass(lookAtType, bound, livingEntity -> true),
 +                    lookAtContext,
 +                    mob,
@@ -1002,7 +995,7 @@ index 6463c3c9b08d6058f2843c225b08a40fc30a960b..126bd98bc5980a2f1177bd7c74918b86
      @Override
      public boolean canContinueToUse() {
 diff --git a/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java b/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java
-index f15da598cb1d7872fafb8b173e5134b9667c9a9f..d84b7b797e526670ddbabecc3ff773e589489f7e 100644
+index f15da598cb1d7872fafb8b173e5134b9667c9a9f..a6cb3b316c797cf85496ba395295c002805f573e 100644
 --- a/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java
 @@ -41,14 +41,73 @@ public abstract class MoveToBlockGoal extends Goal {
@@ -1045,7 +1038,7 @@ index f15da598cb1d7872fafb8b173e5134b9667c9a9f..d84b7b797e526670ddbabecc3ff773e5
 +        final BlockPos blockPos = mob.blockPosition();
 +        final float homeRadius = mob.getHomeRadius();
 +        final BlockPos homePos = mob.getHomePosition();
-+        ctx.wake = () -> findNearestBlockAsync(ty, toRemove, mob, serverLevel, verticalSearchStart, searchRange, verticalSearchRange, blockPos, homeRadius, homePos);
++        ctx.wake = world -> findNearestBlockAsync(ty, toRemove, mob, world, verticalSearchStart, searchRange, verticalSearchRange, blockPos, homeRadius, homePos);
 +        return false;
 +    }
 +
@@ -1190,7 +1183,7 @@ index f15da598cb1d7872fafb8b173e5134b9667c9a9f..d84b7b797e526670ddbabecc3ff773e5
 +    }
  }
 diff --git a/net/minecraft/world/entity/ai/goal/OfferFlowerGoal.java b/net/minecraft/world/entity/ai/goal/OfferFlowerGoal.java
-index 4ba5f7da27f7f6842790c0093bc0f25e138fa982..d0e3e030bc5eacc304c523afcabd193ea86080e6 100644
+index 4ba5f7da27f7f6842790c0093bc0f25e138fa982..569b344c190d60c10d33dad90cf1ae19a917d997 100644
 --- a/net/minecraft/world/entity/ai/goal/OfferFlowerGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/OfferFlowerGoal.java
 @@ -19,10 +19,20 @@ public class OfferFlowerGoal extends Goal {
@@ -1215,7 +1208,7 @@ index 4ba5f7da27f7f6842790c0093bc0f25e138fa982..d0e3e030bc5eacc304c523afcabd193e
          } else {
              this.villager = getServerLevel(this.golem)
                  .getNearestEntity(
-@@ -38,6 +48,36 @@ public class OfferFlowerGoal extends Goal {
+@@ -38,6 +48,35 @@ public class OfferFlowerGoal extends Goal {
          }
      }
  
@@ -1236,10 +1229,9 @@ index 4ba5f7da27f7f6842790c0093bc0f25e138fa982..d0e3e030bc5eacc304c523afcabd193e
 +        final double x = golem.getX();
 +        final double y = golem.getEyeY();
 +        final double z = golem.getZ();
-+        final var serverLevel = getServerLevel(golem);
 +        final var bound = golem.getBoundingBox().inflate(6.0, 2.0, 6.0);
-+        ctx.wake = () -> serverLevel.getNearestEntity(
-+            serverLevel.getEntitiesOfClass(Villager.class, bound, livingEntity -> true),
++        ctx.wake = world -> world.getNearestEntity(
++            world.getEntitiesOfClass(Villager.class, bound, livingEntity -> true),
 +            OFFER_TARGER_CONTEXT,
 +            golem,
 +            x,
@@ -1294,10 +1286,10 @@ index 16ec032d84f128fc44a836843fafef303f52b699..e3bb4c5850e25405a243aaf57e2e8b1c
 +    // Leaf end - Async target finding
  }
 diff --git a/net/minecraft/world/entity/ai/goal/TemptGoal.java b/net/minecraft/world/entity/ai/goal/TemptGoal.java
-index a805c9426630c2c46db9d0dd536f1d16769395d3..66445cf3aa824a1294959eb3ae41a1807bb18f42 100644
+index a805c9426630c2c46db9d0dd536f1d16769395d3..7d3d5c73d31370c89cd4953e7245ca644bcf92e3 100644
 --- a/net/minecraft/world/entity/ai/goal/TemptGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/TemptGoal.java
-@@ -49,14 +49,43 @@ public class TemptGoal extends Goal {
+@@ -49,14 +49,42 @@ public class TemptGoal extends Goal {
          this.targetingConditions = TEMPT_TARGETING.copy().selector((entity, level) -> this.shouldFollow(entity));
      }
  
@@ -1314,11 +1306,10 @@ index a805c9426630c2c46db9d0dd536f1d16769395d3..66445cf3aa824a1294959eb3ae41a180
 +        final var mob = this.mob;
 +        final var ctx = mob.getGoalCtx();
 +        if (!ctx.state) return;
-+        final var serverLevel = getServerLevel(mob);
 +        final var conditions = this.targetingConditions
 +            .range(mob.getAttributeValue(Attributes.TEMPT_RANGE))
 +            .copy();
-+        ctx.wake = () -> serverLevel.getNearestPlayer(conditions, mob);
++        ctx.wake = world -> world.getNearestPlayer(conditions, mob);
 +    }
 +    // Leaf end - Async target finding
      @Override
@@ -1344,10 +1335,10 @@ index a805c9426630c2c46db9d0dd536f1d16769395d3..66445cf3aa824a1294959eb3ae41a180
              if (this.player != null) {
                  org.bukkit.event.entity.EntityTargetLivingEntityEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callEntityTargetLivingEvent(this.mob, this.player, org.bukkit.event.entity.EntityTargetEvent.TargetReason.TEMPT);
 diff --git a/net/minecraft/world/entity/ai/goal/target/DefendVillageTargetGoal.java b/net/minecraft/world/entity/ai/goal/target/DefendVillageTargetGoal.java
-index fb160a59c873d5c3f2c3d31966ca1a653f1b384d..96ccafe979c5c15e26c12f6ca98ad1e81537bdce 100644
+index fb160a59c873d5c3f2c3d31966ca1a653f1b384d..66f2d0121bc90ada6c2aeac31a10d57682466e4b 100644
 --- a/net/minecraft/world/entity/ai/goal/target/DefendVillageTargetGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/target/DefendVillageTargetGoal.java
-@@ -24,13 +24,52 @@ public class DefendVillageTargetGoal extends TargetGoal {
+@@ -24,13 +24,51 @@ public class DefendVillageTargetGoal extends TargetGoal {
          this.setFlags(EnumSet.of(Goal.Flag.TARGET));
      }
  
@@ -1365,10 +1356,9 @@ index fb160a59c873d5c3f2c3d31966ca1a653f1b384d..96ccafe979c5c15e26c12f6ca98ad1e8
 +        final var ctx = mob.getGoalCtx();
 +        if (!ctx.state) return;
 +        AABB bound = this.golem.getBoundingBox().inflate(10.0, 8.0, 10.0);
-+        final ServerLevel serverLevel = getServerLevel(mob);
-+        ctx.wake = () -> {
-+            List<Villager> nearbyEntities = serverLevel.getNearbyEntities(Villager.class, attackTargeting, mob, bound);
-+            List<Player> nearbyPlayers = serverLevel.getNearbyPlayers(attackTargeting, mob, bound);
++        ctx.wake = world -> {
++            List<Villager> nearbyEntities = world.getNearbyEntities(Villager.class, attackTargeting, mob, bound);
++            List<Player> nearbyPlayers = world.getNearbyPlayers(attackTargeting, mob, bound);
 +            for (Villager villager : nearbyEntities) {
 +                for (Player player : nearbyPlayers) {
 +                    int playerReputation = villager.getPlayerReputation(player);
@@ -1400,7 +1390,7 @@ index fb160a59c873d5c3f2c3d31966ca1a653f1b384d..96ccafe979c5c15e26c12f6ca98ad1e8
          for (LivingEntity livingEntity : nearbyEntities) {
              Villager villager = (Villager)livingEntity;
  
-@@ -41,6 +80,8 @@ public class DefendVillageTargetGoal extends TargetGoal {
+@@ -41,6 +79,8 @@ public class DefendVillageTargetGoal extends TargetGoal {
                  }
              }
          }
@@ -1410,10 +1400,10 @@ index fb160a59c873d5c3f2c3d31966ca1a653f1b384d..96ccafe979c5c15e26c12f6ca98ad1e8
          return this.potentialTarget != null && !(this.potentialTarget instanceof Player player1 && (player1.isSpectator() || player1.isCreative()));
      }
 diff --git a/net/minecraft/world/entity/ai/goal/target/HurtByTargetGoal.java b/net/minecraft/world/entity/ai/goal/target/HurtByTargetGoal.java
-index a8ec1d5f4b0fb0ff26a234235b7d8d9c4b4a2a98..c2b4bc95ee4cb4167c06556b14656c0fa59051a3 100644
+index a8ec1d5f4b0fb0ff26a234235b7d8d9c4b4a2a98..65156222eb93c5a59163c407f62d0a1f848043d0 100644
 --- a/net/minecraft/world/entity/ai/goal/target/HurtByTargetGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/target/HurtByTargetGoal.java
-@@ -73,6 +73,46 @@ public class HurtByTargetGoal extends TargetGoal {
+@@ -73,6 +73,45 @@ public class HurtByTargetGoal extends TargetGoal {
      protected void alertOthers() {
          double followDistance = this.getFollowDistance();
          AABB aabb = AABB.unitCubeFromLowerCorner(this.mob.position()).inflate(followDistance, 10.0, followDistance);
@@ -1423,11 +1413,10 @@ index a8ec1d5f4b0fb0ff26a234235b7d8d9c4b4a2a98..c2b4bc95ee4cb4167c06556b14656c0f
 +            final var self = this.mob;
 +            final var ctx = self.getGoalCtx();
 +            if (!ctx.state) return;
-+            final var serverLevel = getServerLevel(self);
-+            final var toIgnoreAlert = this.toIgnoreAlert;
-+            ctx.wake = () -> {
++            final Class<?>[] toIgnoreAlert = this.toIgnoreAlert;
++            ctx.wake = world -> {
 +                var toAlert = new java.util.ArrayList<Mob>();
-+                List<? extends Mob> entitiesOfClass = serverLevel
++                List<? extends Mob> entitiesOfClass = world
 +                    .getEntitiesOfClass(self.getClass(), aabb, EntitySelector.NO_SPECTATORS);
 +                for (Mob mob : entitiesOfClass) {
 +                    if (self == mob
@@ -1460,7 +1449,7 @@ index a8ec1d5f4b0fb0ff26a234235b7d8d9c4b4a2a98..c2b4bc95ee4cb4167c06556b14656c0f
          List<? extends Mob> entitiesOfClass = this.mob
              .level()
              .getEntitiesOfClass((Class<? extends Mob>)this.mob.getClass(), aabb, EntitySelector.NO_SPECTATORS);
-@@ -87,7 +127,7 @@ public class HurtByTargetGoal extends TargetGoal {
+@@ -87,7 +126,7 @@ public class HurtByTargetGoal extends TargetGoal {
  
                  mob = (Mob)var5.next();
                  if (this.mob != mob
@@ -1469,7 +1458,7 @@ index a8ec1d5f4b0fb0ff26a234235b7d8d9c4b4a2a98..c2b4bc95ee4cb4167c06556b14656c0f
                      && (!(this.mob instanceof TamableAnimal) || ((TamableAnimal)this.mob).getOwner() == ((TamableAnimal)mob).getOwner())
                      && !mob.isAlliedTo(this.mob.getLastHurtByMob())) {
                      if (this.toIgnoreAlert == null) {
-@@ -96,7 +136,7 @@ public class HurtByTargetGoal extends TargetGoal {
+@@ -96,7 +135,7 @@ public class HurtByTargetGoal extends TargetGoal {
  
                      boolean flag = false;
  
@@ -1478,7 +1467,7 @@ index a8ec1d5f4b0fb0ff26a234235b7d8d9c4b4a2a98..c2b4bc95ee4cb4167c06556b14656c0f
                          if (mob.getClass() == clazz) {
                              flag = true;
                              break;
-@@ -113,6 +153,36 @@ public class HurtByTargetGoal extends TargetGoal {
+@@ -113,6 +152,36 @@ public class HurtByTargetGoal extends TargetGoal {
          }
      }
  
@@ -1516,10 +1505,10 @@ index a8ec1d5f4b0fb0ff26a234235b7d8d9c4b4a2a98..c2b4bc95ee4cb4167c06556b14656c0f
          mob.setTarget(target, org.bukkit.event.entity.EntityTargetEvent.TargetReason.TARGET_ATTACKED_NEARBY_ENTITY); // CraftBukkit - reason
      }
 diff --git a/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java b/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java
-index 1cd8143c938237ce035fa866d4f2ed1e2cd1ebca..d44aec876818421eb8a54007e2bdabd7d354f22b 100644
+index 1cd8143c938237ce035fa866d4f2ed1e2cd1ebca..048c4965f94790daa58088c26d7fd9c7172985a4 100644
 --- a/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/target/NearestAttackableTargetGoal.java
-@@ -41,12 +41,52 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
+@@ -41,12 +41,51 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
          this.targetConditions = TargetingConditions.forCombat().range(this.getFollowDistance()).selector(selector);
      }
  
@@ -1547,12 +1536,11 @@ index 1cd8143c938237ce035fa866d4f2ed1e2cd1ebca..d44aec876818421eb8a54007e2bdabd7
 +        final TargetingConditions targetConditions = this.getTargetConditions().copy();
 +        final Class<T> targetType = this.targetType;
 +        final AABB targetSearch = getTargetSearchArea(this.getFollowDistance());
-+        final ServerLevel serverLevel = getServerLevel(mob);
-+        ctx.wake = () -> {
++        ctx.wake = world -> {
 +            if (targetType != Player.class && targetType != ServerPlayer.class) {
-+                return serverLevel.getNearestEntity(mob.level().getEntitiesOfClass(targetType, targetSearch, entity -> entity != null && entity != mob && entity.isAlive()), targetConditions, mob, x, y, z);
++                return world.getNearestEntity(world.getEntitiesOfClass(targetType, targetSearch, entity -> entity != null && entity != mob && entity.isAlive()), targetConditions, mob, x, y, z);
 +            } else {
-+                return serverLevel.getNearestPlayer(targetConditions, mob, x, y, z);
++                return world.getNearestPlayer(targetConditions, mob, x, y, z);
 +            }
 +        };
 +    }
@@ -1573,7 +1561,7 @@ index 1cd8143c938237ce035fa866d4f2ed1e2cd1ebca..d44aec876818421eb8a54007e2bdabd7
              return this.target != null;
          }
      }
-@@ -57,6 +97,7 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
+@@ -57,6 +96,7 @@ public class NearestAttackableTargetGoal<T extends LivingEntity> extends TargetG
  
      protected void findTarget() {
          ServerLevel serverLevel = getServerLevel(this.mob);
@@ -1630,10 +1618,10 @@ index abf57494950f55bbd75f335f26736cb9e703c197..efd2418f56c36e7850edde483a2a4906
      }
  }
 diff --git a/net/minecraft/world/entity/ai/goal/target/ResetUniversalAngerTargetGoal.java b/net/minecraft/world/entity/ai/goal/target/ResetUniversalAngerTargetGoal.java
-index 61a7bb5f1760d47a13b6aafc123bcf3dff420860..08a09dea0dd377adca22b4432cf8f57c3122ec02 100644
+index 61a7bb5f1760d47a13b6aafc123bcf3dff420860..6754f43767bde0bb6432a33aedd5b8e8d568ae40 100644
 --- a/net/minecraft/world/entity/ai/goal/target/ResetUniversalAngerTargetGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/target/ResetUniversalAngerTargetGoal.java
-@@ -37,6 +37,27 @@ public class ResetUniversalAngerTargetGoal<T extends Mob & NeutralMob> extends G
+@@ -37,6 +37,26 @@ public class ResetUniversalAngerTargetGoal<T extends Mob & NeutralMob> extends G
          this.lastHurtByPlayerTimestamp = this.mob.getLastHurtByMobTimestamp();
          this.mob.forgetCurrentTargetAndRefreshUniversalAnger();
          if (this.alertOthersOfSameType) {
@@ -1642,11 +1630,10 @@ index 61a7bb5f1760d47a13b6aafc123bcf3dff420860..08a09dea0dd377adca22b4432cf8f57c
 +                final var mob = this.mob;
 +                final var ctx = mob.getGoalCtx();
 +                if (!ctx.state) return;
-+                final var serverLevel = getServerLevel(mob);
 +                final double followRange = this.mob.getAttributeValue(Attributes.FOLLOW_RANGE);
 +                final AABB aabb = AABB.unitCubeFromLowerCorner(this.mob.position()).inflate(followRange, 10.0, followRange);
-+                ctx.wake = () -> {
-+                    var entities = serverLevel.getEntitiesOfClass(mob.getClass(), aabb, EntitySelector.NO_SPECTATORS);
++                ctx.wake = world -> {
++                    List<? extends Mob> entities = world.getEntitiesOfClass(mob.getClass(), aabb, EntitySelector.NO_SPECTATORS);
 +                    List<NeutralMob> toStop = new java.util.ArrayList<>(entities.size());
 +                    for (Mob entity : entities) {
 +                        if (entity != mob) {
@@ -1661,7 +1648,7 @@ index 61a7bb5f1760d47a13b6aafc123bcf3dff420860..08a09dea0dd377adca22b4432cf8f57c
              this.getNearbyMobsOfSameType()
                  .stream()
                  .filter(mob -> mob != this.mob)
-@@ -47,7 +68,19 @@ public class ResetUniversalAngerTargetGoal<T extends Mob & NeutralMob> extends G
+@@ -47,7 +67,19 @@ public class ResetUniversalAngerTargetGoal<T extends Mob & NeutralMob> extends G
          super.start();
      }
  
@@ -1913,10 +1900,10 @@ index 7ff380212ce5e56e0e58e5f52f8c75bda5061ef0..c21519490433dfb2da3435afe757df01
  
      static class DrownedGoToWaterGoal extends Goal {
 diff --git a/net/minecraft/world/entity/monster/EnderMan.java b/net/minecraft/world/entity/monster/EnderMan.java
-index 58887b2cc931892f96793edd7a7d1db22cb8686c..573986e139321cd8389440ac2a9a50f806b4ed8c 100644
+index 58887b2cc931892f96793edd7a7d1db22cb8686c..ac55224190c97e5785a295639154e80ac6054de9 100644
 --- a/net/minecraft/world/entity/monster/EnderMan.java
 +++ b/net/minecraft/world/entity/monster/EnderMan.java
-@@ -588,10 +588,34 @@ public class EnderMan extends Monster implements NeutralMob {
+@@ -588,10 +588,33 @@ public class EnderMan extends Monster implements NeutralMob {
  
          @Override
          public boolean canUse() {
@@ -1928,9 +1915,8 @@ index 58887b2cc931892f96793edd7a7d1db22cb8686c..573986e139321cd8389440ac2a9a50f8
 +                final EnderMan enderman = this.enderman;
 +                final var ctx = enderman.getGoalCtx();
 +                if (!ctx.state) return false;
-+                final var level = getServerLevel(this.enderman);
 +                final var cond = this.startAggroTargetConditions.range(this.getFollowDistance()).copy();
-+                ctx.wake = () -> level.getNearestPlayer(cond, enderman);
++                ctx.wake = world -> world.getNearestPlayer(cond, enderman);
 +                return false;
 +            }
 +            // Leaf end - Async target finding
