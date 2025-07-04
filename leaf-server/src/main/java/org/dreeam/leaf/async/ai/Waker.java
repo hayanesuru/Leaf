@@ -9,6 +9,7 @@ public class Waker {
     public volatile VWaker wake = null;
     @Nullable
     public volatile Object result = null;
+    private volatile boolean cancel = false;
     public boolean state = true;
 
     public final @Nullable Object result() {
@@ -18,6 +19,7 @@ public class Waker {
     }
 
     public final void cancel() {
+        this.cancel = true;
         this.wake = null;
         this.result = null;
     }
@@ -31,6 +33,9 @@ public class Waker {
                 AsyncGoalExecutor.LOGGER.error("Exception while wake", e);
             }
             this.wake = null;
+            if (this.cancel) {
+                this.result = null;
+            }
         }
     }
 }

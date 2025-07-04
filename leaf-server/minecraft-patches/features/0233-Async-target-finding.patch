@@ -177,6 +177,23 @@ index a9f33e705b3c0abfa3dcc01647a57c06bb614e1c..02c2b9c1978959e1ee0be5c72a5f7b98
      }
  
      // Leaf start - SparklyPaper - parallel world ticking - Shutdown handling for async reads
+diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
+index 1d78cacbf2c63f35fdf0552d50834385ab51aaf0..aadba595ca9ad6ba403b16b3c741421005f0414a 100644
+--- a/net/minecraft/world/entity/LivingEntity.java
++++ b/net/minecraft/world/entity/LivingEntity.java
+@@ -750,6 +750,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+ 
+         super.remove(reason, eventCause); // CraftBukkit
+         this.brain.clearMemories();
++        // Leaf start - Async target finding
++        if (org.dreeam.leaf.config.modules.async.AsyncTargetFinding.enabled && this instanceof Mob mob) {
++            mob.targetSelector.ctx.cancel();
++            mob.goalSelector.ctx.cancel();
++        }
++        // Leaf end - Async target finding
+     }
+ 
+     @Override
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
 index 173ec6919cef2aa90c40d3bf33d927a2db7b4922..e99fd3cd5ca6863facd189bf9cd4a3d5c102424a 100644
 --- a/net/minecraft/world/entity/Mob.java
@@ -219,10 +236,10 @@ index 173ec6919cef2aa90c40d3bf33d927a2db7b4922..e99fd3cd5ca6863facd189bf9cd4a3d5
          this.navigation.tick();
          this.customServerAiStep((ServerLevel)this.level());
 diff --git a/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java b/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
-index 7651676e72fcec52d7c1f9f7d7b6f9e585015c4d..df1fcc24878ce6623f605140ac4b5850bc79bf28 100644
+index 7651676e72fcec52d7c1f9f7d7b6f9e585015c4d..7b1f8e58f6b1fc34204b77cf3c902759aceb3350 100644
 --- a/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/AvoidEntityGoal.java
-@@ -67,15 +67,24 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
+@@ -67,6 +67,13 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
  
      @Override
      public boolean canUse() {
@@ -236,11 +253,8 @@ index 7651676e72fcec52d7c1f9f7d7b6f9e585015c4d..df1fcc24878ce6623f605140ac4b5850
          this.toAvoid = getServerLevel(this.mob)
              .getNearestEntity(
                  this.mob.level().getEntitiesOfClass(this.avoidClass, this.mob.getBoundingBox().inflate(this.maxDist, 3.0, this.maxDist), livingEntity -> true),
-                 this.avoidEntityTargeting,
-                 this.mob,
-                 this.mob.getX(),
--                this.mob.getY(),
-+                this.mob.getEyeY(), // Leaf - Async target finding
+@@ -76,6 +83,8 @@ public class AvoidEntityGoal<T extends LivingEntity> extends Goal {
+                 this.mob.getY(),
                  this.mob.getZ()
              );
 +        }
@@ -266,7 +280,7 @@ index 7651676e72fcec52d7c1f9f7d7b6f9e585015c4d..df1fcc24878ce6623f605140ac4b5850
 +        final var ctx = mob.getGoalCtx();
 +        if (!ctx.state) return;
 +        final double x = mob.getX();
-+        final double y = mob.getEyeY();
++        final double y = mob.getY();
 +        final double z = mob.getZ();
 +        final var avoidClass = this.avoidClass;
 +        final var bound = mob.getBoundingBox().inflate(this.maxDist, 3.0, this.maxDist);

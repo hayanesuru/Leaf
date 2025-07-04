@@ -5,7 +5,7 @@ Subject: [PATCH] Add configurable death item drop knockback settings
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 905a532f22b1155641c5a7c66f8cd18ab6447e99..89751b2651f85eefeca7c782460297fbb2ddbcff 100644
+index 4a39b4ee1ea860a8a47bdad67ac79c74157b6d07..9ec5f1ebc013b427e92f92d6df722b42aa7f73d7 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1065,7 +1065,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -18,10 +18,10 @@ index 905a532f22b1155641c5a7c66f8cd18ab6447e99..89751b2651f85eefeca7c782460297fb
              }
          }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 1d78cacbf2c63f35fdf0552d50834385ab51aaf0..f1975e5ab19da6dd1d8b94503924471e3efab921 100644
+index aadba595ca9ad6ba403b16b3c741421005f0414a..93c1e8f39f8db3cd69959f1528ef80481f74e8b0 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -4154,9 +4154,9 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -4160,9 +4160,9 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              }
  
              if (randomizeMotion) {
