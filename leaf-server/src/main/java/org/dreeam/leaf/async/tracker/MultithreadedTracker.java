@@ -5,11 +5,9 @@ import ca.spottedleaf.moonrise.common.misc.NearbyPlayers;
 import ca.spottedleaf.moonrise.patches.chunk_system.level.entity.server.ServerEntityLookup;
 import ca.spottedleaf.moonrise.patches.entity_tracker.EntityTrackerEntity;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.Util;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.FullChunkStatus;
-import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import org.apache.logging.log4j.LogManager;
@@ -68,11 +66,13 @@ public class MultithreadedTracker {
         final ServerEntityLookup entityLookup = (ServerEntityLookup) level.moonrise$getEntityLookup();
 
         final ReferenceList<Entity> trackerEntities = entityLookup.trackerEntities;
+        final int trackerEntitiesSize = trackerEntities.size();
         final Entity[] trackerEntitiesRaw = trackerEntities.getRawDataUnchecked();
 
         // Move tracking to off-main
         TRACKER_EXECUTOR.execute(() -> {
-            for (final Entity entity : trackerEntitiesRaw) {
+            for (int i = 0; i < trackerEntitiesSize; i++) {
+                Entity entity = trackerEntitiesRaw[i];
                 if (entity == null) continue;
 
                 final ChunkMap.TrackedEntity tracker = ((EntityTrackerEntity) entity).moonrise$getTrackedEntity();
@@ -80,7 +80,7 @@ public class MultithreadedTracker {
                 if (tracker == null) continue;
 
                 synchronized (tracker) {
-                    var trackedChunk = nearbyPlayers.getChunk(entity.chunkPosition());
+                    NearbyPlayers.TrackedChunk trackedChunk = nearbyPlayers.getChunk(entity.chunkPosition());
                     tracker.moonrise$tick(trackedChunk);
                     tracker.serverEntity.sendChanges();
                 }
@@ -94,11 +94,13 @@ public class MultithreadedTracker {
 
         final ReferenceList<Entity> trackerEntities = entityLookup.trackerEntities;
         final Entity[] trackerEntitiesRaw = trackerEntities.getRawDataUnchecked();
-        final Runnable[] sendChangesTasks = new Runnable[trackerEntitiesRaw.length];
-        final Runnable[] tickTask = new Runnable[trackerEntitiesRaw.length];
+        final int trackerEntitiesSize = trackerEntities.size();
+        final Runnable[] sendChangesTasks = new Runnable[trackerEntitiesSize];
+        final Runnable[] tickTask = new Runnable[trackerEntitiesSize];
         int index = 0;
 
-        for (final Entity entity : trackerEntitiesRaw) {
+        for (int i = 0; i < trackerEntitiesSize; i++) {
+            Entity entity = trackerEntitiesRaw[i];
             if (entity == null) continue;
 
             final ChunkMap.TrackedEntity tracker = ((EntityTrackerEntity) entity).moonrise$getTrackedEntity();
@@ -107,7 +109,7 @@ public class MultithreadedTracker {
 
             synchronized (tracker) {
                 tickTask[index] = tracker.leafTickCompact(nearbyPlayers.getChunk(entity.chunkPosition()));
-                sendChangesTasks[index] = () -> tracker.serverEntity.sendChanges(); // Collect send changes to task array
+                sendChangesTasks[index] = tracker.serverEntity::sendChanges; // Collect send changes to task array
             }
             index++;
         }
