@@ -555,7 +555,7 @@ index db3b8a237d63255aa9ffd70c88a093002a6bd770..4a69f404eee00d8972e9501a76031d43
      }
  
 diff --git a/net/minecraft/world/level/chunk/ChunkGenerator.java b/net/minecraft/world/level/chunk/ChunkGenerator.java
-index 11c7c299d4affb9e78488590e7db939efe6e3dd9..f1675db9942751235bb31634d5b99fdc30fb2950 100644
+index 11c7c299d4affb9e78488590e7db939efe6e3dd9..a89c61aac1f1a35dc8c5943c0002661ce5fb76bf 100644
 --- a/net/minecraft/world/level/chunk/ChunkGenerator.java
 +++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
 @@ -516,6 +516,35 @@ public abstract class ChunkGenerator {
@@ -563,8 +563,8 @@ index 11c7c299d4affb9e78488590e7db939efe6e3dd9..f1675db9942751235bb31634d5b99fdc
      }
  
 +    // Leaf start - optimize mob spawning
-+    public WeightedList<MobSpawnSettings.SpawnerData> getMobsAtChunk(Holder<Biome> biome, StructureManager structureManager, MobCategory category, BlockPos pos, LevelChunk chunk) {
-+        Map<Structure, LongSet> allStructuresAt = structureManager.getAllStructuresAtChunk(ChunkPos.asLong(pos) == chunk.getPos().longKey ? chunk : structureManager.level.getChunk(pos.getX() >> 4, pos.getZ() >> 4, ChunkStatus.STRUCTURE_REFERENCES));
++    public WeightedList<MobSpawnSettings.SpawnerData> getMobsAtChunk(Holder<Biome> biome, StructureManager structureManager, MobCategory category, BlockPos pos, ChunkAccess chunk) {
++        Map<Structure, LongSet> allStructuresAt = ChunkPos.asLong(pos) == chunk.getPos().longKey ? structureManager.getAllStructuresAtChunk(chunk) : structureManager.getAllStructuresAt(pos);
 +
 +        for (Entry<Structure, LongSet> entry : allStructuresAt.entrySet()) {
 +            Structure structure = entry.getKey();
