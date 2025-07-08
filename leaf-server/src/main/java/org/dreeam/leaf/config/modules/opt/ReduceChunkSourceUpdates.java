@@ -23,7 +23,8 @@ public class ReduceChunkSourceUpdates extends ConfigModules {
                 减少玩家跨区块移动时的区块源更新."""
         );
         enabled = config.getBoolean(getBasePath() + ".force-enabled", enabled);
-        if (!enabled && config.getBoolean(getBasePath() + ".enabled", enabled)) {
+        boolean oldEnabled = config.getBoolean(getBasePath() + ".enabled", enabled);
+        if (!enabled && oldEnabled) {
             LOGGER.warn("Disabled reduce-chunk-source-updates due to experimentation");
         }
     }
