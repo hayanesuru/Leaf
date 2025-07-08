@@ -5,10 +5,10 @@ Subject: [PATCH] Remove stream in BehaviorUtils
 
 
 diff --git a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
-index e7f74b4f54069ffdf74f029639cbf0756f2db095..b5257eefa04e930b45ffd9d46f28e53026ad728f 100644
+index cc8f0586fca7b12a95afadb08d51077c74713ce3..ceddfed85cedbe2ddaea9ef6530688b69f087874 100644
 --- a/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
 +++ b/net/minecraft/world/entity/ai/behavior/BehaviorUtils.java
-@@ -110,10 +110,33 @@ public class BehaviorUtils {
+@@ -112,10 +112,33 @@ public class BehaviorUtils {
  
      public static SectionPos findSectionClosestToVillage(ServerLevel serverLevel, SectionPos sectionPos, int radius) {
          int i = serverLevel.sectionsToVillage(sectionPos);
