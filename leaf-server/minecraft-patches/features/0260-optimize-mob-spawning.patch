@@ -14,7 +14,7 @@ Generally faster than the non-async approach
 iterate over all entities, get their chunk, and increment the count
 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index a640cb4d767c6c81ad27bbf0dd8027a80a2fc224..f4d4f39540a25d6772c8078d0ff01af04d90c8e7 100644
+index 79674f4bd7a12c42dec19a4175012d7a2dc88b84..0a97a491737807d59815b75635fa3d8c94901ba8 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
 @@ -287,6 +287,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider

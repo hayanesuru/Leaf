@@ -5,7 +5,7 @@ Subject: [PATCH] do not log invalid flatten text component parse
 
 
 diff --git a/ca/spottedleaf/dataconverter/minecraft/versions/V4290.java b/ca/spottedleaf/dataconverter/minecraft/versions/V4290.java
-index d5dfa9a64e2d3f9a37a5bdde60b92ed93bd89aed..83155bf0befab0207a4b756b19527d071037a870 100644
+index 44e74a97debbb36deb50a1f726ee25cc5272ab09..98311af4cc0256399f0cf782c744b268497b86fc 100644
 --- a/ca/spottedleaf/dataconverter/minecraft/versions/V4290.java
 +++ b/ca/spottedleaf/dataconverter/minecraft/versions/V4290.java
 @@ -254,7 +254,7 @@ public final class V4290 {
