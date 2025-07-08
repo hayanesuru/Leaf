@@ -2310,7 +2310,7 @@ index aab9adb8313c4b18279c7fd7500ef04bda09c6c1..86a694b94045b47f6e98c480645f7573
      protected ParticleOptions getInkParticle() {
          return ParticleTypes.GLOW_SQUID_INK;
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index fd775ce9a6ca84ce348d929f75f019581a437ea4..dd5343287503e2818e083696a17362091d94e652 100644
+index 40b9dd1a1568f0f1eeba6925167a79cde48d66fd..25a7651efa80938124bbda27a1de25e9a6eb3620 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -236,9 +236,9 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -2529,7 +2529,7 @@ index fd775ce9a6ca84ce348d929f75f019581a437ea4..dd5343287503e2818e083696a1736209
          }
  
          // CraftBukkit start - Call death event // Paper start - call advancement triggers with correct entity equipment
-@@ -3013,6 +3074,21 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3010,6 +3071,21 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              this.move(MoverType.SELF, this.getDeltaMovement());
              this.setDeltaMovement(this.getDeltaMovement().scale(0.5));
          } else {
@@ -2551,7 +2551,7 @@ index fd775ce9a6ca84ce348d929f75f019581a437ea4..dd5343287503e2818e083696a1736209
              this.moveRelative(amount, relative);
              this.move(MoverType.SELF, this.getDeltaMovement());
              this.setDeltaMovement(this.getDeltaMovement().scale(0.91F));
-@@ -3153,6 +3229,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3150,6 +3226,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              float f = (float)(d * 10.0 - 3.0);
              if (f > 0.0F) {
                  this.playSound(this.getFallDamageSound((int)f), 1.0F, 1.0F);
@@ -2559,7 +2559,7 @@ index fd775ce9a6ca84ce348d929f75f019581a437ea4..dd5343287503e2818e083696a1736209
                  this.hurt(this.damageSources().flyIntoWall(), f);
              }
          }
-@@ -3596,8 +3673,10 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3593,8 +3670,10 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
  
          this.pushEntities();
          // Paper start - Add EntityMoveEvent
@@ -2572,7 +2572,7 @@ index fd775ce9a6ca84ce348d929f75f019581a437ea4..dd5343287503e2818e083696a1736209
                  Location from = new Location(this.level().getWorld(), this.xo, this.yo, this.zo, this.yRotO, this.xRotO);
                  Location to = new Location(this.level().getWorld(), this.getX(), this.getY(), this.getZ(), this.getYRot(), this.getXRot());
                  io.papermc.paper.event.entity.EntityMoveEvent event = new io.papermc.paper.event.entity.EntityMoveEvent(this.getBukkitLivingEntity(), from, to.clone());
-@@ -3607,11 +3686,52 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3604,11 +3683,52 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
                      this.absSnapTo(event.getTo().getX(), event.getTo().getY(), event.getTo().getZ(), event.getTo().getYaw(), event.getTo().getPitch());
                  }
              }
@@ -2625,7 +2625,7 @@ index fd775ce9a6ca84ce348d929f75f019581a437ea4..dd5343287503e2818e083696a1736209
      }
  
      protected void applyInput() {
-@@ -3645,7 +3765,18 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3642,7 +3762,18 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
                          .filter(equipmentSlot1 -> canGlideUsing(this.getItemBySlot(equipmentSlot1), equipmentSlot1))
                          .toList();
                      EquipmentSlot equipmentSlot = Util.getRandom(list, this.random);
@@ -2645,7 +2645,7 @@ index fd775ce9a6ca84ce348d929f75f019581a437ea4..dd5343287503e2818e083696a1736209
                  }
  
                  this.gameEvent(GameEvent.ELYTRA_GLIDE);
-@@ -4533,6 +4664,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -4530,6 +4661,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              : slot == equippable.slot() && this.canUseSlot(equippable.slot()) && equippable.canBeEquippedBy(this.getType());
      }
  
@@ -16693,7 +16693,7 @@ index 04527a5c65ad630f794fed9071d485aedd02257a..77731406cb3dc417aa2fe1cb4352f3d2
  
              NoiseCache cache = noiseCache.get().computeIfAbsent(noise, noiseKey -> new NoiseCache()); // Paper - Perf: Optimize end generation
 diff --git a/net/minecraft/world/level/levelgen/PhantomSpawner.java b/net/minecraft/world/level/levelgen/PhantomSpawner.java
-index 1ec7abf2c82a5371fe1dacd57d90386fdae67f56..d9fca70ff61f20401643fe95833d3f7fbf3117e0 100644
+index 07231d39357b4a58a22a17d6e965c4d611aff6a6..2b869b00b9512f7705b82062742635cc348c01aa 100644
 --- a/net/minecraft/world/level/levelgen/PhantomSpawner.java
 +++ b/net/minecraft/world/level/levelgen/PhantomSpawner.java
 @@ -38,13 +38,13 @@ public class PhantomSpawner implements CustomSpawner {
@@ -16714,7 +16714,7 @@ index 1ec7abf2c82a5371fe1dacd57d90386fdae67f56..d9fca70ff61f20401643fe95833d3f7f
                                          int i = Mth.clamp(stats.getValue(Stats.CUSTOM.get(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);
                                          int i1 = 24000;
 @@ -64,7 +64,7 @@ public class PhantomSpawner implements CustomSpawner {
-                                             FluidState fluidState = level.getFluidState(blockPos1);
+                                             // Gale end - MultiPaper - don't load chunks to spawn phantoms
                                              if (NaturalSpawner.isValidEmptySpawnBlock(level, blockPos1, blockState, fluidState, EntityType.PHANTOM)) {
                                                  SpawnGroupData spawnGroupData = null;
 -                                                int i2 = 1 + randomSource.nextInt(currentDifficultyAt.getDifficulty().getId() + 1);

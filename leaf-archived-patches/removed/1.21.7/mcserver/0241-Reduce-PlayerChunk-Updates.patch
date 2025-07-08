@@ -3,6 +3,7 @@ From: Taiyou06 <kaandindar21@gmail.com>
 Date: Thu, 8 May 2025 10:08:54 +0200
 Subject: [PATCH] Reduce PlayerChunk Updates
 
+Removed since Leaf 1.21.7, too tiny optimization, no need.
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 index 608324d13514063b48ae250d3aaf11c433438ce6..09818ac59077a6a81f2f7c46d37d81b34e9ee3ab 100644

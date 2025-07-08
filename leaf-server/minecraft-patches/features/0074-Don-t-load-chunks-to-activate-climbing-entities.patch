@@ -28,7 +28,7 @@ index 8fcc1223942114f46c36028326e9c7daf4f0d9e0..41279a276622062338bef685491cc295
          return this.chunkPosition;
      }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 586b79bc844b098336c6d3bf342b570396e6af88..bc284bbd3d601b1e7c15f663cb65b85c24d85a41 100644
+index 586b79bc844b098336c6d3bf342b570396e6af88..9e93c446fb3641a88643d382abddc5d2acc8a810 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -2129,8 +2129,17 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -51,7 +51,7 @@ index 586b79bc844b098336c6d3bf342b570396e6af88..bc284bbd3d601b1e7c15f663cb65b85c
          }
  
          return this.cachedOnClimbable;
-@@ -2138,11 +2147,28 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -2138,11 +2147,25 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      // Gale end - Airplane - cache on climbable check
  
      public boolean onClimbable() {
@@ -72,10 +72,7 @@ index 586b79bc844b098336c6d3bf342b570396e6af88..bc284bbd3d601b1e7c15f663cb65b85c
 +                inBlockState = this.getInBlockState();
 +            } else {
 +                inBlockState = this.getInBlockStateIfLoaded();
-+
-+                if (inBlockState == null) {
-+                    return null;
-+                }
++                if (inBlockState == null) return null;
 +            }
 +            // Gale end - don't load chunks to activate climbing entities
              if (inBlockState.is(BlockTags.CLIMBABLE)) {
