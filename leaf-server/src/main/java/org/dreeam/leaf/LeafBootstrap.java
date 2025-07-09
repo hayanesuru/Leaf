@@ -5,7 +5,7 @@ import joptsimple.OptionSet;
 
 public class LeafBootstrap {
 
-    public static final boolean enableFMA = Boolean.getBoolean("Leaf.enableFMA");
+    public static final boolean enableFMA = Boolean.getBoolean("Leaf.enableFMA"); // Leaf - Optimize Entity distanceTo
 
     public static void boot(final OptionSet options) {
         //runPreBootTasks();
