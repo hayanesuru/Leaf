@@ -15,7 +15,7 @@ public class OptimizeRandomTick extends ConfigModules {
 
     @Override
     public void onLoaded() {
-        Boolean old = config.getBoolean(EnumConfigCategory.PERF.getBaseKeyName() + ".optimise-random-tick");
+        Boolean old = config.getBoolean(EnumConfigCategory.PERF.getBaseKeyName() + ".optimize-random-tick");
         if (old != null && old) {
             enabled = config.getBoolean(getBasePath(), true);
             return;
