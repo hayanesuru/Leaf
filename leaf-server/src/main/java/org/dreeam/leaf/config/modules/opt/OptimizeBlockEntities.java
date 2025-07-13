@@ -14,7 +14,7 @@ public class OptimizeBlockEntities extends ConfigModules {
     @Override
     public void onLoaded() {
         // Transfer old config
-        Boolean optimiseBlockEntities = config.getBoolean(getBasePath() + ".optimize-block-entities");
+        Boolean optimiseBlockEntities = config.getBoolean(getBasePath() + ".optimise-block-entities");
         if (optimiseBlockEntities != null && optimiseBlockEntities) {
             enabled =  true;
         }
