@@ -18,7 +18,8 @@ This patch refactored from original multithreaded tracker (Petal version),
 and is derived from the Airplane fork by Paul Sauve, the tree is like:
 Airplane -> Pufferfish(?) -> Petal -> Leaf
 
-The core logic has beed reworked compared to the old one.
+The core logic has beed reworked compared to the old one, can handle larger
+scale situation better now.
 Current impl includes many improvements and fixes we made, such as
 plugin compat issues with some NPC plugins using real entity type,
 e.g. Citizens.

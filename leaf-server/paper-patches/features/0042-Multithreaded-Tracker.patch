@@ -16,13 +16,16 @@ Co-authored-by: hayanesuru <hayanesuru@outlook.jp>
 
 This patch refactored from original multithreaded tracker (Petal version),
 and is derived from the Airplane fork by Paul Sauve, the tree is like:
-Airplane -> Pufferfish? -> Petal -> Leaf
+Airplane -> Pufferfish(?) -> Petal -> Leaf
 
-We made much of tracking logic asynchronously, and fixed visible issue
-for the case of some NPC plugins which using real entity type, e.g. Citizens.
+The core logic has beed reworked compared to the old one, can handle larger
+scale situation better now.
+Current impl includes many improvements and fixes we made, such as
+plugin compat issues with some NPC plugins using real entity type,
+e.g. Citizens.
 
-But it is still recommending to use those packet based, virtual entity
-based NPC plugins, e.g. ZNPC Plus, Adyeshach, Fancy NPC, etc.
+However we still recommend to use those packet based NPC plugins,
+e.g. ZNPC Plus, Adyeshach, Fancy NPC, etc.
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 index beae8a57a0ce9b8e7d81619efe4c39d908869319..6b1926080eddf61ff9c0156a6846f7f0bcff1c2d 100644
