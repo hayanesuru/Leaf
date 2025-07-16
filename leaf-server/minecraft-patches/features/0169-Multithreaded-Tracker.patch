@@ -1176,14 +1176,14 @@ index add696ec1835eb161d6fc94509a2a77febd23d69..ca948c0f4f48b567b66e4b992eef99d3
          if (this.entity instanceof ServerPlayer) {
              ((ServerPlayer)this.entity).connection.send(packet);
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 08d12a1acc3a672a77daa15f82392cd603c30283..b4ee1682a851eb8f1fae999ba0913ae300a71a89 100644
+index 08d12a1acc3a672a77daa15f82392cd603c30283..b0ac6de9e0f15d234781fc43dd6fd1d5cd6c5ddf 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -216,6 +216,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      private final alternate.current.wire.WireHandler wireHandler = new alternate.current.wire.WireHandler(this); // Paper - optimize redstone (Alternate Current)
      public boolean hasRidableMoveEvent = false; // Purpur - Ridables
      final List<ServerPlayer> realPlayers; // Leaves - skip
-+    public @Nullable java.util.concurrent.Future<org.dreeam.leaf.async.tracker.TrackerCtx>[] trackerTask; // Leaf - Multithreaded tracker
++    public volatile @Nullable java.util.concurrent.Future<org.dreeam.leaf.async.tracker.TrackerCtx>[] trackerTask; // Leaf - Multithreaded tracker
  
      @Override
      public @Nullable LevelChunk getChunkIfLoaded(int x, int z) {

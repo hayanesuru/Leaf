@@ -66,6 +66,10 @@ public final class AsyncTracker {
     }
 
     public static void onTickEnd(MinecraftServer server) {
+        if (!TRACKER_EXECUTOR.channel.isEmpty()) {
+            // not likely
+            TRACKER_EXECUTOR.unpack();
+        }
         for (ServerLevel world : server.getAllLevels()) {
             Future<TrackerCtx>[] task = world.trackerTask;
             if (task != null) {

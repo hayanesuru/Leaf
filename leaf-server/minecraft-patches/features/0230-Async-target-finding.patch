@@ -134,7 +134,7 @@ index 9b8d119116b0c3a51d3fe2ff7efb33cc39627cc4..436e73086678e4afbf94f1b7bca9b0c7
  
          // Gale start - Pufferfish - SIMD support
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 65f6cd4508c41f14930f768575fe26dc80c9a2fa..ccb0913370e862e936f2a23289d4d49ce8773759 100644
+index 68bba7703ffcbeb1bf18d7dfdba9dbb21fe9d4b5..cc88326fc1017605c65b32a7a124cc8734281a86 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -175,7 +175,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -158,7 +158,7 @@ index 65f6cd4508c41f14930f768575fe26dc80c9a2fa..ccb0913370e862e936f2a23289d4d49c
 @@ -220,6 +229,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      public boolean hasRidableMoveEvent = false; // Purpur - Ridables
      final List<ServerPlayer> realPlayers; // Leaves - skip
-     public @Nullable java.util.concurrent.Future<org.dreeam.leaf.async.tracker.TrackerCtx>[] trackerTask; // Leaf - Multithreaded tracker
+     public volatile @Nullable java.util.concurrent.Future<org.dreeam.leaf.async.tracker.TrackerCtx>[] trackerTask; // Leaf - Multithreaded tracker
 +    public final @Nullable org.dreeam.leaf.async.ai.AsyncGoalExecutor asyncGoalExecutor; // Leaf - Async target finding
  
      @Override

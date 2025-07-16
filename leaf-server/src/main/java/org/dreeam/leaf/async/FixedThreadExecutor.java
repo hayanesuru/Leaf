@@ -9,7 +9,7 @@ import java.util.concurrent.locks.LockSupport;
 
 public final class FixedThreadExecutor {
     private final Thread[] workers;
-    private final MpmcQueue<Runnable> channel;
+    public final MpmcQueue<Runnable> channel;
     private static volatile boolean SHUTDOWN = false;
 
     public FixedThreadExecutor(int numThreads, int queue, String prefix) {
@@ -72,12 +72,17 @@ public final class FixedThreadExecutor {
     private record Worker(MpmcQueue<Runnable> channel) implements Runnable {
         @Override
         public void run() {
-            while (!SHUTDOWN) {
+            while (true) {
                 final Runnable task = channel.recv();
                 if (task != null) {
                     task.run();
-                } else if (!SHUTDOWN) {
-                    LockSupport.park();
+                } else if (SHUTDOWN) {
+                    break;
+                } else if (channel.isEmpty()) {
+                    Thread.yield();
+                    if (channel.isEmpty()) {
+                        LockSupport.park();
+                    }
                 }
             }
         }
