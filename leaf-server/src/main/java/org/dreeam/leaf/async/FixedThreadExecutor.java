@@ -78,7 +78,7 @@ public final class FixedThreadExecutor {
                     task.run();
                 } else if (SHUTDOWN) {
                     break;
-                } else if (!channel.isEmpty()) {
+                } else if (channel.isEmpty()) {
                     synchronized (sync) {
                         try {
                             sync.wait();
