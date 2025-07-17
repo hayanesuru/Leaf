@@ -1,10 +1,13 @@
 package org.dreeam.leaf.async.tracker;
 
 import ca.spottedleaf.moonrise.common.misc.NearbyPlayers;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.FullChunkStatus;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
 import org.dreeam.leaf.util.EntitySlice;
 
 import java.util.concurrent.Callable;
@@ -23,9 +26,11 @@ public final class TrackerTask implements Callable<TrackerCtx> {
         NearbyPlayers nearbyPlayers = world.moonrise$getNearbyPlayers();
         TrackerCtx ctx = new TrackerCtx(this.world);
         final Entity[] raw = entities.array();
+        Long2ObjectMap<NearbyPlayers.TrackedChunk> chunkCache = new Long2ObjectOpenHashMap<>();
         for (int i = entities.start(); i < entities.end(); i++) {
             final Entity entity = raw[i];
             final ChunkMap.TrackedEntity tracker = ((ca.spottedleaf.moonrise.patches.entity_tracker.EntityTrackerEntity)entity).moonrise$getTrackedEntity();
+            long chunkPos = entity.chunkPosition().toLong();
             if (tracker == null) {
                 continue;
             }
@@ -33,7 +38,7 @@ public final class TrackerTask implements Callable<TrackerCtx> {
                 ctx.citizensEntity(entity);
                 continue;
             }
-            NearbyPlayers.TrackedChunk trackedChunk = nearbyPlayers.getChunk(entity.chunkPosition());
+            NearbyPlayers.TrackedChunk trackedChunk = chunkCache.computeIfAbsent(chunkPos, k -> nearbyPlayers.getChunk(ChunkPos.getX(k), ChunkPos.getZ(k)));
 
             tracker.leafTick(ctx, trackedChunk);
             boolean flag = false;
