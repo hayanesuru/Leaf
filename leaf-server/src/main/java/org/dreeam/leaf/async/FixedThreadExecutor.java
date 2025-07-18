@@ -5,11 +5,11 @@ import org.dreeam.leaf.util.queue.MpmcQueue;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.locks.LockSupport;
 
 public final class FixedThreadExecutor {
     private final Thread[] threads;
     public final MpmcQueue<Runnable> channel;
-    public final Object sync;
     private static volatile boolean SHUTDOWN = false;
 
     public FixedThreadExecutor(int numThreads, int queue, String prefix) {
@@ -18,14 +18,13 @@ public final class FixedThreadExecutor {
         }
         this.threads = new Thread[numThreads];
         this.channel = new MpmcQueue<>(Runnable.class, queue);
-        this.sync = new Object();
         for (int i = 0; i < numThreads; i++) {
             threads[i] = Thread.ofPlatform()
                 .uncaughtExceptionHandler(Util::onThreadException)
                 .daemon(false)
                 .priority(Thread.NORM_PRIORITY)
                 .name(prefix + " - " + i)
-                .start(new Worker(channel, sync));
+                .start(new Worker(channel));
         }
     }
 
@@ -42,15 +41,16 @@ public final class FixedThreadExecutor {
     }
 
     public void unpack() {
-        synchronized (sync) {
-            sync.notifyAll();
+        final int len = Math.clamp(channel.length(), 1, threads.length);
+        for (int i = 0; i < len; i++) {
+            LockSupport.unpark(threads[i]);
         }
     }
 
     public void shutdown() {
         SHUTDOWN = true;
-        synchronized (sync) {
-            sync.notifyAll();
+        for (Thread thread : threads) {
+            LockSupport.unpark(thread);
         }
     }
 
@@ -69,7 +69,7 @@ public final class FixedThreadExecutor {
         }
     }
 
-    private record Worker(MpmcQueue<Runnable> channel, Object sync) implements Runnable {
+    private record Worker(MpmcQueue<Runnable> channel) implements Runnable {
         @Override
         public void run() {
             while (true) {
@@ -78,12 +78,12 @@ public final class FixedThreadExecutor {
                     task.run();
                 } else if (SHUTDOWN) {
                     break;
-                } else if (channel.isEmpty()) {
-                    synchronized (sync) {
-                        try {
-                            sync.wait();
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
+                } else {
+                    Thread.yield();
+                    if (channel.isEmpty()) {
+                        LockSupport.park();
+                        if (Thread.interrupted()) {
+                            return;
                         }
                     }
                 }
