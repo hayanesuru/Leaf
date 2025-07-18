@@ -58,7 +58,7 @@ Building a Paperclip JAR for distribution:
 ```xml
 <repository>
     <id>leafmc</id>
-    <url>https://maven.nostal.ink/repository/maven-snapshots/</url>
+    <url>https://maven.leafmc.one/snapshots/</url>
 </repository>
 ```
 ```xml
@@ -73,7 +73,7 @@ Building a Paperclip JAR for distribution:
 ```kotlin
 repositories {
   maven {
-    url = uri("https://maven.nostal.ink/repository/maven-snapshots/")
+    url = uri("https://maven.leafmc.one/snapshots/")
   }
 }
 

@@ -7,7 +7,7 @@ plugins {
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-val leafMavenPublicUrl = "https://maven.nostal.ink/repository/maven-snapshots/"
+val leafMavenPublicUrl = "https://maven.leafmc.one/snapshots/"
 
 subprojects {
     apply(plugin = "java-library")
@@ -23,7 +23,6 @@ subprojects {
         mavenCentral()
         maven(paperMavenPublicUrl)
         maven(leafMavenPublicUrl)
-        maven("https://repo.bsdevelopment.org/releases/") // Leaf - Leaf config - ConfigurationMaster-API
     }
 
     tasks.withType<AbstractArchiveTask>().configureEach {

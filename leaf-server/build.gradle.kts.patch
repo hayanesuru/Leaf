@@ -4,7 +4,7 @@
  }
  
  val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-+val leafMavenPublicUrl = "https://maven.nostal.ink/repository/maven-snapshots/" // Leaf - project setup - Add publish repo
++val leafMavenPublicUrl = "https://maven.leafmc.one/snapshots/" // Leaf - project setup - Add publish repo
  
  dependencies {
      mache("io.papermc:mache:1.21.8+build.1")
