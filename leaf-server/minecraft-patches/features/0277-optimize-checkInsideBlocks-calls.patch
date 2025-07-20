@@ -11,7 +11,7 @@ Subject: [PATCH] optimize checkInsideBlocks calls
 License: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 086525c31bd8167baac79a7f41e3e4d1ca783136..a553a4205688369226244ee712dca8f3d2295484 100644
+index 641ad9779e7822d29d35a199fed8766887e62a8e..4a6f3e060496c831f8d810148e4f36a57f5e9f5d 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1733,8 +1733,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -97,7 +97,7 @@ index 086525c31bd8167baac79a7f41e3e4d1ca783136..a553a4205688369226244ee712dca8f3
      private void debugBlockIntersection(BlockPos blockPos, boolean flag, boolean flag1) {
      }
 diff --git a/net/minecraft/world/entity/InsideBlockEffectApplier.java b/net/minecraft/world/entity/InsideBlockEffectApplier.java
-index a7bc5ead2062504ceac95f603bc1ca8d4290bbfd..db2c51f7ec06705188734c2d5d8bf68fd5860b03 100644
+index a7bc5ead2062504ceac95f603bc1ca8d4290bbfd..3f5b466c886310e38f5ade805941368e5b2903e2 100644
 --- a/net/minecraft/world/entity/InsideBlockEffectApplier.java
 +++ b/net/minecraft/world/entity/InsideBlockEffectApplier.java
 @@ -30,20 +30,28 @@ public interface InsideBlockEffectApplier {
@@ -139,22 +139,44 @@ index a7bc5ead2062504ceac95f603bc1ca8d4290bbfd..db2c51f7ec06705188734c2d5d8bf68f
              if (this.lastStep != step) {
                  this.lastStep = step;
                  this.flushStep();
-@@ -53,46 +61,59 @@ public interface InsideBlockEffectApplier {
+@@ -53,46 +61,88 @@ public interface InsideBlockEffectApplier {
          public void applyAndClear(Entity entity) {
              this.flushStep();
  
 -            for (Consumer<Entity> consumer : this.finalEffects) {
--                if (!entity.isAlive()) {
--                    break;
--                }
--
--                consumer.accept(entity);
-+            // no iter alloc
 +            List<Consumer<Entity>> effects = this.finalEffects;
 +            int size = effects.size();
-+            for (int i = 0; i < size; i++) {
-+                if (!entity.isAlive()) break;
-+                effects.get(i).accept(entity);
++
++            if (size == 0) {
++                this.lastStep = -1;
++                return;
++            }
++
++            if (!entity.isAlive()) {
++                effects.clear();
++                this.lastStep = -1;
++                return;
++            }
++
++            int i = 0;
++            while (i < size - 3) {
++                effects.get(i++).accept(entity);
++                effects.get(i++).accept(entity);
++                effects.get(i++).accept(entity);
++                effects.get(i++).accept(entity);
+                 if (!entity.isAlive()) {
+                     break;
+                 }
++            }
+ 
+-                consumer.accept(entity);
++            if (entity.isAlive()) {
++                for (; i < size; i++) {
++                    effects.get(i).accept(entity);
++                    if (!entity.isAlive()) {
++                        break;
++                    }
++                }
              }
  
 -            this.finalEffects.clear();
@@ -169,31 +191,34 @@ index a7bc5ead2062504ceac95f603bc1ca8d4290bbfd..db2c51f7ec06705188734c2d5d8bf68f
 -                list.clear();
 -                if (this.effectsInStep.remove(insideBlockEffectType) instanceof final Consumer<Entity> recordedEffect) { // Paper - track position inside effect was triggered on - better than null check to avoid diff.
 -                    this.finalEffects.add(recordedEffect); // Paper - track position inside effect was triggered on
-+            for (int i = 0; i < APPLY_ORDER.length; i++) {
-+                InsideBlockEffectType type = APPLY_ORDER[i];
-+                int index = type.ordinal();
++            final int len = APPLY_ORDER.length;
++            final List<Consumer<Entity>>[] beforeArr = this.beforeEffectsInStep;
++            final Consumer<Entity>[] effectArr = this.effectsInStep;
++            final List<Consumer<Entity>>[] afterArr = this.afterEffectsInStep;
++            final List<Consumer<Entity>> finalList = this.finalEffects;
 +
++            for (int i = 0; i < len; i++) {
 +                // Process before effects
-+                List<Consumer<Entity>> beforeList = beforeEffectsInStep[index];
++                List<Consumer<Entity>> beforeList = beforeArr[i];
 +                if (!beforeList.isEmpty()) {
-+                    finalEffects.addAll(beforeList);
++                    finalList.addAll(beforeList);
 +                    beforeList.clear();
++                }
++
++                // Process main effect
++                Consumer<Entity> effect = effectArr[i];
++                if (effect != null) {
++                    finalList.add(effect);
++                    effectArr[i] = null;
                  }
  
 -                List<Consumer<Entity>> list1 = this.afterEffectsInStep.get(insideBlockEffectType);
 -                this.finalEffects.addAll(list1);
 -                list1.clear();
-+                // Process main effect
-+                Consumer<Entity> effect = effectsInStep[index];
-+                if (effect != null) {
-+                    finalEffects.add(effect);
-+                    effectsInStep[index] = null; // Clear reference
-+                }
-+
 +                // Process after effects
-+                List<Consumer<Entity>> afterList = afterEffectsInStep[index];
++                List<Consumer<Entity>> afterList = afterArr[i];
 +                if (!afterList.isEmpty()) {
-+                    finalEffects.addAll(afterList);
++                    finalList.addAll(afterList);
 +                    afterList.clear();
 +                }
              }
@@ -218,7 +243,7 @@ index a7bc5ead2062504ceac95f603bc1ca8d4290bbfd..db2c51f7ec06705188734c2d5d8bf68f
          }
  
          // Paper start - track position inside effect was triggered on
-@@ -113,5 +134,6 @@ public interface InsideBlockEffectApplier {
+@@ -113,5 +163,6 @@ public interface InsideBlockEffectApplier {
              }
          }
          // Paper end - track position inside effect was triggered on
