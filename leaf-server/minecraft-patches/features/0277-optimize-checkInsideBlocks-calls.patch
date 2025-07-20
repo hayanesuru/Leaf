@@ -11,7 +11,7 @@ Subject: [PATCH] optimize checkInsideBlocks calls
 License: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 086525c31bd8167baac79a7f41e3e4d1ca783136..e05d1a4b4126c8cddcf9adbf83cc4b53c5b028d5 100644
+index 086525c31bd8167baac79a7f41e3e4d1ca783136..a553a4205688369226244ee712dca8f3d2295484 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1733,8 +1733,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -56,11 +56,9 @@ index 086525c31bd8167baac79a7f41e3e4d1ca783136..e05d1a4b4126c8cddcf9adbf83cc4b53
                          return true;
                      } else {
 -                        VoxelShape entityInsideCollisionShape = blockState.getEntityInsideCollisionShape(this.level(), pos, this);
--                        boolean flag = entityInsideCollisionShape == Shapes.block()
--                            || this.collidedWithShapeMovingFrom(vec3, vec31, entityInsideCollisionShape.move(new Vec3(pos)).toAabbs());
-+                        final Vec3 blockVec = new Vec3(pos);
 +                        VoxelShape entityInsideCollisionShape = blockState.getEntityInsideCollisionShape(level, pos, this);
-+                        boolean flag = entityInsideCollisionShape == Shapes.block() || this.collidedWithShapeMovingFrom(vec3, vec31, entityInsideCollisionShape.move(blockVec).toAabbs());
+                         boolean flag = entityInsideCollisionShape == Shapes.block()
+                             || this.collidedWithShapeMovingFrom(vec3, vec31, entityInsideCollisionShape.move(new Vec3(pos)).toAabbs());
 +
                          if (flag) {
                              try {
@@ -94,7 +92,7 @@ index 086525c31bd8167baac79a7f41e3e4d1ca783136..e05d1a4b4126c8cddcf9adbf83cc4b53
              }
          );
      }
-+    // Leaf end - optimize checkInsideBlocks calls
++// Leaf end - optimize checkInsideBlocks calls
  
      private void debugBlockIntersection(BlockPos blockPos, boolean flag, boolean flag1) {
      }
