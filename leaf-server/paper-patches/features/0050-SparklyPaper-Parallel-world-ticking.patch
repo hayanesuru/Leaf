@@ -328,7 +328,7 @@ index 3183dab5ae079402f5c0f2d5c0048a4d105d8eeb..ad53cef93c55e73579f2419e10196beb
      }
      // Paper end
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index b00a82816784ea2f6422ca98c1f11597105cc177..5c43785b891b8b6faf3f513510509ec3a1514b69 100644
+index dd122bbbe2c33183017dbde6997d3f1cd08479b5..4d8c87bd55e3503a84ad9a24b04a11a472d68f3c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 @@ -74,12 +74,97 @@ public class CraftBlock implements Block {
@@ -871,7 +871,7 @@ index b00a82816784ea2f6422ca98c1f11597105cc177..5c43785b891b8b6faf3f513510509ec3
  
      @Override
      public int getBlockPower() {
-@@ -478,106 +746,180 @@ public class CraftBlock implements Block {
+@@ -478,23 +746,35 @@ public class CraftBlock implements Block {
  
      @Override
      public PistonMoveReaction getPistonMoveReaction() {
@@ -910,7 +910,8 @@ index b00a82816784ea2f6422ca98c1f11597105cc177..5c43785b891b8b6faf3f513510509ec3
      }
  
      @Override
-     public boolean breakNaturally(ItemStack item, boolean triggerEffect, boolean dropExperience) {
+@@ -506,84 +786,147 @@ public class CraftBlock implements Block {
+     public boolean breakNaturally(ItemStack item, boolean triggerEffect, boolean dropExperience, boolean forceEffect) {
          // Paper end
          // Order matters here, need to drop before setting to air so skulls can get their data
 +        // Leaf start - SparklyPaper - parallel world ticking - Write operation check
@@ -930,50 +931,45 @@ index b00a82816784ea2f6422ca98c1f11597105cc177..5c43785b891b8b6faf3f513510509ec3
          net.minecraft.world.level.block.Block block = state.getBlock();
          net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
 -        boolean result = false;
--
++        boolean droppedItems = false;
+ 
 -        // Modelled off Player#hasCorrectToolForDrops
 -        if (block != Blocks.AIR && (item == null || !state.requiresCorrectToolForDrops() || nmsItem.isCorrectToolForDrops(state))) {
 -            net.minecraft.world.level.block.Block.dropResources(state, this.world.getMinecraftWorld(), this.position, this.world.getBlockEntity(this.position), null, nmsItem, false); // Paper - Properly handle xp dropping
 -            // Paper start - improve Block#breakNaturally
--            if (triggerEffect) {
--                if (state.getBlock() instanceof net.minecraft.world.level.block.BaseFireBlock) {
--                    this.world.levelEvent(net.minecraft.world.level.block.LevelEvent.SOUND_EXTINGUISH_FIRE, this.position, 0);
--                } else {
--                    this.world.levelEvent(net.minecraft.world.level.block.LevelEvent.PARTICLES_DESTROY_BLOCK, this.position, net.minecraft.world.level.block.Block.getId(state));
-+        boolean droppedItems = false;
-+
+-            if (dropExperience) block.popExperience(this.world.getMinecraftWorld(), this.position, block.getExpDrop(state, this.world.getMinecraftWorld(), this.position, nmsItem, true));
+-            // Paper end
+-            result = true;
+-        }
 +        // Experience dropping requires ServerLevel
 +        ServerLevel serverLevelForDrops = getServerLevel(); // Re-get ServerLevel specifically for drop logic
-+
+ 
+-        if ((result && triggerEffect) || (forceEffect && block != Blocks.AIR)) {
+-            if (state.getBlock() instanceof net.minecraft.world.level.block.BaseFireBlock) {
+-                this.world.levelEvent(net.minecraft.world.level.block.LevelEvent.SOUND_EXTINGUISH_FIRE, this.position, 0);
+-            } else {
+-                this.world.levelEvent(net.minecraft.world.level.block.LevelEvent.PARTICLES_DESTROY_BLOCK, this.position, net.minecraft.world.level.block.Block.getId(state));
 +        if (serverLevelForDrops != null) { // Only attempt drops/XP if we have a ServerLevel
 +            // Check if block should drop items
 +            if (!state.isAir() && (item == null || !state.requiresCorrectToolForDrops() || nmsItem.isCorrectToolForDrops(state))) {
 +                // Drop items using ServerLevel
 +                net.minecraft.world.level.block.Block.dropResources(state, serverLevelForDrops, this.position, this.world.getBlockEntity(this.position), null, nmsItem, false);
 +
-+                // Trigger effect using LevelAccessor (safe)
-+                if (triggerEffect) {
-+                    int eventId = (state.getBlock() instanceof net.minecraft.world.level.block.BaseFireBlock)
-+                        ? net.minecraft.world.level.block.LevelEvent.SOUND_EXTINGUISH_FIRE
-+                        : net.minecraft.world.level.block.LevelEvent.PARTICLES_DESTROY_BLOCK;
-+                    int eventData = (eventId == net.minecraft.world.level.block.LevelEvent.PARTICLES_DESTROY_BLOCK)
-+                        ? net.minecraft.world.level.block.Block.getId(state) : 0;
-+                    this.world.levelEvent(eventId, this.position, eventData);
-+                }
 +                // Drop experience using ServerLevel
 +                if (dropExperience) {
 +                    int xp = block.getExpDrop(state, serverLevelForDrops, this.position, nmsItem, true);
 +                    if (xp > 0) { // Only pop if there's XP to drop
 +                        block.popExperience(serverLevelForDrops, this.position, xp);
++
 +                    }
-                 }
++                }
 +                droppedItems = true;
 +            }
 +        } else {
 +            // Log if we couldn't drop XP because it wasn't a ServerLevel
 +            if (dropExperience && !state.isAir()) { // Only warn if XP was requested and block wasn't air
 +                org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, "PWT: Cannot drop experience for breakNaturally: Not a ServerLevel.");
-+            }
+             }
 +            // Still trigger effects if requested and possible with LevelAccessor
 +            if (triggerEffect && !state.isAir()) {
 +                int eventId = (state.getBlock() instanceof net.minecraft.world.level.block.BaseFireBlock)
@@ -982,10 +978,17 @@ index b00a82816784ea2f6422ca98c1f11597105cc177..5c43785b891b8b6faf3f513510509ec3
 +                int eventData = (eventId == net.minecraft.world.level.block.LevelEvent.PARTICLES_DESTROY_BLOCK)
 +                    ? net.minecraft.world.level.block.Block.getId(state) : 0;
 +                this.world.levelEvent(eventId, this.position, eventData);
-             }
--            if (dropExperience) block.popExperience(this.world.getMinecraftWorld(), this.position, block.getExpDrop(state, this.world.getMinecraftWorld(), this.position, nmsItem, true));
--            // Paper end
--            result = true;
++            }
++        }
++
++        // Trigger effect using LevelAccessor (safe)
++        if ((droppedItems && triggerEffect) || (forceEffect && block != Blocks.AIR)) {
++            int eventId = (state.getBlock() instanceof net.minecraft.world.level.block.BaseFireBlock)
++                ? net.minecraft.world.level.block.LevelEvent.SOUND_EXTINGUISH_FIRE
++                : net.minecraft.world.level.block.LevelEvent.PARTICLES_DESTROY_BLOCK;
++            int eventData = (eventId == net.minecraft.world.level.block.LevelEvent.PARTICLES_DESTROY_BLOCK)
++                ? net.minecraft.world.level.block.Block.getId(state) : 0;
++            this.world.levelEvent(eventId, this.position, eventData);
          }
  
 -        // SPIGOT-6778: Directly call setBlock instead of setBlockState, so that the block entity is not removed and custom remove logic is run.
@@ -1092,7 +1095,7 @@ index b00a82816784ea2f6422ca98c1f11597105cc177..5c43785b891b8b6faf3f513510509ec3
      }
  
      @Override
-@@ -592,31 +934,70 @@ public class CraftBlock implements Block {
+@@ -598,31 +941,70 @@ public class CraftBlock implements Block {
  
      @Override
      public Collection<ItemStack> getDrops(ItemStack item, Entity entity) {
@@ -1173,7 +1176,7 @@ index b00a82816784ea2f6422ca98c1f11597105cc177..5c43785b891b8b6faf3f513510509ec3
      @Override
      public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
          this.getCraftWorld().getBlockMetadata().setMetadata(this, metadataKey, newMetadataValue);
-@@ -639,57 +1020,148 @@ public class CraftBlock implements Block {
+@@ -645,57 +1027,148 @@ public class CraftBlock implements Block {
  
      @Override
      public boolean isPassable() {
@@ -1345,7 +1348,7 @@ index b00a82816784ea2f6422ca98c1f11597105cc177..5c43785b891b8b6faf3f513510509ec3
      }
  
      @Override
-@@ -705,7 +1177,10 @@ public class CraftBlock implements Block {
+@@ -711,7 +1184,10 @@ public class CraftBlock implements Block {
      // Paper start
      @Override
      public com.destroystokyo.paper.block.BlockSoundGroup getSoundGroup() {
@@ -1357,7 +1360,7 @@ index b00a82816784ea2f6422ca98c1f11597105cc177..5c43785b891b8b6faf3f513510509ec3
      }
  
      @Override
-@@ -718,26 +1193,76 @@ public class CraftBlock implements Block {
+@@ -724,26 +1200,76 @@ public class CraftBlock implements Block {
          return this.getNMS().getBlock().getDescriptionId();
      }
  
@@ -1508,7 +1511,7 @@ index 196835bdf95ba0e149b2977e9ef41698971f501f..eb7e63d4549e672ff1206055d2d75439
          net.minecraft.world.item.ItemStack nms = org.bukkit.craftbukkit.inventory.CraftItemStack.asNMSCopy(item);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
-index db71a9fc02bfac7799b58f07da044e53b2273e98..842713df01a0bde562b2bef366af7d5429497bae 100644
+index 18f09de5c6549df3562e710ede825f75d69c046e..1b06f97caeda6f33938ff5391ecaad5a1fc26f36 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlockStates.java
 @@ -195,14 +195,14 @@ public final class CraftBlockStates {
@@ -1530,7 +1533,7 @@ index db71a9fc02bfac7799b58f07da044e53b2273e98..842713df01a0bde562b2bef366af7d54
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 5e73db484a5526f4c39c7cc2de5ddc3ff037d2e4..acb5182a59859f65653cd309ca85b8301ace5383 100644
+index 658385b2887d6debec7fc941c28621da5d263411..2e7ee5faf114e9b8619826c0252c5daac333f0b5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -829,6 +829,28 @@ public class CraftEventFactory {

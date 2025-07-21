@@ -14,11 +14,11 @@ import io.papermc.paper.configuration.legacy.RequiresSpigotInitialization;
 import io.papermc.paper.configuration.mapping.InnerClassFieldDiscoverer;
 import io.papermc.paper.configuration.serializer.ComponentSerializer;
 import io.papermc.paper.configuration.serializer.EnumValueSerializer;
-import io.papermc.paper.configuration.serializer.PacketClassSerializer;
+import io.papermc.paper.configuration.serializer.ServerboundPacketClassSerializer;
 import io.papermc.paper.configuration.serializer.StringRepresentableSerializer;
-import io.papermc.paper.configuration.serializer.collections.FastutilMapSerializer;
-import io.papermc.paper.configuration.serializer.collections.MapSerializer;
-import io.papermc.paper.configuration.serializer.collections.TableSerializer;
+import io.papermc.paper.configuration.serializer.collection.TableSerializer;
+import io.papermc.paper.configuration.serializer.collection.map.FastutilMapSerializer;
+import io.papermc.paper.configuration.serializer.collection.map.MapSerializer;
 import io.papermc.paper.configuration.serializer.registry.RegistryHolderSerializer;
 import io.papermc.paper.configuration.serializer.registry.RegistryValueSerializer;
 import io.papermc.paper.configuration.transformation.Transformations;
@@ -140,7 +140,7 @@ public class GaleConfigurations extends Configurations<GaleGlobalConfiguration, 
     }
 
     private static ObjectMapper.Factory.Builder defaultGlobalFactoryBuilder(ObjectMapper.Factory.Builder builder) {
-        return builder.addDiscoverer(InnerClassFieldDiscoverer.globalConfig());
+        return builder.addDiscoverer(InnerClassFieldDiscoverer.globalConfig(PaperConfigurations.defaultFieldProcessors()));
     }
 
     @Override
@@ -152,7 +152,7 @@ public class GaleConfigurations extends Configurations<GaleGlobalConfiguration, 
     private static ConfigurationOptions defaultGlobalOptions(RegistryAccess registryAccess, ConfigurationOptions options) {
         return options
             .header(GLOBAL_HEADER)
-            .serializers(builder -> builder.register(new PacketClassSerializer())
+            .serializers(builder -> builder.register(new ServerboundPacketClassSerializer())
                 .register(new RegistryValueSerializer<>(new TypeToken<DataComponentType<?>>() {}, registryAccess, Registries.DATA_COMPONENT_TYPE, false))
             );
     }
@@ -175,7 +175,7 @@ public class GaleConfigurations extends Configurations<GaleGlobalConfiguration, 
         return super.createWorldObjectMapperFactoryBuilder(contextMap)
             .addNodeResolver(new RequiresSpigotInitialization.Factory(contextMap.require(PaperConfigurations.SPIGOT_WORLD_CONFIG_CONTEXT_KEY).get()))
             .addNodeResolver(new NestedSetting.Factory())
-            .addDiscoverer(InnerClassFieldDiscoverer.galeWorldConfig(contextMap));
+            .addDiscoverer(InnerClassFieldDiscoverer.galeWorldConfig(contextMap, PaperConfigurations.defaultFieldProcessors()));
     }
 
     @Override

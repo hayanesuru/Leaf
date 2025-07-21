@@ -127,7 +127,7 @@ index 0000000000000000000000000000000000000000..15a226e3854d731f7724025ea3459c8a
 +    }
 +}
 diff --git a/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java b/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
-index e6ad63a56dc0fc969dbf3ed5bdc36b4187331e30..f99ee5383bb9f33c1ebdbc74a640c2f7dc20a046 100644
+index d243d661ea0efcd7bdb9716a2bbd0995cad8db16..74249a202a1dbfc227d5028e68991a1625a75554 100644
 --- a/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
 +++ b/src/main/java/com/destroystokyo/paper/entity/ai/MobGoalHelper.java
 @@ -142,6 +142,10 @@ public class MobGoalHelper {
@@ -1087,10 +1087,10 @@ index cabdcbef0e6f7ca41ff5677bc2e6a81665ca812d..c47ca9ab164b6abd28e979c944569181
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 9d6235390c530b4f3780ac8d088ad8f6ee3db58e..ab454a7c53b074c8c60bab38c0544aa3b69d5c6d 100644
+index d4183bd69358b68980b80232d76863480d9b926c..aed79c57a691eb9a100e566c4d1163181af0b360 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -682,10 +682,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -681,10 +681,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      @Override
      public void setPlayerListName(String name) {
@@ -1107,7 +1107,7 @@ index 9d6235390c530b4f3780ac8d088ad8f6ee3db58e..ab454a7c53b074c8c60bab38c0544aa3
          if (this.getHandle().connection == null) return; // Paper - Updates are possible before the player has fully joined
          for (ServerPlayer player : (List<ServerPlayer>) this.server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
-@@ -1486,6 +1491,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1485,6 +1490,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          // Paper start - Teleport passenger API
          // Don't allow teleporting between worlds while keeping passengers
          if (ignorePassengers && entity.isVehicle() && location.getWorld() != this.getWorld()) {
@@ -1115,7 +1115,7 @@ index 9d6235390c530b4f3780ac8d088ad8f6ee3db58e..ab454a7c53b074c8c60bab38c0544aa3
              return false;
          }
  
-@@ -1507,6 +1513,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1506,6 +1512,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          }
  
          if (entity.isVehicle() && !ignorePassengers) { // Paper - Teleport API
@@ -1123,7 +1123,7 @@ index 9d6235390c530b4f3780ac8d088ad8f6ee3db58e..ab454a7c53b074c8c60bab38c0544aa3
              return false;
          }
  
-@@ -2793,6 +2800,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2792,6 +2799,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          this.getHandle().getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(player.getAbilities().walkingSpeed); // SPIGOT-5833: combination of the two in 1.16+
      }
  
@@ -1152,7 +1152,7 @@ index 9d6235390c530b4f3780ac8d088ad8f6ee3db58e..ab454a7c53b074c8c60bab38c0544aa3
      private void validateSpeed(float value) {
          Preconditions.checkArgument(value <= 1f && value >= -1f, "Speed value (%s) need to be between -1f and 1f", value);
      }
-@@ -3601,4 +3630,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -3600,4 +3629,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              this(new ShortArraySet(), new ArrayList<>());
          }
      }

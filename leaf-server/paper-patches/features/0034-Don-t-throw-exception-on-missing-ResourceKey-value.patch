@@ -5,11 +5,11 @@ Subject: [PATCH] Don't throw exception on missing ResourceKey value
 
 
 diff --git a/src/main/java/io/papermc/paper/configuration/serializer/registry/RegistryValueSerializer.java b/src/main/java/io/papermc/paper/configuration/serializer/registry/RegistryValueSerializer.java
-index 6831b7b72c5e1f79eff36019ca2ff56531c26df8..a1b9949c9e36770724292ea2f71f21456ae7889f 100644
+index ad08f242cd195bdf952bde02d759f2c853b496ff..40086e9e4d031605f12f1a4e8f9e4c241a5a38b6 100644
 --- a/src/main/java/io/papermc/paper/configuration/serializer/registry/RegistryValueSerializer.java
 +++ b/src/main/java/io/papermc/paper/configuration/serializer/registry/RegistryValueSerializer.java
-@@ -23,7 +23,11 @@ public final class RegistryValueSerializer<T> extends RegistryEntrySerializer<T,
-     protected T convertFromResourceKey(ResourceKey<T> key) throws SerializationException {
+@@ -33,7 +33,11 @@ public final class RegistryValueSerializer<T> extends RegistryEntrySerializer<T,
+     protected T convertFromResourceKey(final ResourceKey<T> key) throws SerializationException {
          final T value = this.registry().getValue(key);
          if (value == null) {
 -            throw new SerializationException("Missing value in " + this.registry() + " with key " + key.location());

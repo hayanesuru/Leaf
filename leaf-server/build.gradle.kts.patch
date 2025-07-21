@@ -89,7 +89,7 @@
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
      implementation("net.kyori:adventure-text-serializer-ansi:4.23.0") // Keep in sync with adventureVersion from Paper-API build file
      runtimeConfiguration(sourceSets.main.map { it.runtimeClasspath })
-@@ -143,41 +_,58 @@
+@@ -143,24 +_,38 @@
        all its classes to check if they are plugins.
        Scanning takes about 1-2 seconds so adding this speeds up the server start.
       */
@@ -112,8 +112,7 @@
 +    implementation("org.apache.logging.log4j:log4j-iostreams:2.24.3")
 +    // Leaf end - Bump Dependencies
      implementation("org.ow2.asm:asm-commons:9.8")
-     implementation("org.spongepowered:configurate-yaml:4.2.0-20250225.064233-199")
-     implementation("org.spongepowered:configurate-core:4.2.0-20250225.064233-204") // Pinned dependency of above pinned yaml snapshot.
+     implementation("org.spongepowered:configurate-yaml:4.2.0")
  
 +    // Purpur start
 +    implementation("org.mozilla:rhino-runtime:1.7.15")
@@ -135,15 +134,7 @@
      implementation("com.googlecode.json-simple:json-simple:1.1.1") { // change to runtimeOnly once Timings is removed
          isTransitive = false // includes junit
      }
- 
--    runtimeOnly("org.apache.maven:maven-resolver-provider:3.9.6")
--    runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.9.18")
--    runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.9.18")
-+    runtimeOnly("org.apache.maven:maven-resolver-provider:3.9.9")
-+    runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.9.22") // Dreeam TODO - Update to 2.0.1
-+    runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.9.22") // Dreeam TODO - Update to 2.0.1
-+    // Leaf end - Bump Dependencies
- 
+@@ -168,11 +_,13 @@
      testImplementation("io.github.classgraph:classgraph:4.8.179") // For mob goal test
      testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
      testImplementation("org.junit.platform:junit-platform-suite-engine:1.12.2")
@@ -161,7 +152,7 @@
  
      implementation("net.neoforged:srgutils:1.0.9") // Mappings handling
      implementation("net.neoforged:AutoRenamingTool:2.0.3") // Remap plugins
-@@ -188,31 +_,45 @@
+@@ -183,31 +_,45 @@
      implementation("io.papermc:reflection-rewriter-runtime:$reflectionRewriterVersion")
      implementation("io.papermc:reflection-rewriter-proxy-generator:$reflectionRewriterVersion")
  
@@ -216,7 +207,7 @@
              "Build-Number" to (build ?: ""),
              "Build-Time" to buildTime.toString(),
              "Git-Branch" to gitBranch,
-@@ -271,7 +_,7 @@
+@@ -266,7 +_,7 @@
      jvmArgumentProviders.add(provider)
  }
  
@@ -225,7 +216,7 @@
  idea {
      module {
          generatedSourceDirs.add(generatedDir.toFile())
-@@ -329,6 +_,8 @@
+@@ -324,6 +_,8 @@
      val memoryGb = providers.gradleProperty("paper.runMemoryGb").getOrElse("2")
      minHeapSize = "${memoryGb}G"
      maxHeapSize = "${memoryGb}G"
@@ -234,7 +225,7 @@
  
      doFirst {
          workingDir.mkdirs()
-@@ -391,3 +_,78 @@
+@@ -386,3 +_,78 @@
          }
      }
  }

@@ -70,19 +70,26 @@ index d0c4037c3cc60c54ea4c60ffc2c227107fecd01c..c01f3bd5022371b71f2bdc00ebf9d134
 +
  }
 diff --git a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-index 266932720ae0af0f17df18ad1570b29631ed2c2a..58d250bfd14690ed79ca7716b584cc3f91d0e7e6 100644
+index a972eeddbdc59e53279a7c5c704e28c2fcdf7290..8485ebd3289e94fda018749de714654e2bbdbcb6 100644
 --- a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
 +++ b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-@@ -334,7 +334,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
+@@ -341,13 +341,13 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
          }
      }
  
+-    private static List<Definition<? extends Annotation, ?, ? extends FieldProcessor.Factory<?, ?>>> defaultFieldProcessors() {
++    private static List<Definition<? extends Annotation, ?, ? extends FieldProcessor.Factory<?, ?>>> defaultFieldProcessors() { // Gale - Gale configuration - private -> public
+         return List.of(
+             MergeMap.DEFINITION
+         );
+     }
+ 
 -    private static ContextMap createWorldContextMap(ServerLevel level) {
-+    public static ContextMap createWorldContextMap(ServerLevel level) { // Gale - Gale configuration
++    public static ContextMap createWorldContextMap(ServerLevel level) { // Gale - Gale configuration - private -> public
          return createWorldContextMap(level.levelStorageAccess.levelDirectory.path(), level.serverLevelData.getLevelName(), level.dimension().location(), level.spigotConfig, level.registryAccess(), level.getGameRules());
      }
  
-@@ -437,17 +437,6 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
+@@ -450,17 +450,6 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
          return Files.exists(legacyConfig) && Files.isRegularFile(legacyConfig);
      }
  
@@ -100,7 +107,7 @@ index 266932720ae0af0f17df18ad1570b29631ed2c2a..58d250bfd14690ed79ca7716b584cc3f
      @Deprecated
      public static YamlConfiguration loadLegacyConfigFile(File configFile) throws Exception {
          YamlConfiguration config = new YamlConfiguration();
-@@ -470,9 +459,16 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
+@@ -483,9 +472,16 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
      }
  
      // Symlinks are not correctly checked in createDirectories
@@ -119,28 +126,28 @@ index 266932720ae0af0f17df18ad1570b29631ed2c2a..58d250bfd14690ed79ca7716b584cc3f
 +    // Gale end - Gale configuration
  }
 diff --git a/src/main/java/io/papermc/paper/configuration/mapping/InnerClassFieldDiscoverer.java b/src/main/java/io/papermc/paper/configuration/mapping/InnerClassFieldDiscoverer.java
-index 05339a176083af667c16f77d76dc1878dafce3f0..9ca55cba185b9de566f911b08d671bee50bca075 100644
+index a8a82aca70a97e30ca680c86421c6a04ed8172f8..db23f74b4c02c43ab42cf8db15c400eedf35d343 100644
 --- a/src/main/java/io/papermc/paper/configuration/mapping/InnerClassFieldDiscoverer.java
 +++ b/src/main/java/io/papermc/paper/configuration/mapping/InnerClassFieldDiscoverer.java
-@@ -46,7 +46,19 @@ public final class InnerClassFieldDiscoverer implements FieldDiscoverer<Map<Fiel
-         return new InnerClassFieldDiscoverer(overrides);
+@@ -97,7 +97,19 @@ public final class InnerClassFieldDiscoverer implements FieldDiscoverer<Map<Fiel
+         return create(overrides, fieldProcessors);
      }
  
--    public static FieldDiscoverer<?> globalConfig() {
+-    public static FieldDiscoverer<?> globalConfig(final List<Definition<?, ?, ? extends FieldProcessor.Factory<?, ?>>> fieldProcessors) {
 +    // Gale start - Gale configuration
-+    public static FieldDiscoverer<?> galeWorldConfig(io.papermc.paper.configuration.Configurations.ContextMap contextMap) {
++    public static FieldDiscoverer<?> galeWorldConfig(final io.papermc.paper.configuration.Configurations.ContextMap contextMap, final List<Definition<?, ?, ? extends FieldProcessor.Factory<?, ?>>> fieldProcessors) {
 +        final Map<Class<?>, Object> overrides = Map.of(
 +            org.galemc.gale.configuration.GaleWorldConfiguration.class, new org.galemc.gale.configuration.GaleWorldConfiguration(
 +                contextMap.require(io.papermc.paper.configuration.PaperConfigurations.SPIGOT_WORLD_CONFIG_CONTEXT_KEY).get(),
 +                contextMap.require(io.papermc.paper.configuration.Configurations.WORLD_KEY)
 +            )
 +        );
-+        return new InnerClassFieldDiscoverer(overrides);
++        return create(overrides, fieldProcessors);
 +    }
 +    // Gale end - Gale configuration
 +
-+    public static FieldDiscoverer<?> globalConfig() { // Gale - Gale configuration
-         return new InnerClassFieldDiscoverer(Collections.emptyMap());
++    public static FieldDiscoverer<?> globalConfig(final List<Definition<?, ?, ? extends FieldProcessor.Factory<?, ?>>> fieldProcessors) { // Gale - Gale configuration
+         return create(Collections.emptyMap(), fieldProcessors);
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java

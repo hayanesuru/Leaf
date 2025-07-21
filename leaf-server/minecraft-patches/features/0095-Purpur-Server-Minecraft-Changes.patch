@@ -291,10 +291,10 @@ index 17f33a309ead525975a3090514a6367260f0af09..f4360d9472ba344f2e7afd6d798d313d
                      Commands.literal("export")
                          .then(
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 8bab2c26e10e8495fd39be470bcb02917fe56f40..e72eda830644851656fae3118c513d7bd701be45 100644
+index 41005f6b9f53a9c1125ad5e08538d9f5aacb3571..411e1284a208ca1a097cf6eaa92e1e0d2203d83d 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -579,11 +579,20 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -580,11 +580,20 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
      private static final int MAX_PER_TICK = io.papermc.paper.configuration.GlobalConfiguration.get().misc.maxJoinsPerTick; // Paper - Buffer joins to world
      private static int joinAttemptsThisTick; // Paper - Buffer joins to world
      private static int currTick; // Paper - Buffer joins to world
@@ -1313,7 +1313,7 @@ index de630a692291926c52a0947f9943e59433ab130a..ca9ba2a2535eab66622230778efdf941
                  this.playerBrand = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.wrappedBuffer(data)).readUtf(256);
              }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 3f1f68ed20ec6c944f031afc74052e63594e84e6..6fc36c917bee5453e4aadd018389893c0f5dd6f4 100644
+index 04d6647ca0d9c69054bc2f1fdacc80497e0a7804..51e2aad2034c289e7f6838cb7ac6686593072903 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -338,6 +338,20 @@ public class ServerGamePacketListenerImpl
@@ -1570,7 +1570,7 @@ index f9fad100d3e5e4b44a5b0f88e288e6fac7a250f7..6d320ed179393e47398c44f2ba2b2285
                      }
                  } catch (AuthenticationUnavailableException var4) {
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 92b92476835d6de2a5db89529d58fd0b3067bac6..5d65f070fe622ed27f4fc26688589a8701de8782 100644
+index 77f74c35b0221fb6b14cc1d6acdb77c6bf8f68c6..7d1d455e67cab4eba3473b7111e30e9b1dcc282c 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -412,6 +412,7 @@ public abstract class PlayerList {
@@ -3693,7 +3693,7 @@ index cdf44c2586db396f1afdcbae4174b8b4fb00f48e..4d99a1bf2dc141630a76942ccbf1f608
          animal.resetLove();
          level.broadcastEntityEvent(this, (byte)18);
 diff --git a/net/minecraft/world/entity/animal/Bee.java b/net/minecraft/world/entity/animal/Bee.java
-index d40954f03c865bfbc5beb308bbcf7b7c9ac48eb9..ca5651f15552f91fba650747d28a75c00fa11442 100644
+index 13f24836649790a34b988e2d63accb043e6ff080..7573f1be88ca23096e02efe2fa933429fa4421ba 100644
 --- a/net/minecraft/world/entity/animal/Bee.java
 +++ b/net/minecraft/world/entity/animal/Bee.java
 @@ -150,6 +150,7 @@ public class Bee extends Animal implements NeutralMob, FlyingAnimal {

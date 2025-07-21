@@ -33,10 +33,10 @@ index 9f7288223bc1f13e3664d82d2e883336f527e5e2..ed51fd7c4c9f26dbcc348e6aefcafd36
  
      public static void shutdownExecutors() {
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index a6077984e139be5cbcc00f8f0828f1992d3604a6..4142ef85071b13427f99808482a1f1344ee976d3 100644
+index d04531c7316fc13207a6b7312a82697eb51b96f7..c64ce409b13a4f95e73cef7cc48db49eabffcc8a 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -645,13 +645,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -646,13 +646,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
              if (!(this.packetListener instanceof net.minecraft.server.network.ServerLoginPacketListenerImpl loginPacketListener)
                  || loginPacketListener.state != net.minecraft.server.network.ServerLoginPacketListenerImpl.State.VERIFYING
                  || Connection.joinAttemptsThisTick++ < MAX_PER_TICK) {
@@ -100,7 +100,7 @@ index 4535858701b2bb232b9d2feb2af6551526232ddc..e65c62dbe4c1560ae153e4c4344e9194
 -    // Paper end - detailed watchdog information
  }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 0709922df9b1dcef1010de725bf132d194e29aad..e39c3b7cea5de9a2e6d5e2256617c969d41a55c8 100644
+index 964c97a394122083a2f3c77b8ca529592c826080..a58ba94171b54feee82e4ec3d68d23f474507d8f 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1512,13 +1512,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -132,7 +132,7 @@ index 0709922df9b1dcef1010de725bf132d194e29aad..e39c3b7cea5de9a2e6d5e2256617c969
  
      private void tickPassenger(Entity ridingEntity, Entity passengerEntity, final boolean isActive) { // Paper - EAR 2
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 2b29b0e5334ad9f8b3768e9b198565f093c6d3a4..086525c31bd8167baac79a7f41e3e4d1ca783136 100644
+index a253d714670f932d67e2c44fdf895716b6b595ec..641ad9779e7822d29d35a199fed8766887e62a8e 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1170,16 +1170,6 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
