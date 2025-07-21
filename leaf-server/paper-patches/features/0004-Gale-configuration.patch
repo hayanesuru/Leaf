@@ -70,7 +70,7 @@ index d0c4037c3cc60c54ea4c60ffc2c227107fecd01c..c01f3bd5022371b71f2bdc00ebf9d134
 +
  }
 diff --git a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-index a972eeddbdc59e53279a7c5c704e28c2fcdf7290..8485ebd3289e94fda018749de714654e2bbdbcb6 100644
+index a972eeddbdc59e53279a7c5c704e28c2fcdf7290..c18f917171a5ba62afbeedd3638f020117394aff 100644
 --- a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
 +++ b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
 @@ -341,13 +341,13 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
@@ -78,7 +78,7 @@ index a972eeddbdc59e53279a7c5c704e28c2fcdf7290..8485ebd3289e94fda018749de714654e
      }
  
 -    private static List<Definition<? extends Annotation, ?, ? extends FieldProcessor.Factory<?, ?>>> defaultFieldProcessors() {
-+    private static List<Definition<? extends Annotation, ?, ? extends FieldProcessor.Factory<?, ?>>> defaultFieldProcessors() { // Gale - Gale configuration - private -> public
++    public static List<Definition<? extends Annotation, ?, ? extends FieldProcessor.Factory<?, ?>>> defaultFieldProcessors() { // Gale - Gale configuration - private -> public
          return List.of(
              MergeMap.DEFINITION
          );
