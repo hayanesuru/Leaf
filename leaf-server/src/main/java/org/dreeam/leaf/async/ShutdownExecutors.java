@@ -15,15 +15,6 @@ public class ShutdownExecutors {
     public static final Logger LOGGER = LogManager.getLogger("Leaf");
 
     public static void shutdown(MinecraftServer server) {
-        if (AsyncLocator.LOCATING_EXECUTOR_SERVICE != null) {
-            LOGGER.info("Waiting for structure locating executor to shutdown...");
-            AsyncLocator.LOCATING_EXECUTOR_SERVICE.shutdown();
-            try {
-                AsyncLocator.LOCATING_EXECUTOR_SERVICE.awaitTermination(60L, TimeUnit.SECONDS);
-            } catch (InterruptedException ignored) {
-            }
-        }
-
         if (server.mobSpawnExecutor != null && server.mobSpawnExecutor.thread.isAlive()) {
             LOGGER.info("Waiting for mob spawning thread to shutdown...");
             try {
@@ -64,6 +55,15 @@ public class ShutdownExecutors {
             AsyncPathProcessor.PATH_PROCESSING_EXECUTOR.shutdown();
             try {
                 AsyncPathProcessor.PATH_PROCESSING_EXECUTOR.awaitTermination(10L, TimeUnit.SECONDS);
+            } catch (InterruptedException ignored) {
+            }
+        }
+
+        if (AsyncLocator.LOCATING_EXECUTOR_SERVICE != null) {
+            LOGGER.info("Waiting for structure locating executor to shutdown...");
+            AsyncLocator.LOCATING_EXECUTOR_SERVICE.shutdown();
+            try {
+                AsyncLocator.LOCATING_EXECUTOR_SERVICE.awaitTermination(60L, TimeUnit.SECONDS);
             } catch (InterruptedException ignored) {
             }
         }

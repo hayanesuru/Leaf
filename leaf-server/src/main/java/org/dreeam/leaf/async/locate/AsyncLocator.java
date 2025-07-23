@@ -46,10 +46,9 @@ public class AsyncLocator {
     }
 
     static {
-        int threads = org.dreeam.leaf.config.modules.async.AsyncLocator.asyncLocatorThreads;
-        LOCATING_EXECUTOR_SERVICE = new ThreadPoolExecutor(
+        LOCATING_EXECUTOR_SERVICE = !org.dreeam.leaf.config.modules.async.AsyncLocator.enabled ? null : new ThreadPoolExecutor(
             1,
-            threads,
+            org.dreeam.leaf.config.modules.async.AsyncLocator.asyncLocatorThreads,
             org.dreeam.leaf.config.modules.async.AsyncLocator.asyncLocatorKeepalive,
             TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(),
