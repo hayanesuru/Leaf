@@ -4,6 +4,7 @@ import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dreeam.leaf.async.ai.AsyncGoalThread;
+import org.dreeam.leaf.async.locate.AsyncLocator;
 import org.dreeam.leaf.async.path.AsyncPathProcessor;
 import org.dreeam.leaf.async.tracker.AsyncTracker;
 
@@ -14,6 +15,15 @@ public class ShutdownExecutors {
     public static final Logger LOGGER = LogManager.getLogger("Leaf");
 
     public static void shutdown(MinecraftServer server) {
+        if (AsyncLocator.LOCATING_EXECUTOR_SERVICE != null) {
+            LOGGER.info("Waiting for structure locating executor to shutdown...");
+            AsyncLocator.LOCATING_EXECUTOR_SERVICE.shutdown();
+            try {
+                AsyncLocator.LOCATING_EXECUTOR_SERVICE.awaitTermination(60L, TimeUnit.SECONDS);
+            } catch (InterruptedException ignored) {
+            }
+        }
+
         if (server.mobSpawnExecutor != null && server.mobSpawnExecutor.thread.isAlive()) {
             LOGGER.info("Waiting for mob spawning thread to shutdown...");
             try {

@@ -11,6 +11,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.Structure;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -24,7 +26,8 @@ import java.util.function.Consumer;
 // Original project: https://github.com/thebrightspark/AsyncLocator
 public class AsyncLocator {
 
-    private static final ExecutorService LOCATING_EXECUTOR_SERVICE;
+    public static final Logger LOGGER = LogManager.getLogger("Leaf Async Locator");
+    public static final ExecutorService LOCATING_EXECUTOR_SERVICE;
 
     private AsyncLocator() {
     }
@@ -63,12 +66,6 @@ public class AsyncLocator {
                 .setPriority(Thread.NORM_PRIORITY - 2)
                 .build()
         );
-    }
-
-    public static void shutdownExecutorService() {
-        if (LOCATING_EXECUTOR_SERVICE != null) {
-            LOCATING_EXECUTOR_SERVICE.shutdown();
-        }
     }
 
     /**
