@@ -6,7 +6,7 @@ Subject: [PATCH] Fix Paper config fixClimbingBypassingCrammingRule
 Waiting for Paper#12793
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 3a669d98db60bfe19aa0c4b55dc28d06d44f7b88..fdb6527c9d7e18c37e681ea2d8e4428ece49e2ff 100644
+index 5307e80f6e84df7a053e7132883d8338bbd751a0..d6be86981219f0fe0db15d36d9c85e9a56020373 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3850,7 +3850,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

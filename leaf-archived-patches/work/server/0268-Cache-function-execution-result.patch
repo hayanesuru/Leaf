@@ -3,6 +3,7 @@ From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Tue, 9 Nov 2077 00:00:00 +0800
 Subject: [PATCH] Cache function execution result
 
+TODO: Need to find a better way to identify the entity selector, currently splitting command arguments is a bit brittle.
 
 diff --git a/net/minecraft/commands/arguments/EntityArgument.java b/net/minecraft/commands/arguments/EntityArgument.java
 index 8f6a1788b5ca396b79a638955fc6a6b3a276337f..4acf68e42a9644612608c8521020a989cbdea4a9 100644
