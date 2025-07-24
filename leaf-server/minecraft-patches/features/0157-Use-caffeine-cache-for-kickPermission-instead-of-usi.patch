@@ -23,7 +23,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index b3c138e78552ba348d67c37343c6684d37f2e10f..3f8b0c9f0d2172b1ffaee6c1065a91ff34b35953 100644
+index 0c73d4919e58b9282a8a6fc24fc7ab8e87b97b74..070fc3b4ec0558c597eb411db5b22edc447fe976 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -342,17 +342,12 @@ public class ServerGamePacketListenerImpl

@@ -5,7 +5,7 @@ Subject: [PATCH] Optimize checking nearby players for spawning
 
 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index 634d37f6401f19cc28f9c131dbfbbfefb6c0895a..3c80a42a4d99460d75ab18afae43cfe29e4be798 100644
+index 42555d9fc1b37696b8da4c85f9a809819bcc6dde..5c369b3d94e369c3f240821ad90b9d96223f24ca 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
 @@ -764,7 +764,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider

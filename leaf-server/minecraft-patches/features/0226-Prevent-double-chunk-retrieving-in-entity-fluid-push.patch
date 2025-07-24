@@ -11,7 +11,7 @@ As part of: Airplane (https://github.com/TECHNOVE/Airplane)
 Licensed under: GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.html)
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 4be8e90dfe99663ea84dae04d9bb2b0e3bb01098..aa1c937f8cee164b9e832b7d155bcbcf22e95b63 100644
+index b1b9bc9be22da5a9a683e907766aaaafee0129ec..bfd486c85942a7d7b3e00724dd08319381222230 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4812,10 +4812,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

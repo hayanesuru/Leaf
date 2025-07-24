@@ -7,7 +7,7 @@ Original license: AGPL-3.0
 Original project: https://github.com/snackbag/TT20
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 07943aa3be4222ab7a63b09a6625f7a003da8725..3c45e6eac0403c9cb13409c8e0e9c1653fd531ba 100644
+index 6c1a8925b1e13a0ebddc1b45a980fe8bdd8676cf..169d4c5e317af201a2d5ad0d82d39805376c2e9e 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1541,6 +1541,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

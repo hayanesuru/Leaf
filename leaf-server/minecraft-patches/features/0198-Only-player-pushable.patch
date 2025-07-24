@@ -6,7 +6,7 @@ Subject: [PATCH] Only player pushable
 Useful for extreme cases like massive entities collide together in a small area
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 875975594bc1356c416f6824907037aa28d2993d..3df99f699db7f25d3e05e2626c4babee87893813 100644
+index a1efe500e3751e1345d0c5b7671b378a97541f88..6d9d8f85bf6936eee76c3d790dd676aa309a1d46 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3694,7 +3694,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

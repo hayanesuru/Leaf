@@ -8,7 +8,7 @@ Integrated with Imanity Software's Raytrace AntiXray for better performance
 Original project: https://github.com/Imanity-Software/raytrace-antixray-spigot-sdk
 
 diff --git a/net/minecraft/server/level/ServerPlayerGameMode.java b/net/minecraft/server/level/ServerPlayerGameMode.java
-index c4a4f08272b34f72dea4feaaeb66d153b2aab8c8..be5da5a81246b4f4abe19f7c0cf68990d6bdf5bd 100644
+index d638821595138ef972163925136eb57207b31719..02c02314a4a6a7a6da427f0d064dbc61ce92301d 100644
 --- a/net/minecraft/server/level/ServerPlayerGameMode.java
 +++ b/net/minecraft/server/level/ServerPlayerGameMode.java
 @@ -296,6 +296,12 @@ public class ServerPlayerGameMode {
