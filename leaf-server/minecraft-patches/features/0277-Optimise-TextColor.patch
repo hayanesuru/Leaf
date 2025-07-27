@@ -7,7 +7,7 @@ The JMH benchmark of this patch can be found in SunBox's JMH `OptimizeTextColorM
 and nanoTime bench `OptimizeTextColor`.
 
 diff --git a/net/minecraft/network/chat/TextColor.java b/net/minecraft/network/chat/TextColor.java
-index a68e0999c7eb1f038a0da23b3417609443660809..35f1a3b542e5049bf00cd091b9c3c1069c188d6e 100644
+index a68e0999c7eb1f038a0da23b3417609443660809..d943e621e21831b912980f470ffad63bf77465ee 100644
 --- a/net/minecraft/network/chat/TextColor.java
 +++ b/net/minecraft/network/chat/TextColor.java
 @@ -15,9 +15,18 @@ import net.minecraft.ChatFormatting;
@@ -65,7 +65,7 @@ index a68e0999c7eb1f038a0da23b3417609443660809..35f1a3b542e5049bf00cd091b9c3c106
  
      public static DataResult<TextColor> parseColor(String color) {
 -        if (color.startsWith("#")) {
-+        if (color.charAt(0) == '#') { // Leaf - Optimise TextColor
++        if (!color.isEmpty() && color.charAt(0) == '#') { // Leaf - Optimise TextColor
              try {
                  int i = Integer.parseInt(color.substring(1), 16);
                  return i >= 0 && i <= 16777215
