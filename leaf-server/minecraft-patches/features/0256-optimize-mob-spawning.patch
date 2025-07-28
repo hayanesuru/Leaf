@@ -204,7 +204,7 @@ index eb5e1e67db2ee1bdbedfa244088fcb7a9356bae3..5e1f29af864df93856eabccde05a98f5
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index 81e176d17fb072f9ee531639abfe42134ae833a9..c3284577437412e1c3fb891bee2b0e20b52ccd59 100644
+index bb655318f49242858e2c25d5469705c0c314ed85..f0b78c6d89cd3010a0b8e9fbe760f615d7b8771e 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
 @@ -68,6 +68,7 @@ public final class NaturalSpawner {
@@ -290,7 +290,7 @@ index 81e176d17fb072f9ee531639abfe42134ae833a9..c3284577437412e1c3fb891bee2b0e20
      }
 @@ -265,28 +328,68 @@ public final class NaturalSpawner {
          MobCategory category, ServerLevel level, ChunkAccess chunk, BlockPos pos, NaturalSpawner.SpawnPredicate filter, NaturalSpawner.AfterSpawnCallback callback, final int maxSpawns, final @Nullable Consumer<Entity> trackEntity, final boolean nothing
-         // Paper end - throttle failed spawn attempts
+         // Paper PR end - throttle failed spawn attempts
      ) {
 +        // Leaf start - optimize mob spawning
 +        if (!(chunk instanceof LevelChunk levelChunk)) {
@@ -305,12 +305,12 @@ index 81e176d17fb072f9ee531639abfe42134ae833a9..c3284577437412e1c3fb891bee2b0e20
 +        // Leaf start - optimize mob spawning
 +        int posX = pos.getX();
 +        int posZ = pos.getZ();
-         int i = 0; // Paper - throttle failed spawn attempts
+         int i = 0; // Paper PR - throttle failed spawn attempts
 -        BlockState blockState = level.getBlockStateIfLoadedAndInBounds(pos); // Paper - don't load chunks for mob spawn
 +        BlockState blockState = level.getWorldBorder().isWithinBounds(pos) ? (ChunkPos.asLong(pos) == levelChunk.getPos().longKey ? levelChunk.getBlockStateFinal(posX, y, posZ) : level.getBlockStateIfLoaded(pos)) : null; // Paper - don't load chunks for mob spawn // Leaf
          if (blockState != null && !blockState.isRedstoneConductor(chunk, pos)) { // Paper - don't load chunks for mob spawn
              BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-             //int i = 0; // Paper - throttle failed spawn attempts - move up
+             //int i = 0; // Paper PR - throttle failed spawn attempts - move up
  
 +            // 3 * (2 + 3 * [1, 4] * 4)
 +            long rand = level.random.nextLong();
@@ -577,7 +577,7 @@ index db3b8a237d63255aa9ffd70c88a093002a6bd770..4a69f404eee00d8972e9501a76031d43
      }
  
 diff --git a/net/minecraft/world/level/chunk/ChunkGenerator.java b/net/minecraft/world/level/chunk/ChunkGenerator.java
-index 11c7c299d4affb9e78488590e7db939efe6e3dd9..a89c61aac1f1a35dc8c5943c0002661ce5fb76bf 100644
+index fb77cd58542c1a690cbeaa6ed3a4d657de6e619d..e0267e84c8fd2267b047590d712728e963d165f2 100644
 --- a/net/minecraft/world/level/chunk/ChunkGenerator.java
 +++ b/net/minecraft/world/level/chunk/ChunkGenerator.java
 @@ -516,6 +516,35 @@ public abstract class ChunkGenerator {
