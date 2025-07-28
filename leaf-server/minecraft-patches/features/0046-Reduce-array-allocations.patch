@@ -16,6 +16,8 @@ So we can cache the values result to avoid useless allocations.
 Cached as the array since it does not create iterator on the enhanced for loop,
 But the list does, and may spend more time than iterating using the array.
 
+One-time calls are excluded from this patch, since no need.
+
 The JMH benchmark of this patch can be found in SunBox's `CachedEnumValuesForLoop`
 
 This patch is based on the following patch:

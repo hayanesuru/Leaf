@@ -3,10 +3,10 @@ From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
 Date: Sat, 2 Nov 2024 04:15:20 -0400
 Subject: [PATCH] Cache chunk key
 
-Cache convert process between ChunkPos < - > chunkKey
-This patch didn't cahce SectionPos or BlockPos to chunkKey, since it needs to consider the mutable blockpos siutation.
+Cache convert process in ChunkPos to the chunkKey, to avoid unnecessary casting and shift operations.
+This patch didn't cahce SectionPos or BlockPos to chunkKey, since they are mutable after creation.
 
-TODO: Cache block pos and section pos, whether need?
+The JMH benchmark of this patch can be found in SunBox's `CacheChunkKey`
 
 diff --git a/ca/spottedleaf/moonrise/common/misc/NearbyPlayers.java b/ca/spottedleaf/moonrise/common/misc/NearbyPlayers.java
 index 2a2626e90836ae52a8a686b2040843c6644b6914..283e02b32cae0bc1b0cd71602795aa48987903db 100644
@@ -30,6 +30,28 @@ index 2a2626e90836ae52a8a686b2040843c6644b6914..283e02b32cae0bc1b0cd71602795aa48
      }
  
      public ReferenceList<ServerPlayer> getPlayersByChunk(final int chunkX, final int chunkZ, final NearbyMapType type) {
+diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
+index 47a600204ae1a1e7f166284dc26a1a7afc1dbecc..cddb42e1668c675e7d1528a56ec0ccdefd81d91c 100644
+--- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
++++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/server/ServerEntityLookup.java
+@@ -92,7 +92,7 @@ public final class ServerEntityLookup extends EntityLookup {
+             ((ChunkSystemServerLevel)this.serverWorld).moonrise$getNearbyPlayers().addPlayer(player);
+         }
+         if (entity instanceof ThrownEnderpearl enderpearl) {
+-            this.addEnderPearl(CoordinateUtils.getChunkKey(enderpearl.chunkPosition()));
++            this.addEnderPearl(enderpearl.chunkPosition().longKey); // Leaf - Cache chunk key
+         }
+         entity.registerScheduler(); // Paper - optimise Folia entity scheduler
+     }
+@@ -103,7 +103,7 @@ public final class ServerEntityLookup extends EntityLookup {
+             ((ChunkSystemServerLevel)this.serverWorld).moonrise$getNearbyPlayers().removePlayer(player);
+         }
+         if (entity instanceof ThrownEnderpearl enderpearl) {
+-            this.removeEnderPearl(CoordinateUtils.getChunkKey(enderpearl.chunkPosition()));
++            this.removeEnderPearl(enderpearl.chunkPosition().longKey); // Leaf - Cache chunk key
+         }
+     }
+ 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java b/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
 index 6ce4a98e4d3b633e3c87944c23b6b3f0ff58f159..0f5966932c4211922eccac09ab164fcb69dad582 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/scheduling/ChunkHolderManager.java
@@ -84,7 +106,7 @@ index 51f4dd4f583dfbd16cb00f1cb4418d1044cecb1c..e1812910d7c3941dec3d4f1c90f4cf96
                      valueInMap = new ServerChunkTasks(
                              keyInMap, ServerLightQueue.this.lightInterface, ServerLightQueue.this, priority
 diff --git a/net/minecraft/server/level/DistanceManager.java b/net/minecraft/server/level/DistanceManager.java
-index fd3d0f6cb53bc8b6186f0d86575f21007b2c20ed..cddeeab73e7b981701a42c5aad6b47778d46b792 100644
+index 50bc5b940812432bc472e5b272582efb8bbfc7a7..d55677f66ec7e2d4f2a96556f874e719d98376ca 100644
 --- a/net/minecraft/server/level/DistanceManager.java
 +++ b/net/minecraft/server/level/DistanceManager.java
 @@ -178,7 +178,7 @@ public abstract class DistanceManager implements ca.spottedleaf.moonrise.patches
@@ -128,7 +150,7 @@ index b0ac6de9e0f15d234781fc43dd6fd1d5cd6c5ddf..7fb763e89e43698bfb2b9fcf62967053
          // Paper end - rewrite chunk system
      }
 diff --git a/net/minecraft/world/level/ChunkPos.java b/net/minecraft/world/level/ChunkPos.java
-index 6e2b2d258e47dcca30a5ad9f4f492598f2bc21fb..b48f429320db9f440f65b5032a952d9b050af323 100644
+index 6e2b2d258e47dcca30a5ad9f4f492598f2bc21fb..6947016aa06670f340b6fb51c74ed33de9bf591b 100644
 --- a/net/minecraft/world/level/ChunkPos.java
 +++ b/net/minecraft/world/level/ChunkPos.java
 @@ -54,19 +54,19 @@ public class ChunkPos {
@@ -164,7 +186,20 @@ index 6e2b2d258e47dcca30a5ad9f4f492598f2bc21fb..b48f429320db9f440f65b5032a952d9b
  
      public static long asLong(BlockPos pos) {
 -        return asLong(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()));
-+        return ((pos.getX() >> 4) & 4294967295L) | (((pos.getZ() >> 4) & 4294967295L) << 32); // Leaf - Cache chunk key - diff on change - inline
++        return ((pos.getX() >> 4) & 4294967295L) | (((pos.getZ() >> 4) & 4294967295L) << 32); // Leaf - Cache chunk key - inline
      }
  
      public static int getX(long chunkAsLong) {
+diff --git a/net/minecraft/world/waypoints/WaypointTransmitter.java b/net/minecraft/world/waypoints/WaypointTransmitter.java
+index 5d1c933dfa862d0733777d305563a89ea7827f07..c4db265b469cbd37530c3391f99d08ecac59d195 100644
+--- a/net/minecraft/world/waypoints/WaypointTransmitter.java
++++ b/net/minecraft/world/waypoints/WaypointTransmitter.java
+@@ -34,7 +34,7 @@ public interface WaypointTransmitter extends Waypoint {
+     static boolean isChunkVisible(ChunkPos pos, ServerPlayer player) {
+         // Paper start - rewrite chunk system
+         final ca.spottedleaf.moonrise.patches.chunk_system.player.RegionizedPlayerChunkLoader.PlayerChunkLoaderData playerChunkLoader = ((ca.spottedleaf.moonrise.patches.chunk_system.player.ChunkSystemServerPlayer)player).moonrise$getChunkLoader();
+-        return playerChunkLoader != null && playerChunkLoader.getSentChunksRaw().contains(ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkKey(pos));
++        return playerChunkLoader != null && playerChunkLoader.getSentChunksRaw().contains(pos.longKey); // Leaf - Cache chunk key
+         // Paper end - rewrite chunk system
+     }
+ 
