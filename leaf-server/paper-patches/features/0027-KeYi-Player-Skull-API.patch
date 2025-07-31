@@ -7,10 +7,10 @@ Original license: MIT
 Original project: https://github.com/KeYiMC/KeYi
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 148960dcbe98e8eb56b3a0371e938049859331e0..54dc4edd5bcad99134e18ef995bc5c8ce2b5bc59 100644
+index a40380fbafe1868c9fbb6623987c4f226e3f2150..32537a9a892b12258ae17c63c32e98e1b3902cb9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3616,4 +3616,31 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -3623,4 +3623,31 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          this.getHandle().connection.send(new net.minecraft.network.protocol.game.ClientboundPlayerCombatKillPacket(getEntityId(), io.papermc.paper.adventure.PaperAdventure.asVanilla(message)));
      }
      // Purpur end - Death screen API

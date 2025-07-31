@@ -1087,10 +1087,10 @@ index cabdcbef0e6f7ca41ff5677bc2e6a81665ca812d..c47ca9ab164b6abd28e979c944569181
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index c0ef55c206af2391b71c4326fd294dbb7d4bd46c..148960dcbe98e8eb56b3a0371e938049859331e0 100644
+index 322a1e38799a7bf45b8d3ee151b0b62df45d55d7..a40380fbafe1868c9fbb6623987c4f226e3f2150 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -564,10 +564,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -565,10 +565,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      @Override
      public void setPlayerListName(String name) {
@@ -1107,7 +1107,7 @@ index c0ef55c206af2391b71c4326fd294dbb7d4bd46c..148960dcbe98e8eb56b3a0371e938049
          if (this.getHandle().connection == null) return; // Paper - Updates are possible before the player has fully joined
          for (ServerPlayer player : (List<ServerPlayer>) this.server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
-@@ -1382,6 +1387,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1383,6 +1388,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          // Paper start - Teleport passenger API
          // Don't allow teleporting between worlds while keeping passengers
          if (ignorePassengers && entity.isVehicle() && location.getWorld() != this.getWorld()) {
@@ -1115,7 +1115,7 @@ index c0ef55c206af2391b71c4326fd294dbb7d4bd46c..148960dcbe98e8eb56b3a0371e938049
              return false;
          }
  
-@@ -1403,6 +1409,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1404,6 +1410,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          }
  
          if (entity.isVehicle() && !ignorePassengers) { // Paper - Teleport API
@@ -1123,7 +1123,7 @@ index c0ef55c206af2391b71c4326fd294dbb7d4bd46c..148960dcbe98e8eb56b3a0371e938049
              return false;
          }
  
-@@ -2665,6 +2672,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2672,6 +2679,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          return this.getHandle().getAbilities().walkingSpeed * 2f;
      }
  
@@ -1152,7 +1152,7 @@ index c0ef55c206af2391b71c4326fd294dbb7d4bd46c..148960dcbe98e8eb56b3a0371e938049
      private void validateSpeed(float value) {
          Preconditions.checkArgument(value <= 1f && value >= -1f, "Speed value (%s) need to be between -1f and 1f", value);
      }
-@@ -3515,4 +3544,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -3522,4 +3551,76 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
      public PlayerGameConnection getConnection() {
          return this.getHandle().connection.playerGameConnection;
      }

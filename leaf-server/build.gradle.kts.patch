@@ -87,7 +87,7 @@
 +    implementation("org.jline:jline-terminal-ffm:3.29.0") // use ffm on java 22+ // Leaf - Bump Dependencies
 +    implementation("org.jline:jline-terminal-jni:3.29.0") // fall back to jni on java 21 // Leaf - Bump Dependencies
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
-     implementation("net.kyori:adventure-text-serializer-ansi:4.23.0") // Keep in sync with adventureVersion from Paper-API build file
+     implementation("net.kyori:adventure-text-serializer-ansi")
      runtimeConfiguration(sourceSets.main.map { it.runtimeClasspath })
 @@ -143,24 +_,38 @@
        all its classes to check if they are plugins.
