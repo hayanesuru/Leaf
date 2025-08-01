@@ -1,7 +1,6 @@
 package org.dreeam.leaf.util.map;
 
 import com.google.common.collect.AbstractIterator;
-import com.google.common.collect.Collections2;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.util.Mth;
@@ -22,7 +21,7 @@ public final class BlockPosIterator extends AbstractIterator<BlockPos> {
     private @Nullable MutableBlockPos pos = null;
 
     public static Iterable<BlockPos> iterable(AABB bb) {
-        return new BlockPosIterator(bb);
+        return () -> new BlockPosIterator(bb);
     }
 
     public static Iterable<BlockPos> traverseArea(Vec3 vec, AABB boundingBox) {
