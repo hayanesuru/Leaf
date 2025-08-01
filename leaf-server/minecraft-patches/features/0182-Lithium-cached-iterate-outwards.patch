@@ -4,7 +4,7 @@ Date: Fri, 8 Nov 2024 00:06:34 +0100
 Subject: [PATCH] Lithium: cached iterate outwards
 
 By: 2No2Name <2No2Name@web.de>
-As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
+As part of: Lithium (https://github.com/CaffeineMC/lithium)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/core/BlockPos.java b/net/minecraft/core/BlockPos.java
