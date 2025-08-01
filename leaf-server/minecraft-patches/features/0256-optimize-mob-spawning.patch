@@ -26,7 +26,7 @@ index 5c369b3d94e369c3f240821ad90b9d96223f24ca..9803c395fce103cb7bc746f43a017ff9
       }
      // Paper end - Optional per player mob spawns
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 46e171ca454253c32e22c0c18587e9a7ba19f331..43156ecde8bb86c77f3b13c17b3330eae95efcc3 100644
+index 46e171ca454253c32e22c0c18587e9a7ba19f331..517c50639175276a9a040abf09f3ab9545627dd6 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -70,11 +70,11 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -136,7 +136,7 @@ index 46e171ca454253c32e22c0c18587e9a7ba19f331..43156ecde8bb86c77f3b13c17b3330ea
              }
              // Paper end - PlayerNaturallySpawnCreaturesEvent
              boolean flag = this.level.ticksPerSpawnCategory.getLong(org.bukkit.entity.SpawnCategory.ANIMAL) != 0L && this.level.getLevelData().getGameTime() % this.level.ticksPerSpawnCategory.getLong(org.bukkit.entity.SpawnCategory.ANIMAL) == 0L; // CraftBukkit
-@@ -621,16 +632,40 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -621,16 +632,36 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
          List<LevelChunk> list = this.spawningChunks;
  
          try {
@@ -144,11 +144,11 @@ index 46e171ca454253c32e22c0c18587e9a7ba19f331..43156ecde8bb86c77f3b13c17b3330ea
 +            // Leaf start - optimize mob spawning
 +            // this.chunkMap.collectSpawningChunks(list);
 +            this.level.natureSpawnChunkMap.build();
++            this.level.natureSpawnChunkMap.collectSpawningChunks(this.level.moonrise$getPlayerTickingChunks(), list);
              // Paper start - chunk tick iteration optimisation
 -            this.shuffleRandom.setSeed(this.level.random.nextLong());
 -            if (!this.level.paperConfig().entities.spawning.perPlayerMobSpawns) Util.shuffle(list, this.shuffleRandom); // Paper - Optional per player mob spawns; do not need this when per-player is enabled
 +            if (!this.level.paperConfig().entities.spawning.perPlayerMobSpawns) {
-+                this.level.natureSpawnChunkMap.collectSpawningChunks(this.level.moonrise$getPlayerTickingChunks(), list);
 +                this.shuffleRandom.setSeed(this.level.random.nextLong()); // Leaf - paw optimization - Only set seed if is really used
 +                Util.shuffle(list, this.shuffleRandom); // Paper - Optional per player mob spawns; do not need this when per-player is enabled
 +            }
@@ -160,18 +160,14 @@ index 46e171ca454253c32e22c0c18587e9a7ba19f331..43156ecde8bb86c77f3b13c17b3330ea
 +                NaturalSpawner.SpawnState currentState = lastSpawnState;
 +                if (currentState != null) {
 +                    currentState.applyPerPlayerMobCount(level);
-+                    if (!this.level.paperConfig().entities.spawning.perPlayerMobSpawns) {
-+                        for (LevelChunk levelChunk : list) {
-+                            this.tickSpawningChunk(levelChunk, timeInhabited, filteredSpawningCategories, currentState); // Pufferfish
++                    if (list instanceof it.unimi.dsi.fastutil.objects.ReferenceArrayList<LevelChunk> list1) {
++                        LevelChunk[] raw = list1.elements();
++                        for (int i = 0, j = list1.size(); i < j; i++) {
++                            this.tickSpawningChunk(raw[i], timeInhabited, filteredSpawningCategories, currentState); // Pufferfish
 +                        }
 +                    } else {
-+                        ca.spottedleaf.moonrise.common.list.ReferenceList<LevelChunk> chunks = this.level.moonrise$getPlayerTickingChunks();
-+                        LevelChunk[] raw = chunks.getRawDataUnchecked();
-+                        for (int i = 0, length = chunks.size(); i < length; i++) {
-+                            LevelChunk levelChunk = raw[i];
-+                            if (level.natureSpawnChunkMap.contains(levelChunk.locX, levelChunk.locZ)) {
-+                                this.tickSpawningChunk(levelChunk, timeInhabited, filteredSpawningCategories, currentState); // Pufferfish
-+                            }
++                        for (LevelChunk levelChunk : list) {
++                            this.tickSpawningChunk(levelChunk, timeInhabited, filteredSpawningCategories, currentState); // Pufferfish
 +                        }
 +                    }
 +                }
@@ -182,7 +178,7 @@ index 46e171ca454253c32e22c0c18587e9a7ba19f331..43156ecde8bb86c77f3b13c17b3330ea
              list.clear();
          }
  
-@@ -648,7 +683,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -648,7 +679,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
          }
  
          if (!spawnCategories.isEmpty()) {
