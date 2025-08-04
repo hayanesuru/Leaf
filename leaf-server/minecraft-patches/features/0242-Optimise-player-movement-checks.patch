@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Taiyou06 <kaandindar21@gmail.com>
+Date: Sat, 10 May 2025 23:18:17 +0200
+Subject: [PATCH] Optimise player movement checks
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index e4c07980e88b56210566b100a6055e7fb68922e0..ab0cf0bff7b477327fd92a20e6c7bc7d62f418d2 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -1216,7 +1216,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+             }
+             // Paper end
+ 
+-            movement = this.maybeBackOffFromEdge(movement, type);
++            if (!org.dreeam.leaf.config.modules.opt.OptimizePlayerMovementProcessing.enabled) movement = this.maybeBackOffFromEdge(movement, type); // Leaf - Optimise player movement checks
+             Vec3 vec3 = this.collide(movement);
+             double d = vec3.lengthSqr();
+             if (d > 1.0E-7 || movement.lengthSqr() - d < 1.0E-7) {
