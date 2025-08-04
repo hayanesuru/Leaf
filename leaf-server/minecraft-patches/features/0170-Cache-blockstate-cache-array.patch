@@ -3,6 +3,10 @@ From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Tue, 22 Oct 2024 17:07:36 +0800
 Subject: [PATCH] Cache blockstate cache array
 
+Cache values to reduce allocations.
+(See `Reduce array allocations` patch for full explanation)
+
+The JMH benchmark of this patch can be found in SunBox's `CachedEnumValuesForLoop`
 
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
 index 331474bb33c8612283a0ec478c1ae8768180b22d..84f4d772bfe06383ca718b6a00d983e97e2e35f4 100644
