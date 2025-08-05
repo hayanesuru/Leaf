@@ -1285,7 +1285,7 @@ index cfbf34964288526e93d0a5b212c1b60296c10430..d638821595138ef972163925136eb572
 +    // Purpur end - Shift right click to use exp for mending
  }
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index de630a692291926c52a0947f9943e59433ab130a..ca9ba2a2535eab66622230778efdf941f540f6d2 100644
+index fa11f06db33efe7284e6e5dca9a3d460abb3a079..9af8f731bd583c46b93336b635ba9a5cea7e1ff3 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -56,6 +56,10 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -12926,7 +12926,7 @@ index f736f72b8e76dd82236badcdd2756f0d4da89aa4..0dbfbadcabcf1b719addb034e676cb51
      protected double getDefaultGravity() {
          return 0.06;
 diff --git a/net/minecraft/world/entity/projectile/Projectile.java b/net/minecraft/world/entity/projectile/Projectile.java
-index 36124bfd4189e35208875e971733889410242641..ef960ee83adbb5e3ebfa44cd2457b23718045f61 100644
+index e705dca7c5e2b9604cce7bce1ae80ebbbdecc20e..5daa37fc0e44d3c4f3755ec3d3d89213f6670de1 100644
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
 @@ -485,7 +485,7 @@ public abstract class Projectile extends Entity implements TraceableEntity {
@@ -13813,10 +13813,10 @@ index 34d52c941395645e77de810855b14012c259cf02..c605bd700fd9f5a6596a2bf964849278
  
          return itemStack;
 diff --git a/net/minecraft/world/inventory/PlayerEnderChestContainer.java b/net/minecraft/world/inventory/PlayerEnderChestContainer.java
-index beb74bc8398de8b48f41af7daef14d624826310e..7ae8d115b6f4af45db9309b46ed4b4fdd8e25c08 100644
+index 51148b7b95c93a9e25da70ac9275c63f1458d84c..96359fef8c83b54ea65d4358aa5d594723b38ead 100644
 --- a/net/minecraft/world/inventory/PlayerEnderChestContainer.java
 +++ b/net/minecraft/world/inventory/PlayerEnderChestContainer.java
-@@ -25,11 +25,18 @@ public class PlayerEnderChestContainer extends SimpleContainer {
+@@ -26,11 +26,18 @@ public class PlayerEnderChestContainer extends SimpleContainer {
      }
  
      public PlayerEnderChestContainer(Player owner) {
