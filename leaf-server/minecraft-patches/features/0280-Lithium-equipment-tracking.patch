@@ -3,9 +3,6 @@ From: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 Date: Tue, 9 Nov 2077 00:00:00 +0800
 Subject: [PATCH] Lithium: equipment tracking
 
-TODO: needs to fix issues related to Piglins lose the crossbow animation
-original report is in discord.
-
 Should have special treatment to ArmorStand, since Paper introduced the configurable
 ArmorStand no-tick, and still gives it ability to update equipment changes.
 Thus added a bypass condition in LivingEntity#collectEquipmentChanges, always send
@@ -20,7 +17,7 @@ This patch is based on the following mixins:
 * "net/caffeinemc/mods/lithium/common/util/change_tracking/ChangePublisher.java"
 * "net/caffeinemc/mods/lithium/common/util/change_tracking/ChangeSubscriber.java"
 By: 2No2Name <2No2Name@web.de>
-As part of: Lithium (https://github.com/CaffeineMC/lithium-fabric)
+As part of: Lithium (https://github.com/CaffeineMC/lithium)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/core/component/PatchedDataComponentMap.java b/net/minecraft/core/component/PatchedDataComponentMap.java
@@ -76,7 +73,7 @@ index 3af6c1e2549ba3aeb60aa9d498a976be3680c0ee..57e0fc928cf97bac8d6ed3f2b746c267
      public boolean equals(Object other) {
          return this == other
 diff --git a/net/minecraft/world/entity/EntityEquipment.java b/net/minecraft/world/entity/EntityEquipment.java
-index 90814ad07a2686c5a274860395f5aca29cc3bf13..369f0176a636def905fb2a2df1a0e2cadd1eb3b2 100644
+index 90814ad07a2686c5a274860395f5aca29cc3bf13..94c7ae9535a235abb8fddf0ca6578dfae2e675bb 100644
 --- a/net/minecraft/world/entity/EntityEquipment.java
 +++ b/net/minecraft/world/entity/EntityEquipment.java
 @@ -7,7 +7,7 @@ import java.util.Objects;
@@ -106,9 +103,9 @@ index 90814ad07a2686c5a274860395f5aca29cc3bf13..369f0176a636def905fb2a2df1a0e2ca
          stack.getItem().verifyComponentsAfterLoad(stack);
 -        return Objects.requireNonNullElse(this.items.put(slot, stack), ItemStack.EMPTY);
 +        // Leaf start - Lithium - equipment tracking
-+        ItemStack newStack = Objects.requireNonNullElse(this.items.put(slot, stack), ItemStack.EMPTY);
-+        this.onEquipmentReplaced(this.get(slot), newStack);
-+        return newStack;
++        ItemStack oldStack = Objects.requireNonNullElse(this.items.put(slot, stack), ItemStack.EMPTY);
++        this.onEquipmentReplaced(oldStack, stack);
++        return oldStack;
 +        // Leaf end - Lithium - equipment tracking
      }
  
@@ -244,10 +241,10 @@ index 90814ad07a2686c5a274860395f5aca29cc3bf13..369f0176a636def905fb2a2df1a0e2ca
 +    }
  }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index b3e9ad0669bb4b91d5d991f106b225e914a4e68f..a927e8a7d9149f5b7abaae50ba8d4fdc6ec87b55 100644
+index a55b1534dc3c0745ff569f5c1e07dbeaba0fe57d..dfe39967ba858f27bf6a18d820dae2e2f737c142 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -417,7 +417,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -431,7 +431,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              this.getSleepingPos().ifPresent(this::setPosToBed);
          }
  
@@ -256,15 +253,15 @@ index b3e9ad0669bb4b91d5d991f106b225e914a4e68f..a927e8a7d9149f5b7abaae50ba8d4fdc
              EnchantmentHelper.tickEffects(serverLevel, this);
          }
  
-@@ -3394,6 +3394,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3464,6 +3464,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      public void detectEquipmentUpdates() {
          Map<EquipmentSlot, ItemStack> map = this.collectEquipmentChanges();
          if (map != null) {
-+            if (!(this instanceof net.minecraft.world.entity.player.Player)) this.equipment.lithium$onEquipmentChangesSent();; // Leaf - Lithium - equipment tracking
++            if (!(this instanceof net.minecraft.world.entity.player.Player)) this.equipment.lithium$onEquipmentChangesSent(); // Leaf - Lithium - equipment tracking
              this.handleHandSwap(map);
              if (!map.isEmpty()) {
                  this.handleEquipmentChanges(map);
-@@ -3403,6 +3404,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3473,6 +3474,10 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
  
      @Nullable
      private Map<EquipmentSlot, ItemStack> collectEquipmentChanges() {
@@ -276,24 +273,25 @@ index b3e9ad0669bb4b91d5d991f106b225e914a4e68f..a927e8a7d9149f5b7abaae50ba8d4fdc
          // Paper start - EntityEquipmentChangedEvent
          record EquipmentChangeImpl(org.bukkit.inventory.ItemStack oldItem, org.bukkit.inventory.ItemStack newItem) implements io.papermc.paper.event.entity.EntityEquipmentChangedEvent.EquipmentChange {
 diff --git a/net/minecraft/world/entity/decoration/ArmorStand.java b/net/minecraft/world/entity/decoration/ArmorStand.java
-index 0417175c7beabbca53cd080d158001eabe3941f0..cb2a8f9cff99a7a906bc7be09d301728742bc11e 100644
+index 98a1795be167d4ecde25a89ba031827ccbd14483..745d548c1574233f34206260a051fd77bdacd1f3 100644
 --- a/net/minecraft/world/entity/decoration/ArmorStand.java
 +++ b/net/minecraft/world/entity/decoration/ArmorStand.java
-@@ -559,8 +559,8 @@ public class ArmorStand extends LivingEntity {
-             }
- 
+@@ -528,8 +528,9 @@ public class ArmorStand extends LivingEntity {
+         maxUpStep = level().purpurConfig.armorstandStepHeight; // Purpur - Add option to set armorstand step height
+         if (!this.canTick) {
              if (this.noTickEquipmentDirty) {
 -                this.noTickEquipmentDirty = false;
++                //this.noTickEquipmentDirty = false; // Leaf - Lithium - equipment tracking - move down
                  this.detectEquipmentUpdates();
-+                this.noTickEquipmentDirty = false; // Leaf - Lithium - equipment tracking - Remove dirty mark after handling equipment update for armor stand
++                this.noTickEquipmentDirty = false;  // Leaf - Lithium - equipment tracking
              }
  
              return;
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index 07f1b27116baf2a06e6cd4eeaa8639e166fb362d..d1c8b4a2a32d49d90f2f2aa460915d319a781535 100644
+index f5ca3d6b29b11475ac56cd206464577b2d85b7dc..b4a196533e81c9e003325f885d1ebaebe540ebe5 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -97,7 +97,7 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+@@ -94,7 +94,7 @@ import org.apache.commons.lang3.function.TriConsumer;
  import org.apache.commons.lang3.mutable.MutableBoolean;
  import org.slf4j.Logger;
  
@@ -302,7 +300,7 @@ index 07f1b27116baf2a06e6cd4eeaa8639e166fb362d..d1c8b4a2a32d49d90f2f2aa460915d31
      private static final List<Component> OP_NBT_WARNING = List.of(
          Component.translatable("item.op_warning.line1").withStyle(ChatFormatting.RED, ChatFormatting.BOLD),
          Component.translatable("item.op_warning.line2").withStyle(ChatFormatting.RED),
-@@ -168,6 +168,11 @@ public final class ItemStack implements DataComponentHolder {
+@@ -165,6 +165,11 @@ public final class ItemStack implements DataComponentHolder {
      PatchedDataComponentMap components;
      @Nullable
      private Entity entityRepresentation;
@@ -314,7 +312,7 @@ index 07f1b27116baf2a06e6cd4eeaa8639e166fb362d..d1c8b4a2a32d49d90f2f2aa460915d31
  
      public static DataResult<ItemStack> validateStrict(ItemStack stack) {
          DataResult<Unit> dataResult = validateComponents(stack.getComponents());
-@@ -1402,6 +1407,21 @@ public final class ItemStack implements DataComponentHolder {
+@@ -1330,6 +1335,21 @@ public final class ItemStack implements DataComponentHolder {
      }
  
      public void setCount(int count) {
@@ -336,7 +334,7 @@ index 07f1b27116baf2a06e6cd4eeaa8639e166fb362d..d1c8b4a2a32d49d90f2f2aa460915d31
          this.count = count;
      }
  
-@@ -1457,4 +1477,87 @@ public final class ItemStack implements DataComponentHolder {
+@@ -1385,4 +1405,87 @@ public final class ItemStack implements DataComponentHolder {
      public boolean canDestroyBlock(BlockState state, Level level, BlockPos pos, Player player) {
          return this.getItem().canDestroyBlock(this, state, level, pos, player);
      }
