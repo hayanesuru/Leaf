@@ -13,7 +13,6 @@ public final class RegistryTypeManager {
     public static final int ATTRIBUTE_SIZE;
     public static final int ACTIVITY_SIZE;
     public static final Holder<Attribute>[] ATTRIBUTE;
-
     public static final Activity[] ACTIVITY_DIRECT;
 
     static {
