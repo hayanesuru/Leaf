@@ -28,10 +28,10 @@ index 340d5487fa778277b9560250271c5143d80d9987..99543330da85ddecd91c954c8aa386c8
      public boolean isCommandBlockEnabled() {
          return true;
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 7849a905db35377da0931aa1c9b8770f30a51044..463f3d5334df16234c1794dd8c7bbea56cb87f70 100644
+index 926d0cf31be80fe1298c14411e65cd39a0962b32..f31a643b9fcfdafb2c1c6069b44b736527960787 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -2064,6 +2064,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2063,6 +2063,12 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      public abstract boolean isEpollEnabled();
  
@@ -45,10 +45,10 @@ index 7849a905db35377da0931aa1c9b8770f30a51044..463f3d5334df16234c1794dd8c7bbea5
          return this.pvp;
      }
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index 463a9d9b15301e7139bd36435214662aa3ccf63d..7c3a376f6b055fa80a68e0909aa5e59d3d7a0388 100644
+index 16e5321ba7a7d6fda059ea338d71904f583459ba..c13b8c2a4a1b6a6b744a0b1b330e63f3c77fa6e5 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -510,9 +510,21 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -505,9 +505,21 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
  
      @Override
      public boolean isEpollEnabled() {
