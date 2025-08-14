@@ -1261,7 +1261,7 @@ index 1556b2d4a758e3a15b6c4468bf994ea3781a4958..581791bf2892715543f003c36e301e69
          if (this.player.isRemoved()) {
              LOGGER.info("Attempt to teleport removed player {} restricted", player.getScoreboardName());
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 4d4efd979c4478c1571e7044f639afe08a7118d6..de4d13e7c6f57d6cc3a78b1b9ca914157820186c 100644
+index 4d4efd979c4478c1571e7044f639afe08a7118d6..4f0b903945860e518ebf3c858722f28df9394b3d 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -1342,13 +1342,13 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -1275,7 +1275,7 @@ index 4d4efd979c4478c1571e7044f639afe08a7118d6..de4d13e7c6f57d6cc3a78b1b9ca91415
 -        for (AttributeInstance attributeInstance : attributesToUpdate) {
 -            this.onAttributeUpdated(attributeInstance.getAttribute());
 +        for (int attribute : attributesToUpdate) {
-+            this.onAttributeUpdated(net.minecraft.core.registries.BuiltInRegistries.ATTRIBUTE.get(attribute).orElseThrow());
++            this.onAttributeUpdated(org.dreeam.leaf.util.RegistryTypeManager.ATTRIBUTE[attribute]);
          }
 -
 -        attributesToUpdate.clear();
