@@ -3,6 +3,7 @@ From: Taiyou06 <kaandindar21@gmail.com>
 Date: Sat, 22 Mar 2025 00:07:38 +0100
 Subject: [PATCH] Optimize addOrUpdateTransientModifier
 
+Removed since Leaf 1.21.8
 
 diff --git a/net/minecraft/world/entity/ai/attributes/AttributeInstance.java b/net/minecraft/world/entity/ai/attributes/AttributeInstance.java
 index 7f8eb388308806008805970d4d8ed329440380ee..7f1b670eab23c02fb0f27cfa5ca0d0113794c8eb 100644
