@@ -5,24 +5,10 @@ Subject: [PATCH] fix temptation lookups
 
 
 diff --git a/io/papermc/paper/entity/temptation/GlobalTemptationLookup.java b/io/papermc/paper/entity/temptation/GlobalTemptationLookup.java
-index 5f5cdfc538ba9aa6666c019df6706015234d7bae..e7c0fd59b4b64b3e60887ddae63e2f1a4ddd752f 100644
+index 5f5cdfc538ba9aa6666c019df6706015234d7bae..2dfec8f6d0fe833e5f06cf2165ae14bf54cc7b84 100644
 --- a/io/papermc/paper/entity/temptation/GlobalTemptationLookup.java
 +++ b/io/papermc/paper/entity/temptation/GlobalTemptationLookup.java
-@@ -1,9 +1,12 @@
- package io.papermc.paper.entity.temptation;
- 
--import java.util.ArrayList;
- import java.util.BitSet;
- import java.util.List;
- import java.util.function.Predicate;
-+
-+import it.unimi.dsi.fastutil.objects.ObjectArrays;
-+import net.minecraft.server.level.ServerLevel;
-+import net.minecraft.server.level.ServerPlayer;
- import net.minecraft.tags.ItemTags;
- import net.minecraft.world.entity.animal.HappyGhast;
- import net.minecraft.world.entity.animal.armadillo.ArmadilloAi;
-@@ -24,6 +27,7 @@ public class GlobalTemptationLookup {
+@@ -24,6 +24,7 @@ public class GlobalTemptationLookup {
      public static final TemptationPredicate BEE_FOOD = register(stack -> stack.is(ItemTags.BEE_FOOD));
      public static final TemptationPredicate CHICKEN_FOOD = register(stack -> stack.is(ItemTags.CHICKEN_FOOD));
      public static final TemptationPredicate COW_FOOD = register(stack -> stack.is(ItemTags.COW_FOOD));
@@ -30,15 +16,15 @@ index 5f5cdfc538ba9aa6666c019df6706015234d7bae..e7c0fd59b4b64b3e60887ddae63e2f1a
      public static final TemptationPredicate PANDA_FOOD = register(stack -> stack.is(ItemTags.PANDA_FOOD));
      public static final TemptationPredicate PIG_CARROT_ON_A_STICK = register(stack -> stack.is(Items.CARROT_ON_A_STICK));
      public static final TemptationPredicate PIG = register(stack -> stack.is(ItemTags.PIG_FOOD));
-@@ -61,20 +65,34 @@ public class GlobalTemptationLookup {
+@@ -61,20 +62,34 @@ public class GlobalTemptationLookup {
          return val;
      }
  
 -    private final List<BitSet> precalculatedTemptItems = new ArrayList<>();
 +    private final BitSet[] precalculatedTemptItems;
      private final BitSet calculatedThisTick = new BitSet();
-+    private static final ServerPlayer[] EMPTY_PLAYERS = {};
-+    private ServerPlayer[] players = EMPTY_PLAYERS;
++    private static final net.minecraft.server.level.ServerPlayer[] EMPTY_PLAYERS = {};
++    private net.minecraft.server.level.ServerPlayer[] players = EMPTY_PLAYERS;
  
      {
 -        for (int i = 0; i < registeredPredicateCounter; i++) {
@@ -50,7 +36,7 @@ index 5f5cdfc538ba9aa6666c019df6706015234d7bae..e7c0fd59b4b64b3e60887ddae63e2f1a
      }
  
 -    public void reset() {
-+    public void tick(final ServerLevel world) {
++    public void tick(final net.minecraft.server.level.ServerLevel world) {
          for (int i = 0; i < registeredPredicateCounter; i++) {
 -            this.precalculatedTemptItems.get(i).clear();
 +            this.precalculatedTemptItems[i].clear();
@@ -58,20 +44,20 @@ index 5f5cdfc538ba9aa6666c019df6706015234d7bae..e7c0fd59b4b64b3e60887ddae63e2f1a
 +        }
 +
 +        int j = 0;
-+        final ServerPlayer[] array = world.players().toArray(EMPTY_PLAYERS);
++        final net.minecraft.server.level.ServerPlayer[] array = world.players().toArray(EMPTY_PLAYERS);
 +        for (int i = 0; i < array.length; i++) {
-+            final ServerPlayer p = array[i];
++            final net.minecraft.server.level.ServerPlayer p = array[i];
 +            if (!p.isSpectator() && p.isAlive()) {
 +                array[j] = p;
 +                j++;
 +            }
          }
 -        this.calculatedThisTick.clear();
-+        this.players = ObjectArrays.setLength(array, j);
++        this.players = it.unimi.dsi.fastutil.objects.ObjectArrays.setLength(array, j);
      }
  
      public boolean isCalculated(final int index) {
-@@ -86,6 +104,10 @@ public class GlobalTemptationLookup {
+@@ -86,6 +101,10 @@ public class GlobalTemptationLookup {
      }
  
      public BitSet getBitSet(final int index) {
@@ -79,7 +65,7 @@ index 5f5cdfc538ba9aa6666c019df6706015234d7bae..e7c0fd59b4b64b3e60887ddae63e2f1a
 +        return this.precalculatedTemptItems[index];
 +    }
 +
-+    public ServerPlayer[] players() {
++    public net.minecraft.server.level.ServerPlayer[] players() {
 +        return this.players;
      }
  }
