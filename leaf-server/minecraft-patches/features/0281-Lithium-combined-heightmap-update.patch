@@ -33,7 +33,7 @@ index c3ecdd80efad340c9fa0ea6913db9a3362b53ad4..e429932a044647f931443c6761d1b39e
                  if (hasOnlyAir != hasOnlyAir1) {
                      this.level.getChunkSource().getLightEngine().updateSectionStatus(pos, hasOnlyAir1);
 diff --git a/net/minecraft/world/level/levelgen/Heightmap.java b/net/minecraft/world/level/levelgen/Heightmap.java
-index f7b8637680e654dc0b3e8850d65081a1c565bb69..94ac77e269d84ede7f16e7595feedb103f8a1f35 100644
+index f7b8637680e654dc0b3e8850d65081a1c565bb69..0d577548e4019d5914885415d903411b7f3d6ecb 100644
 --- a/net/minecraft/world/level/levelgen/Heightmap.java
 +++ b/net/minecraft/world/level/levelgen/Heightmap.java
 @@ -40,6 +40,12 @@ public class Heightmap {
@@ -54,7 +54,7 @@ index f7b8637680e654dc0b3e8850d65081a1c565bb69..94ac77e269d84ede7f16e7595feedb10
      }
  
 -    private void setHeight(int x, int z, int value) {
-+    public void setHeight(int x, int z, int value) {
++    public void setHeight(int x, int z, int value) { // Leaf - Lithium - combined heightmap update - private -> public
          this.data.set(getIndex(x, z), value - this.chunk.getMinY());
      }
  
