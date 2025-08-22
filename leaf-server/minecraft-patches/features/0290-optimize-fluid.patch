@@ -50,7 +50,7 @@ index 6a70665e9b8bc767ba316ada542178634e090afa..0ee94459c1995ddd7e8b469088827b87
      public BlockState getBlockState(BlockPos pos) {
          if (true) {
 diff --git a/net/minecraft/world/level/chunk/LevelChunkSection.java b/net/minecraft/world/level/chunk/LevelChunkSection.java
-index df717c545472006b99532280c38c1fbef12bcf82..df94db4a21ecb9353b3fbadd19caecd0fb74ae8d 100644
+index df717c545472006b99532280c38c1fbef12bcf82..938b664a7a8189188c4ae3991b50a966cb715718 100644
 --- a/net/minecraft/world/level/chunk/LevelChunkSection.java
 +++ b/net/minecraft/world/level/chunk/LevelChunkSection.java
 @@ -21,6 +21,8 @@ public class LevelChunkSection implements ca.spottedleaf.moonrise.patches.block_
@@ -92,7 +92,7 @@ index df717c545472006b99532280c38c1fbef12bcf82..df94db4a21ecb9353b3fbadd19caecd0
                  this.tickingBlockCount++;
              }
 +            // Leaf start
-+            final int flags = blockState.tagFlag;
++            final int flags = state.tagFlag;
 +            if ((flags & org.dreeam.leaf.util.BlockMasks.WATER) != 0) {
 +                this.waterFluidCount++;
 +            }
