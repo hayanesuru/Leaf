@@ -5,10 +5,10 @@ Subject: [PATCH] optimize checkInsideBlocks
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 2d3998b547a5593703788f7a532f960f6054b7c9..0804d3dc5262350a194c5e6d86c313364b6fba76 100644
+index 0366217ac729a967ba69fb256481479255d347be..afc9788b69a9398c295a6fe3801b82fb6d6c3384 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1811,72 +1811,57 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1818,72 +1818,57 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      private void checkInsideBlocks(Vec3 vec3, Vec3 vec31, InsideBlockEffectApplier.StepBasedCollector stepBasedCollector, LongSet set) {
          final Level level = this.level();
          AABB aabb = this.getBoundingBox().move(vec31.subtract(this.position())).deflate(1.0E-5F);

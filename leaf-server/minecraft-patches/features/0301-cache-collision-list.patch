@@ -18,10 +18,10 @@ index b94f2122da885fe94bd60c7914421968e6a2f3fa..5178290d060dd8a72f0e6cb77f77d196
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index fc1175ae9bf5b59be2575a4e560bb558cbf007f4..46724762116945d9eb8d1692657fe5ef4d7f912b 100644
+index dcae12c34690346cb32780f7143fe05549c84c11..7140c99edfc2d6fbbd4aff6df5012a4e617b727f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1640,8 +1640,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1647,8 +1647,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
          final AABB currentBox = this.getBoundingBox();
  
@@ -32,7 +32,7 @@ index fc1175ae9bf5b59be2575a4e560bb558cbf007f4..46724762116945d9eb8d1692657fe5ef
  
          final AABB initialCollisionBox;
          if (xZero & zZero) {
-@@ -1653,17 +1653,17 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1660,17 +1660,17 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              initialCollisionBox = currentBox.expandTowards(movement);
          }
  
@@ -55,7 +55,7 @@ index fc1175ae9bf5b59be2575a4e560bb558cbf007f4..46724762116945d9eb8d1692657fe5ef
  
          final boolean collidedX = collided.x != movement.x;
          final boolean collidedY = collided.y != movement.y;
-@@ -1674,6 +1674,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1681,6 +1681,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          final double stepHeight;
  
          if ((!collidedDownwards && !this.onGround) || (!collidedX && !collidedZ) || (stepHeight = (double)this.maxUpStep()) <= 0.0) {
@@ -63,7 +63,7 @@ index fc1175ae9bf5b59be2575a4e560bb558cbf007f4..46724762116945d9eb8d1692657fe5ef
              return collided;
          }
  
-@@ -1684,7 +1685,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1691,7 +1692,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
  
          final List<VoxelShape> stepVoxels = new ArrayList<>();
@@ -72,7 +72,7 @@ index fc1175ae9bf5b59be2575a4e560bb558cbf007f4..46724762116945d9eb8d1692657fe5ef
  
          ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getCollisionsForBlocksOrWorldBorder(
              this.level, (Entity)(Object)this, stepRetrievalBox, stepVoxels, stepAABBs,
-@@ -1698,6 +1699,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1705,6 +1706,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              }
          }
  
