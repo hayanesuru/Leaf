@@ -9,7 +9,7 @@ Leaf: ~48ms (-36%)
 This should help drastically on the farms that use actively changing fluids.
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 9b31e15392b38fd269559f69e8de56251aef6db7..dfeff3886bfeb3aa92e5961237ac0af89c78cb4e 100644
+index 75f81fada6e8064add9fc04f25933d4fb8f6dcd7..d2cbdfccd9f98516b8fa67f71c84871ee3167dd3 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1444,6 +1444,10 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -24,7 +24,7 @@ index 9b31e15392b38fd269559f69e8de56251aef6db7..dfeff3886bfeb3aa92e5961237ac0af8
          BlockState blockState = this.getBlockState(pos);
          FluidState fluidState = blockState.getFluidState();
 diff --git a/net/minecraft/world/level/material/FlowingFluid.java b/net/minecraft/world/level/material/FlowingFluid.java
-index 4fe1b3fc6304a2a404fd0f62f52fc792bcd5dfaf..a00c38b0d6b6d32af4ab3e926705b0f2594157dd 100644
+index 4fe1b3fc6304a2a404fd0f62f52fc792bcd5dfaf..bcda72fbd920a087ea7d10171da933b13adc1813 100644
 --- a/net/minecraft/world/level/material/FlowingFluid.java
 +++ b/net/minecraft/world/level/material/FlowingFluid.java
 @@ -342,32 +342,124 @@ public abstract class FlowingFluid extends Fluid {
@@ -110,7 +110,7 @@ index 4fe1b3fc6304a2a404fd0f62f52fc792bcd5dfaf..a00c38b0d6b6d32af4ab3e926705b0f2
 +    }
 +
 +    private static long encodeSlopeNode(BlockPos pos, Direction excludedDir) {
-+        return ((long) pos.getX() & 0xFFFFFFFFL) << 32 | ((long) pos.getZ() & 0xFFFFFFFFL) << 4 | (excludedDir.ordinal() & 0x0F);
++        return ((pos.getX() & 67108863L) << 38) | ((pos.getZ() & 67108863L) << 12) | (excludedDir.ordinal() & 0x0F);
 +    }
 +
 +    public static class SlopeDistanceNodeDeque {
