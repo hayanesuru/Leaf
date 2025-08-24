@@ -18,7 +18,7 @@ index b94f2122da885fe94bd60c7914421968e6a2f3fa..5178290d060dd8a72f0e6cb77f77d196
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index dcae12c34690346cb32780f7143fe05549c84c11..7140c99edfc2d6fbbd4aff6df5012a4e617b727f 100644
+index dcae12c34690346cb32780f7143fe05549c84c11..841c90c20525e34177de271983db4c1c6b96b57f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1647,8 +1647,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -72,7 +72,12 @@ index dcae12c34690346cb32780f7143fe05549c84c11..7140c99edfc2d6fbbd4aff6df5012a4e
  
          ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getCollisionsForBlocksOrWorldBorder(
              this.level, (Entity)(Object)this, stepRetrievalBox, stepVoxels, stepAABBs,
-@@ -1705,6 +1706,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1701,10 +1702,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         for (final float step : calculateStepHeights(collidedYBox, stepVoxels, stepAABBs, (float)stepHeight, (float)collided.y)) {
+             final Vec3 stepResult = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performCollisions(new Vec3(movement.x, (double)step, movement.z), collidedYBox, stepVoxels, stepAABBs);
+             if (stepResult.horizontalDistanceSqr() > collided.horizontalDistanceSqr()) {
++                entityCollisionCache.clear(); // Leaf - cache collision list
+                 return stepResult.add(0.0, collidedYBox.minY - currentBox.minY, 0.0);
              }
          }
  
