@@ -220,7 +220,7 @@ index 94a9ed024d3859793618152ea559a168bbcbb5e2..e60008693e017bec1b4eb49c84be3898
 -<http://www.gnu.org/philosophy/why-not-lgpl.html>.
 +<https://www.gnu.org/philosophy/why-not-lgpl.html>.
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index d0554ed6631535815e5932930911e3fe1dee8710..4608f94a2cc98e397aed41fa5c65749bdbe92ce7 100644
+index d0554ed6631535815e5932930911e3fe1dee8710..07b4e19ea672b38b8127da30b4111e903274f944 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
@@ -239,7 +239,7 @@ index d0554ed6631535815e5932930911e3fe1dee8710..4608f94a2cc98e397aed41fa5c65749b
  import net.kyori.adventure.text.Component;
  import net.kyori.adventure.text.event.ClickEvent;
  import net.kyori.adventure.text.format.NamedTextColor;
-@@ -30,58 +32,34 @@ import org.slf4j.Logger;
+@@ -30,60 +32,36 @@ import org.slf4j.Logger;
  import static net.kyori.adventure.text.Component.text;
  import static net.kyori.adventure.text.format.TextColor.color;
  
@@ -312,12 +312,15 @@ index d0554ed6631535815e5932930911e3fe1dee8710..4608f94a2cc98e397aed41fa5c65749b
 -        };
 +    @Override
 +    protected int fetchDistanceFromSiteApi(int jenkinsBuild) {
-+        return fetchDistanceFromSiteApi(ServerBuildInfo.buildInfo(), jenkinsBuild);
++        return fetchDistanceFromPaperApi(ServerBuildInfo.buildInfo(), jenkinsBuild);
      }
 +    // Gale end - branding changes - version fetcher
  
-     private static int fetchDistanceFromSiteApi(final ServerBuildInfo build, final int jenkinsBuild) {
+-    private static int fetchDistanceFromSiteApi(final ServerBuildInfo build, final int jenkinsBuild) {
++    private static int fetchDistanceFromPaperApi(final ServerBuildInfo build, final int jenkinsBuild) {
          try {
+             try (final BufferedReader reader = Resources.asCharSource(
+                 URI.create("https://api.papermc.io/v2/projects/paper/versions/" + build.minecraftVersionId()).toURL(),
 @@ -105,42 +83,4 @@ public class PaperVersionFetcher implements VersionFetcher {
              return DISTANCE_ERROR;
          }
