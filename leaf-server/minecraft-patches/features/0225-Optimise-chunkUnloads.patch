@@ -159,10 +159,10 @@ index 4ca68a903e67606fc4ef0bfa9862a73797121c8b..bed3a64388bb43e47c2ba4e67f7dde5b
  
      public static final class SaveState {
 diff --git a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-index 2c10d216929fbc7f00385e4baac3aa60c203b799..0ef9e974bc848b5273f002751628a989a2b3627b 100644
+index 08b98e60518027a6d0aa99d03ba02982355ffa76..bbb871f011e947e426f8be32f0ab71aded4e0980 100644
 --- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
 +++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
-@@ -495,14 +495,16 @@ public record SerializableChunkData(
+@@ -493,14 +493,16 @@ public record SerializableChunkData(
              throw new IllegalArgumentException("Chunk can't be serialized: " + chunk);
          } else {
              ChunkPos pos = chunk.getPos();
@@ -182,7 +182,7 @@ index 2c10d216929fbc7f00385e4baac3aa60c203b799..0ef9e974bc848b5273f002751628a989
  
              final LevelChunkSection[] chunkSections = chunk.getSections();
              final ca.spottedleaf.moonrise.patches.starlight.light.SWMRNibbleArray[] blockNibbles = ((ca.spottedleaf.moonrise.patches.starlight.chunk.StarlightChunk)chunk).starlight$getBlockNibbles();
-@@ -520,10 +522,20 @@ public record SerializableChunkData(
+@@ -518,10 +520,20 @@ public record SerializableChunkData(
                      continue;
                  }
  
@@ -206,7 +206,7 @@ index 2c10d216929fbc7f00385e4baac3aa60c203b799..0ef9e974bc848b5273f002751628a989
                  );
  
                  if (blockNibble != null) {
-@@ -534,12 +546,16 @@ public record SerializableChunkData(
+@@ -532,12 +544,16 @@ public record SerializableChunkData(
                      ((ca.spottedleaf.moonrise.patches.starlight.storage.StarlightSectionData)(Object)sectionData).starlight$setSkyLightState(skyNibble.state);
                  }
  
@@ -225,7 +225,7 @@ index 2c10d216929fbc7f00385e4baac3aa60c203b799..0ef9e974bc848b5273f002751628a989
              for (BlockPos blockPos : chunk.getBlockEntitiesPos()) {
                  CompoundTag blockEntityNbtForSaving = chunk.getBlockEntityNbtForSaving(blockPos, level.registryAccess());
                  if (blockEntityNbtForSaving != null) {
-@@ -547,15 +563,27 @@ public record SerializableChunkData(
+@@ -545,15 +561,27 @@ public record SerializableChunkData(
                  }
              }
  
@@ -255,7 +255,7 @@ index 2c10d216929fbc7f00385e4baac3aa60c203b799..0ef9e974bc848b5273f002751628a989
              }
  
              Map<Heightmap.Types, long[]> map = new EnumMap<>(Heightmap.Types.class);
-@@ -563,14 +591,26 @@ public record SerializableChunkData(
+@@ -561,14 +589,26 @@ public record SerializableChunkData(
              for (Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
                  if (chunk.getPersistedStatus().heightmapsAfter().contains(entry.getKey())) {
                      long[] rawData = entry.getValue().getRawData();
