@@ -13,6 +13,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.stream.StreamSupport;
 
 public class LeafVersionFetcher extends AbstractPaperVersionFetcher {
@@ -28,16 +30,20 @@ public class LeafVersionFetcher extends AbstractPaperVersionFetcher {
     }
 
     @Override
-    protected boolean canFetchDistanceFromSiteApi() {
-        return true;
+    protected int fetchDistanceFromAPI(final String repo, final ServerBuildInfo build) {
+        int distance = DISTANCE_ERROR;
+
+        final Optional<String> gitBranch = build.gitBranch();
+        final Optional<String> gitCommit = build.gitCommit();
+        final OptionalInt buildNumber = build.buildNumber();
+        if (gitBranch.isPresent() && gitCommit.isPresent() && buildNumber.isPresent()) {
+            distance = fetchDistanceFromLeafApi(build, buildNumber.getAsInt());
+        }
+
+        return distance;
     }
 
-    @Override
-    protected int fetchDistanceFromSiteApi(int jenkinsBuild) {
-        return fetchDistanceFromLeafApi(ServerBuildInfo.buildInfo(), jenkinsBuild);
-    }
-
-    private static int fetchDistanceFromLeafApi(final ServerBuildInfo build, final int jenkinsBuild) {
+    private static int fetchDistanceFromLeafApi(final ServerBuildInfo build, final int current) {
         try {
             try (final BufferedReader reader = Resources.asCharSource(
                 URI.create("https://api.leafmc.one/v2/projects/leaf/versions/" + build.minecraftVersionId()).toURL(),
@@ -49,7 +55,7 @@ public class LeafVersionFetcher extends AbstractPaperVersionFetcher {
                     .mapToInt(JsonElement::getAsInt)
                     .max()
                     .orElseThrow();
-                return latest - jenkinsBuild;
+                return latest - current;
             } catch (final JsonSyntaxException ex) {
                 LOGGER.error("Error parsing json from Leaf's downloads API", ex);
                 return DISTANCE_ERROR;
