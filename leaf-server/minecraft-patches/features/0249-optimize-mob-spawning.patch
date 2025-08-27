@@ -5,6 +5,8 @@ Subject: [PATCH] optimize mob spawning
 
 Avoid getChunk calls if its position is same as the chunk used for mob spawning
 
+Don't sync load chunks for mob spawning checks
+
 Fix data race in async mob spawning
 by adding chunk position to the mob count map
 then apply result on server thread.
@@ -200,7 +202,7 @@ index b3d877089f4eebcd78f1019a91d9d71615a15148..b9986a9df48f6986c8151d727893b750
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index bb655318f49242858e2c25d5469705c0c314ed85..f0b78c6d89cd3010a0b8e9fbe760f615d7b8771e 100644
+index bb655318f49242858e2c25d5469705c0c314ed85..a015f0bbff3bb58fd4d28c59620f75dbb125f869 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
 @@ -68,6 +68,7 @@ public final class NaturalSpawner {
@@ -443,7 +445,7 @@ index bb655318f49242858e2c25d5469705c0c314ed85..f0b78c6d89cd3010a0b8e9fbe760f615
      private static boolean canSpawnMobAt(
          ServerLevel level, StructureManager structureManager, ChunkGenerator generator, MobCategory category, MobSpawnSettings.SpawnerData data, BlockPos pos
      ) {
-@@ -463,6 +615,16 @@ public final class NaturalSpawner {
+@@ -463,8 +615,22 @@ public final class NaturalSpawner {
              : generator.getMobsAt(biome != null ? biome : (org.dreeam.leaf.config.modules.opt.OptimizeBiome.mobSpawn ? level.getBiomeCached(null, pos) : level.getBiome(pos)), structureManager, cetagory, pos); // Leaf - cache getBiome
      }
  
@@ -458,15 +460,24 @@ index bb655318f49242858e2c25d5469705c0c314ed85..f0b78c6d89cd3010a0b8e9fbe760f615
 +    // Leaf end - optimize mob spawning
 +
      public static boolean isInNetherFortressBounds(BlockPos pos, ServerLevel level, MobCategory category, StructureManager structureManager) {
-         if (category == MobCategory.MONSTER && level.getBlockState(pos.below()).is(Blocks.NETHER_BRICKS)) {
+-        if (category == MobCategory.MONSTER && level.getBlockState(pos.below()).is(Blocks.NETHER_BRICKS)) {
++        // Leaf start - optimize mob spawning
++        if (category == MobCategory.MONSTER) {
++            BlockState blockState = level.getBlockStateIfLoaded(pos.below());
++            if (blockState == null || !blockState.is(Blocks.NETHER_BRICKS)) return false;
++        // Leaf end - optimize mob spawning
              Structure structure = structureManager.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValue(BuiltinStructures.FORTRESS);
-@@ -472,6 +634,17 @@ public final class NaturalSpawner {
+             return structure != null && structureManager.getStructureAt(pos, structure).isValid();
+         } else {
+@@ -472,6 +638,19 @@ public final class NaturalSpawner {
          }
      }
  
 +    // Leaf start - optimize mob spawning
 +    public static boolean isInNetherFortressBoundsChunk(BlockPos pos, ServerLevel level, MobCategory category, StructureManager structureManager, LevelChunk chunk) {
-+        if (category == MobCategory.MONSTER && ((chunk.getPos().longKey == ChunkPos.asLong(pos) ? chunk.getBlockStateFinal(pos.getX(), pos.getY() - 1, pos.getZ()).is(Blocks.NETHER_BRICKS) : level.getBlockState(pos.below()).is(Blocks.NETHER_BRICKS)))) {
++        if (category == MobCategory.MONSTER) {
++            @Nullable BlockState blockState = chunk.getPos().longKey == ChunkPos.asLong(pos) ? chunk.getBlockStateFinal(pos.getX(), pos.getY() - 1, pos.getZ()) : level.getBlockStateIfLoaded(pos.below());
++            if (blockState == null || !blockState.is(Blocks.NETHER_BRICKS)) return false;
 +            Structure structure = structureManager.registryAccess().lookupOrThrow(Registries.STRUCTURE).getValue(BuiltinStructures.FORTRESS);
 +            return structure != null && structureManager.getStructureAt(pos, structure).isValid();
 +        } else {
@@ -478,7 +489,7 @@ index bb655318f49242858e2c25d5469705c0c314ed85..f0b78c6d89cd3010a0b8e9fbe760f615
      private static BlockPos getRandomPosWithin(Level level, LevelChunk chunk) {
          ChunkPos pos = chunk.getPos();
          int i = pos.getMinBlockX() + level.random.nextInt(16);
-@@ -612,18 +785,21 @@ public final class NaturalSpawner {
+@@ -612,18 +791,21 @@ public final class NaturalSpawner {
          @Nullable
          private EntityType<?> lastCheckedType;
          private double lastCharge;
@@ -501,7 +512,7 @@ index bb655318f49242858e2c25d5469705c0c314ed85..f0b78c6d89cd3010a0b8e9fbe760f615
          }
  
          private boolean canSpawn(EntityType<?> entityType, BlockPos pos, ChunkAccess chunk) {
-@@ -680,5 +856,32 @@ public final class NaturalSpawner {
+@@ -680,5 +862,32 @@ public final class NaturalSpawner {
          boolean canSpawnForCategoryLocal(MobCategory category, ChunkPos chunkPos) {
              return this.localMobCapCalculator.canSpawn(category, chunkPos);
          }
