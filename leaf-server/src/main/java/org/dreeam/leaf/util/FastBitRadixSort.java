@@ -2,44 +2,32 @@ package org.dreeam.leaf.util;
 
 import net.minecraft.world.entity.Entity;
 
-import java.lang.reflect.Array; // Required for Array.newInstance
-import java.util.List;
-
 public class FastBitRadixSort {
 
     private static final int SMALL_ARRAY_THRESHOLD = 6;
-    private Entity[] entityBuffer = new Entity[0];
-    private long[] bitsBuffer = new long[0];
+    private static final long[] LONGS = new long[0];
+    private long[] bitsBuffer = LONGS;
 
-    @SuppressWarnings("unchecked")
-    public <T extends Entity, T_REF extends Entity> T[] sort(List<T> entities, T_REF referenceEntity, Class<T> entityClass) {
-        int size = entities.size();
+    public <T extends Entity> void sort(T[] entities, int size, net.minecraft.core.Position target) {
         if (size <= 1) {
-            T[] resultArray = (T[]) Array.newInstance(entityClass, size);
-            return entities.toArray(resultArray);
+            return;
         }
 
-        if (this.entityBuffer.length < size) {
-            this.entityBuffer = new Entity[size];
+        if (this.bitsBuffer.length < size) {
             this.bitsBuffer = new long[size];
         }
+        double tx = target.x();
+        double ty = target.y();
+        double tz = target.z();
         for (int i = 0; i < size; i++) {
-            this.entityBuffer[i] = entities.get(i);
-            this.bitsBuffer[i] = Double.doubleToRawLongBits(
-                referenceEntity.distanceToSqr(entities.get(i))
-            );
+            T e = entities[i];
+            this.bitsBuffer[i] = Double.doubleToRawLongBits(e.distanceToSqr(tx, ty, tz));
         }
 
-        fastRadixSort(this.entityBuffer, this.bitsBuffer, 0, size - 1, 62);
-
-        T[] resultArray = (T[]) Array.newInstance(entityClass, size);
-        for (int i = 0; i < size; i++) {
-            resultArray[i] = entityClass.cast(this.entityBuffer[i]);
-        }
-        return resultArray;
+        fastRadixSort(entities, this.bitsBuffer, 0, size - 1, 62);
     }
 
-    private void fastRadixSort(
+    private static void fastRadixSort(
         Entity[] ents,
         long[] bits,
         int low,
@@ -79,7 +67,7 @@ public class FastBitRadixSort {
         }
     }
 
-    private void insertionSort(
+    private static void insertionSort(
         Entity[] ents,
         long[] bits,
         int low,
@@ -100,7 +88,7 @@ public class FastBitRadixSort {
         }
     }
 
-    private void swap(Entity[] ents, long[] bits, int a, int b) {
+    private static void swap(Entity[] ents, long[] bits, int a, int b) {
         Entity tempEntity = ents[a];
         ents[a] = ents[b];
         ents[b] = tempEntity;
