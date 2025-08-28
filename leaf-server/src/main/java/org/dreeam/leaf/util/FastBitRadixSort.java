@@ -2,13 +2,13 @@ package org.dreeam.leaf.util;
 
 import net.minecraft.world.entity.Entity;
 
-public class FastBitRadixSort {
+public final class FastBitRadixSort {
 
     private static final int SMALL_ARRAY_THRESHOLD = 6;
     private static final long[] LONGS = new long[0];
     private long[] bitsBuffer = LONGS;
 
-    public <T extends Entity> void sort(T[] entities, int size, net.minecraft.core.Position target) {
+    public void sort(Object[] entities, int size, net.minecraft.core.Position target) {
         if (size <= 1) {
             return;
         }
@@ -20,15 +20,14 @@ public class FastBitRadixSort {
         double ty = target.y();
         double tz = target.z();
         for (int i = 0; i < size; i++) {
-            T e = entities[i];
-            this.bitsBuffer[i] = Double.doubleToRawLongBits(e.distanceToSqr(tx, ty, tz));
+            this.bitsBuffer[i] = Double.doubleToRawLongBits(((Entity) entities[i]).distanceToSqr(tx, ty, tz));
         }
 
         fastRadixSort(entities, this.bitsBuffer, 0, size - 1, 62);
     }
 
     private static void fastRadixSort(
-        Entity[] ents,
+        Object[] ents,
         long[] bits,
         int low,
         int high,
@@ -68,14 +67,14 @@ public class FastBitRadixSort {
     }
 
     private static void insertionSort(
-        Entity[] ents,
+        Object[] ents,
         long[] bits,
         int low,
         int high
     ) {
         for (int i = low + 1; i <= high; i++) {
             int j = i;
-            Entity currentEntity = ents[j];
+            Object currentEntity = ents[j];
             long currentBits = bits[j];
 
             while (j > low && bits[j - 1] > currentBits) {
@@ -88,8 +87,8 @@ public class FastBitRadixSort {
         }
     }
 
-    private static void swap(Entity[] ents, long[] bits, int a, int b) {
-        Entity tempEntity = ents[a];
+    private static void swap(Object[] ents, long[] bits, int a, int b) {
+        Object tempEntity = ents[a];
         ents[a] = ents[b];
         ents[b] = tempEntity;
 
