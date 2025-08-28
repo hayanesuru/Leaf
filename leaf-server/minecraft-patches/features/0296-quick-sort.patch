@@ -1,0 +1,95 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Thu, 28 Aug 2025 15:50:27 +0900
+Subject: [PATCH] quick sort
+
+
+diff --git a/net/minecraft/world/entity/ai/sensing/NearestItemSensor.java b/net/minecraft/world/entity/ai/sensing/NearestItemSensor.java
+index 09fd13e2d958da8326276c4dadf25bf488aff5ac..e854127f83b2a60906206f4f5d5f8ddc59a31a66 100644
+--- a/net/minecraft/world/entity/ai/sensing/NearestItemSensor.java
++++ b/net/minecraft/world/entity/ai/sensing/NearestItemSensor.java
+@@ -15,6 +15,7 @@ public class NearestItemSensor extends Sensor<Mob> {
+     private static final long XZ_RANGE = 32L;
+     private static final long Y_RANGE = 16L;
+     public static final int MAX_DISTANCE_TO_WANTED_ITEM = 32;
++    private static final double MAX_DIST_SQ = (double) MAX_DISTANCE_TO_WANTED_ITEM * MAX_DISTANCE_TO_WANTED_ITEM; // Leaf - quick sort
+ 
+     @Override
+     public Set<MemoryModuleType<?>> requires() {
+@@ -24,8 +25,16 @@ public class NearestItemSensor extends Sensor<Mob> {
+     @Override
+     protected void doTick(ServerLevel level, Mob entity) {
+         Brain<?> brain = entity.getBrain();
+-        List<ItemEntity> entitiesOfClass = level.getEntitiesOfClass(ItemEntity.class, entity.getBoundingBox().inflate(32.0, 16.0, 32.0), itemEntity -> itemEntity.closerThan(entity, MAX_DISTANCE_TO_WANTED_ITEM) && entity.wantsToPickUp(level, itemEntity.getItem())); // Paper - Perf: Move predicate into getEntities
+-        entitiesOfClass.sort(Comparator.comparingDouble(entity::distanceToSqr));
++        // Leaf start - quick sort
++        net.minecraft.core.Position pos = entity.position();
++        double x = pos.x();
++        double y = pos.y();
++        double z = pos.z();
++        net.minecraft.world.phys.AABB boundingBox = entity.getBoundingBox().inflate(32.0, 16.0, 32.0);
++        it.unimi.dsi.fastutil.objects.ObjectArrayList<ItemEntity> entitiesOfClass = new it.unimi.dsi.fastutil.objects.ObjectArrayList<>();
++        ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemLevel) level).moonrise$getEntityLookup().getEntities(ItemEntity.class, null, boundingBox, entitiesOfClass, (ItemEntity itemEntity) -> itemEntity.distanceToSqr(x, y, z) < MAX_DIST_SQ && entity.wantsToPickUp(level, itemEntity.getItem())); // Paper - Perf: Move predicate into getEntities
++        entitiesOfClass.unstableSort(Comparator.comparingDouble((ItemEntity itemEntity) -> itemEntity.distanceToSqr(x, y, z)));
++        // Leaf end - quick sort
+         // Paper start - Perf: remove streams from hot code
+         ItemEntity nearest = null;
+         for (final ItemEntity itemEntity : entitiesOfClass) {
+diff --git a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
+index b0c5e41fefc7c9adf1a61bd5b52861736657d37e..28607bbf202d780e331f91535335f0e23b7d9f17 100644
+--- a/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
++++ b/net/minecraft/world/entity/ai/sensing/NearestLivingEntitySensor.java
+@@ -17,10 +17,15 @@ public class NearestLivingEntitySensor<T extends LivingEntity> extends Sensor<T>
+     protected void doTick(ServerLevel level, T entity) {
+         double attributeValue = entity.getAttributeValue(Attributes.FOLLOW_RANGE);
+         AABB aabb = entity.getBoundingBox().inflate(attributeValue, attributeValue, attributeValue);
+-        List<LivingEntity> entitiesOfClass = level.getEntitiesOfClass(
+-            LivingEntity.class, aabb, matchableEntity -> matchableEntity != entity && matchableEntity.isAlive()
+-        );
+-        entitiesOfClass.sort(Comparator.comparingDouble(entity::distanceToSqr));
++        // Leaf start - quick sort
++        it.unimi.dsi.fastutil.objects.ObjectArrayList<LivingEntity> entitiesOfClass = new it.unimi.dsi.fastutil.objects.ObjectArrayList<>();
++        ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemLevel) level).moonrise$getEntityLookup().getEntities(LivingEntity.class, entity, aabb, entitiesOfClass, LivingEntity::isAlive);
++        net.minecraft.world.phys.Vec3 vec3 = entity.position();
++        double x = vec3.x();
++        double y = vec3.y();
++        double z = vec3.z();
++        entitiesOfClass.unstableSort(Comparator.comparingDouble((LivingEntity e) -> e.distanceToSqr(x, y, z)));
++        // Leaf end - quick sort
+         Brain<?> brain = entity.getBrain();
+         brain.setMemory(MemoryModuleType.NEAREST_LIVING_ENTITIES, entitiesOfClass);
+         brain.setMemory(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES, new NearestVisibleLivingEntities(level, entity, entitiesOfClass));
+diff --git a/net/minecraft/world/entity/ai/sensing/PlayerSensor.java b/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
+index fa438315b4ed8e9394383b82b89ecb04bac3399f..896e716975e48637e188c167a4accf79071a0fde 100644
+--- a/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
++++ b/net/minecraft/world/entity/ai/sensing/PlayerSensor.java
+@@ -27,18 +27,26 @@ public class PlayerSensor extends Sensor<LivingEntity> {
+     @Override
+     protected void doTick(ServerLevel level, LivingEntity entity) {
+         // Leaf start - Remove stream in PlayerSensor
+-        List<Player> list = new java.util.ArrayList<>();
++        // Leaf start - quick sort
++        it.unimi.dsi.fastutil.objects.ObjectArrayList<Player> list = new it.unimi.dsi.fastutil.objects.ObjectArrayList<>();
++        double distance = this.getFollowDistance(entity);
++        double distSq = distance * distance;
++        net.minecraft.world.phys.Vec3 vec3 = entity.position();
++        double tx = vec3.x();
++        double ty = vec3.y();
++        double tz = vec3.z();
+         for (Player serverPlayer : level.players()) {
+             if (!EntitySelector.NO_SPECTATORS.test(serverPlayer)) {
+                 continue;
+             }
+-            if (!entity.closerThan(serverPlayer, this.getFollowDistance(entity))) {
++            if (serverPlayer.distanceToSqr(tx, ty, tz) >= distSq) {
+                 continue;
+             }
+ 
+             list.add(serverPlayer);
+         }
+-        list.sort(Comparator.comparingDouble(entity::distanceToSqr));
++        list.unstableSort(Comparator.comparingDouble(p -> p.distanceToSqr(tx, ty, tz)));
++        // Leaf end - quick sort
+         // Leaf end - Remove stream in PlayerSensor
+         Brain<?> brain = entity.getBrain();
+         brain.setMemory(MemoryModuleType.NEAREST_PLAYERS, list);
