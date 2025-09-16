@@ -65,7 +65,7 @@ index d49a5360d4a21e5b15bac94a823831e25d242a3d..04286fdba0c22d5b6d7b3ab71ee1a1fe
                      CriteriaTriggers.SHOT_CROSSBOW.trigger(serverPlayer, weapon);
                      serverPlayer.awardStat(Stats.ITEM_USED.get(weapon.getItem()));
 diff --git a/net/minecraft/world/item/ProjectileWeaponItem.java b/net/minecraft/world/item/ProjectileWeaponItem.java
-index f12b9e4e8a78c713782af548d1cb15ef363305b4..9467d8513786a1ed0d4d14cc5540151f897aae35 100644
+index f12b9e4e8a78c713782af548d1cb15ef363305b4..d24b5e8baa6920d8736fe8686200bf39b0ae727a 100644
 --- a/net/minecraft/world/item/ProjectileWeaponItem.java
 +++ b/net/minecraft/world/item/ProjectileWeaponItem.java
 @@ -40,7 +40,20 @@ public abstract class ProjectileWeaponItem extends Item {
@@ -154,7 +154,7 @@ index f12b9e4e8a78c713782af548d1cb15ef363305b4..9467d8513786a1ed0d4d14cc5540151f
 +                        List<ItemStack> newProjectiles = new ArrayList<>(projectileItems);
 +                        newProjectiles.remove(i - (projectileItems.size() - newProjectiles.size()));
 +                        // Explicitly update new data to crossbow on hand, since plugin can change item in inventory during this stage
-+                        shooter.getItemInHand(hand).set(DataComponents.CHARGED_PROJECTILES, net.minecraft.world.item.component.ChargedProjectiles.of(newProjectiles));
++                        if (shooter.getItemInHand(hand).is(Items.CROSSBOW)) shooter.getItemInHand(hand).set(DataComponents.CHARGED_PROJECTILES, net.minecraft.world.item.component.ChargedProjectiles.of(newProjectiles));
 +                    } else if (level.shouldConsumeArrow) {
 +                        unrealizedDrawResult.consumeProjectilesFromPlayerInventory(i);
 +                        // Paper PR end - prevent item consumption for cancelled events
