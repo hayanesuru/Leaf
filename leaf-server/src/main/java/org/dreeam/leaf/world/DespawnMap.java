@@ -92,7 +92,7 @@ public final class DespawnMap implements Consumer<Entity> {
         final int i = mob.getType().getCategory().ordinal();
         final double hardDist = this.hard[i];
         final Vec3 vec3 = mob.position;
-        final double dist = this.tree.nearestSqr(vec3.x, vec3.z, vec3.y, hardDist);
+        final double dist = this.tree.nearestSqr(vec3.x, vec3.y, vec3.z, hardDist);
         if (dist == Double.POSITIVE_INFINITY) {
             return;
         }
@@ -110,7 +110,7 @@ public final class DespawnMap implements Consumer<Entity> {
 
     public ServerPlayer checkDespawnFallback(final Mob mob) {
         final Vec3 vec3 = mob.position;
-        final int i = tree.nearestIdx(vec3.x, vec3.z, vec3.y, Double.POSITIVE_INFINITY);
+        final int i = tree.nearestIdx(vec3.x, vec3.y, vec3.z, Double.POSITIVE_INFINITY);
         return i == -1 ? null : this.players[i];
     }
 
