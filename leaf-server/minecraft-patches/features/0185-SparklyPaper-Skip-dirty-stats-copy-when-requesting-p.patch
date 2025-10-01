@@ -6,10 +6,10 @@ Subject: [PATCH] SparklyPaper: Skip dirty stats copy when requesting player
 
 
 diff --git a/net/minecraft/stats/ServerStatsCounter.java b/net/minecraft/stats/ServerStatsCounter.java
-index 195ff539c9cb4b2a0640555fc4b59df39e06c90d..8a927cb4327f5fdfe06b595095d840e789141733 100644
+index 37cccb75599724bdcc64f36142857bd81c6eae40..30e3e56b3c7238852f4c07ce4758e52e61991d93 100644
 --- a/net/minecraft/stats/ServerStatsCounter.java
 +++ b/net/minecraft/stats/ServerStatsCounter.java
-@@ -98,11 +98,15 @@ public class ServerStatsCounter extends StatsCounter {
+@@ -104,11 +104,15 @@ public class ServerStatsCounter extends StatsCounter {
          this.dirty.add(stat);
      }
  
@@ -25,7 +25,7 @@ index 195ff539c9cb4b2a0640555fc4b59df39e06c90d..8a927cb4327f5fdfe06b595095d840e7
  
      public void parseLocal(DataFixer fixerUpper, String json) {
          try {
-@@ -141,10 +145,12 @@ public class ServerStatsCounter extends StatsCounter {
+@@ -147,10 +151,12 @@ public class ServerStatsCounter extends StatsCounter {
      public void sendStats(ServerPlayer player) {
          Object2IntMap<Stat<?>> map = new Object2IntOpenHashMap<>();
  

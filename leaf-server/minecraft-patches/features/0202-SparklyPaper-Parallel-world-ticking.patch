@@ -267,7 +267,7 @@ index f8dd55a4a5a93788e0690b1a6a6b87d12cf26571..b81de5b278c43a404d0f6b96cf134b40
      }
      // CraftBukkit end
 diff --git a/net/minecraft/server/PlayerAdvancements.java b/net/minecraft/server/PlayerAdvancements.java
-index 4bf87ebb49880b8e09203a48fce6371398281561..27bbe0c43dd9b7f8bf932a6b4825ce2cb1996d48 100644
+index d6d6526a6272b60c01bbef821c3660dffad3d698..5037bcdc0dd42ad1c9d45aeb4620afd075c27659 100644
 --- a/net/minecraft/server/PlayerAdvancements.java
 +++ b/net/minecraft/server/PlayerAdvancements.java
 @@ -53,8 +53,11 @@ public class PlayerAdvancements {
@@ -292,7 +292,7 @@ index 4bf87ebb49880b8e09203a48fce6371398281561..27bbe0c43dd9b7f8bf932a6b4825ce2c
          this.isFirstPacket = true;
          this.lastSelectedTab = null;
          this.tree = manager.tree();
-@@ -150,7 +154,7 @@ public class PlayerAdvancements {
+@@ -152,7 +156,7 @@ public class PlayerAdvancements {
                  if (org.galemc.gale.configuration.GaleGlobalConfiguration.get().logToConsole.ignoredAdvancements) LOGGER.warn("Ignored advancement '{}' in progress file {} - it doesn't exist anymore?", path, this.playerSavePath); // Gale - Purpur - do not log ignored advancements
              } else {
                  this.startProgress(advancementHolder, progress);
@@ -301,7 +301,7 @@ index 4bf87ebb49880b8e09203a48fce6371398281561..27bbe0c43dd9b7f8bf932a6b4825ce2c
                  this.markForVisibilityUpdate(advancementHolder);
              }
          });
-@@ -182,10 +186,12 @@ public class PlayerAdvancements {
+@@ -184,10 +188,12 @@ public class PlayerAdvancements {
                  return false;
              }
              // Paper end - Add PlayerAdvancementCriterionGrantEvent
@@ -318,7 +318,7 @@ index 4bf87ebb49880b8e09203a48fce6371398281561..27bbe0c43dd9b7f8bf932a6b4825ce2c
                  // Paper start - Add Adventure message to PlayerAdvancementDoneEvent
                  final net.kyori.adventure.text.Component message = advancement.value().display().flatMap(info -> {
                      return java.util.Optional.ofNullable(
-@@ -219,12 +225,14 @@ public class PlayerAdvancements {
+@@ -221,12 +227,14 @@ public class PlayerAdvancements {
          AdvancementProgress orStartProgress = this.getOrStartProgress(advancement);
          boolean isDone = orStartProgress.isDone();
          if (orStartProgress.revokeProgress(criterionKey)) {
@@ -336,7 +336,7 @@ index 4bf87ebb49880b8e09203a48fce6371398281561..27bbe0c43dd9b7f8bf932a6b4825ce2c
              this.markForVisibilityUpdate(advancement);
          }
  
-@@ -270,7 +278,10 @@ public class PlayerAdvancements {
+@@ -272,7 +280,10 @@ public class PlayerAdvancements {
      }
  
      public void flushDirty(ServerPlayer player, boolean showAdvancements) {
@@ -348,7 +348,7 @@ index 4bf87ebb49880b8e09203a48fce6371398281561..27bbe0c43dd9b7f8bf932a6b4825ce2c
              Map<ResourceLocation, AdvancementProgress> map = new HashMap<>();
              Set<AdvancementHolder> set = new java.util.TreeSet<>(java.util.Comparator.comparing(adv -> adv.id().toString())); // Paper - Changed from HashSet to TreeSet ordered alphabetically.
              Set<ResourceLocation> set1 = new HashSet<>();
-@@ -278,16 +289,24 @@ public class PlayerAdvancements {
+@@ -280,16 +291,24 @@ public class PlayerAdvancements {
              for (AdvancementNode advancementNode : this.rootsToUpdate) {
                  this.updateTreeVisibility(advancementNode, set, set1);
              }
@@ -377,7 +377,7 @@ index 4bf87ebb49880b8e09203a48fce6371398281561..27bbe0c43dd9b7f8bf932a6b4825ce2c
              if (!map.isEmpty() || !set.isEmpty() || !set1.isEmpty()) {
                  player.connection.send(new ClientboundUpdateAdvancementsPacket(this.isFirstPacket, set, set1, map, showAdvancements));
              }
-@@ -330,10 +349,13 @@ public class PlayerAdvancements {
+@@ -332,10 +351,13 @@ public class PlayerAdvancements {
                  AdvancementHolder advancementHolder = node.holder();
                  if (visible) {
                      if (this.visible.add(advancementHolder)) {
