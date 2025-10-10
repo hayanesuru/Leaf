@@ -1,5 +1,6 @@
 package org.dreeam.leaf.async;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.Util;
 import org.apache.commons.io.FilenameUtils;
@@ -16,34 +17,38 @@ import java.util.concurrent.*;
 
 public final class AsyncPlayerDataSaving {
 
-    public static ThreadPoolExecutor IO_POOL = null;
-    private static final Map<String, Future<Void>> PLAYERDATA = it.unimi.dsi.fastutil.objects.Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
-    private static final Map<String, Future<Void>> ADVANCEMENTS = it.unimi.dsi.fastutil.objects.Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
-    private static final Map<String, Future<Void>> STATS = it.unimi.dsi.fastutil.objects.Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
-    private static final Logger LOGGER = LogManager.getLogger("Leaf Async Player Storage");
+    public static final ThreadPoolExecutor IO_POOL;
+    private static final Map<String, Future<Void>> PLAYERDATA = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
+    private static final Map<String, Future<Void>> ADVANCEMENTS = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
+    private static final Map<String, Future<Void>> STATS = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
+    private static final Map<String, Future<Void>> LEVEL_DATA = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
+    private static final Map<String, Future<Void>> USER_LIST = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
+
+    private static final Logger LOGGER = LogManager.getLogger("Leaf Async IO");
 
     private AsyncPlayerDataSaving() {
     }
 
     public static void init() {
-        if (IO_POOL == null) {
-            IO_POOL = new ThreadPoolExecutor(
-                1,
-                1,
-                0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<>(),
-                new com.google.common.util.concurrent.ThreadFactoryBuilder()
-                    .setPriority(Thread.NORM_PRIORITY - 2)
-                    .setNameFormat("Leaf IO Thread")
-                    .setUncaughtExceptionHandler(Util::onThreadException)
-                    .build(),
-                new ThreadPoolExecutor.DiscardPolicy()
-            );
-        }
+    }
+
+    static {
+        IO_POOL = new ThreadPoolExecutor(
+            1,
+            1,
+            0L, TimeUnit.MILLISECONDS,
+            new LinkedBlockingQueue<>(),
+            new com.google.common.util.concurrent.ThreadFactoryBuilder()
+                .setPriority(Thread.NORM_PRIORITY - 2)
+                .setNameFormat("Leaf IO Thread")
+                .setUncaughtExceptionHandler(Util::onThreadException)
+                .build(),
+            new ThreadPoolExecutor.DiscardPolicy()
+        );
     }
 
     public static void submit(Callable<Void> task, Path path, int ty) {
-        Path fileName = path.getFileName();
+        Path fileName = path == null ? null : path.getFileName();
         if (fileName != null) {
             submit(task, fileName.toString(), ty);
         }
@@ -59,8 +64,12 @@ public final class AsyncPlayerDataSaving {
             submit(task, name, PLAYERDATA, "playerdata", AsyncPlayerDataSave.playerdata);
         } else if (ty == 1) {
             submit(task, name, ADVANCEMENTS, "advancements", AsyncPlayerDataSave.advancements);
-        } else {
+        } else if (ty == 2) {
             submit(task, name, STATS, "stats", AsyncPlayerDataSave.stats);
+        } else if (ty == 3) {
+            submit(task, path, LEVEL_DATA, "levelData", AsyncPlayerDataSave.levelData);
+        } else {
+            submit(task, path, USER_LIST, "userList", AsyncPlayerDataSave.userList);
         }
     }
 

@@ -83,6 +83,41 @@ index 195ff539c9cb4b2a0640555fc4b59df39e06c90d..37cccb75599724bdcc64f36142857bd8
      }
  
      @Override
+diff --git a/net/minecraft/world/level/storage/LevelStorageSource.java b/net/minecraft/world/level/storage/LevelStorageSource.java
+index 3b40822ea6ec9783fe3cb8eaba069a8d626d8382..6d87eac80a5b8456f96dd4b0640834519d187f7c 100644
+--- a/net/minecraft/world/level/storage/LevelStorageSource.java
++++ b/net/minecraft/world/level/storage/LevelStorageSource.java
+@@ -521,15 +521,24 @@ public class LevelStorageSource {
+         private void saveLevelData(CompoundTag tag) {
+             Path path = this.levelDirectory.path();
+ 
++            // Leaf start - Async playerdata saving
++            // Save level.dat asynchronously
++            var nbtBytes = new it.unimi.dsi.fastutil.io.FastByteArrayOutputStream(65536);
+             try {
+-                Path path1 = Files.createTempFile(path, "level", ".dat");
+-                NbtIo.writeCompressed(tag, path1);
+-                Path path2 = this.levelDirectory.oldDataFile();
+-                Path path3 = this.levelDirectory.dataFile();
+-                Util.safeReplaceFile(path3, path1, path2);
++                NbtIo.writeCompressed(tag, nbtBytes);
+             } catch (Exception var6) {
+-                LevelStorageSource.LOGGER.error("Failed to save level {}", path, var6);
++                LevelStorageSource.LOGGER.error("Failed to encode level {}", path, var6);
++                return;
+             }
++            Path path2 = this.levelDirectory.oldDataFile();
++            Path path3 = this.levelDirectory.dataFile();
++            org.dreeam.leaf.async.AsyncPlayerDataSaving.submit(() -> {
++                Path path1 = Files.createTempFile(path, "level", ".dat");
++                org.apache.commons.io.FileUtils.writeByteArrayToFile(path1.toFile(), nbtBytes.array, 0, nbtBytes.length, false);
++                Util.safeReplaceFile(path3, path1, path2);
++                return null;
++            }, path3.toString(), 3);
++            // Leaf end - Async playerdata saving
+         }
+ 
+         public Optional<Path> getIconFile() {
 diff --git a/net/minecraft/world/level/storage/PlayerDataStorage.java b/net/minecraft/world/level/storage/PlayerDataStorage.java
 index fe44d8d17d2622b3d6021c11579af85ef96737bb..3a71f710168addcfad8b2f4d102d6a40c7d15d26 100644
 --- a/net/minecraft/world/level/storage/PlayerDataStorage.java

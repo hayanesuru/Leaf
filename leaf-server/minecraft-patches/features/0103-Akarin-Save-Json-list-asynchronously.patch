@@ -8,30 +8,30 @@ Original license: GPL v3
 Original project: https://github.com/Akarin-project/Akarin
 
 diff --git a/net/minecraft/server/players/StoredUserList.java b/net/minecraft/server/players/StoredUserList.java
-index 39483f7b453d6faedeccc1ab1eda76669395ea5a..1fe9be5381b43d240593c8394977d7ffccd1132b 100644
+index 39483f7b453d6faedeccc1ab1eda76669395ea5a..9b558d6baf4a5ea00dcb4cd9289bbbc6de4a3546 100644
 --- a/net/minecraft/server/players/StoredUserList.java
 +++ b/net/minecraft/server/players/StoredUserList.java
-@@ -97,13 +97,23 @@ public abstract class StoredUserList<K, V extends StoredUserEntry<K>> {
+@@ -97,6 +97,7 @@ public abstract class StoredUserList<K, V extends StoredUserEntry<K>> {
      }
  
      public void save() throws IOException {
-+        Runnable saveTask = () -> {// Leaf - Akarin - Save Json list asynchronously
++        java.util.concurrent.Callable<Void> saveTask = () -> {// Leaf - Akarin - Save Json list asynchronously
          this.removeExpired(); // Paper - remove expired values before saving
          JsonArray jsonArray = new JsonArray();
          this.map.values().stream().map(storedEntry -> Util.make(new JsonObject(), storedEntry::serialize)).forEach(jsonArray::add);
- 
-+        try { // Leaf - Akarin - Save Json list asynchronously
+@@ -104,10 +105,15 @@ public abstract class StoredUserList<K, V extends StoredUserEntry<K>> {
          try (BufferedWriter writer = Files.newWriter(this.file, StandardCharsets.UTF_8)) {
              GSON.toJson(jsonArray, GSON.newJsonWriter(writer));
          }
-+
-+        // Leaf start - Akarin - Save Json list asynchronously
-+        } catch (Exception e) {
-+            StoredUserList.LOGGER.warn("Failed to save {} asynchronously", this.file, e);
-+        }
++        return null;
 +        };
-+        io.papermc.paper.util.MCUtil.scheduleAsyncTask(saveTask);
++        org.dreeam.leaf.async.AsyncPlayerDataSaving.submit(saveTask, this.file.toString(), 4);
 +        // Leaf end - Akarin - Save Json list asynchronously
      }
  
      public void load() throws IOException {
+         if (this.file.exists()) {
++            org.dreeam.leaf.async.AsyncPlayerDataSaving.submit(null, this.file.toString(), 4); // Leaf - Akarin - Save Json list asynchronously
+             try (BufferedReader reader = Files.newReader(this.file, StandardCharsets.UTF_8)) {
+                 this.map.clear();
+                 JsonArray jsonArray = GSON.fromJson(reader, JsonArray.class);
