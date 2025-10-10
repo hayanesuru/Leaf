@@ -197,8 +197,30 @@ index 8a6c049c5bf39925d45778b3e297394193cb3e17..8c8aee9762a08de19e88f0f557ce8cca
      public void tickChunk(LevelChunk chunk, int randomTickSpeed) {
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
+diff --git a/net/minecraft/util/random/WeightedList.java b/net/minecraft/util/random/WeightedList.java
+index daab145028c59c07049a2cf75c4f159e4c5073dc..90f349af1bec3bccb1176a6a4b7d48f3eae1f1f2 100644
+--- a/net/minecraft/util/random/WeightedList.java
++++ b/net/minecraft/util/random/WeightedList.java
+@@ -70,6 +70,17 @@ public class WeightedList<E> { // Paper - non-final
+         }
+     }
+ 
++    // Leaf start - Optimize mob spawning
++    public E getRandomNullable(RandomSource random) {
++        if (this.selector == null) {
++            return null;
++        } else {
++            int randomInt = random.nextInt(this.totalWeight);
++            return this.selector.get(randomInt);
++        }
++    }
++    // Leaf end - Optimize mob spawning
++
+     public E getRandomOrThrow(RandomSource random) {
+         if (this.selector == null) {
+             throw new IllegalStateException("Weighted list has no elements");
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index bb655318f49242858e2c25d5469705c0c314ed85..a015f0bbff3bb58fd4d28c59620f75dbb125f869 100644
+index bb655318f49242858e2c25d5469705c0c314ed85..f1b29a10869db1c65aafd1ae99c60c53fab1770d 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
 @@ -68,6 +68,7 @@ public final class NaturalSpawner {
@@ -358,18 +380,23 @@ index bb655318f49242858e2c25d5469705c0c314ed85..a015f0bbff3bb58fd4d28c59620f75db
                      mutableBlockPos.set(x, y, z);
                      double d = x + 0.5;
                      double d1 = z + 0.5;
-@@ -295,8 +398,8 @@ public final class NaturalSpawner {
+@@ -295,19 +398,19 @@ public final class NaturalSpawner {
                          double d2 = nearestPlayer.distanceToSqr(d, y, d1);
                          if (level.isLoadedAndInBounds(mutableBlockPos) && isRightDistanceToPlayerAndSpawnPoint(level, chunk, mutableBlockPos, d2)) { // Paper - don't load chunks for mob spawn
                              if (spawnerData == null) {
 -                                Optional<MobSpawnSettings.SpawnerData> randomSpawnMobAt = getRandomSpawnMobAt(
 -                                    level, structureManager, generator, category, level.random, mutableBlockPos
-+                                Optional<MobSpawnSettings.SpawnerData> randomSpawnMobAt = getRandomSpawnMobAtWithChunk( // Leaf - optimize mob spawning
++                                MobSpawnSettings.SpawnerData randomSpawnMobAt = getRandomSpawnMobAtWithChunk( // Leaf - optimize mob spawning
 +                                    level, structureManager, generator, category, level.random, mutableBlockPos, levelChunk // Leaf - optimize mob spawning
                                  );
-                                 if (randomSpawnMobAt.isEmpty()) {
+-                                if (randomSpawnMobAt.isEmpty()) {
++                                if (randomSpawnMobAt == null) { // Leaf - optimize mob spawning
                                      break;
-@@ -307,7 +410,7 @@ public final class NaturalSpawner {
+                                 }
+ 
+-                                spawnerData = randomSpawnMobAt.get();
++                                spawnerData = randomSpawnMobAt; // Leaf - optimize mob spawning
+                                 ceil = spawnerData.minCount() + level.random.nextInt(1 + spawnerData.maxCount() - spawnerData.minCount());
                              }
  
                              // Paper start - PreCreatureSpawnEvent
@@ -428,13 +455,13 @@ index bb655318f49242858e2c25d5469705c0c314ed85..a015f0bbff3bb58fd4d28c59620f75db
      }
  
 +    // Leaf start - optimize mob spawning
-+    private static Optional<MobSpawnSettings.SpawnerData> getRandomSpawnMobAtWithChunk(
++    private static @Nullable MobSpawnSettings.SpawnerData getRandomSpawnMobAtWithChunk(
 +        ServerLevel level, StructureManager structureManager, ChunkGenerator generator, MobCategory category, RandomSource random, BlockPos pos, LevelChunk chunk
 +    ) {
 +        Holder<Biome> biome = org.dreeam.leaf.config.modules.opt.OptimizeBiome.mobSpawn ? level.getBiomeCached(chunk, pos) : level.getBiome(pos); // Leaf - cache getBiome
 +        return category == MobCategory.WATER_AMBIENT && biome.is(BiomeTags.REDUCED_WATER_AMBIENT_SPAWNS) && random.nextFloat() < 0.98F
-+            ? Optional.empty()
-+            : mobsAtWithChunk(level, structureManager, generator, category, pos, biome, chunk).getRandom(random);
++            ? null
++            : mobsAtWithChunk(level, structureManager, generator, category, pos, biome, chunk).getRandomNullable(random);
 +    }
 +    // Leaf end - optimize mob spawning
 +
