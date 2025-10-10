@@ -24,7 +24,7 @@ index 2721b999dcfcf1cd5a0919221f2d94da4c93a6e7..2a1a6a0306b781e9ae5c0e3261cb740f
              this.level.tickCustomSpawners(this.spawnEnemies, this.spawnFriendlies);
          }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index b9986a9df48f6986c8151d727893b750557e9a74..88a3f390f615275c84237814e10c969bfe3c6a55 100644
+index 8c8aee9762a08de19e88f0f557ce8ccaaefaa523..65b35ab2348e139727296ed27ce59c1b7eb2d5c7 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1093,6 +1093,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
