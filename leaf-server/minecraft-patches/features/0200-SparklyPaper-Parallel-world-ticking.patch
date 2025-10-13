@@ -423,7 +423,7 @@ index eaaa66c4d86d4ebda0acf8f1dbe8ecb55aa28285..3a6c894178829cec8daa08ea9f0294f7
                  continue;
              }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 06294e4036991a803deefc20e35160c5ff76a81b..8f93d8887d1e0ee8d27d0ead8e733cf7fa5d719d 100644
+index 30bb5b9d021d01dea272313763b0748856ce28a6..1b8f9cc3de9778e556a0017b320bfba983750f0f 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -180,7 +180,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -858,7 +858,7 @@ index f9e7532f86122a379692561a639a209a126e8bba..fab317d6c9a1c914f19bae11846cb576
              if (isLocatorBarEnabledFor(player)) {
                  if (!connection.isBroken()) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index c18f6f3f8307ae1d221a38cd1dc2191cdc4e767a..1bb78f90f9bfc58f39f21605d1e4e45680fdd41b 100644
+index 67556752551e1d30519e2533543de9b04342420b..45bc4aa35fda48c816e08ec8bacfb11a5c792b27 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -3476,15 +3476,40 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
