@@ -121,7 +121,7 @@ index f127231587fef0cef6767a259e0e1294650e1330..edd60ec3e725985f091379c4753e1bcf
          if (MinecraftServer.currentTick > entity.activatedTick) {
              if (entity.defaultActivationState) { // Pufferfish - diff on change
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 697553ad6625ac8ab74e79f727a95fd0d628a87a..711a16d5c9fbdd19c6a8912f8c5e5214cbc902d9 100644
+index 96e476ff9133627c9253def2c5a2ff376ac7b131..a0d9181391358acfe64019f904a33afdbf6a2169 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -935,14 +935,14 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
