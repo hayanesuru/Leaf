@@ -70,10 +70,10 @@ index 5f5cdfc538ba9aa6666c019df6706015234d7bae..2dfec8f6d0fe833e5f06cf2165ae14bf
      }
  }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index ba956cd407e71407fcd5babc671880d6f62e62e2..aa919f4aeb79e00afd455cc73de2825c63a6afc7 100644
+index 5c30ef523a3fa835745b3f2dd42f425e36e56735..6cfcd2d4d03ffcce3803979d9bb7daf3e96572ec 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -936,7 +936,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -942,7 +942,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
  
              io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR

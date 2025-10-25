@@ -6,11 +6,11 @@ Subject: [PATCH] SparklyPaper: Track each world MSPT
 Original project: https://github.com/SparklyPower/SparklyPaper
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index b81de5b278c43a404d0f6b96cf134b401f137ab3..3531e37b784b4d61660c66cd92bc609884f78a91 100644
+index 51efe9aadb377c35d6ed2b7eadead3c9e1c745f8..d3c6f7f78d895cca4abe1da79abb595c51449afc 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1687,7 +1687,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-     // Leaf start - SparklyPaper - parallel world ticking mod (move level ticking logic out for branch convergence)
+@@ -1686,7 +1686,16 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+     // Leaf start - SparklyPaper - parallel world ticking - move level ticking logic out for branch convergence
      private void tickLevel(ServerLevel serverLevel, BooleanSupplier hasTimeLeft) {
          try {
 +            long i = Util.getNanos(); // SparklyPaper - track world's MSPT
@@ -27,10 +27,10 @@ index b81de5b278c43a404d0f6b96cf134b401f137ab3..3531e37b784b4d61660c66cd92bc6098
              CrashReport crashReport = CrashReport.forThrowable(levelTickingException, "Exception ticking world");
              serverLevel.fillReportDetails(crashReport);
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 1b8f9cc3de9778e556a0017b320bfba983750f0f..2f213917594b846616d2933b3669c70a5ce26196 100644
+index f1ce73c615f1804c1f44f140dc17965877937078..52eab2c9eaf7f9f1de82d096a3cbe85aabf4ed10 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -571,6 +571,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -573,6 +573,12 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      }
      // Paper end - chunk tick iteration
  
