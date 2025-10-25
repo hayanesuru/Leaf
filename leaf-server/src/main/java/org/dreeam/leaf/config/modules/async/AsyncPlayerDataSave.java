@@ -9,12 +9,13 @@ public class AsyncPlayerDataSave extends ConfigModules {
         return EnumConfigCategory.ASYNC.getBaseKeyName() + ".async-playerdata-save";
     }
 
-    public static boolean enabled = false;
+    public static boolean enabled = true;
     public static boolean playerdata = false;
     public static boolean advancements = false;
     public static boolean stats = false;
     public static boolean levelData = false;
     public static boolean userList = false;
+    public static boolean profileCache = true;
     private static boolean asyncPlayerDataSavingInitialized;
 
     @Override
@@ -31,17 +32,15 @@ public class AsyncPlayerDataSave extends ConfigModules {
         asyncPlayerDataSavingInitialized = true;
 
         enabled = config.getBoolean(getBasePath() + ".enabled", enabled);
-        boolean advancements = config.getBoolean(getBasePath() + ".advancements", false);
-        boolean playerdata = config.getBoolean(getBasePath() + ".playerdata", false);
-        boolean stats = config.getBoolean(getBasePath() + ".stats", false);
-        boolean levelData = config.getBoolean(getBasePath() + ".level-data", false);
-        boolean userList = config.getBoolean(getBasePath() + ".user-list", false);
-        AsyncPlayerDataSave.advancements = enabled && advancements;
-        AsyncPlayerDataSave.playerdata = enabled && playerdata;
-        AsyncPlayerDataSave.stats = enabled && stats;
-        AsyncPlayerDataSave.levelData = enabled && levelData;
-        AsyncPlayerDataSave.userList = enabled && userList;
+        advancements = get(getBasePath() + "advancements", advancements);
+        playerdata = get(getBasePath() + "playerdata", playerdata);
+        stats = get(getBasePath() + "stats", stats);
+        levelData = get(getBasePath() + "level-data", levelData);
+        userList = get(getBasePath() + "user-list", userList);
+        profileCache = get(getBasePath() + "profile-cache", profileCache);
+    }
 
-        org.dreeam.leaf.async.AsyncPlayerDataSaving.init();
+    private boolean get(String s, boolean def) {
+        return config.getBoolean(getBasePath() + '.' + s, def) && enabled;
     }
 }

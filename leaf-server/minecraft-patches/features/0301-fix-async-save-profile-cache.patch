@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Sat, 25 Oct 2025 22:29:26 +0900
+Subject: [PATCH] fix async save profile cache
+
+
+diff --git a/net/minecraft/server/players/GameProfileCache.java b/net/minecraft/server/players/GameProfileCache.java
+index 4faa87d18c2e55d6320f9e8ec91862b9e58d26b5..9009b9ac4974bc89ed4e023e83ce85a2e7b26938 100644
+--- a/net/minecraft/server/players/GameProfileCache.java
++++ b/net/minecraft/server/players/GameProfileCache.java
+@@ -233,23 +233,23 @@ public class GameProfileCache {
+     }
+ 
+     public void save(boolean asyncSave) { // Paper - Perf: Async GameProfileCache saving
+-        JsonArray jsonArray = new JsonArray();
+-        DateFormat dateFormat = createDateFormat();
+-        this.listTopMRUProfiles(org.spigotmc.SpigotConfig.userCacheCap).forEach((info) -> jsonArray.add(writeGameProfile(info, dateFormat))); // Spigot // Paper - Fix GameProfileCache concurrency
+-        String string = this.gson.toJson((JsonElement)jsonArray);
+-        Runnable save = () -> { // Paper - Perf: Async GameProfileCache saving
+-
++        //JsonArray jsonArray = new JsonArray(); // Leaf - fix async save profile cache
++        //DateFormat dateFormat = createDateFormat(); // Leaf - fix async save profile cache
++        //this.listTopMRUProfiles(org.spigotmc.SpigotConfig.userCacheCap).forEach((info) -> jsonArray.add(writeGameProfile(info, dateFormat))); // Spigot // Paper - Fix GameProfileCache concurrency // Leaf - fix async save profile cache
++        //String string = this.gson.toJson((JsonElement)jsonArray); // Leaf - fix async save profile cache
++        java.util.concurrent.Callable<Void> save = () -> { // Paper - Perf: Async GameProfileCache saving // Leaf - fix async save profile cache
++        JsonArray jsonArray = new JsonArray(); // Leaf - fix async save profile cache
++        DateFormat dateFormat = createDateFormat(); // Leaf - fix async save profile cache
++        this.listTopMRUProfiles(org.spigotmc.SpigotConfig.userCacheCap).forEach((info) -> jsonArray.add(writeGameProfile(info, dateFormat))); // Spigot // Paper - Fix GameProfileCache concurrency // Leaf - fix async save profile cache
++        String string = this.gson.toJson((JsonElement)jsonArray); // Leaf - fix async save profile cache
+         try (Writer writer = Files.newWriter(this.file, StandardCharsets.UTF_8)) {
+             writer.write(string);
+         } catch (IOException var9) {
+         }
++        return null; // Leaf - fix async save profile cache
+         // Paper start - Perf: Async GameProfileCache saving
+         };
+-        if (asyncSave) {
+-            io.papermc.paper.util.MCUtil.scheduleAsyncTask(save);
+-        } else {
+-            save.run();
+-        }
++        org.dreeam.leaf.async.AsyncPlayerDataSaving.submit(save, this.file.toPath(), 5, asyncSave); // Leaf - fix async save profile cache
+         // Paper end - Perf: Async GameProfileCache saving
+     }
+ 

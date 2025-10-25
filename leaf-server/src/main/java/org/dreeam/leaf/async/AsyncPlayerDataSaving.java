@@ -1,5 +1,6 @@
 package org.dreeam.leaf.async;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.Util;
@@ -12,24 +13,36 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.concurrent.*;
 
 public final class AsyncPlayerDataSaving {
 
     public static final ThreadPoolExecutor IO_POOL;
-    private static final Map<String, Future<Void>> PLAYERDATA = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
-    private static final Map<String, Future<Void>> ADVANCEMENTS = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
-    private static final Map<String, Future<Void>> STATS = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
-    private static final Map<String, Future<Void>> LEVEL_DATA = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
-    private static final Map<String, Future<Void>> USER_LIST = Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>());
+    private static final Tasks PLAYER_DATA = new Tasks("playerData", true);
+    private static final Tasks ADVANCEMENTS = new Tasks("advancements", true);
+    private static final Tasks STATS = new Tasks("stats", true);
+    private static final Tasks LEVEL_DATA = new Tasks("levelData", false);
+    private static final Tasks USER_LIST = new Tasks("userList", false);
+    private static final Tasks PROFILE_CACHE = new Tasks("profileCache", false);
 
     private static final Logger LOGGER = LogManager.getLogger("Leaf Async IO");
 
     private AsyncPlayerDataSaving() {
     }
 
-    public static void init() {
+    private record Tasks(Object2ObjectMap<String, Future<Void>> map, String ty, boolean stripPath) {
+        private Tasks(String ty, boolean stripPath) {
+            this(Object2ObjectMaps.synchronize(new Object2ObjectOpenHashMap<>()), ty, stripPath);
+        }
+
+        private String format(String path) {
+            String name = FilenameUtils.getBaseName(path);
+            if (name == null || name.isEmpty()) {
+                return null;
+            } else {
+                return stripPath() ? name : path;
+            }
+        }
     }
 
     static {
@@ -47,83 +60,88 @@ public final class AsyncPlayerDataSaving {
         );
     }
 
-    public static void submit(Callable<Void> task, Path path, int ty) {
-        Path fileName = path == null ? null : path.getFileName();
-        if (fileName != null) {
-            submit(task, fileName.toString(), ty);
+    public static void submit(Callable<?> task, Path path, int ty) {
+        submit(task, path, ty, true);
+    }
+
+    public static void submit(Callable<?> task, Path path, int ty, boolean async) {
+        submit(task, path == null ? null : path.toString(), ty, async);
+    }
+
+    public static void submit(Callable<?> task, String path, int ty) {
+        submit(task, path, ty, true);
+    }
+
+    private static void submit(Callable<?> task, String path, int ty, boolean async) {
+        if (ty == 0) {
+            submit(task, path, PLAYER_DATA, async, AsyncPlayerDataSave.playerdata);
+        } else if (ty == 1) {
+            submit(task, path, ADVANCEMENTS, async, AsyncPlayerDataSave.advancements);
+        } else if (ty == 2) {
+            submit(task, path, STATS, async, AsyncPlayerDataSave.stats);
+        } else if (ty == 3) {
+            submit(task, path, LEVEL_DATA, async, AsyncPlayerDataSave.levelData);
+        } else if (ty == 4) {
+            submit(task, path, USER_LIST, async, AsyncPlayerDataSave.userList);
+        } else if (ty == 5) {
+            submit(task, path, PROFILE_CACHE, async, AsyncPlayerDataSave.profileCache);
         }
     }
 
-    public static void submit(Callable<Void> task, String path, int ty) {
-        String name = FilenameUtils.getBaseName(path);
-        if (name == null || name.isEmpty()) {
+    private static void submit(Callable<?> task, String path, Tasks tasks, boolean async, boolean enabled) {
+        String name = tasks.format(path);
+        if (name == null) {
             return;
         }
-
-        if (ty == 0) {
-            submit(task, name, PLAYERDATA, "playerdata", AsyncPlayerDataSave.playerdata);
-        } else if (ty == 1) {
-            submit(task, name, ADVANCEMENTS, "advancements", AsyncPlayerDataSave.advancements);
-        } else if (ty == 2) {
-            submit(task, name, STATS, "stats", AsyncPlayerDataSave.stats);
-        } else if (ty == 3) {
-            submit(task, path, LEVEL_DATA, "levelData", AsyncPlayerDataSave.levelData);
-        } else {
-            submit(task, path, USER_LIST, "userList", AsyncPlayerDataSave.userList);
-        }
-    }
-
-    private static void submit(Callable<Void> task, String name, Map<String, Future<Void>> tasks, String ty, boolean enabled) {
         if (enabled) {
-            Future<Void> fut = tasks.get(name);
+            Future<?> fut = tasks.map().get(name);
             if (fut != null) {
                 try {
                     fut.get();
-                    tasks.remove(name, fut);
+                    tasks.map().remove(name, fut);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (ExecutionException e) {
-                    LOGGER.error("Failed to save {} for {}", ty, fut, e.getCause());
+                    LOGGER.error("Failed to save {} for {}", tasks.ty(), fut, e.getCause());
                 }
             }
         }
         if (task == null) {
             return;
         }
-        if (!enabled) {
+        if (!enabled || !async) {
             try {
                 runDirectly(task);
             } catch (Exception e) {
-                LOGGER.error("Failed to save {} for {}", ty, name, e);
+                LOGGER.error("Failed to save {} for {}", tasks.ty(), name, e);
             }
         } else {
-            tasks.put(name, IO_POOL.submit(new SaveTask(name, task, tasks, ty)));
+            tasks.map().put(name, IO_POOL.submit(new SaveTask(name, task, tasks)));
         }
     }
 
     private record SaveTask(String name,
-                            Callable<Void> task,
-                            Map<String, Future<Void>> tasks,
-                            String ty) implements Callable<Void> {
+                            Callable<?> task,
+                            Tasks tasks) implements Callable<Void> {
         @Override
         public Void call() {
             try {
                 task.call();
             } catch (Exception e) {
-                LOGGER.error("Failed to save {} for {}", ty, this, e);
+                LOGGER.error("Failed to save {} for {}", tasks.ty(), this, e);
             } finally {
-                tasks.remove(name);
+                tasks.map().remove(name);
             }
             return null;
         }
 
         @Override
         public @NotNull String toString() {
-            return "SaveTask{name='" + name + "', type='" + ty + "'}";
+            return "SaveTask{name='" + name + "', type='" + tasks.ty() + "'}";
         }
     }
 
-    private static void runDirectly(Callable<Void> callable) throws Exception {
+    private static void runDirectly(Callable<?> callable) throws Exception {
         callable.call();
     }
 
