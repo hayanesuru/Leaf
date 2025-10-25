@@ -117,10 +117,10 @@ index 0000000000000000000000000000000000000000..5f5cdfc538ba9aa6666c019df6706015
 +    }
 +}
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 062d0abf366c98803b92bd2169c945346845c45d..ba956cd407e71407fcd5babc671880d6f62e62e2 100644
+index 78b252fcdd0079508d3811ba299b1faedd661c51..855f09a6ef911a7c9a56d06df6e7466a8104bcc8 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -936,6 +936,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -946,6 +946,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
  
              io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
@@ -128,7 +128,7 @@ index 062d0abf366c98803b92bd2169c945346845c45d..ba956cd407e71407fcd5babc671880d6
  
              if (org.dreeam.leaf.config.modules.opt.OptimizeDespawn.enabled && tickRateManager.runsNormally()) { despawnMap.tick(this, this.entityTickList); } // Leaf - optimize despawn
              this.entityTickList
-@@ -3039,4 +3040,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -3049,4 +3050,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          this.lagCompensationTick = (System.nanoTime() - MinecraftServer.SERVER_INIT) / (java.util.concurrent.TimeUnit.MILLISECONDS.toNanos(50L));
      }
      // Paper end - lag compensation
