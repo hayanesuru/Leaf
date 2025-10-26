@@ -31,7 +31,8 @@ public class AsyncPlayerDataSave extends ConfigModules {
         }
         asyncPlayerDataSavingInitialized = true;
 
-        enabled = config.getBoolean(".enabled", enabled);
+        enabled = config.getBoolean(getBasePath() + ".enabled", enabled);
+
         advancements = get("advancements", advancements);
         playerdata = get("playerdata", playerdata);
         stats = get("stats", stats);
