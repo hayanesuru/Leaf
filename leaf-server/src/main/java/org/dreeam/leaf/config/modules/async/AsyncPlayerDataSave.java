@@ -31,13 +31,13 @@ public class AsyncPlayerDataSave extends ConfigModules {
         }
         asyncPlayerDataSavingInitialized = true;
 
-        enabled = config.getBoolean(getBasePath() + ".enabled", enabled);
-        advancements = get(getBasePath() + "advancements", advancements);
-        playerdata = get(getBasePath() + "playerdata", playerdata);
-        stats = get(getBasePath() + "stats", stats);
-        levelData = get(getBasePath() + "level-data", levelData);
-        userList = get(getBasePath() + "user-list", userList);
-        profileCache = get(getBasePath() + "profile-cache", profileCache);
+        enabled = config.getBoolean(".enabled", enabled);
+        advancements = get("advancements", advancements);
+        playerdata = get("playerdata", playerdata);
+        stats = get("stats", stats);
+        levelData = get("level-data", levelData);
+        userList = get("user-list", userList);
+        profileCache = get("profile-cache", profileCache);
     }
 
     private boolean get(String s, boolean def) {
