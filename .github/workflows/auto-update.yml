@@ -12,13 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Leaf repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: 'Leaf'
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout Paper repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: 'Paper'
           repository: "PaperMC/Paper"
