@@ -100,10 +100,10 @@ index 4535858701b2bb232b9d2feb2af6551526232ddc..e65c62dbe4c1560ae153e4c4344e9194
 -    // Paper end - detailed watchdog information
  }
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 2847aa24cca82b1c66b69600ddcb5dbdadec5b9d..bd4c98e9ec41a2bd608e2e2245c503be3171ceee 100644
+index 357aaaa848dd6e47793e75225f690d2770a6cd4a..cc7f3f8487db241b235e5f49d8bab3eb635f6a37 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -638,8 +638,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -632,8 +632,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
              this.level.natureSpawnChunkMap.build();
              this.level.natureSpawnChunkMap.collectSpawningChunks(this.level.moonrise$getPlayerTickingChunks(), list);
              // Paper start - chunk tick iteration optimisation
