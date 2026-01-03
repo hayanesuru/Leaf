@@ -4,7 +4,7 @@ Date: Sat, 2 Nov 2024 04:15:20 -0400
 Subject: [PATCH] Cache chunk key
 
 Cache convert process in ChunkPos to the chunkKey, to avoid unnecessary casting and shift operations.
-This patch didn't cahce SectionPos or BlockPos to chunkKey, since they are mutable after creation.
+This patch didn't cache SectionPos or BlockPos to chunkKey, since they are mutable after creation.
 
 The JMH benchmark of this patch can be found in SunBox's `CacheChunkKey`
 
