@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 @NullMarked
 public final class AsyncPath {
     @Nullable
-    private volatile Path task = null;
+    private volatile Path ret = null;
     private boolean completion = false;
     @Nullable
     private PathNavigation listener;
@@ -42,8 +42,8 @@ public final class AsyncPath {
     public AsyncPath(int accuracy, Supplier<@Nullable Path> inner) {
         this.accuracy = accuracy;
         PATH_PROCESSING_EXECUTOR.execute(() -> {
-            Path ret = inner.get();
-            task = ret != null ? ret : NULL;
+            Path path = inner.get();
+            ret = path != null ? path : NULL;
         });
     }
 
@@ -58,7 +58,7 @@ public final class AsyncPath {
 
     private void schedulePostProcessing(Consumer<@Nullable Path> runnable) {
         if (complete()) {
-            Path result = task;
+            Path result = ret;
             runnable.accept(result != NULL ? result : null);
         } else if (postProcessing == NOP) {
             postProcessing = new PostProcessing(runnable, null);
@@ -68,25 +68,24 @@ public final class AsyncPath {
     }
 
     public boolean complete() {
-        Path result = task;
+        Path result = ret;
         if (!completion && result == null) {
             return false;
         } else {
-            // no block
-            poll(result != null ? result : NULL);
-            return completion;
+            poll(result != NULL ? result : null);
+            return true;
         }
     }
 
     private void poll(@Nullable Path result) {
         if (listener != null) {
-            PathNavigation navigation = listener;
+            PathNavigation nav = listener;
             listener = null;
             if (result != null) {
-                navigation.path = result;
-                navigation.targetPos = result.getTarget();
-                navigation.reachRange = accuracy;
-                navigation.resetStuckTimeout();
+                nav.path = result;
+                nav.targetPos = result.getTarget();
+                nav.reachRange = accuracy;
+                nav.resetStuckTimeout();
             }
         }
         if (completion) {
@@ -103,10 +102,21 @@ public final class AsyncPath {
         postProcessing = NOP;
     }
 
-    public static void moveTo(PathNavigation navigation, Path self, AsyncPath task) {
-        self.task = task;
-        task.listener = navigation;
-        task.complete();
+    public static void moveTo(PathNavigation nav, @Nullable Path path) {
+        if (path == null) {
+            nav.path = null;
+        } else if (path.complete()) {
+            nav.path = path.task != null ? path.task.ret : path;
+        } else {
+            if (path.task != null) {
+                path.task.listener = nav;
+            }
+            if (nav.path != null && path.task != null) {
+                nav.path.task = path.task;
+            } else {
+                nav.path = path;
+            }
+        }
     }
 
     public void stop() {

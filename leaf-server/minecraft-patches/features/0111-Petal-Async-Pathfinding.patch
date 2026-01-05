@@ -20,7 +20,7 @@ This patch was ported downstream from the Petal fork.
 Makes most pathfinding-related work happen asynchronously
 
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index eef6b4b6ccc02e23c5a2707eaeb3566e32e47362..374c8ce2b8d24a295e351376df8d5e4db61f1a02 100644
+index eef6b4b6ccc02e23c5a2707eaeb3566e32e47362..0e407bba639d24d4ac394c6f3bc76c501019d71f 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
 @@ -245,6 +245,7 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
@@ -31,15 +31,14 @@ index eef6b4b6ccc02e23c5a2707eaeb3566e32e47362..374c8ce2b8d24a295e351376df8d5e4d
          return this.target;
      }
  
-@@ -779,7 +780,7 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -779,6 +780,7 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
              this.goalSelector.tick();
          }
  
--        this.navigation.tick();
-+        if (this.navigation.path == null || (this.navigation.path.complete() || !this.navigation.path.nodes.isEmpty())) { this.navigation.tick(); } // Kaiiju - petal - async path processing
++        if (this.navigation.path != null) { this.navigation.path.complete(); } // Leaf
+         this.navigation.tick();
          this.customServerAiStep((ServerLevel)this.level());
          this.moveControl.tick();
-         this.lookControl.tick();
 diff --git a/net/minecraft/world/entity/ai/behavior/AcquirePoi.java b/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
 index b0ca555cc3b565a8be8d01fe10b139ed27a2a2c3..28f7ffc67babea619a8702b37324f45a94c9df7b 100644
 --- a/net/minecraft/world/entity/ai/behavior/AcquirePoi.java
@@ -403,7 +402,7 @@ index 86fccf3617a32f3791b03d8067e2eaf6b8d8bebb..9cef6797e6d8eb43a51a1b94fea3947d
      }
  
 diff --git a/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-index 24dd92449f70144c79f25bf24942ebd666655ed2..75130f4d730dfa9553cd016cbb5f47f9a445a5f1 100644
+index 24dd92449f70144c79f25bf24942ebd666655ed2..63350f422d56470e469f3b79f3c9f6071cc5c7a4 100644
 --- a/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 @@ -33,7 +33,7 @@ public abstract class PathNavigation {
@@ -426,20 +425,15 @@ index 24dd92449f70144c79f25bf24942ebd666655ed2..75130f4d730dfa9553cd016cbb5f47f9
      private float maxVisitedNodesMultiplier = 1.0F;
      public final PathFinder pathFinder;
      private boolean isStuck;
-@@ -98,6 +98,12 @@ public abstract class PathNavigation {
+@@ -98,6 +98,7 @@ public abstract class PathNavigation {
              if (this.targetPos != null) {
                  this.path = null;
                  this.path = this.createPath(this.targetPos, this.reachRange);
-+                // Leaf start
-+                org.dreeam.leaf.async.path.AsyncPath task = this.path == null ? null : this.path.task;
-+                if (task != null) {
-+                    org.dreeam.leaf.async.path.AsyncPath.moveTo(this, this.path, task);
-+                }
-+                // Leaf end
++                org.dreeam.leaf.async.path.AsyncPath.moveTo(this, this.path);
                  this.timeLastRecompute = this.level.getGameTime();
                  this.hasDelayedRecomputation = false;
              }
-@@ -189,8 +195,12 @@ public abstract class PathNavigation {
+@@ -189,8 +190,12 @@ public abstract class PathNavigation {
              // Paper end - EntityPathfindEvent
              BlockPos blockPos = offsetUpward ? this.mob.blockPosition().above() : this.mob.blockPosition();
              int i = (int)(followRange + regionOffset);
@@ -454,7 +448,7 @@ index 24dd92449f70144c79f25bf24942ebd666655ed2..75130f4d730dfa9553cd016cbb5f47f9
              if (path != null && path.getTarget() != null) {
                  this.targetPos = path.getTarget();
                  this.reachRange = accuracy;
-@@ -236,18 +246,35 @@ public abstract class PathNavigation {
+@@ -236,13 +241,20 @@ public abstract class PathNavigation {
  
      public boolean moveTo(@Nullable Path pathentity, double speed) {
          if (pathentity == null) {
@@ -469,31 +463,14 @@ index 24dd92449f70144c79f25bf24942ebd666655ed2..75130f4d730dfa9553cd016cbb5f47f9
          } else {
              if (!pathentity.sameAs(this.path)) {
 -                this.path = pathentity;
-+                // Leaf start
-+                org.dreeam.leaf.async.path.AsyncPath task = pathentity.task;
-+                if (task != null) {
-+                    if (this.path == null) {
-+                        this.path = pathentity;
-+                    }
-+                    org.dreeam.leaf.async.path.AsyncPath.moveTo(this, this.path, task);
-+                } else {
-+                    this.path = pathentity;
-+                }
-+                // Leaf end
++                org.dreeam.leaf.async.path.AsyncPath.moveTo(this, pathentity); // Leaf
              }
  
++            if (this.path != null && this.path.task != null) { return true; } // Leaf
              if (this.isDone()) {
                  return false;
              } else {
--                this.trimPath();
--                if (this.path.getNodeCount() <= 0) {
-+                boolean completion = this.path.complete(); // Kaiiju - petal - only trim if processed
-+                if (completion) { this.trimPath(); } // Kaiiju - petal - only trim if processed
-+                if (completion && this.path.getNodeCount() <= 0) { // Kaiiju - petal - only check node count if processed
-                     return false;
-                 } else {
-                     this.speedModifier = speed;
-@@ -380,7 +407,7 @@ public abstract class PathNavigation {
+@@ -380,7 +392,7 @@ public abstract class PathNavigation {
          this.stop();
      }
  
@@ -502,7 +479,7 @@ index 24dd92449f70144c79f25bf24942ebd666655ed2..75130f4d730dfa9553cd016cbb5f47f9
          this.timeoutCachedNode = Vec3i.ZERO;
          this.timeoutTimer = 0L;
          this.timeoutLimit = 0.0;
-@@ -396,6 +423,12 @@ public abstract class PathNavigation {
+@@ -396,6 +408,12 @@ public abstract class PathNavigation {
      }
  
      public void stop() {
@@ -515,7 +492,7 @@ index 24dd92449f70144c79f25bf24942ebd666655ed2..75130f4d730dfa9553cd016cbb5f47f9
          this.path = null;
      }
  
-@@ -455,7 +488,7 @@ public abstract class PathNavigation {
+@@ -455,7 +473,7 @@ public abstract class PathNavigation {
      public boolean shouldRecomputePath(BlockPos pos) {
          if (this.hasDelayedRecomputation) {
              return false;
@@ -853,7 +830,7 @@ index d6d3c8f5e5dd4a8cab0d3fcc131c3a59f06130c6..251925218f0259f99ad2370aac4084be
                  Node node = this.nodes.get(i);
                  Node node1 = pathentity.nodes.get(i);
 diff --git a/net/minecraft/world/level/pathfinder/PathFinder.java b/net/minecraft/world/level/pathfinder/PathFinder.java
-index c2baadcdceb1df6a881d6f73aa4eb4dd264bcdfe..9fa756a50ae952f4a2df366ba51ffccb868f9ce6 100644
+index c2baadcdceb1df6a881d6f73aa4eb4dd264bcdfe..82429b800a74c6f3d961147f4813bd27feb198d1 100644
 --- a/net/minecraft/world/level/pathfinder/PathFinder.java
 +++ b/net/minecraft/world/level/pathfinder/PathFinder.java
 @@ -22,17 +22,54 @@ public class PathFinder {
@@ -963,6 +940,19 @@ index c2baadcdceb1df6a881d6f73aa4eb4dd264bcdfe..9fa756a50ae952f4a2df366ba51ffccb
                      float f = this.distance(node1, node2);
                      node2.walkedDistance = node1.walkedDistance + f;
                      float f1 = node1.g + f + node2.costMalus;
+@@ -101,10 +144,10 @@ public class PathFinder {
+                         node2.g = f1;
+                         node2.h = this.getBestH(node2, positions) * 1.5F; // Paper - Perf: remove streams and optimize collection
+                         if (node2.inOpenSet()) {
+-                            this.openSet.changeCost(node2, node2.g + node2.h);
++                            openSet.changeCost(node2, node2.g + node2.h); // Leaf
+                         } else {
+                             node2.f = node2.g + node2.h;
+-                            this.openSet.insert(node2);
++                            openSet.insert(node2); // Leaf
+                         }
+                     }
+                 }
 @@ -123,6 +166,7 @@ public class PathFinder {
                  best = path;
              }
