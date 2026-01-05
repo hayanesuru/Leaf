@@ -105,13 +105,11 @@ public final class AsyncPath {
     public static void moveTo(PathNavigation nav, @Nullable Path path) {
         if (path == null) {
             nav.path = null;
-        } else if (path.complete()) {
+        } else if (path.task == null || path.task.complete()) {
             nav.path = path.task != null ? path.task.ret : path;
         } else {
-            if (path.task != null) {
-                path.task.listener = nav;
-            }
-            if (nav.path != null && path.task != null) {
+            path.task.listener = nav;
+            if (nav.path != null) {
                 nav.path.task = path.task;
             } else {
                 nav.path = path;

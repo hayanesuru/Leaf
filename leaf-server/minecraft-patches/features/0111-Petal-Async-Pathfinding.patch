@@ -342,7 +342,7 @@ index 458ceec68ca138b0aa9b70d6c934473c01d468f4..dc42e63d1c166aed02081e687ada76a0
      }
  
 diff --git a/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java b/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
-index 077863b758fbc3e51f25bcf842d00a2cc07c6a2f..f3e37920f3adeaeb3500a167f176d02fe4f05da3 100644
+index 077863b758fbc3e51f25bcf842d00a2cc07c6a2f..41f8d4d09b246d09bcb212ef129495fad47d0ff6 100644
 --- a/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/FlyingPathNavigation.java
 @@ -16,9 +16,25 @@ public class FlyingPathNavigation extends PathNavigation {
@@ -371,6 +371,24 @@ index 077863b758fbc3e51f25bcf842d00a2cc07c6a2f..f3e37920f3adeaeb3500a167f176d02f
          return new PathFinder(this.nodeEvaluator, maxVisitedNodes);
      }
  
+@@ -49,7 +65,7 @@ public class FlyingPathNavigation extends PathNavigation {
+             this.recomputePath();
+         }
+ 
+-        if (!this.isDone()) {
++        if (!this.isDone2()) { // Leaf
+             if (this.canUpdatePath()) {
+                 this.followThePath();
+             } else if (this.path != null && !this.path.isDone()) {
+@@ -62,7 +78,7 @@ public class FlyingPathNavigation extends PathNavigation {
+             }
+ 
+             DebugPackets.sendPathFindingPacket(this.level, this.mob, this.path, this.maxDistanceToWaypoint);
+-            if (!this.isDone()) {
++            if (!this.isDone2()) { // Leaf
+                 Vec3 nextEntityPos = this.path.getNextEntityPos(this.mob);
+                 this.mob.getMoveControl().setWantedPosition(nextEntityPos.x, nextEntityPos.y, nextEntityPos.z, this.speedModifier);
+             }
 diff --git a/net/minecraft/world/entity/ai/navigation/GroundPathNavigation.java b/net/minecraft/world/entity/ai/navigation/GroundPathNavigation.java
 index 86fccf3617a32f3791b03d8067e2eaf6b8d8bebb..9cef6797e6d8eb43a51a1b94fea3947dd3d534da 100644
 --- a/net/minecraft/world/entity/ai/navigation/GroundPathNavigation.java
@@ -402,7 +420,7 @@ index 86fccf3617a32f3791b03d8067e2eaf6b8d8bebb..9cef6797e6d8eb43a51a1b94fea3947d
      }
  
 diff --git a/net/minecraft/world/entity/ai/navigation/PathNavigation.java b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
-index 24dd92449f70144c79f25bf24942ebd666655ed2..63350f422d56470e469f3b79f3c9f6071cc5c7a4 100644
+index 24dd92449f70144c79f25bf24942ebd666655ed2..e5a6b6793792664a8d8cafd6b7910abab4341e58 100644
 --- a/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 +++ b/net/minecraft/world/entity/ai/navigation/PathNavigation.java
 @@ -33,7 +33,7 @@ public abstract class PathNavigation {
@@ -448,7 +466,7 @@ index 24dd92449f70144c79f25bf24942ebd666655ed2..63350f422d56470e469f3b79f3c9f607
              if (path != null && path.getTarget() != null) {
                  this.targetPos = path.getTarget();
                  this.reachRange = accuracy;
-@@ -236,13 +241,20 @@ public abstract class PathNavigation {
+@@ -236,13 +241,25 @@ public abstract class PathNavigation {
  
      public boolean moveTo(@Nullable Path pathentity, double speed) {
          if (pathentity == null) {
@@ -466,11 +484,34 @@ index 24dd92449f70144c79f25bf24942ebd666655ed2..63350f422d56470e469f3b79f3c9f607
 +                org.dreeam.leaf.async.path.AsyncPath.moveTo(this, pathentity); // Leaf
              }
  
-+            if (this.path != null && this.path.task != null) { return true; } // Leaf
++            // Leaf start
++            if (this.path != null && this.path.task != null) {
++                this.speedModifier = speed;
++                return true;
++            }
++            // Leaf end
              if (this.isDone()) {
                  return false;
              } else {
-@@ -380,7 +392,7 @@ public abstract class PathNavigation {
+@@ -271,7 +288,7 @@ public abstract class PathNavigation {
+             this.recomputePath();
+         }
+ 
+-        if (!this.isDone()) {
++        if (!this.isDone2()) { // Leaf
+             if (this.canUpdatePath()) {
+                 this.followThePath();
+             } else if (this.path != null && !this.path.isDone()) {
+@@ -286,7 +303,7 @@ public abstract class PathNavigation {
+             }
+ 
+             DebugPackets.sendPathFindingPacket(this.level, this.mob, this.path, this.maxDistanceToWaypoint);
+-            if (!this.isDone()) {
++            if (!this.isDone2()) { // Leaf
+                 Vec3 tempMobPos = this.path.getNextEntityPos(this.mob);
+                 this.mob.getMoveControl().setWantedPosition(tempMobPos.x, this.getGroundY(tempMobPos), tempMobPos.z, this.speedModifier);
+             }
+@@ -380,7 +397,7 @@ public abstract class PathNavigation {
          this.stop();
      }
  
@@ -479,7 +520,21 @@ index 24dd92449f70144c79f25bf24942ebd666655ed2..63350f422d56470e469f3b79f3c9f607
          this.timeoutCachedNode = Vec3i.ZERO;
          this.timeoutTimer = 0L;
          this.timeoutLimit = 0.0;
-@@ -396,6 +408,12 @@ public abstract class PathNavigation {
+@@ -388,14 +405,26 @@ public abstract class PathNavigation {
+     }
+ 
+     public boolean isDone() {
++        return this.path == null || (this.path.complete() && this.path.isDone()); // Leaf
++    }
++
++    // Leaf start
++    public boolean isDone2() {
+         return this.path == null || this.path.isDone();
+     }
++    // Leaf end
+ 
+     public boolean isInProgress() {
+         return !this.isDone();
      }
  
      public void stop() {
@@ -492,7 +547,7 @@ index 24dd92449f70144c79f25bf24942ebd666655ed2..63350f422d56470e469f3b79f3c9f607
          this.path = null;
      }
  
-@@ -455,7 +473,7 @@ public abstract class PathNavigation {
+@@ -455,7 +484,7 @@ public abstract class PathNavigation {
      public boolean shouldRecomputePath(BlockPos pos) {
          if (this.hasDelayedRecomputation) {
              return false;
