@@ -5,17 +5,22 @@ Subject: [PATCH] optimize collision shape
 
 
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
-index 503420bbeaf3da0c568c28c55582f45469f40aeb..20fb2439c11f24790f58fe9d9caa100b398308a0 100644
+index 503420bbeaf3da0c568c28c55582f45469f40aeb..e186b435e7a25ba4c5a203a8748b1531dbf7b1b8 100644
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -619,6 +619,13 @@ public abstract class BlockBehaviour implements FeatureElement {
+@@ -619,6 +619,18 @@ public abstract class BlockBehaviour implements FeatureElement {
                  this.emptyConstantCollisionShape = this.constantCollisionShape != null && this.constantCollisionShape.isEmpty();
                  // init caches
                  initCaches(collisionShape, true);
 +                // Leaf start - optimize collision shape
 +                switch (getBlock()) {
-+                    case net.minecraft.world.level.block.FireBlock fireBlock -> {}
-+                    case net.minecraft.world.level.block.LiquidBlock liquidBlock -> {}
++                    case net.minecraft.world.level.block.LiquidBlock ignore -> {
++                        if (getFluidState().is(Fluids.WATER)) {
++                            this.constantCollisionShape = collisionShape;
++                        }
++                    }
++                    case net.minecraft.world.level.block.ScaffoldingBlock ignore -> {}
++                    case net.minecraft.world.level.block.PowderSnowBlock ignore -> {}
 +                    default -> this.constantCollisionShape = collisionShape;
 +                }
 +                // Leaf end - optimize collision shape
