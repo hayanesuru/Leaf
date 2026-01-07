@@ -3,6 +3,9 @@ From: Samsuik <kfian294ma4@gmail.com>
 Date: Fri, 8 Nov 2024 19:35:49 +0000
 Subject: [PATCH] Sakura: Optimise check inside blocks and traverse blocks
 
+Original license: MIT
+Original project: https://github.com/Samsuik/Sakura
+
 Chunk cache is already removed from this patch, since we already have it in Leaf
 
 The JMH benchmark of this patch can be found in SunBox's `BetterBlocksTraverse`
