@@ -27,7 +27,7 @@ jobs:
         with:
           path: 'Paper'
           repository: "PaperMC/Paper"
-          ref: "ver/1.21.8"
+          ref: "main"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get Paper latest commit hash
