@@ -16,10 +16,10 @@ With this approach only new methods are added into already existing Bukkit API, 
   get standarized.
 
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 82e56218b5c854a16851b75e3145e301d5fedab0..e12d161ac49f4725faf3ad2d13972524f625b862 100644
+index 4bf353137a75f1aba5952c58df6c2d0f2f1618d3..7e80835366d0a11c8fb484848a6417d24f1c4a51 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2929,4 +2929,15 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2981,4 +2981,15 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
      // Leaves start - Photographer API
      @NotNull org.leavesmc.leaves.entity.photographer.PhotographerManager getPhotographerManager();
      // Leaves end - Photographer API
@@ -36,10 +36,10 @@ index 82e56218b5c854a16851b75e3145e301d5fedab0..e12d161ac49f4725faf3ad2d13972524
 +    // Fish end - Parallel World Ticking API
  }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index bb9fe9a6c3116e83d2ebd98f81298454f6677ccc..5b02d1938ddaf02c7f227271c0dc27702a41fc83 100644
+index b5ffb6317914e2bbf7267e1d1afb82463bf57278..c156468aaef9259001f402b0bc83e53a8995e6d4 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
-@@ -4494,6 +4494,25 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
+@@ -4654,6 +4654,25 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
      @NotNull
      public Collection<GeneratedStructure> getStructures(int x, int z, @NotNull Structure structure);
  
