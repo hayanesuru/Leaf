@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dreeam <61569423+Dreeam-qwq@users.noreply.github.com>
+Date: Mon, 17 Jul 2023 08:31:51 +0800
+Subject: [PATCH] Purpur: Configurable server mod name
+
+Original license: MIT
+Original project: https://github.com/PurpurMC/Purpur
+
+diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
+index 8704398b1708af8524aa666d9f735974919b49e2..9ddbdee1fa02357f26d4f0edc1fd20f619c5696f 100644
+--- a/net/minecraft/server/MinecraftServer.java
++++ b/net/minecraft/server/MinecraftServer.java
+@@ -2010,7 +2010,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+     @DontObfuscate
+     public String getServerModName() {
+-        return io.papermc.paper.ServerBuildInfo.buildInfo().brandName(); // Paper
++        return org.dreeam.leaf.config.modules.misc.ServerBrand.serverModName; // Paper // Leaf - Configurable server mod name
+     }
+ 
+     public SystemReport fillSystemReport(SystemReport systemReport) {
