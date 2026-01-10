@@ -92,7 +92,7 @@ public final class AsyncTracker {
             if (trackedEntity == null) {
                 continue;
             }
-            trackedEntity.broadcastAndSend(new ClientboundSetEntityMotionPacket(player));
+            trackedEntity.sendToTrackingPlayersAndSelf(new ClientboundSetEntityMotionPacket(player));
         }
     }
 

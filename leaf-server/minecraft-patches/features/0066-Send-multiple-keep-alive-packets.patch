@@ -37,7 +37,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index d5bf3b49d34a04294c92a5b5b5d2de290642fc5e..3b39021719a47275e23ff10fc33272cb916a1f19 100644
+index d5bf3b49d34a04294c92a5b5b5d2de290642fc5e..58aefee3d3393932c7bf0e43e77e22485fbd7320 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -40,10 +40,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -53,10 +53,11 @@ index d5bf3b49d34a04294c92a5b5b5d2de290642fc5e..3b39021719a47275e23ff10fc33272cb
      private volatile int latency; // Paper - improve keepalives - make volatile
      private final io.papermc.paper.util.KeepAlive keepAlive; // Paper - improve keepalives
      private volatile boolean suspendFlushingOnServerThread = false;
-@@ -53,6 +54,10 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -52,7 +53,10 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+     public boolean processedDisconnect;
      // CraftBukkit end
      public final java.util.Map<java.util.UUID, net.kyori.adventure.resource.ResourcePackCallback> packCallbacks = new java.util.concurrent.ConcurrentHashMap<>(); // Paper - adventure resource pack callbacks
-     private static final long KEEPALIVE_LIMIT = Long.getLong("paper.playerconnection.keepalive", 30) * 1000; // Paper - provide property to set keepalive limit
+-    private static final long KEEPALIVE_LIMIT = Long.getLong("paper.playerconnection.keepalive", 30) * 1000; // Paper - provide property to set keepalive limit
 +    // Gale start - Purpur - send multiple keep-alive packets
 +    private static final long KEEPALIVE_LIMIT_IN_SECONDS = Long.getLong("paper.playerconnection.keepalive", 30); // Paper - provide property to set keepalive limit
 +    private static final long KEEPALIVE_LIMIT = KEEPALIVE_LIMIT_IN_SECONDS * 1000;
@@ -64,7 +65,7 @@ index d5bf3b49d34a04294c92a5b5b5d2de290642fc5e..3b39021719a47275e23ff10fc33272cb
      protected static final net.minecraft.resources.Identifier MINECRAFT_BRAND = net.minecraft.resources.Identifier.withDefaultNamespace("brand"); // Paper - Brand support
      // Purpur start - Purpur client support
      protected static final net.minecraft.resources.Identifier PURPUR_CLIENT = net.minecraft.resources.Identifier.fromNamespaceAndPath("purpur", "client");
-@@ -109,6 +114,18 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -109,6 +113,18 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          // Paper start - improve keepalives
          long now = System.nanoTime();
          io.papermc.paper.util.KeepAlive.PendingKeepAlive pending = this.keepAlive.pendingKeepAlives.peek();
@@ -83,7 +84,7 @@ index d5bf3b49d34a04294c92a5b5b5d2de290642fc5e..3b39021719a47275e23ff10fc33272cb
          if (pending != null && pending.challengeId() == packet.getId()) {
              this.keepAlive.pendingKeepAlives.remove(pending);
  
-@@ -120,6 +137,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -120,6 +136,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
              this.latency = this.keepAlive.pingCalculator5s.getAvgLatencyMS();
              return;
          }
@@ -91,7 +92,7 @@ index d5bf3b49d34a04294c92a5b5b5d2de290642fc5e..3b39021719a47275e23ff10fc33272cb
  
          for (java.util.Iterator<io.papermc.paper.util.KeepAlive.PendingKeepAlive> itr = this.keepAlive.pendingKeepAlives.iterator(); itr.hasNext();) {
              io.papermc.paper.util.KeepAlive.PendingKeepAlive ka = itr.next();
-@@ -274,6 +292,24 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -274,6 +291,24 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          Profiler.get().push("keepAlive");
          long millis = Util.getMillis();
          // Paper start - improve keepalives
@@ -102,7 +103,7 @@ index d5bf3b49d34a04294c92a5b5b5d2de290642fc5e..3b39021719a47275e23ff10fc33272cb
 +                if ((currTime - this.keepAlive.lastKeepAliveTx) >= java.util.concurrent.TimeUnit.SECONDS.toNanos(1L)) { // 1 second
 +                    this.keepAlive.lastKeepAliveTx = currTime;
 +                    if (this.keepAlivePending && !this.processedDisconnect && keepAlives.size() * 1000L >= KEEPALIVE_LIMIT) {
-+                        LOGGER.info("{} was kicked due to keepalive timeout!", this.playerProfile().getName());
++                        LOGGER.info("{} was kicked due to keepalive timeout!", this.playerProfile().name());
 +                        this.disconnect(TIMEOUT_DISCONNECTION_MESSAGE, io.papermc.paper.connection.DisconnectionReason.TIMEOUT);
 +                    } else if (this.checkIfClosed(millis)) {
 +                        this.keepAlivePending = true;
@@ -116,7 +117,7 @@ index d5bf3b49d34a04294c92a5b5b5d2de290642fc5e..3b39021719a47275e23ff10fc33272cb
          if (this.checkIfClosed(millis) && !this.processedDisconnect) {
              long currTime = System.nanoTime();
  
-@@ -292,6 +328,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -292,6 +327,7 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
                  // Paper end - improve keepalives
              }
          }

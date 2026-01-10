@@ -18,7 +18,7 @@ index 1bfbc8d4c1475a85d2f044121f98af7b580aeede..0c1692022989e0ea05e6e349d91e56a2
              String suffix = (split.length > 1 ? split[1] : "").replace(org.purpurmc.purpur.PurpurConfig.afkTabListSuffix, "");
              if (afk) {
 diff --git a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
-index 70be7fdc6b66fc19965e7d1e64d0e44a075f8341..2ee0629606b693385292fb11ce57782609b412b2 100644
+index dacfe3ec4401304d3bd974df109fbb1826a3b503..ac3e011c158c24864e68fcc49b51619bb56b16e4 100644
 --- a/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerLoginPacketListenerImpl.java
 @@ -165,11 +165,20 @@ public class ServerLoginPacketListenerImpl implements ServerLoginPacketListener,
@@ -50,7 +50,7 @@ index 70be7fdc6b66fc19965e7d1e64d0e44a075f8341..2ee0629606b693385292fb11ce577826
                          GameProfile gameprofile = ServerLoginPacketListenerImpl.this.createOfflineProfile(ServerLoginPacketListenerImpl.this.requestedUsername); // Spigot
 +                        // Leaf start - Configurable vanilla username check
 +                        if (org.dreeam.leaf.config.modules.misc.VanillaUsernameCheck.allowOldPlayersJoin) {
-+                            if (server.playerDataStorage.load(gameprofile.getName(), gameprofile.getId().toString(), gameprofile.getId(), net.minecraft.util.ProblemReporter.DISCARDING).orElse(null) != null) {
++                            if (server.playerDataStorage.load(new net.minecraft.server.players.NameAndId(gameprofile)).orElse(null) != null) {
 +                                server.getPlayerList().playedPlayers.add(packet.name());
 +                            } else if (allPrevChecksPassed) {
 +                                Validate.validState(StringUtil.isReasonablePlayerName(packet.name()), "Invalid characters in username");
