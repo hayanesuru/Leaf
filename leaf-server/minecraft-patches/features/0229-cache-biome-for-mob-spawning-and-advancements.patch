@@ -18,7 +18,7 @@ index da4b0d7d583aa8e54a34a20d24b47b4c1754b559..ec3a665fd1d566325e52a49909d73910
                  && (!this.smokey.isPresent() || isLoaded && this.smokey.get() == CampfireBlock.isSmokeyPos(level, blockPos))
                  && (!this.light.isPresent() || this.light.get().matches(level, blockPos))
 diff --git a/net/minecraft/world/level/LevelReader.java b/net/minecraft/world/level/LevelReader.java
-index fd5a38a9f24c26f8eca738f78180446d354ff3ac..247bcb1447af80297f376b6e7c3328f50c16ec7d 100644
+index fd5a38a9f24c26f8eca738f78180446d354ff3ac..8fc0bdfe284a1ab42c130db5b133bdc1704fc06c 100644
 --- a/net/minecraft/world/level/LevelReader.java
 +++ b/net/minecraft/world/level/LevelReader.java
 @@ -55,6 +55,12 @@ public interface LevelReader extends ca.spottedleaf.moonrise.patches.chunk_syste
@@ -26,7 +26,7 @@ index fd5a38a9f24c26f8eca738f78180446d354ff3ac..247bcb1447af80297f376b6e7c3328f5
      }
  
 +    // Leaf start - cache getBiome
-+    default Holder<Biome> getBiomeCached(@Nullable net.minecraft.world.level.chunk.LevelChunk chunk, BlockPos pos) {
++    default Holder<Biome> getBiomeCached(net.minecraft.world.level.chunk.@Nullable LevelChunk chunk, BlockPos pos) {
 +        return this.getBiomeManager().getBiomeCached(chunk, pos);
 +    }
 +    // Leaf end - cache getBiome

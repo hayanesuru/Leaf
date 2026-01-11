@@ -30,7 +30,7 @@ index 24342dcbc8f0f7e502d35c9c129c52faef6eb084..21340bd7fd7a90dfef705c3819a39176
      }
      // Paper end - Optional per player mob spawns
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 3849314a97b484af454aa8b9a3fe96389cf20e86..b246bb17d47aa656aee8465673d374247ea8a906 100644
+index 3849314a97b484af454aa8b9a3fe96389cf20e86..dcf6537cdc744ea45f0f9b08fcebc4185b3d99fb 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -72,10 +72,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -158,8 +158,8 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..b246bb17d47aa656aee8465673d37424
 +                    currentState.applyPerPlayerMobCount(level);
 +                    if (list instanceof it.unimi.dsi.fastutil.objects.ReferenceArrayList<LevelChunk> list1) {
 +                        LevelChunk[] raw = list1.elements();
-+                        for (int i = 0, j = list1.size(); i < j; i++) {
-+                            this.tickSpawningChunk(raw[i], timeInhabited, filteredSpawningCategories, currentState); // Pufferfish
++                        for (int _index = 0, _size = list1.size(); _index < _size; _index++) {
++                            this.tickSpawningChunk(raw[_index], timeInhabited, filteredSpawningCategories, currentState); // Pufferfish
 +                        }
 +                    } else {
 +                        for (LevelChunk levelChunk : list) {

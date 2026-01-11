@@ -17,19 +17,6 @@ index f79f2656764fe03b299dbc3f8b4926c3163a5e78..bcd11fc0a5b18ac379ddabb2052412bc
      // Paper start - improve tick loop
      public final ca.spottedleaf.moonrise.common.time.TickData tickTimes1s  = new ca.spottedleaf.moonrise.common.time.TickData(java.util.concurrent.TimeUnit.SECONDS.toNanos(1L));
      public final ca.spottedleaf.moonrise.common.time.TickData tickTimes5s  = new ca.spottedleaf.moonrise.common.time.TickData(java.util.concurrent.TimeUnit.SECONDS.toNanos(5L));
-diff --git a/net/minecraft/server/gui/StatsComponent.java b/net/minecraft/server/gui/StatsComponent.java
-index f485e83fa6cbf510472bcffd18d29a41e177e856..931a9a331e726a0c2c7f432808d1304842945e54 100644
---- a/net/minecraft/server/gui/StatsComponent.java
-+++ b/net/minecraft/server/gui/StatsComponent.java
-@@ -41,7 +41,7 @@ public class StatsComponent extends JComponent {
-         }
-         this.msgs[0] = "Memory use: " + l / 1024L / 1024L + " mb (" + Runtime.getRuntime().freeMemory() * 100L / Runtime.getRuntime().maxMemory() + "% free)";
-         this.msgs[1] = "Avg tick: " + DECIMAL_FORMAT.format((double)this.server.getAverageTickTimeNanos() / TimeUtil.NANOSECONDS_PER_MILLISECOND) + " ms";
--        this.msgs[2] = "TPS from last 1m, 5m, 15m: " + String.join(", ", tpsAvg);
-+        this.msgs[2] = "TPS from last 5s, 1m, 5m, 15m: " + String.join(", ", tpsAvg); // Leaf - Purpur - Add 5 second tps average in /tps
-         // Paper end - Improve ServerGUI
-         this.values[this.vp++ & 0xFF] = (int)(l * 100L / Runtime.getRuntime().maxMemory());
-         this.repaint();
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 index 9448fcd3638d8a2356c3895fd315da8075daa945..192326af6fec43d2e862fb18d4de3b024fe55c30 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java

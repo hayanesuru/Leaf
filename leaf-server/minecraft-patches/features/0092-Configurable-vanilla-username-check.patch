@@ -137,19 +137,10 @@ index da0018214439511288a43ca665abec6f01441f47..d21806680b1a4c1293ee1aed6c3cc9d2
              return false;
          }
 diff --git a/net/minecraft/world/item/component/ResolvableProfile.java b/net/minecraft/world/item/component/ResolvableProfile.java
-index 8dbdb40095321cfb2164026f5ca7e0d0c8f1914f..30dccf1db014db5fd0534730055ab8bf12ae16f8 100644
+index 8dbdb40095321cfb2164026f5ca7e0d0c8f1914f..b32dd189e384680b7d1164d044ea0f3b361d07de 100644
 --- a/net/minecraft/world/item/component/ResolvableProfile.java
 +++ b/net/minecraft/world/item/component/ResolvableProfile.java
-@@ -7,6 +7,8 @@ import com.mojang.serialization.Codec;
- import com.mojang.serialization.MapCodec;
- import com.mojang.serialization.codecs.RecordCodecBuilder;
- import io.netty.buffer.ByteBuf;
-+
-+import java.util.Objects;
- import java.util.Optional;
- import java.util.UUID;
- import java.util.concurrent.CompletableFuture;
-@@ -68,6 +70,12 @@ public abstract sealed class ResolvableProfile implements TooltipProvider permit
+@@ -68,6 +68,12 @@ public abstract sealed class ResolvableProfile implements TooltipProvider permit
  
      public abstract Either<GameProfile, ResolvableProfile.Partial> unpack();
  
@@ -162,7 +153,7 @@ index 8dbdb40095321cfb2164026f5ca7e0d0c8f1914f..30dccf1db014db5fd0534730055ab8bf
      protected ResolvableProfile(GameProfile partialProfile, PlayerSkin.Patch skinPatch) {
          this.partialProfile = partialProfile;
          this.skinPatch = skinPatch;
-@@ -84,7 +92,7 @@ public abstract sealed class ResolvableProfile implements TooltipProvider permit
+@@ -84,7 +90,7 @@ public abstract sealed class ResolvableProfile implements TooltipProvider permit
      }
  
      static GameProfile createPartialProfile(Optional<String> name, Optional<UUID> id, PropertyMap properties) {
