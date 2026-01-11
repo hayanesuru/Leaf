@@ -9,11 +9,11 @@ Original project: https://github.com/Cryptite/Slice
 Co-authored-by: HaHaWTH <102713261+HaHaWTH@users.noreply.github.com>
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 2ab6ca0c7ec5e6358a0fd8e93852c99cb0456e18..a323110ffc7d279e300a593d499ffa8d792d2c93 100644
+index 278bbbe456b12892ddf1070288f452d0584e0837..0f8e538017a052e38a7bd09236d7cc9c1b61a050 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1405,6 +1405,25 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
-         // Paper end - Teleportation API
+@@ -1385,6 +1385,25 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+         this.getHandle().lookAt(toNmsAnchor(playerAnchor), ((CraftEntity) entity).getHandle(), toNmsAnchor(entityAnchor));
      }
  
 +    // Slice start
@@ -36,5 +36,5 @@ index 2ab6ca0c7ec5e6358a0fd8e93852c99cb0456e18..a323110ffc7d279e300a593d499ffa8d
 +    // Slice end
 +
      @Override
-     public boolean teleport(Location location, PlayerTeleportEvent.TeleportCause cause) {
-         // Paper start - Teleport API
+     protected boolean teleport0(Location location, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause, io.papermc.paper.entity.TeleportFlag... flags) {
+         if (this.getHandle().connection == null) {

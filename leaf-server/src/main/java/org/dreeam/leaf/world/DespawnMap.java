@@ -96,7 +96,7 @@ public final class DespawnMap implements Consumer<Entity> {
     private boolean checkDespawn(final Entity entity) {
         if (entity instanceof Mob mob) {
             if (!(mob instanceof EnderDragon)) {
-                if (difficultyIsPeaceful && mob.shouldActuallyDespawnInPeaceful()) {
+                if (difficultyIsPeaceful && mob.shouldDespawnInPeaceful()) {
                     return true;
                 } else if (mob instanceof WitherBoss || mob.isPersistenceRequired() || mob.requiresCustomPersistence()) {
                     mob.noActionTime = 0;

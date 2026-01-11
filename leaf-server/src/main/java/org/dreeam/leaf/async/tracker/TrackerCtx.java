@@ -127,7 +127,7 @@ public final class TrackerCtx {
         }
     }
 
-    public void broadcastAndSend(ChunkMap.TrackedEntity entity, Packet<? super net.minecraft.network.protocol.game.ClientGamePacketListener> packet) {
+    public void broadcastAndSend(ChunkMap.TrackedEntity entity, Packet<? super ClientGamePacketListener> packet) {
         broadcast(entity, packet);
         if (entity.serverEntity.entity instanceof ServerPlayer serverPlayer) {
             send(serverPlayer.connection, packet);
