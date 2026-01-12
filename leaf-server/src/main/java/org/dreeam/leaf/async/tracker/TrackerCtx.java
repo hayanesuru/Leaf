@@ -37,6 +37,7 @@ import org.dreeam.leaf.util.map.AttributeInstanceArrayMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public final class TrackerCtx {
     @SuppressWarnings("unchecked")
@@ -113,22 +114,22 @@ public final class TrackerCtx {
         packets.computeIfAbsent(connection, INIT_PACKET_LIST).add(packet);
     }
 
-    public void broadcast(ChunkMap.TrackedEntity entity, Packet<?> packet) {
+    public void sendToTrackingPlayers(ChunkMap.TrackedEntity entity, Packet<? super ClientGamePacketListener> packet) {
         for (ServerPlayerConnection serverPlayerConnection : entity.seenBy()) {
             send(serverPlayerConnection, packet);
         }
     }
 
-    public void broadcastIgnorePlayers(ChunkMap.TrackedEntity entity, Packet<?> packet, List<UUID> ignoredPlayers) {
-        for (ServerPlayerConnection conn : entity.seenBy()) {
-            if (!ignoredPlayers.contains(conn.getPlayer().getUUID())) {
-                send(conn, packet);
+    public void sendToTrackingPlayersFiltered(ChunkMap.TrackedEntity entity, Packet<? super ClientGamePacketListener> packet, Predicate<ServerPlayer> filter) {
+        for (ServerPlayerConnection serverPlayerConnection : entity.seenBy()) {
+            if (filter.test(serverPlayerConnection.getPlayer())) {
+                send(serverPlayerConnection, packet);
             }
         }
     }
 
-    public void broadcastAndSend(ChunkMap.TrackedEntity entity, Packet<? super ClientGamePacketListener> packet) {
-        broadcast(entity, packet);
+    public void sendToTrackingPlayersAndSelf(ChunkMap.TrackedEntity entity, Packet<? super ClientGamePacketListener> packet) {
+        sendToTrackingPlayers(entity, packet);
         if (entity.serverEntity.entity instanceof ServerPlayer serverPlayer) {
             send(serverPlayer.connection, packet);
         }
@@ -306,7 +307,7 @@ public final class TrackerCtx {
         if (list != null) {
             tracker.serverEntity.trackedDataValues = entityData.getNonDefaultValues();
             ClientboundSetEntityDataPacket packet = new ClientboundSetEntityDataPacket(entity.getId(), list);
-            broadcastAndSend(tracker, packet);
+            sendToTrackingPlayersAndSelf(tracker, packet);
         }
         if (entity instanceof LivingEntity livingEntity && livingEntity.getAttributes().attributeDirty()) {
             syncAttributes.add(tracker);
@@ -345,7 +346,7 @@ public final class TrackerCtx {
                 attributes.add(new ClientboundUpdateAttributesPacket.AttributeSnapshot(attribute, attributeInstance.getBaseValue(), attributeInstance.getModifiers()));
             }
         }
-        broadcastAndSend(tracker, new ClientboundUpdateAttributesPacket(e.getId(), attributes));
+        sendToTrackingPlayersAndSelf(tracker, new ClientboundUpdateAttributesPacket(e.getId(), attributes));
     }
 
     private static void flush(ServerLevel world, Object2ObjectOpenHashMap<ServerPlayerConnection, ObjectArrayList<Packet<?>>> packets) {
