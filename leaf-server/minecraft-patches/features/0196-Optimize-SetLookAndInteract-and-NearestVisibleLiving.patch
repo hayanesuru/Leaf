@@ -9,7 +9,7 @@ Paper: 3859ms
 Leaf : 1363ms (-64% reduction)
 
 diff --git a/net/minecraft/world/entity/ai/behavior/SetLookAndInteract.java b/net/minecraft/world/entity/ai/behavior/SetLookAndInteract.java
-index 13359e484486a5280f408955fe2a365cd3c34a43..48c30c8b686fdc82481bd72d6d10f541e9eb0217 100644
+index 13359e484486a5280f408955fe2a365cd3c34a43..b1fe28b653b6c441669e8de3a803b7bbed9818c1 100644
 --- a/net/minecraft/world/entity/ai/behavior/SetLookAndInteract.java
 +++ b/net/minecraft/world/entity/ai/behavior/SetLookAndInteract.java
 @@ -9,7 +9,7 @@ import net.minecraft.world.entity.ai.memory.NearestVisibleLivingEntities;
@@ -21,7 +21,7 @@ index 13359e484486a5280f408955fe2a365cd3c34a43..48c30c8b686fdc82481bd72d6d10f541
          return BehaviorBuilder.create(
              instance -> instance.group(
                      instance.registered(MemoryModuleType.LOOK_TARGET),
-@@ -19,16 +19,22 @@ public class SetLookAndInteract {
+@@ -19,8 +19,14 @@ public class SetLookAndInteract {
                  .apply(
                      instance,
                      (lookTarget, interactionTarget, nearestVisibleLivingEntities) -> (level, entity, gameTime) -> {
@@ -33,24 +33,11 @@ index 13359e484486a5280f408955fe2a365cd3c34a43..48c30c8b686fdc82481bd72d6d10f541
 +                        Optional<LivingEntity> optional = entities.findClosest(
 +                            nearEntity -> entityType.equals(nearEntity.getType()) && nearEntity.distanceToSqr(entity) <= maxDistSq
 +                        );
++                        // Leaf end - Optimize SetLookAndInteract and NearestVisibleLivingEntities
 +
                          if (optional.isEmpty()) {
                              return false;
--                        } else {
--                            LivingEntity livingEntity = optional.get();
--                            interactionTarget.set(livingEntity);
--                            lookTarget.set(new EntityTracker(livingEntity, true));
--                            return true;
-                         }
-+
-+                        LivingEntity livingEntity = optional.get();
-+                        interactionTarget.set(livingEntity);
-+                        lookTarget.set(new EntityTracker(livingEntity, true));
-+                        return true;
-+                        // Leaf end - Optimize SetLookAndInteract and NearestVisibleLivingEntities
-                     }
-                 )
-         );
+                         } else {
 diff --git a/net/minecraft/world/entity/ai/memory/NearestVisibleLivingEntities.java b/net/minecraft/world/entity/ai/memory/NearestVisibleLivingEntities.java
 index 2b973a3ba7d65330fa4690e71e5321c28457ec61..82de8e3bc462638bffbb43456076de2670d76540 100644
 --- a/net/minecraft/world/entity/ai/memory/NearestVisibleLivingEntities.java

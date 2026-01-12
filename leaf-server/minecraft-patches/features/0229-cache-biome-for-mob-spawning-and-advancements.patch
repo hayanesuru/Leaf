@@ -57,7 +57,7 @@ index c0ed4a8c23eaaf802985cd3f9c286e2fab1d9f59..0cb3e9f4e51f30fc21c50eeb96ff1bb8
  
      public static boolean isInNetherFortressBounds(BlockPos pos, ServerLevel level, MobCategory category, StructureManager structureManager) {
 diff --git a/net/minecraft/world/level/biome/BiomeManager.java b/net/minecraft/world/level/biome/BiomeManager.java
-index a48175a7ebb1788ace46395621ed78d910178a53..66084a596ecbfb47902ee0a779a811410d01513f 100644
+index a48175a7ebb1788ace46395621ed78d910178a53..787f06557ca894cbcffe747fa2c793ce91316826 100644
 --- a/net/minecraft/world/level/biome/BiomeManager.java
 +++ b/net/minecraft/world/level/biome/BiomeManager.java
 @@ -15,10 +15,23 @@ public class BiomeManager {
@@ -93,7 +93,7 @@ index a48175a7ebb1788ace46395621ed78d910178a53..66084a596ecbfb47902ee0a779a81141
 +    }
 +
 +    // Leaf start - cache getBiome
-+    public Holder<Biome> getBiomeCached(@org.jetbrains.annotations.Nullable net.minecraft.world.level.chunk.LevelChunk chunk, BlockPos pos) {
++    public Holder<Biome> getBiomeCached(net.minecraft.world.level.chunk.@org.jspecify.annotations.Nullable LevelChunk chunk, BlockPos pos) {
 +        if (biomeCache == null) {
 +            return getBiome(pos);
 +        }
@@ -117,7 +117,7 @@ index a48175a7ebb1788ace46395621ed78d910178a53..66084a596ecbfb47902ee0a779a81141
 +        return biome;
 +    }
 +
-+    private Holder<Biome> getBiome(@org.jetbrains.annotations.Nullable net.minecraft.world.level.chunk.LevelChunk chunk, int xMinus2, int yMinus2, int zMinus2) {
++    private Holder<Biome> getBiome(net.minecraft.world.level.chunk.@org.jspecify.annotations.Nullable LevelChunk chunk, int xMinus2, int yMinus2, int zMinus2) {
 +        // Leaf start - Carpet-Fixes - Optimized getBiome method
          int x = xMinus2 >> 2; // BlockPos to BiomePos
          int y = yMinus2 >> 2;

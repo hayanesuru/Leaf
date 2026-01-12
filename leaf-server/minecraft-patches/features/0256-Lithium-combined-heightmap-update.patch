@@ -4,7 +4,8 @@ Date: Wed, 30 Jul 2025 23:18:41 +0200
 Subject: [PATCH] Lithium: combined heightmap update
 
 This patch is based on the following mixins:
-* "net/caffeinemc/mods/lithium/mixin/world/combined_heightmap_update/LevelChunkMixin"
+* "net/caffeinemc/mods/lithium/mixin/world/combined_heightmap_update/LevelChunkMixin.java"
+* "net/caffeinemc/mods/lithium/common/world/chunk/heightmap/CombinedHeightmapUpdate.java"
 
 By: 2No2Name <2No2Name@web.de>
 As part of: Lithium (https://github.com/CaffeineMC/lithium)

@@ -21,10 +21,10 @@ index 6fd00b09c1be79e8aec40e87493321c4e24a53c3..1bd52f976392544dc0e0967f2b046783
  
      public static Collection<ServerPlayer> getOptionalPlayers(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
 diff --git a/net/minecraft/commands/arguments/selector/EntitySelector.java b/net/minecraft/commands/arguments/selector/EntitySelector.java
-index fbab3e2f4e3a9cdc1c148fc794036c5655368666..670f292295ae7fd905662808acb743ab72781796 100644
+index fbab3e2f4e3a9cdc1c148fc794036c5655368666..0fb09fe97b8ef5a2fd7ded9ac60897ea4d81897a 100644
 --- a/net/minecraft/commands/arguments/selector/EntitySelector.java
 +++ b/net/minecraft/commands/arguments/selector/EntitySelector.java
-@@ -161,6 +161,51 @@ public class EntitySelector {
+@@ -161,6 +161,53 @@ public class EntitySelector {
          }
      }
  
@@ -35,12 +35,13 @@ index fbab3e2f4e3a9cdc1c148fc794036c5655368666..670f292295ae7fd905662808acb743ab
 +            return this.findPlayers(source);
 +        } else if (this.playerName != null) {
 +            ServerPlayer playerByName = source.getServer().getPlayerList().getPlayerByName(this.playerName);
-+            playerByName = playerByName instanceof org.leavesmc.leaves.replay.ServerPhotographer ? null : playerByName; // Leaves - skip photographer
++            //playerByName = playerByName instanceof org.leavesmc.leaves.replay.ServerPhotographer ? null : playerByName; // Leaves - skip photographer // Leaf - TODO
 +            return playerByName == null ? List.of() : List.of(playerByName);
 +        } else if (this.entityUUID != null) {
 +            for (ServerLevel serverLevel : source.getServer().getAllLevels()) {
 +                Entity entity = serverLevel.getEntity(this.entityUUID);
-+                if (entity != null && !(entity instanceof org.leavesmc.leaves.replay.ServerPhotographer)) { // Leaves - skip photographer
++                //if (entity != null && !(entity instanceof org.leavesmc.leaves.replay.ServerPhotographer)) { // Leaves - skip photographer // Leaf - TODO
++                if (entity != null) {
 +                    if (entity.getType().isEnabled(source.enabledFeatures())) {
 +                        return List.of(entity);
 +                    }
@@ -54,7 +55,8 @@ index fbab3e2f4e3a9cdc1c148fc794036c5655368666..670f292295ae7fd905662808acb743ab
 +            AABB absoluteAabb = this.getAbsoluteAabb(vec3);
 +            if (this.currentEntity) {
 +                Predicate<Entity> predicate = this.getPredicateSkipInactive(vec3, absoluteAabb, null);
-+                return source.getEntity() != null && !(source.getEntity() instanceof org.leavesmc.leaves.replay.ServerPhotographer) && predicate.test(source.getEntity()) ? List.of(source.getEntity()) : List.of(); // Leaves - skip photographer
++                //return source.getEntity() != null && !(source.getEntity() instanceof org.leavesmc.leaves.replay.ServerPhotographer) && predicate.test(source.getEntity()) ? List.of(source.getEntity()) : List.of(); // Leaves - skip photographer // Leaf - TODO
++                return source.getEntity() != null && predicate.test(source.getEntity()) ? List.of(source.getEntity()) : List.of();
 +            } else {
 +                Predicate<Entity> predicate = this.getPredicateSkipInactive(vec3, absoluteAabb, source.enabledFeatures());
 +                List<Entity> list = new ObjectArrayList<>();
@@ -65,7 +67,7 @@ index fbab3e2f4e3a9cdc1c148fc794036c5655368666..670f292295ae7fd905662808acb743ab
 +                        this.addEntities(list, serverLevel1, absoluteAabb, predicate);
 +                    }
 +                }
-+                list.removeIf(entity -> entity instanceof org.leavesmc.leaves.replay.ServerPhotographer); // Leaves - skip photographer
++                //list.removeIf(entity -> entity instanceof org.leavesmc.leaves.replay.ServerPhotographer); // Leaves - skip photographer // Leaf - TODO
 +
 +                return this.sortAndLimit(vec3, list);
 +            }
@@ -76,7 +78,7 @@ index fbab3e2f4e3a9cdc1c148fc794036c5655368666..670f292295ae7fd905662808acb743ab
      private void addEntities(List<Entity> entities, ServerLevel level, @Nullable AABB box, Predicate<Entity> predicate) {
          int resultLimit = this.getResultLimit();
          if (entities.size() < resultLimit) {
-@@ -257,6 +302,38 @@ public class EntitySelector {
+@@ -257,6 +304,38 @@ public class EntitySelector {
          return Util.allOf(list);
      }
  

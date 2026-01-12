@@ -35,7 +35,7 @@ index 44e934a549be6d9169e900af617d24d65d328678..b9b0614b70e51cf34d0816b60ea0417e
 +    // Leaf end - Cache block state tags
  }
 diff --git a/net/minecraft/world/level/block/state/BlockBehaviour.java b/net/minecraft/world/level/block/state/BlockBehaviour.java
-index 00eae5480a2c8aa3cec4bbf24cfb48f509666ef0..09e8348f5485347a3e098dd70c016017f1016c0f 100644
+index 47cff92e3244b556ee565b088003abd2784d4341..320df6752be17d81484a809ee511b06163327809 100644
 --- a/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/net/minecraft/world/level/block/state/BlockBehaviour.java
 @@ -471,6 +471,8 @@ public abstract class BlockBehaviour implements FeatureElement {
@@ -88,7 +88,7 @@ index 57d60080810054ad791ac8537e105413576a666f..334afe90613ab5da12a9806b59ed4eb8
  
      public BlockState getBlockState(BlockPos pos) {
 diff --git a/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java b/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
-index 876aef8dab7187a69bcb380692d0f6a583fb38bd..9bf6449c4c9933c04c726012b6ce02074a357a3f 100644
+index 876aef8dab7187a69bcb380692d0f6a583fb38bd..46130fd10265a2128abf1960f266a346c3a5bb27 100644
 --- a/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
 +++ b/net/minecraft/world/level/pathfinder/WalkNodeEvaluator.java
 @@ -476,6 +476,17 @@ public class WalkNodeEvaluator extends NodeEvaluator {
@@ -109,14 +109,13 @@ index 876aef8dab7187a69bcb380692d0f6a583fb38bd..9bf6449c4c9933c04c726012b6ce0207
      protected static PathType getPathTypeFromState(BlockGetter level, BlockPos pos) {
          // Paper start - Do not load chunks during pathfinding
          BlockState blockState = level.getBlockStateIfLoaded(pos);
-@@ -483,6 +494,12 @@ public class WalkNodeEvaluator extends NodeEvaluator {
+@@ -483,6 +494,11 @@ public class WalkNodeEvaluator extends NodeEvaluator {
              return PathType.BLOCKED;
          }
          // Paper end
 +        // Leaf start - Cache block state tags
 +        return getPathTypeFromState(blockState);
 +    }
-+
 +    public static PathType getPathTypeFromState(BlockState blockState) {
 +        // Leaf end - Cache block state tags
          Block block = blockState.getBlock();

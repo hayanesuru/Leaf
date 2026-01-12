@@ -5,10 +5,10 @@ Subject: [PATCH] optimise ReferenceList
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/common/list/ReferenceList.java b/src/main/java/ca/spottedleaf/moonrise/common/list/ReferenceList.java
-index 8df9406b77eb3c225ebf88bf76a7adb666452f3b..14ac2a533e0b882f26ee4a11f8d6bccfe752c750 100644
+index 8df9406b77eb3c225ebf88bf76a7adb666452f3b..5a46a5eb0fea9e684acdb68a6a5926f8c13eb505 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/common/list/ReferenceList.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/common/list/ReferenceList.java
-@@ -47,17 +47,21 @@ public final class ReferenceList<E> implements Iterable<E> {
+@@ -47,12 +47,17 @@ public final class ReferenceList<E> implements Iterable<E> {
  
          // move the object at the end to this index
          final int endIndex = --this.count;
@@ -28,8 +28,3 @@ index 8df9406b77eb3c225ebf88bf76a7adb666452f3b..14ac2a533e0b882f26ee4a11f8d6bccf
          this.references[endIndex] = null;
  
          return true;
-     }
--
-     public boolean add(final E obj) {
-         final int count = this.count;
-         final int currIndex = this.referenceToIndex.putIfAbsent(obj, count);
