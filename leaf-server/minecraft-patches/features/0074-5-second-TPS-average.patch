@@ -37,7 +37,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index f86508fd765a821343f162398d7a274bd1009ccb..b9dae035f3a484a9b1f1dca3fc9bde85af8d6d1a 100644
+index f86508fd765a821343f162398d7a274bd1009ccb..770fde9600c2e014e89a900a4a9fbd9b8f805581 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -327,6 +327,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -66,7 +66,7 @@ index f86508fd765a821343f162398d7a274bd1009ccb..b9dae035f3a484a9b1f1dca3fc9bde85
 +        synchronized (this.statsLock) {
 +            double[] tps5s = this.tps5s;
 +            if (tps5s == null) {
-+                tps5s = this.computeTPS();
++                tps5s = this.computeTPSIncluding5Seconds();
 +                this.tps5s = tps5s;
 +            }
 +            return tps5s.clone();
