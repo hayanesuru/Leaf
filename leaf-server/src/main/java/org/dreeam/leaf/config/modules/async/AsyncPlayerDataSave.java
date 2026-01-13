@@ -9,7 +9,6 @@ public class AsyncPlayerDataSave extends ConfigModules {
         return EnumConfigCategory.ASYNC.getBaseKeyName() + ".async-playerdata-save";
     }
 
-    public static boolean enabled = true;
     public static boolean playerdata = false;
     public static boolean advancements = false;
     public static boolean stats = false;
@@ -21,17 +20,15 @@ public class AsyncPlayerDataSave extends ConfigModules {
     @Override
     public void onLoaded() {
         config.addCommentRegionBased(getBasePath(), """
-                Asynchronously save player data.""",
+                Save file asynchronously.""",
             """
-                异步保存玩家数据.""");
+                异步保存文件.""");
 
         if (asyncPlayerDataSavingInitialized) {
             config.getConfigSection(getBasePath());
             return;
         }
         asyncPlayerDataSavingInitialized = true;
-
-        enabled = config.getBoolean(getBasePath() + ".enabled", enabled);
 
         advancements = get("advancements", advancements);
         playerdata = get("playerdata", playerdata);
@@ -42,6 +39,6 @@ public class AsyncPlayerDataSave extends ConfigModules {
     }
 
     private boolean get(String s, boolean def) {
-        return config.getBoolean(getBasePath() + '.' + s, def) && enabled;
+        return config.getBoolean(getBasePath() + '.' + s, def);
     }
 }
