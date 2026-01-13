@@ -64,7 +64,7 @@ index 5bfdb48ff7ef740a5a01d02e87f0264e17338de4..4e16552680f86cf1589f862cb38c0f43
          }
  
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 480e7873efc4b58ce76645264c7af3431691af57..8ca6bad0899db10212bf135d283e2bb62e1831cc 100644
+index 72926c0c0a1d0a123acc981b88dcb9c2c8962568..28c9076346332862ff8ddd034971aa9acf7499c4 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -643,8 +643,12 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon

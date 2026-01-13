@@ -5,7 +5,7 @@ Subject: [PATCH] optimize entity in fluid
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 079843bf0515ea14870142f9ed1fed5351f1bd4c..0d273e520a8cb682915281ea9e7cc8d128020b97 100644
+index 079843bf0515ea14870142f9ed1fed5351f1bd4c..2f961198e6ba519202cdee77ae2114ed973ae720 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -4944,7 +4944,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name

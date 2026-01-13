@@ -5,7 +5,7 @@ Subject: [PATCH] optimize random tick
 
 
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index b246bb17d47aa656aee8465673d374247ea8a906..480e7873efc4b58ce76645264c7af3431691af57 100644
+index dcf6537cdc744ea45f0f9b08fcebc4185b3d99fb..72926c0c0a1d0a123acc981b88dcb9c2c8962568 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -672,6 +672,13 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon

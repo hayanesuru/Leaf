@@ -10,8 +10,6 @@ By: ishland <ishlandmc@yeah.net>
 As part of: C2ME-fabric (https://github.com/RelativityMC/C2ME-fabric)
 Licensed under: MIT
 
-Co-authored-by: Taiyou06 <kaandindar21@gmail.com>
-
 diff --git a/net/minecraft/world/level/ChunkPos.java b/net/minecraft/world/level/ChunkPos.java
 index de7c262f65557f149e00059c7df85917c9ca4342..125fc0057b0ac1ebd830da11bf3a75caf2770f1f 100644
 --- a/net/minecraft/world/level/ChunkPos.java
@@ -53,25 +51,3 @@ index b87fad848fa4342dc420a186a762cc826e9c0294..5959543cfe44d6ae80ac9dff70f9f49b
      }
  
      private static double getBeardContribution(int x, int y, int z, int height) {
-diff --git a/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java b/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
-index 216ae83ee6bcd21e20507ff5cfd47507393fdf2a..89610ee582740b47cc92f79f5df58bc6643c3f20 100644
---- a/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
-+++ b/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
-@@ -67,15 +67,12 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
-     }
- 
-     private static Aquifer.FluidPicker createFluidPicker(NoiseGeneratorSettings settings) {
--        Aquifer.FluidStatus fluidStatus = new Aquifer.FluidStatus(-54, Blocks.LAVA.defaultBlockState());
-         int seaLevel = settings.seaLevel();
--        Aquifer.FluidStatus fluidStatus1 = new Aquifer.FluidStatus(seaLevel, settings.defaultFluid());
--        Aquifer.FluidStatus fluidStatus2 = new Aquifer.FluidStatus(DimensionType.MIN_Y * 2, Blocks.AIR.defaultBlockState());
-         return (x, y, z) -> {
-             if (SharedConstants.DEBUG_DISABLE_FLUID_GENERATION) {
--                return fluidStatus2;
-+                return new Aquifer.FluidStatus(DimensionType.MIN_Y * 2, Blocks.AIR.defaultBlockState()); // Leaf - C2ME - Optimize world gen math
-             } else {
--                return y < Math.min(-54, seaLevel) ? fluidStatus : fluidStatus1;
-+                return y < Math.min(-54, seaLevel) ? new Aquifer.FluidStatus(-54, Blocks.LAVA.defaultBlockState()) : new Aquifer.FluidStatus(seaLevel, settings.defaultFluid()); // Leaf - C2ME - Optimize world gen math
-             }
-         };
-     }

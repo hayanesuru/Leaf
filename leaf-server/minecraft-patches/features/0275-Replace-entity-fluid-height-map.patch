@@ -5,7 +5,7 @@ Subject: [PATCH] Replace entity fluid height map
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 0d273e520a8cb682915281ea9e7cc8d128020b97..a5fcb8f6d474114fc12917e2133bf43d5eae6eca 100644
+index 2f961198e6ba519202cdee77ae2114ed973ae720..4ca189be0de095250b8c422f9a798779348f67c4 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -290,7 +290,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name

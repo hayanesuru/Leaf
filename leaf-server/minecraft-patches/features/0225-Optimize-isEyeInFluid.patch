@@ -5,7 +5,7 @@ Subject: [PATCH] Optimize isEyeInFluid
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 0000e7f7c5767d653515efbfefd004ddb1f5c450..b074be37bace5b1b99cdbb9f0eb7273ca8736193 100644
+index 23534448301c3ee7d7cb485c6ab19c4575fc59b2..cf22a560c331f08f7c1729ad5a40d966e1726a96 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -2049,7 +2049,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -210,7 +210,7 @@ index 44c7f63d549d208decf1bb7fe7c9e751e3669192..223fb6395c9ebcea7a9ef31bbdf08c05
          }
  
 diff --git a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
-index e5854af03a58dc26a100feac59357862e46bfeed..05b3d2f2883d5fac7b1c0dd647955537dcc5f8ec 100644
+index e5854af03a58dc26a100feac59357862e46bfeed..33fb59123ce59b8fd5c9f84bc31e52d21ad060ff 100644
 --- a/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 +++ b/net/minecraft/world/entity/vehicle/boat/AbstractBoat.java
 @@ -787,7 +787,7 @@ public abstract class AbstractBoat extends VehicleEntity implements Leashable {

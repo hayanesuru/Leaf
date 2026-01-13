@@ -5,7 +5,7 @@ Subject: [PATCH] optimize collidedAlongVector
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index e0a3530406f01b10a8cec1cefb3853264f7e0c44..b39999d6621b373311365615877d9998fd54b101 100644
+index 90b3da7717d924d23fc3099fd9b82622636b61f4..ece19e97fe6084b212cd0d7adc46b33768fe73f6 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1828,7 +1828,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name

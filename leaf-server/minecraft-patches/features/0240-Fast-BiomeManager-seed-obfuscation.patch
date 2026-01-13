@@ -6,7 +6,7 @@ Subject: [PATCH] Fast BiomeManager seed obfuscation
 Pretty tiny optimization, but better than nothing
 
 diff --git a/net/minecraft/world/level/biome/BiomeManager.java b/net/minecraft/world/level/biome/BiomeManager.java
-index 66084a596ecbfb47902ee0a779a811410d01513f..a9c6d26aed6d3cc4b5dee25d7509edcb1eea6477 100644
+index 787f06557ca894cbcffe747fa2c793ce91316826..b17564420e67b9d85131effedd7661d9c9bba943 100644
 --- a/net/minecraft/world/level/biome/BiomeManager.java
 +++ b/net/minecraft/world/level/biome/BiomeManager.java
 @@ -34,9 +34,18 @@ public class BiomeManager {

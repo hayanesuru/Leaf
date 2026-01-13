@@ -17,7 +17,7 @@ index 2643dc54f899420b6847d1c537d0f1dd4a3c2e05..77479e16547cbfc2b850b1310f6910d8
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a5fcb8f6d474114fc12917e2133bf43d5eae6eca..e0a3530406f01b10a8cec1cefb3853264f7e0c44 100644
+index 4ca189be0de095250b8c422f9a798779348f67c4..90b3da7717d924d23fc3099fd9b82622636b61f4 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -1601,8 +1601,8 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name

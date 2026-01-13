@@ -5,7 +5,7 @@ Subject: [PATCH] Add configurable death item drop knockback settings
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 62cf3f5e21ee979973065e4facc00bb080cdd6d0..0000e7f7c5767d653515efbfefd004ddb1f5c450 100644
+index a95a618536e67324299152806ae5aad73ff66a58..23534448301c3ee7d7cb485c6ab19c4575fc59b2 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -1177,7 +1177,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
