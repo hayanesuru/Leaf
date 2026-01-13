@@ -3,6 +3,8 @@ From: Samsuik <kfian294ma4@gmail.com>
 Date: Sun, 2 Feb 2025 17:05:05 +0000
 Subject: [PATCH] Sakura: copy EntityList implementation to BasicEntityList
 
+Original license: MIT
+Original project: https://github.com/Samsuik/Sakura
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 index fee4a7452178c274eb835d758b718d8e874d79d0..7f508c50e451a0689218cd36e6ac993f87092c04 100644
