@@ -32,10 +32,10 @@ index 1da322d4f5a9e8419a874ccd3bca4a10f138a306..1062e2ae5d384ab01b7b731c9cba34c2
 +    // Fish end - Parallel World Ticking API
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 9ce4b182b4192b0982577dc5ec95af30bf4075bc..382d6bff2b899bdfc96623d739f147970e1d6914 100644
+index e1638106d5e4ae9968599f7e908ac246d31fd970..5b1534a2a71ae016b351dee27431db273b2c077f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -2115,4 +2115,15 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -2102,4 +2102,15 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          return POINTERS_SUPPLIER.view(this);
      }
      // Paper end

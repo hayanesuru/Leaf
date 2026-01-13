@@ -34,10 +34,10 @@ index 272e2871aca8d283229cc5618e3051146db56681..7da3fcb1c9995ff8aba5989bb8905dca
              DedicatedServerSettings dedicatedServerSettings = new DedicatedServerSettings(optionSet); // CraftBukkit - CLI argument support
              dedicatedServerSettings.forceSave();
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 82ae10e3777bdb2b4be958f13296968c73afd994..e73013ee9199ac4d9b3b4bb36262e8240652040b 100644
+index d3e5183b2a1986bb43ce953887d440dc2d000311..cd3e3c28825678fc3070da03ccfdac6939bc3c6c 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1297,6 +1297,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1295,6 +1295,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              org.spigotmc.WatchdogThread.tick();
              // Paper end
              org.spigotmc.WatchdogThread.hasStarted = true; // Paper

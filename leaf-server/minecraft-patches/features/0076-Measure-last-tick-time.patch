@@ -23,10 +23,10 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index b9dae035f3a484a9b1f1dca3fc9bde85af8d6d1a..8fa37b7c12feddd98a29b699c31b997e68028513 100644
+index df73e6932ecb1e2e9c14b6784f9b17e6cf25c1b5..36177b645b70b6f1ad9814f84774b8700559a201 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1306,6 +1306,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1304,6 +1304,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
      // Paper end - improve tick loop
  
@@ -38,7 +38,7 @@ index b9dae035f3a484a9b1f1dca3fc9bde85af8d6d1a..8fa37b7c12feddd98a29b699c31b997e
      protected void runServer() {
          try {
              if (!this.initServer()) {
-@@ -1539,11 +1544,13 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1537,11 +1542,13 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      protected void waitUntilNextTick() {
          // Paper - improve tick loop - moved to start of tick
          this.waitingForNextTick = true;
@@ -52,7 +52,7 @@ index b9dae035f3a484a9b1f1dca3fc9bde85af8d6d1a..8fa37b7c12feddd98a29b699c31b997e
          }
      }
  
-@@ -1744,7 +1751,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1742,7 +1749,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          this.tickFrame.start();
          // Paper - improve tick loop - moved into runAllTasksAtTickStart
          this.runAllTasksAtTickStart(); // Paper - improve tick loop

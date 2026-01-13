@@ -35,10 +35,10 @@ index c2b6b0625095aa3645872eecbae4280bbadf85f2..9fa0f4e42e1bc825ae0a296a199fed47
  
      public SystemReport getSystemReport() {
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 3b63b6583c548e48fb3a06e58757423792478c02..c04618d8550c15017d68ed13abb968a1be333af0 100644
+index 6e54aa32245c3d962cc1f7063d6e263c36a888bb..f8ceba0073e760193dee3f27b1825f7e70b52fc9 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1305,7 +1305,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1303,7 +1303,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              }
              // Paper end - Add onboarding message for initial server start
              // Paper start - Improve outdated version checking

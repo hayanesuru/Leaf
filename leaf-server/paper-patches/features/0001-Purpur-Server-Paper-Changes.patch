@@ -662,10 +662,10 @@ index b2961752b50e98d95adf3af4f658e2fdb2127d43..d319dd5264db492e7b8a5e365170f7e1
 +    // Purpur end - Lagging threshold
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 4ff1b4f472cce49d05a22cdfb67f9e8bf980a81c..85f688ce5bafa9ded88157bc1f32452f66556816 100644
+index ebc65e3338c646815416a47bf9af96fe45978caf..01719a81cea75654a0d7eac52fd43ebf2d692b9c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -1939,6 +1939,52 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -1926,6 +1926,52 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          return (this.getHandle().getDragonFight() == null) ? null : new CraftDragonBattle(this.getHandle().getDragonFight());
      }
  
@@ -1122,10 +1122,10 @@ index cabdcbef0e6f7ca41ff5677bc2e6a81665ca812d..c47ca9ab164b6abd28e979c944569181
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index e3c9327de894fdfb252781772817f4c8bc079cce..dd0dcc6ae5cfb72df0483417b22eddd90febc9e6 100644
+index d86ebc4cd182076629eb8000267d7b1a38a06be1..225a88c6976de91b9115471e7942e5585e392ec4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -582,10 +582,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -580,10 +580,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      @Override
      public void setPlayerListName(String name) {
@@ -1142,7 +1142,7 @@ index e3c9327de894fdfb252781772817f4c8bc079cce..dd0dcc6ae5cfb72df0483417b22eddd9
          if (this.getHandle().connection == null) return; // Paper - Updates are possible before the player has fully joined
          for (ServerPlayer player : this.server.getHandle().players) {
              if (player.getBukkitEntity().canSee(this)) {
-@@ -988,6 +993,80 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -984,6 +989,80 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          }
      }
  
@@ -1223,7 +1223,7 @@ index e3c9327de894fdfb252781772817f4c8bc079cce..dd0dcc6ae5cfb72df0483417b22eddd9
      @Override
      public void sendBlockDamage(Location loc, float progress, org.bukkit.entity.Entity source) {
          Preconditions.checkArgument(source != null, "source must not be null");
-@@ -2496,6 +2575,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2490,6 +2569,28 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          return this.getHandle().getAbilities().walkingSpeed * 2f;
      }
  

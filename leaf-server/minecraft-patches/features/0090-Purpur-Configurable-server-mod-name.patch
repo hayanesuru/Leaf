@@ -7,10 +7,10 @@ Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index bcd11fc0a5b18ac379ddabb2052412bc31663492..a4a4f04a46c30a6dc14bb37f580e13fd75243294 100644
+index 116e93836d662839cae1d877edf13beb7390109c..3921f64d28fc0602a424d66811d8e55a6a67b8c5 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -2044,7 +2044,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2042,7 +2042,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @DontObfuscate
      public String getServerModName() {

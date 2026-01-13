@@ -39,10 +39,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index e73013ee9199ac4d9b3b4bb36262e8240652040b..f86508fd765a821343f162398d7a274bd1009ccb 100644
+index cd3e3c28825678fc3070da03ccfdac6939bc3c6c..1edd85812d3acae7970019e6a2096fa005247dc2 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1376,7 +1376,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1374,7 +1374,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
                  // Paper - improve tick loop - done above
  

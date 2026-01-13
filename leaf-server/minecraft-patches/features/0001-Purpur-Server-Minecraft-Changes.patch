@@ -325,7 +325,7 @@ index 094d2d528cb74b8f1d277cd780bba7f438dbe764..272e2871aca8d283229cc5618e305114
              Bootstrap.bootStrap();
              Bootstrap.validate();
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index d6d23eeefb97d3e3253e431feaf286215c445c2b..3b63b6583c548e48fb3a06e58757423792478c02 100644
+index 21500194b5c92baa6ab82503165b113155e4d994..6e54aa32245c3d962cc1f7063d6e263c36a888bb 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -290,6 +290,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -345,7 +345,7 @@ index d6d23eeefb97d3e3253e431feaf286215c445c2b..3b63b6583c548e48fb3a06e587574237
      // Paper start - improve tick loop
      public final ca.spottedleaf.moonrise.common.time.TickData tickTimes1s  = new ca.spottedleaf.moonrise.common.time.TickData(java.util.concurrent.TimeUnit.SECONDS.toNanos(1L));
      public final ca.spottedleaf.moonrise.common.time.TickData tickTimes5s  = new ca.spottedleaf.moonrise.common.time.TickData(java.util.concurrent.TimeUnit.SECONDS.toNanos(5L));
-@@ -1016,6 +1019,15 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1014,6 +1017,15 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
          LOGGER.info("Stopping server");
          Commands.COMMAND_SENDING_POOL.shutdownNow(); // Paper - Perf: Async command map building; Shutdown and don't bother finishing
@@ -361,7 +361,7 @@ index d6d23eeefb97d3e3253e431feaf286215c445c2b..3b63b6583c548e48fb3a06e587574237
          // CraftBukkit start
          if (this.server != null) {
              this.server.spark.disable(); // Paper - spark
-@@ -1114,6 +1126,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1112,6 +1124,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          this.safeShutdown(waitForShutdown, false);
      }
      public void safeShutdown(boolean waitForShutdown, boolean isRestarting) {
@@ -370,7 +370,7 @@ index d6d23eeefb97d3e3253e431feaf286215c445c2b..3b63b6583c548e48fb3a06e587574237
          this.isRestarting = isRestarting;
          this.hasLoggedStop = true; // Paper - Debugging
          if (isDebugging()) io.papermc.paper.util.TraceUtil.dumpTraceForThread("Server stopped"); // Paper - Debugging
-@@ -1291,11 +1305,30 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1289,11 +1303,30 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              }
              // Paper end - Add onboarding message for initial server start
              // Paper start - Improve outdated version checking
@@ -402,7 +402,7 @@ index d6d23eeefb97d3e3253e431feaf286215c445c2b..3b63b6583c548e48fb3a06e587574237
              while (this.running) {
                  final long tickStart = System.nanoTime(); // Paper - improve tick loop
                  long l; // Paper - improve tick loop - diff on change, expect this to be tick interval
-@@ -1309,9 +1342,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1307,9 +1340,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                      final long ticksBehind = Math.max(1L, this.tickSchedule.getPeriodsAhead(l, tickStart));
                      final long catchup = (long)Math.max(
                          1,
@@ -415,7 +415,7 @@ index d6d23eeefb97d3e3253e431feaf286215c445c2b..3b63b6583c548e48fb3a06e587574237
                      // adjust ticksBehind so that it is not greater-than catchup
                      if (ticksBehind > catchup) {
                          final long difference = ticksBehind - catchup;
-@@ -1792,7 +1827,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1790,7 +1825,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              long worldTime = level.getGameTime();
              final ClientboundSetTimePacket worldPacket = new ClientboundSetTimePacket(worldTime, dayTime, doDaylight);
              for (Player entityhuman : level.players()) {
@@ -424,7 +424,7 @@ index d6d23eeefb97d3e3253e431feaf286215c445c2b..3b63b6583c548e48fb3a06e587574237
                      continue;
                  }
                  ServerPlayer entityplayer = (ServerPlayer) entityhuman;
-@@ -1811,6 +1846,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1809,6 +1844,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              serverLevel.hasEntityMoveEvent = io.papermc.paper.event.entity.EntityMoveEvent.getHandlerList().getRegisteredListeners().length > 0; // Paper - Add EntityMoveEvent
              serverLevel.updateLagCompensationTick(); // Paper - lag compensation
              net.minecraft.world.level.block.entity.HopperBlockEntity.skipHopperEvents = serverLevel.paperConfig().hopper.disableMoveEvent || org.bukkit.event.inventory.InventoryMoveItemEvent.getHandlerList().getRegisteredListeners().length == 0; // Paper - Perf: Optimize Hoppers
@@ -963,7 +963,7 @@ index dc65503a2d785d64d37b76b0303f51cf66d9769a..853bb92c034b6361ff8c55daf52f38a2
                  }
                  // Paper end - Fix merchant inventory not closing on entity removal
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index fa83601d1e18268431b14f1b9555b559cac7bea9..9aa1c5ce10e81758e9166d582fd76271ba678d0e 100644
+index fc3b8c999e6b75c94b58b342de063a342f4f84d1..9f27cda78f5a7f01cdf95e4ff2d693b4f40a0bad 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -433,6 +433,9 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -1202,7 +1202,7 @@ index fa83601d1e18268431b14f1b9555b559cac7bea9..9aa1c5ce10e81758e9166d582fd76271
      public ServerStatsCounter getStats() {
          return this.stats;
      }
-@@ -3128,4 +3266,65 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -3126,4 +3264,65 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          return (org.bukkit.craftbukkit.entity.CraftPlayer) super.getBukkitEntity();
      }
      // CraftBukkit end

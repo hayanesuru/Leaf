@@ -22,10 +22,10 @@ index 1da034752064312962a4144f91be5265a9a08997..878e0e0f61a3020b120249d8b04a8e8c
              }
  
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index e7f57c0553b6518cd670cb63e0046a848c6544a1..7b68e37ca2441b314820380a08d64a75d3fa7af2 100644
+index 714b9482797ad4bbc7a2780e6fadc800a2e46461..1a4504111904628f4a1eeb204909f100b4b19113 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1995,6 +1995,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1993,6 +1993,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
          profilerFiller.popPush("server gui refresh");
  
@@ -35,7 +35,7 @@ index e7f57c0553b6518cd670cb63e0046a848c6544a1..7b68e37ca2441b314820380a08d64a75
              runnable.run();
          }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 11a31b1f0c7b6099d26d75d7fa583a2a5cdd95dc..62179c74069d63052c64c571c297baf3c52b544a 100644
+index bd97fe2058d236ba5c8e25e60d4b3216917fb5df..33e42bdce2a9b4dd7c627a953b55ff5a824f5e44 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -787,6 +787,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc

@@ -59,10 +59,10 @@ index d04ff11b293c458fd4f18f04336421e5e183c3f4..09ecc4828d2dc45f3d0711b769a7db84
          }
          return set;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 865f197bbd9c172b49c842ec524160463ac0f5a2..30f8463fa13957ba01e564082533991818a1de38 100644
+index 663e536312a400d4245de5261e424581126b84bf..1742395c42d7844ae3b66ca4bfab515a7ef52c08 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -236,7 +236,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -234,7 +234,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
      private long lastPlayed = 0;
      private boolean hasPlayedBefore = false;
      private final ConversationTracker conversationTracker = new ConversationTracker();
@@ -71,7 +71,7 @@ index 865f197bbd9c172b49c842ec524160463ac0f5a2..30f8463fa13957ba01e5640825339918
      private final Set<UUID> unlistedEntities = new HashSet<>(); // Paper - Add Listing API for Player
      private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
      private int hash = 0;
-@@ -2745,7 +2745,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2739,7 +2739,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          Iterator<AttributeInstance> iterator = collection.iterator();
          while (iterator.hasNext()) {
              AttributeInstance genericInstance = iterator.next();

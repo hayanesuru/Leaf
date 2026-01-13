@@ -81,10 +81,10 @@ index 50d98b6802bef29c3d1c4c114a7934dfa88821b3..62dc2b950486c76d01379a0d2fe2ad51
  
      // note: never call while inside the chunk system, this will absolutely break everything
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 7b68e37ca2441b314820380a08d64a75d3fa7af2..7bd9785657c281faece350217dfca2e1deb2b2e2 100644
+index 1a4504111904628f4a1eeb204909f100b4b19113..7c7934b7379ad7c9b0adb497b3c38ab510f7595b 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1954,6 +1954,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1952,6 +1952,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                      serverLevelTickingSemaphore.acquire();
                      tasks.add(
                          serverLevel.tickExecutor.submit(() -> {
@@ -93,7 +93,7 @@ index 7b68e37ca2441b314820380a08d64a75d3fa7af2..7bd9785657c281faece350217dfca2e1
                              ca.spottedleaf.moonrise.common.util.TickThread.ServerLevelTickThread currentThread = (ca.spottedleaf.moonrise.common.util.TickThread.ServerLevelTickThread) Thread.currentThread();
                              currentThread.currentTickingServerLevel = serverLevel;
  
-@@ -1974,7 +1976,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1972,7 +1974,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              }
  
              while (!tasks.isEmpty()) {
