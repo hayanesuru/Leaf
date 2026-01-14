@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Taiyou06 <kaandindar21@gmail.com>
 Date: Sat, 22 Mar 2025 12:51:28 +0100
-Subject: [PATCH] Remove streams on PlayerDetector
+Subject: [PATCH] Remove stream on PlayerDetector
 
 Dreeam TODO: Merge to single loop
 
@@ -27,7 +27,7 @@ index 438b269e53915f7f00ff894697096157f68cdff8..6e27472deabe86e899d0227d2963d309
 -        .filter(player -> !requireLineOfSight || inLineOfSight(level, pos.getCenter(), player.getEyePosition()))
 -        .map(Entity::getUUID)
 -        .toList();
-+    // Leaf start - Remove streams on PlayerDetector
++    // Leaf start - Remove stream on PlayerDetector
 +    PlayerDetector NO_CREATIVE_PLAYERS = (level, entitySelector, pos, maxDistance, requireLineOfSight) -> {
 +        List<? extends Player> players = entitySelector.getPlayers(
 +                level, player -> player.blockPosition().closerThan(pos, maxDistance) && !player.isCreative() && !player.isSpectator()
@@ -70,7 +70,7 @@ index 438b269e53915f7f00ff894697096157f68cdff8..6e27472deabe86e899d0227d2963d309
 +        }
 +        return result;
      };
-+    // Leaf end - Remove streams on PlayerDetector
++    // Leaf end - Remove stream on PlayerDetector
  
      List<UUID> detect(ServerLevel level, PlayerDetector.EntitySelector entitySelector, BlockPos pos, double maxDistance, boolean requireLineOfSight);
  
@@ -79,7 +79,7 @@ index 438b269e53915f7f00ff894697096157f68cdff8..6e27472deabe86e899d0227d2963d309
                  @Override
                  public List<Player> getPlayers(ServerLevel level, Predicate<? super Player> predicate) {
 -                    return players.stream().filter(predicate).toList();
-+                    // Leaf start - Remove streams on PlayerDetector
++                    // Leaf start - Remove stream on PlayerDetector
 +                    List<Player> result = new java.util.ArrayList<>();
 +                    for (Player player : players) {
 +                        if (predicate.test(player)) {
@@ -87,7 +87,7 @@ index 438b269e53915f7f00ff894697096157f68cdff8..6e27472deabe86e899d0227d2963d309
 +                        }
 +                    }
 +                    return result;
-+                    // Leaf end - Remove streams on PlayerDetector
++                    // Leaf end - Remove stream on PlayerDetector
                  }
  
                  @Override
@@ -95,7 +95,7 @@ index 438b269e53915f7f00ff894697096157f68cdff8..6e27472deabe86e899d0227d2963d309
                      ServerLevel level, EntityTypeTest<Entity, T> typeTest, AABB boundingBox, Predicate<? super T> predicate
                  ) {
 -                    return players.stream().map(typeTest::tryCast).filter(Objects::nonNull).filter(predicate).toList();
-+                    // Leaf start - Remove streams on PlayerDetector
++                    // Leaf start - Remove stream on PlayerDetector
 +                    List<T> result = new java.util.ArrayList<>();
 +                    for (Player player : players) {
 +                        T entity = typeTest.tryCast(player);
@@ -104,7 +104,7 @@ index 438b269e53915f7f00ff894697096157f68cdff8..6e27472deabe86e899d0227d2963d309
 +                        }
 +                    }
 +                    return result;
-+                    // Leaf end - Remove streams on PlayerDetector
++                    // Leaf end - Remove stream on PlayerDetector
                  }
              };
          }

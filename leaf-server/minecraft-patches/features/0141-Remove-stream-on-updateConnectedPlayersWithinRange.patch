@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Taiyou06 <kaandindar21@gmail.com>
 Date: Sat, 22 Mar 2025 11:22:23 +0100
-Subject: [PATCH] Remove streams on updateConnectedPlayersWithinRange
+Subject: [PATCH] Remove stream on updateConnectedPlayersWithinRange
 
 
 diff --git a/net/minecraft/world/level/block/entity/vault/VaultSharedData.java b/net/minecraft/world/level/block/entity/vault/VaultSharedData.java
@@ -17,7 +17,7 @@ index 036087f8085f05b43703ceca3413e0b8ac0a412b..514d8167ccbcc00de95d34e5ef2203dc
 -            .stream()
 -            .filter(uuid -> !serverData.getRewardedPlayers().contains(uuid))
 -            .collect(Collectors.toSet());
-+        // Leaf start - Remove streams on updateConnectedPlayersWithinRange
++        // Leaf start - Remove stream on updateConnectedPlayersWithinRange
 +        java.util.List<UUID> detectedPlayers = config.playerDetector().detect(level, config.entitySelector(), pos, deactivationRange, false);
 +        Set<UUID> set = new ObjectLinkedOpenHashSet<>();
 +
@@ -26,7 +26,7 @@ index 036087f8085f05b43703ceca3413e0b8ac0a412b..514d8167ccbcc00de95d34e5ef2203dc
 +                set.add(uuid);
 +            }
 +        }
-+        // Leaf end - Remove streams on updateConnectedPlayersWithinRange
++        // Leaf end - Remove stream on updateConnectedPlayersWithinRange
 +
          if (!this.connectedPlayers.equals(set)) {
              this.connectedPlayers = set;

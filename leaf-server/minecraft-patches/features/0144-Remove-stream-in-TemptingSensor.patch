@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Taiyou06 <kaandindar21@gmail.com>
 Date: Mon, 12 May 2025 19:39:03 +0200
-Subject: [PATCH] Remove streams in TemptingSensor
+Subject: [PATCH] Remove stream in TemptingSensor
 
 
 diff --git a/net/minecraft/world/entity/ai/sensing/TemptingSensor.java b/net/minecraft/world/entity/ai/sensing/TemptingSensor.java
@@ -20,7 +20,7 @@ index 77cd672c846cb05b19f387348f1531c8b9c972ee..8f1aeaf07b62a332ae0375709552fcbf
 -            .filter(serverPlayer -> !entity.hasPassenger(serverPlayer))
 -            .sorted(Comparator.comparingDouble(entity::distanceToSqr))
 -            .collect(Collectors.toList());
-+        // Leaf start - Remove streams in TemptingSensor
++        // Leaf start - Remove stream in TemptingSensor
 +        List<net.minecraft.server.level.ServerPlayer> allPlayers = level.players();
 +        List<Player> list = new java.util.ArrayList<>();
 +        for (Player serverPlayer : allPlayers) {
@@ -31,9 +31,9 @@ index 77cd672c846cb05b19f387348f1531c8b9c972ee..8f1aeaf07b62a332ae0375709552fcbf
 +                list.add(serverPlayer);
 +            }
 +        }
-+        // Leaf end - Remove streams in TemptingSensor
++        // Leaf end - Remove stream in TemptingSensor
          if (!list.isEmpty()) {
-+            list.sort(Comparator.comparingDouble(entity::distanceToSqr)); // Leaf - Remove streams in TemptingSensor
++            list.sort(Comparator.comparingDouble(entity::distanceToSqr)); // Leaf - Remove stream in TemptingSensor
              Player player = list.get(0);
              // CraftBukkit start
              org.bukkit.event.entity.EntityTargetLivingEntityEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callEntityTargetLivingEvent(
