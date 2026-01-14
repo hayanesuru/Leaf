@@ -63,10 +63,10 @@ index d6ff0c24d020942a5ed1e2b0b046d4d043ff33af..3ab0aba57ed3282eb73fc501ded00558
                  if (!this.careful) {
                      return flag1;
 diff --git a/net/minecraft/world/phys/AABB.java b/net/minecraft/world/phys/AABB.java
-index 7fb127548350e96464da1a4b8009124798a72f16..4b9af5cff5f8bc6bc5283eb61eb68fe355398dd1 100644
+index 7494a012959660e31b1e6d63b27ca85863be44f8..68eecea217c26578ef012ddb58e7341541f15d7f 100644
 --- a/net/minecraft/world/phys/AABB.java
 +++ b/net/minecraft/world/phys/AABB.java
-@@ -416,21 +416,34 @@ public class AABB {
+@@ -415,21 +415,34 @@ public class AABB {
          }
      }
  
