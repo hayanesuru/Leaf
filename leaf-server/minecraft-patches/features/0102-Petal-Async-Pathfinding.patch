@@ -622,6 +622,25 @@ index d68221ce56b4de755fd2c1fcbc18941b2458a167..007e4e78f7e6530ff678573b00acd6c7
              return new PathFinder(this.nodeEvaluator, maxVisitedNodes);
          }
      }
+diff --git a/net/minecraft/world/entity/animal/rabbit/Rabbit.java b/net/minecraft/world/entity/animal/rabbit/Rabbit.java
+index c39004a546c28c9f8af26e727c67dbff85ba1212..44a1efd3179a08b2066edbeda5eda844c3230389 100644
+--- a/net/minecraft/world/entity/animal/rabbit/Rabbit.java
++++ b/net/minecraft/world/entity/animal/rabbit/Rabbit.java
+@@ -612,6 +612,14 @@ public class Rabbit extends Animal {
+ 
+         @Override
+         public void vanillaTick() { // Purpur - Ridables
++            // Kaiiju start - petal - async path processing - don't make movement decisions with unprocessed paths
++            if (org.dreeam.leaf.config.modules.async.AsyncPathfinding.enabled) {
++                Path path = this.rabbit.getNavigation().getPath();
++                if (path != null && !path.isProcessed()) {
++                    return; // Wait for path processing before making movement decisions
++                }
++            }
++            // Kaiiju end - petal - async path processing
+             if (this.rabbit.onGround() && !this.rabbit.jumping && !((Rabbit.RabbitJumpControl)this.rabbit.jumpControl).wantJump()) {
+                 this.rabbit.setSpeedModifier(0.0);
+             } else if (this.hasWanted() || this.operation == MoveControl.Operation.JUMPING) {
 diff --git a/net/minecraft/world/entity/monster/Strider.java b/net/minecraft/world/entity/monster/Strider.java
 index 37b0c8f55ed4ac4feac6a35bd4377007a19ea2ce..433cd822f33b80096d34bef9675c24e022cf3a42 100644
 --- a/net/minecraft/world/entity/monster/Strider.java
