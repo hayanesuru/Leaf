@@ -273,7 +273,7 @@ index b75b358e9c153e146f81ddc27184df519c374fb2..630088ef21265daa28a644ffe6913bdc
          // Paper start - EntityEquipmentChangedEvent
          record EquipmentChangeImpl(org.bukkit.inventory.ItemStack oldItem, org.bukkit.inventory.ItemStack newItem) implements io.papermc.paper.event.entity.EntityEquipmentChangedEvent.EquipmentChange {
 diff --git a/net/minecraft/world/entity/decoration/ArmorStand.java b/net/minecraft/world/entity/decoration/ArmorStand.java
-index 9d5b4309884f9d5fa42cfd46f96502b1bb7a4dc8..7d54d34d9efdf3b1548a2b2a8d1e02c927d99076 100644
+index 9d5b4309884f9d5fa42cfd46f96502b1bb7a4dc8..9ab14c1d61665358b4e3cdafeffe067292130708 100644
 --- a/net/minecraft/world/entity/decoration/ArmorStand.java
 +++ b/net/minecraft/world/entity/decoration/ArmorStand.java
 @@ -529,8 +529,9 @@ public class ArmorStand extends LivingEntity {
@@ -283,7 +283,7 @@ index 9d5b4309884f9d5fa42cfd46f96502b1bb7a4dc8..7d54d34d9efdf3b1548a2b2a8d1e02c9
 -                this.noTickEquipmentDirty = false;
 +                //this.noTickEquipmentDirty = false; // Leaf - Lithium - equipment tracking - move down
                  this.detectEquipmentUpdates();
-+                this.noTickEquipmentDirty = false;  // Leaf - Lithium - equipment tracking
++                this.noTickEquipmentDirty = false; // Leaf - Lithium - equipment tracking
              }
  
              return;

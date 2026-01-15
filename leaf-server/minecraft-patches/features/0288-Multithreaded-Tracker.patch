@@ -1110,7 +1110,7 @@ index 5e7f0429f8e6441b21994e92c4ecc67a4b71abd7..315792310b7e982aa495cdf98390a74c
          void sendToTrackingPlayers(Packet<? super ClientGamePacketListener> packet);
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 1f0d17b0588654d1066a49bc934ff92bfc870afc..93071a7616afbcf28186420dc3bf8d01d94d7f4f 100644
+index 32b7ca2f264ac3b0fd1331b2174900b83318fce9..541c384187a0b20386ccc35200c7c4eb1ce62e9b 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -236,6 +236,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -1121,7 +1121,7 @@ index 1f0d17b0588654d1066a49bc934ff92bfc870afc..93071a7616afbcf28186420dc3bf8d01
  
      @Override
      public @Nullable LevelChunk getChunkIfLoaded(int x, int z) {
-@@ -1059,6 +1060,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1060,6 +1061,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          this.debugSynchronizers.tick(this.server.debugSubscribers());
          profilerFiller.pop();
          this.environmentAttributes().invalidateTickCache();

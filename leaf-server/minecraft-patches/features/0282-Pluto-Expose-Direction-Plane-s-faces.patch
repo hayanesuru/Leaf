@@ -35,10 +35,10 @@ index 45093451fb25ae3bb1e57d2e53c49a1ae666e31e..c228135032b5f74fd1ec96a2cf52aa3e
              }
          }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 47114f0a3d2d308117c936ac1852fa91a3bcd67a..1f0d17b0588654d1066a49bc934ff92bfc870afc 100644
+index b7d85714a76df4cb9ef0dc797b9158a5fdddb50f..32b7ca2f264ac3b0fd1331b2174900b83318fce9 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1269,7 +1269,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1270,7 +1270,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                          // We only need to check blocks that are taller than the minimum step height
                          if (org.purpurmc.purpur.PurpurConfig.smoothSnowAccumulationStep > 0 && layersValue >= org.purpurmc.purpur.PurpurConfig.smoothSnowAccumulationStep) {
                              int layersValueMin = layersValue - org.purpurmc.purpur.PurpurConfig.smoothSnowAccumulationStep;
