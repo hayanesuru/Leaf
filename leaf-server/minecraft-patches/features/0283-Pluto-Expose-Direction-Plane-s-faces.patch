@@ -9,7 +9,7 @@ Original license: GPL-3.0
 Original project: https://github.com/Yive/Pluto
 
 diff --git a/net/minecraft/core/Direction.java b/net/minecraft/core/Direction.java
-index c045411879e2993bea08ad8c45c44dbbe0dcfb5c..cafb00b69e92fe980a6eb9e16ffc53b0cc95b55f 100644
+index 657f77d9fb25f37083d06694de08864f6d4dc6b7..511a6786d4c04d08c857ff15b4ea4e01ef5d692f 100644
 --- a/net/minecraft/core/Direction.java
 +++ b/net/minecraft/core/Direction.java
 @@ -630,7 +630,7 @@ public enum Direction implements StringRepresentable, ca.spottedleaf.moonrise.pa
