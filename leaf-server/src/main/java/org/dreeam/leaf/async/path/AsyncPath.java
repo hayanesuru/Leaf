@@ -41,14 +41,6 @@ public class AsyncPath extends Path {
      */
     private final Supplier<Path> pathSupplier;
 
-    /*
-     * Processed values
-     */
-
-    /**
-     * This is a reference to the nodes list in the parent `Path` object
-     */
-    private final List<Node> nodes;
     /**
      * The block we're trying to path to
      * <p>
@@ -72,7 +64,6 @@ public class AsyncPath extends Path {
     public AsyncPath(List<Node> emptyNodeList, Set<BlockPos> positions, Supplier<Path> pathSupplier) {
         super(emptyNodeList, null, false);
 
-        this.nodes = emptyNodeList;
         this.positions = positions;
         this.pathSupplier = pathSupplier;
 
@@ -122,12 +113,12 @@ public class AsyncPath extends Path {
      * Since this is no longer a synchronized function, checkProcessed is no longer required
      */
     public final void process() {
-        if (this.ready) return;
+        if (this.ready) return; // FIXME: no happens-before guarantees here
 
         synchronized (this) {
             if (this.ready) return; // In the worst case, the main thread only waits until any async thread is done and returns immediately
             final Path bestPath = this.pathSupplier.get();
-            this.nodes.addAll(bestPath.nodes); // We mutate this list to reuse the logic in Path
+            this.nodes = bestPath.nodes;
             this.target = bestPath.getTarget();
             this.distToTarget = bestPath.getDistToTarget();
             this.canReach = bestPath.canReach();

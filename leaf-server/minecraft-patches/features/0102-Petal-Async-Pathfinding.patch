@@ -727,19 +727,42 @@ index 6c5696ab4981a6d582d4d0f13c9822bf84a5d9f1..5cd93a95091deb045b24c23d75a35a85
      }
  
      @Override
+diff --git a/net/minecraft/world/level/pathfinder/NodeEvaluator.java b/net/minecraft/world/level/pathfinder/NodeEvaluator.java
+index 73aacb7b64b5518937273b4a70df944ad05a1b2b..5f4007ac179d51599391eab1d95180bf9a2563dd 100644
+--- a/net/minecraft/world/level/pathfinder/NodeEvaluator.java
++++ b/net/minecraft/world/level/pathfinder/NodeEvaluator.java
+@@ -37,6 +37,15 @@ public abstract class NodeEvaluator {
+         this.mob = null;
+     }
+ 
++    // Kaiiju start - petal - async path processing
++    public void clearNodes() {
++        this.nodes.clear();
++    }
++    public void invalidatePathTypeCache() {
++        this.currentContext.cache = null;
++    }
++    // Kaiiju end - petal - async path processing
++
+     protected Node getNode(BlockPos pos) {
+         return this.getNode(pos.getX(), pos.getY(), pos.getZ());
+     }
 diff --git a/net/minecraft/world/level/pathfinder/Path.java b/net/minecraft/world/level/pathfinder/Path.java
-index 5959e1b1772ffbdfb108365171fe37cbf56ef825..68723bebf60bdb8faa243058e8b0d584cb9a2177 100644
+index 5959e1b1772ffbdfb108365171fe37cbf56ef825..bf11359f17511179e046c538716ed4fb26e6edda 100644
 --- a/net/minecraft/world/level/pathfinder/Path.java
 +++ b/net/minecraft/world/level/pathfinder/Path.java
-@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Entity;
+@@ -11,9 +11,9 @@ import net.minecraft.world.entity.Entity;
  import net.minecraft.world.phys.Vec3;
  import org.jspecify.annotations.Nullable;
  
 -public final class Path {
-+public class Path { // Kaiiju - petal - async path processing - not final
++public class Path { // Kaiiju - petal - async path processing - public-f
      public static final StreamCodec<FriendlyByteBuf, Path> STREAM_CODEC = StreamCodec.of((buffer, value) -> value.writeToStream(buffer), Path::createFromStream);
-     public final List<Node> nodes;
+-    public final List<Node> nodes;
++    public List<Node> nodes; // Kaiiju - petal - async path processing - public-f
      private Path.@Nullable DebugData debugData;
+     private int nextNodeIndex;
+     private final BlockPos target;
 @@ -27,6 +27,17 @@ public final class Path {
          this.reached = reached;
      }
@@ -767,7 +790,7 @@ index 5959e1b1772ffbdfb108365171fe37cbf56ef825..68723bebf60bdb8faa243058e8b0d584
      }
  
 diff --git a/net/minecraft/world/level/pathfinder/PathFinder.java b/net/minecraft/world/level/pathfinder/PathFinder.java
-index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d90352e2c42cb 100644
+index 168b475b38b2872b27c1ab15f6846323ac16dd2c..7251fda9e8098c117b14ec387152d03c3ad4321d 100644
 --- a/net/minecraft/world/level/pathfinder/PathFinder.java
 +++ b/net/minecraft/world/level/pathfinder/PathFinder.java
 @@ -26,10 +26,17 @@ public class PathFinder {
@@ -789,15 +812,13 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
      }
  
      public void setCaptureDebug(BooleanSupplier captureDebug) {
-@@ -41,25 +48,61 @@ public class PathFinder {
-     }
+@@ -42,24 +49,64 @@ public class PathFinder {
  
      public @Nullable Path findPath(PathNavigationRegion region, Mob mob, Set<BlockPos> targets, float maxRange, int reachRange, float maxVisitedNodesMultiplier) {
--        this.openSet.clear();
+         this.openSet.clear();
 -        this.nodeEvaluator.prepare(region, mob);
 -        Node start = this.nodeEvaluator.getStart();
 +        // Kaiiju start - petal - async path processing
-+        if (!org.dreeam.leaf.config.modules.async.AsyncPathfinding.enabled) this.openSet.clear(); // It's always cleared in processPath
 +        // Use a generated evaluator if we have one otherwise run sync
 +        NodeEvaluator nodeEvaluator = this.nodeEvaluatorGenerator == null
 +            ? this.nodeEvaluator
@@ -826,14 +847,18 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
 +                return this.findPath(start, map, maxRange, reachRange, maxVisitedNodesMultiplier);
 +            }
 +
++            final int maxVisitedNodes = this.maxVisitedNodes;
++            final BooleanSupplier captureDebug = this.captureDebug;
 +            return new org.dreeam.leaf.async.path.AsyncPath(Lists.newArrayList(), targets, () -> {
 +                try {
-+                    return this.processPath(nodeEvaluator, start, map, maxRange, reachRange, maxVisitedNodesMultiplier);
-+                } catch (Exception e) {
-+                    e.printStackTrace();
-+                    return null;
++                    nodeEvaluator.invalidatePathTypeCache();
++                    BinaryHeap openSet = org.dreeam.leaf.async.path.NodeEvaluatorCache.HEAP_LOCAL.get();
++                    Node[] neighbors = org.dreeam.leaf.async.path.NodeEvaluatorCache.NEIGHBORS_LOCAL.get();
++                    openSet.clear();
++                    return this.processPath(nodeEvaluator, start, map, maxRange, reachRange, maxVisitedNodesMultiplier, openSet, neighbors, captureDebug, maxVisitedNodes);
 +                } finally {
 +                    nodeEvaluator.done();
++                    nodeEvaluator.clearNodes();
 +                    org.dreeam.leaf.async.path.NodeEvaluatorCache.returnNodeEvaluator(nodeEvaluator);
 +                }
 +            });
@@ -844,7 +869,7 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
      private @Nullable Path findPath(Node node, List<Map.Entry<Target, BlockPos>> positions, float maxRange, int reachRange, float maxVisitedNodesMultiplier) { // Paper - optimize collection
 +        // Kaiiju start - petal - async path processing - split pathfinding into the original sync method for compat and processing for delaying
 +        try {
-+            return this.processPath(this.nodeEvaluator, node, positions, maxRange, reachRange, maxVisitedNodesMultiplier);
++            return this.processPath(this.nodeEvaluator, node, positions, maxRange, reachRange, maxVisitedNodesMultiplier, this.openSet, this.neighbors, this.captureDebug, this.maxVisitedNodes);
 +        } catch (Exception e) {
 +            e.printStackTrace();
 +            return null;
@@ -852,26 +877,85 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
 +            this.nodeEvaluator.done();
 +        }
 +    }
-+    private synchronized Path processPath(NodeEvaluator nodeEvaluator, Node node, List<Map.Entry<Target, BlockPos>> positions, float maxRange, int reachRange, float maxVisitedNodesMultiplier) { // sync to only use the caching functions in this class on a single thread
++    private Path processPath(NodeEvaluator nodeEvaluator, Node node, List<Map.Entry<Target, BlockPos>> positions, float maxRange, int reachRange, float maxVisitedNodesMultiplier, BinaryHeap openSet, Node[] neighbors1, BooleanSupplier captureDebug, int maxVisitedNodes) {
 +        org.apache.commons.lang3.Validate.isTrue(!positions.isEmpty()); // ensure that we have at least one position, which means we'll always return a path
 +        // Kaiiju end - petal - async path processing
          ProfilerFiller profilerFiller = Profiler.get();
          profilerFiller.push("find_path");
          profilerFiller.markForCharting(MetricCategory.PATH_FINDING);
-@@ -103,7 +146,7 @@ public class PathFinder {
+@@ -67,20 +114,19 @@ public class PathFinder {
+         node.g = 0.0F;
+         node.h = this.getBestH(node, positions); // Paper - optimize collection
+         node.f = node.h;
+-        this.openSet.clear();
+-        this.openSet.insert(node);
+-        boolean asBoolean = this.captureDebug.getAsBoolean();
++        openSet.insert(node); // Kaiiju - petal - async path processing
++        boolean asBoolean = captureDebug.getAsBoolean(); // Kaiiju - petal - async path processing
+         Set<Node> set1 = asBoolean ? new HashSet<>() : Set.of();
+         int i = 0;
+         List<Map.Entry<Target, BlockPos>> entryList = Lists.newArrayListWithExpectedSize(positions.size()); // Paper - optimize collection
+-        int i1 = (int)(this.maxVisitedNodes * maxVisitedNodesMultiplier);
++        int i1 = (int)(maxVisitedNodes * maxVisitedNodesMultiplier); // Kaiiju - petal - async path processing
+ 
+-        while (!this.openSet.isEmpty()) {
++        while (!openSet.isEmpty()) { // Kaiiju - petal - async path processing
+             if (++i >= i1) {
+                 break;
+             }
+ 
+-            Node node1 = this.openSet.pop();
++            Node node1 = openSet.pop(); // Kaiiju - petal - async path processing
+             node1.closed = true;
+ 
+             // Paper start - optimize collection
+@@ -103,10 +149,10 @@ public class PathFinder {
              }
  
              if (!(node1.distanceTo(node) >= maxRange)) {
 -                int neighbors = this.nodeEvaluator.getNeighbors(this.neighbors, node1);
-+                int neighbors = nodeEvaluator.getNeighbors(this.neighbors, node1); // Kaiiju - petal - async path processing - use provided nodeEvaluator
++                int neighbors = nodeEvaluator.getNeighbors(neighbors1, node1); // Kaiiju - petal - async path processing - use provided nodeEvaluator
  
                  for (int i2 = 0; i2 < neighbors; i2++) {
-                     Node node2 = this.neighbors[i2];
-@@ -145,6 +188,7 @@ public class PathFinder {
+-                    Node node2 = this.neighbors[i2];
++                    Node node2 = neighbors1[i2]; // Kaiiju - petal - async path processing
+                     float f = this.distance(node1, node2);
+                     node2.walkedDistance = node1.walkedDistance + f;
+                     float f1 = node1.g + f + node2.costMalus;
+@@ -115,10 +161,10 @@ public class PathFinder {
+                         node2.g = f1;
+                         node2.h = this.getBestH(node2, positions) * 1.5F; // Paper - Perf: remove streams and optimize collection
+                         if (node2.inOpenSet()) {
+-                            this.openSet.changeCost(node2, node2.g + node2.h);
++                            openSet.changeCost(node2, node2.g + node2.h); // Kaiiju - petal - async path processing
+                         } else {
+                             node2.f = node2.g + node2.h;
+-                            this.openSet.insert(node2);
++                            openSet.insert(node2); // Kaiiju - petal - async path processing
+                         }
+                     }
+                 }
+@@ -143,8 +189,9 @@ public class PathFinder {
+             for(Map.Entry<Target, BlockPos> entry : positions) {
+                 set.add(entry.getKey());
              }
-             best.setDebug(this.openSet.getHeap(), set1.toArray(Node[]::new), set);
+-            best.setDebug(this.openSet.getHeap(), set1.toArray(Node[]::new), set);
++            best.setDebug(openSet.getHeap(), set1.toArray(Node[]::new), set); // Kaiiju - petal - async path processing
          }
 +        //noinspection ConstantConditions // Kaiiju - petal - async path processing - ignore this warning, we know that the above loop always runs at least once since positions is not empty
          return best;
          // Paper end - Perf: remove streams and optimize collection
      }
+diff --git a/net/minecraft/world/level/pathfinder/PathfindingContext.java b/net/minecraft/world/level/pathfinder/PathfindingContext.java
+index 57d60080810054ad791ac8537e105413576a666f..12cb285b8c2519cb8c8eded98d06ec8aec91c8b2 100644
+--- a/net/minecraft/world/level/pathfinder/PathfindingContext.java
++++ b/net/minecraft/world/level/pathfinder/PathfindingContext.java
+@@ -9,7 +9,7 @@ import org.jspecify.annotations.Nullable;
+ 
+ public class PathfindingContext {
+     private final CollisionGetter level;
+-    private final @Nullable PathTypeCache cache;
++    public @Nullable PathTypeCache cache; // Kaiiju - petal - async path processing - private -> public-f
+     private final BlockPos mobPosition;
+     private final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+ 
