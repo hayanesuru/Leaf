@@ -19,7 +19,7 @@ As part of: Lithium (https://github.com/CaffeineMC/lithium)
 Licensed under: LGPL-3.0 (https://www.gnu.org/licenses/lgpl-3.0.html)
 
 diff --git a/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java b/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
-index 6f9a95dd7f76c0b06d0faaf1627d9c46be14c66b..d5a128556e371628cd9ce9963e53d9acd97101f0 100644
+index d1068a122e5dbd5af274d0f8178ca9f5fa49f930..39705af4ec320213afce2b2c5c326a712aa5eba2 100644
 --- a/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
 +++ b/net/minecraft/world/level/levelgen/NoiseBasedChunkGenerator.java
 @@ -59,6 +59,7 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
@@ -30,7 +30,7 @@ index 6f9a95dd7f76c0b06d0faaf1627d9c46be14c66b..d5a128556e371628cd9ce9963e53d9ac
  
      public NoiseBasedChunkGenerator(BiomeSource biomeSource, Holder<NoiseGeneratorSettings> settings) {
          super(biomeSource);
-@@ -422,7 +423,12 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
+@@ -425,7 +426,12 @@ public final class NoiseBasedChunkGenerator extends ChunkGenerator {
  
      @Override
      public int getSeaLevel() {
