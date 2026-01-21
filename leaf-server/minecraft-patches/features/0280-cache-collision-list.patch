@@ -5,17 +5,17 @@ Subject: [PATCH] cache collision list
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index b8b0415ca3ba428de0836498a4b32f443e747d8f..a5ba157792e5f35e1cd27e13969f2026a3d5152b 100644
+index e7c47be16b1089ef14602a75044f7a092af76b68..c7f3dd35b74e5bad21452c5f63db68c260b6ea09 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1178,6 +1178,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1176,6 +1176,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      public final org.dreeam.leaf.world.DespawnMap despawnMap = new org.dreeam.leaf.world.DespawnMap(); // Leaf - optimize despawn
      public final org.dreeam.leaf.world.NatureSpawnChunkMap natureSpawnChunkMap = new org.dreeam.leaf.world.NatureSpawnChunkMap(); // Leaf - optimize mob spawning
      public final org.dreeam.leaf.world.RandomTickSystem randomTickSystem = new org.dreeam.leaf.world.RandomTickSystem(); // Leaf - optimize random tick
 +    public final org.dreeam.leaf.world.EntityCollisionCache entityCollisionCache = new org.dreeam.leaf.world.EntityCollisionCache(); // Leaf - cache collision list
+ 
      public void tickChunk(LevelChunk chunk, int randomTickSpeed) {
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
-         ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
 index e2dd89760c98e965b309469249a0b8c13ebf9dc8..f62b01cf438e108da64802644edff89931084ba5 100644
 --- a/net/minecraft/world/entity/Entity.java
