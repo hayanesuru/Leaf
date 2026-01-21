@@ -6,7 +6,7 @@ import org.dreeam.leaf.config.EnumConfigCategory;
 public class IceAndSnowChance extends ConfigModules {
 
     public String getBasePath() {
-        return EnumConfigCategory.GAMEPLAY.getBaseKeyName() + ".ice-and-snow-tick-chance";
+        return EnumConfigCategory.GAMEPLAY.getBaseKeyName() + ".ice-and-snow-chance";
     }
 
     public static int iceAndSnowChance = 48 * 8;
