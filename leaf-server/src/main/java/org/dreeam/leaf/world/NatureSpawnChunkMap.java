@@ -69,7 +69,7 @@ public final class NatureSpawnChunkMap {
         }
     }
 
-    private void buildBy(int index) {
+    private void buildBfs(int index) {
         LongArrayList list = this.centersByRadius[index];
         int centersSize = deduplicate(list);
         if (centersSize == 0) {
@@ -150,13 +150,19 @@ public final class NatureSpawnChunkMap {
             this.centersByRadius[range].add(player.chunkPosition().longKey);
         }
         for (int index = 0; index < SIZE_RADIUS; index++) {
-            buildBy(index);
+            buildBfs(index);
         }
 
+        buildKdTree(world.purpurConfig.mobSpawningIgnoreCreativePlayers, players);
+        this.ready = true;
+
+        collectSpawningChunks(world, out);
+    }
+
+    private void buildKdTree(boolean ignoreCreativePlayers, ServerPlayer[] players) {
         double[] pxl = new double[players.length];
         double[] pyl = new double[players.length];
         double[] pzl = new double[players.length];
-        boolean ignoreCreativePlayers = world.purpurConfig.mobSpawningIgnoreCreativePlayers;
         int i1 = 0;
         for (ServerPlayer p : players) {
             if (!p.isSpectator() && !(ignoreCreativePlayers && p.isCreative())) {
@@ -171,8 +177,9 @@ public final class NatureSpawnChunkMap {
             indices[j] = j;
         }
         this.tree.build(new double[][]{pxl, pyl, pzl}, indices);
-        this.ready = true;
+    }
 
+    private void collectSpawningChunks(ServerLevel world, List<LevelChunk> out) {
         ReferenceList<LevelChunk> chunks = ((ca.spottedleaf.moonrise.patches.chunk_tick_iteration.ChunkTickServerLevel) world).moonrise$getPlayerTickingChunks();
         LevelChunk[] raw = chunks.getRawDataUnchecked();
         int size = chunks.size();

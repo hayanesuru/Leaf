@@ -30,15 +30,11 @@ index 24342dcbc8f0f7e502d35c9c129c52faef6eb084..21340bd7fd7a90dfef705c3819a39176
      }
      // Paper end - Optional per player mob spawns
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 3849314a97b484af454aa8b9a3fe96389cf20e86..5421d119cf83b35f33fcc1460d5cda17a34f65bd 100644
+index 3849314a97b484af454aa8b9a3fe96389cf20e86..c5f25380c421f06b11e28529ec9cef76c2fee6cd 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -72,10 +72,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-     private final long[] lastChunkPos = new long[4];
-     private final @Nullable ChunkStatus[] lastChunkStatus = new ChunkStatus[4];
-     private final @Nullable ChunkAccess[] lastChunk = new ChunkAccess[4];
--    private final List<LevelChunk> spawningChunks = new ObjectArrayList<>();
-+    private final List<LevelChunk> spawningChunks = it.unimi.dsi.fastutil.objects.ReferenceArrayList.wrap(new LevelChunk[0]); // Leaf - optimize mob spawning
+@@ -75,7 +75,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+     private final List<LevelChunk> spawningChunks = new ObjectArrayList<>();
      private final Set<ChunkHolder> chunkHoldersToBroadcast = new ReferenceOpenHashSet<>();
      @VisibleForDebug
 -    private NaturalSpawner.@Nullable SpawnState lastSpawnState;
@@ -135,7 +131,7 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..5421d119cf83b35f33fcc1460d5cda17
              profiler.popPush("shuffleSpawningChunks");
              // Paper start - chunk tick iteration optimisation
              this.shuffleRandom.setSeed(this.level.random.nextLong());
-@@ -640,10 +644,25 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -640,10 +644,18 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
              // Paper end - chunk tick iteration optimisation
              profiler.popPush("tickSpawningChunks");
  
@@ -145,15 +141,8 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..5421d119cf83b35f33fcc1460d5cda17
 +                NaturalSpawner.SpawnState currentState = lastSpawnState;
 +                if (currentState != null) {
 +                    currentState.applyPerPlayerMobCount(level);
-+                    if (list instanceof it.unimi.dsi.fastutil.objects.ReferenceArrayList<LevelChunk> list1) {
-+                        LevelChunk[] raw = list1.elements();
-+                        for (int _index = 0, _size = list1.size(); _index < _size; _index++) {
-+                            this.tickSpawningChunk(raw[_index], timeInhabited, filteredSpawningCategories, currentState); // Pufferfish
-+                        }
-+                    } else {
-+                        for (LevelChunk levelChunk : list) {
-+                            this.tickSpawningChunk(levelChunk, timeInhabited, filteredSpawningCategories, currentState); // Pufferfish
-+                        }
++                    for (LevelChunk levelChunk : list) {
++                        this.tickSpawningChunk(levelChunk, timeInhabited, filteredSpawningCategories, currentState); // Pufferfish
 +                    }
 +                }
              }
@@ -163,7 +152,7 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..5421d119cf83b35f33fcc1460d5cda17
              list.clear();
          }
  
-@@ -665,7 +684,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -665,7 +677,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
          }
  
          if (!spawnCategories.isEmpty()) {
