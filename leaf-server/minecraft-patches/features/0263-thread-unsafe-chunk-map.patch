@@ -81,10 +81,10 @@ index 50d98b6802bef29c3d1c4c114a7934dfa88821b3..62dc2b950486c76d01379a0d2fe2ad51
  
      // note: never call while inside the chunk system, this will absolutely break everything
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 37da62fd44e6815a2451732d13a8edbe648777af..273bdde6b995e9167d66f228c07f5486414e550d 100644
+index 10fd28052ccefb8a6d6053458dde0fa9473db599..1d12bc9454bb2925cf8894aa7738abb29e38e029 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1952,6 +1952,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1953,6 +1953,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                      serverLevelTickingSemaphore.acquire();
                      tasks.add(
                          serverLevel.tickExecutor.submit(() -> {
@@ -93,7 +93,7 @@ index 37da62fd44e6815a2451732d13a8edbe648777af..273bdde6b995e9167d66f228c07f5486
                              ca.spottedleaf.moonrise.common.util.TickThread.ServerLevelTickThread currentThread = (ca.spottedleaf.moonrise.common.util.TickThread.ServerLevelTickThread) Thread.currentThread();
                              currentThread.currentTickingServerLevel = serverLevel;
  
-@@ -1972,7 +1974,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1973,7 +1975,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              }
  
              while (!tasks.isEmpty()) {
@@ -105,7 +105,7 @@ index 37da62fd44e6815a2451732d13a8edbe648777af..273bdde6b995e9167d66f228c07f5486
          } catch (java.lang.InterruptedException | java.util.concurrent.ExecutionException e) {
              throw new RuntimeException(e); // Propagate exception
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 28c9076346332862ff8ddd034971aa9acf7499c4..f3b9322e3ef42a3224c1d3d0ee6b5b8b80de2e2d 100644
+index 3a40468e01e9bb6981af81adeb0d9c3c89b3fa8b..5e4bf72eed3f9e82df9afb69b5f77311de3e3382 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -78,6 +78,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
