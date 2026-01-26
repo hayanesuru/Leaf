@@ -80,7 +80,7 @@ index 288a3eb57f3431dd624ad8a4b08684563abbc5ad..499cad369242f9ad724b3251538d62d8
              if (list == null) {
                  throw new IllegalStateException("Does not contain player " + player);
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
-index 7a40cef6c0edf4bb728f74f0c2e93c7e9f34a1b3..3ca08ab3b57c278748ad58ab03751f25ab6202e5 100644
+index d8e0ba633224cc665c7dc65463cdb27e70be73a6..4ad7cb1369f0c2a69a1199de71654f7de5c84470 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
 @@ -345,7 +345,7 @@ public final class RegionizedPlayerChunkLoader {
@@ -92,7 +92,7 @@ index 7a40cef6c0edf4bb728f74f0c2e93c7e9f34a1b3..3ca08ab3b57c278748ad58ab03751f25
  
          private static final byte CHUNK_TICKET_STAGE_NONE           = 0;
          private static final byte CHUNK_TICKET_STAGE_LOADING        = 1;
-@@ -423,6 +423,14 @@ public final class RegionizedPlayerChunkLoader {
+@@ -424,6 +424,14 @@ public final class RegionizedPlayerChunkLoader {
  
                  PlatformHooks.get().onChunkWatch(this.world, chunk, this.player);
                  PlayerChunkSender.sendChunk(this.player.connection, this.world, chunk);
