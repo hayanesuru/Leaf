@@ -31,8 +31,7 @@ public class DoABarrelRollProtocol implements Protocol {
     private static final int PROTOCOL_VERSION = 4;
     private static final ModConfigServer DEFAULT = new ModConfigServer(false, false, false, 40, KineticDamage.VANILLA);
     private static final Component SYNC_TIMEOUT_MESSAGE = Component.literal("Please install Do a Barrel Roll 2.4.0 or later to play on this server.");
-    @Nullable
-    private static DoABarrelRollProtocol INSTANCE = null;
+    private static @Nullable DoABarrelRollProtocol INSTANCE = null;
 
     private final List<Protocols.TypeAndCodec<FriendlyByteBuf, ? extends LeafCustomPayload>> c2s = ImmutableList.of(
         new Protocols.TypeAndCodec<>(ConfigUpdateC2SPacket.TYPE, ConfigUpdateC2SPacket.STREAM_CODEC),
