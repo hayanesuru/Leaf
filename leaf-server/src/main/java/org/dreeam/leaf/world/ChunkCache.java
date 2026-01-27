@@ -196,7 +196,7 @@ public final class ChunkCache<V> {
     /// @see #isSameThread()
     /// @see #setThread()
     public void ensureSameThread() {
-        if (!isSameThread() || !(Thread.currentThread() instanceof WatchdogThread)) {
+        if (!isSameThread() && !(Thread.currentThread() instanceof WatchdogThread)) {
             throw new IllegalStateException("Thread failed main thread check: Cannot update chunk status asynchronously, context=thread=" + Thread.currentThread().getName());
         }
     }
