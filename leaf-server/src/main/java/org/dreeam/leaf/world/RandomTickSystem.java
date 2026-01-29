@@ -6,12 +6,12 @@ import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongArrays;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.levelgen.BitRandomSource;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.material.FluidState;
 
 public final class RandomTickSystem {
@@ -216,8 +216,11 @@ public final class RandomTickSystem {
             if (currentIceAndSnowTick <= 0) {
                 currentIceAndSnowTick = random.nextInt(48 * 16);
                 LevelChunk chunk = raw[i];
-                ChunkPos pos = chunk.getPos();
-                world.tickPrecipitation(world.getBlockRandomPos(pos.getMinBlockX(), 0, pos.getMinBlockZ(), 15));
+                BlockPos pos = world.getBlockRandomPos(chunk.locX << 4, 0, chunk.locZ << 4, 15);
+                int h = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING, pos.getX() & 15, pos.getZ() & 15) + 1;
+                BlockPos heightmapPos = new BlockPos(pos.getX(), h, pos.getZ());
+                BlockPos blockPos = new BlockPos(pos.getX(), h - 1, pos.getZ());
+                world.tickPrecipitation(chunk, heightmapPos, blockPos);
             }
         }
     }

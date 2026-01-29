@@ -24,7 +24,7 @@ index dcf6537cdc744ea45f0f9b08fcebc4185b3d99fb..8f1c33e3fed2937d599a5db3c1b559cf
              profiler.popPush("customSpawners");
              this.level.tickCustomSpawners(this.spawnEnemies);
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 1e435862eceb2731c4eb58f4f60c6c6dfe5765df..7028fce7b114631d9361c8598d9fc0a47653d6f7 100644
+index 1e435862eceb2731c4eb58f4f60c6c6dfe5765df..f2bcd1647cb5d5256a5dfaf8a5e8b1289da45179 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1176,6 +1176,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -35,6 +35,71 @@ index 1e435862eceb2731c4eb58f4f60c6c6dfe5765df..7028fce7b114631d9361c8598d9fc0a4
      public void tickChunk(LevelChunk chunk, int randomTickSpeed) {
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
+@@ -1303,6 +1304,64 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         }
+     }
+ 
++    // Leaf start - optimize random tick
++    public void tickPrecipitation(LevelChunk chunk, BlockPos heightmapPos, BlockPos blockPos) {
++        Biome biome = this.getBiome(heightmapPos).value();
++        if (biome.shouldFreeze(this, blockPos)) {
++            org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(this, blockPos, Blocks.ICE.defaultBlockState(), Block.UPDATE_ALL, null); // CraftBukkit
++        }
++
++        if (this.isRaining()) {
++            int i = this.getGameRules().get(GameRules.MAX_SNOW_ACCUMULATION_HEIGHT);
++            if (i > 0 && biome.shouldSnow(this, heightmapPos)) {
++                BlockState blockState = chunk.getBlockState(heightmapPos);
++                if (blockState.is(Blocks.SNOW)) {
++                    int layersValue = blockState.getValue(SnowLayerBlock.LAYERS);
++                    if (layersValue < Math.min(i, 8)) {
++                        // Purpur start - Smooth snow accumulation
++                        boolean canSnow = true;
++                        // Ensure snow doesn't get more than N layers taller than its neighbors
++                        // We only need to check blocks that are taller than the minimum step height
++                        if (org.purpurmc.purpur.PurpurConfig.smoothSnowAccumulationStep > 0 && layersValue >= org.purpurmc.purpur.PurpurConfig.smoothSnowAccumulationStep) {
++                            int layersValueMin = layersValue - org.purpurmc.purpur.PurpurConfig.smoothSnowAccumulationStep;
++                            for (Direction direction : Direction.Plane.HORIZONTAL.faces) { // Pluto - Expose Direction$Plane's faces
++                                BlockPos blockPosNeighbor = heightmapPos.relative(direction);
++                                BlockState blockStateNeighbor = this.getBlockState(blockPosNeighbor);
++                                if (blockStateNeighbor.is(Blocks.SNOW)) {
++                                    // Special check for snow layers, if neighbors are too short, don't accumulate
++                                    int layersValueNeighbor = blockStateNeighbor.getValue(SnowLayerBlock.LAYERS);
++                                    if (layersValueNeighbor <= layersValueMin) {
++                                        canSnow = false;
++                                        break;
++                                    }
++                                } else if (!Block.isFaceFull(blockStateNeighbor.getCollisionShape(this, blockPosNeighbor), direction.getOpposite())) {
++                                    // Since our layer is tall enough already, if we have a non-full neighbor block, don't accumulate
++                                    canSnow = false;
++                                    break;
++                                }
++                            }
++                        }
++                        if (canSnow) {
++                            // Purpur end - Smooth snow accumulation
++                            BlockState blockState1 = blockState.setValue(SnowLayerBlock.LAYERS, layersValue + 1);
++                            Block.pushEntitiesUp(blockState, blockState1, this, heightmapPos);
++                            org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(this, heightmapPos, blockState1, Block.UPDATE_ALL, null); // CraftBukkit
++                        } // Purpur - Smooth snow accumulation
++                    }
++                } else {
++                    org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(this, heightmapPos, Blocks.SNOW.defaultBlockState(), Block.UPDATE_ALL, null); // CraftBukkit
++                }
++            }
++
++            Biome.Precipitation precipitationAt = biome.getPrecipitationAt(blockPos, this.getSeaLevel());
++            if (precipitationAt != Biome.Precipitation.NONE) {
++                BlockState blockState2 = chunk.getBlockState(blockPos);
++                blockState2.getBlock().handlePrecipitation(blockState2, this, blockPos, precipitationAt);
++            }
++        }
++    }
++    // Leaf end - optimize random tick
++
+     public Optional<BlockPos> findLightningRod(BlockPos pos) {
+         Optional<BlockPos> optional = this.getPoiManager()
+             .findClosest(
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
 index 1ae159c4dff71130bb66db101e5ef4e7aa0afcfc..6d22eead50e76c53cee73e2af87d95c2a4cad393 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java

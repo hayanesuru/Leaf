@@ -113,7 +113,7 @@ index 0000000000000000000000000000000000000000..1f206998a61af887e312953319e69fc7
 +    }
 +}
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 2643dc54f899420b6847d1c537d0f1dd4a3c2e05..696354ce6e9c1df6d8b911773aa7033ce2bc8723 100644
+index 251066712d953fdb72d065f3c17753b0229f051c..3f5f205880ee4a7aa822a706b4580069514d8dd7 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1000,6 +1000,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -124,7 +124,7 @@ index 2643dc54f899420b6847d1c537d0f1dd4a3c2e05..696354ce6e9c1df6d8b911773aa7033c
              this.entityTickList
                  .forEach(
                      entity -> {
-@@ -3218,4 +3219,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -3276,4 +3277,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          this.lagCompensationTick = (System.nanoTime() - MinecraftServer.SERVER_INIT) / (java.util.concurrent.TimeUnit.MILLISECONDS.toNanos(50L));
      }
      // Paper end - lag compensation
