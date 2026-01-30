@@ -5,10 +5,10 @@ Subject: [PATCH] Skip PreCreatureSpawnEvent if no listeners
 
 
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index 2762f9b1861df01a2f38b44a2f7416c7c10af204..08556dcaa23934e033add1d8912890454ce9b638 100644
+index 64593ab8086c31e0919016f7e98a67703d84f288..587741d8a8d741eff70f92415a0b2f643a9ecf58 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -533,17 +533,35 @@ public final class NaturalSpawner {
+@@ -534,17 +534,35 @@ public final class NaturalSpawner {
          LevelChunk chunk
      ) {
          EntityType<?> entityType = data.type();
