@@ -64,11 +64,11 @@ index 5bfdb48ff7ef740a5a01d02e87f0264e17338de4..4e16552680f86cf1589f862cb38c0f43
          }
  
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 72926c0c0a1d0a123acc981b88dcb9c2c8962568..28c9076346332862ff8ddd034971aa9acf7499c4 100644
+index 3b2a5d2c5d6afa8c8cbfe94464bd198e2d0c50f2..73c69215b57858c61474295749bd99a6fb8378d6 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -643,8 +643,12 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-             this.level.natureSpawnChunkMap.collectSpawningChunks(this.level.moonrise$getPlayerTickingChunks(), list);
+@@ -639,8 +639,12 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+             if (org.dreeam.leaf.config.modules.opt.OptimizeMobSpawning.enabled) { this.level.natureSpawnChunkMap.tick(this.level, list); } else { this.chunkMap.collectSpawningChunks(list); } // Leaf - optimize mob spawning
              profiler.popPush("shuffleSpawningChunks");
              // Paper start - chunk tick iteration optimisation
 -            this.shuffleRandom.setSeed(this.level.random.nextLong());
