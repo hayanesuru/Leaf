@@ -30,7 +30,7 @@ index 24342dcbc8f0f7e502d35c9c129c52faef6eb084..21340bd7fd7a90dfef705c3819a39176
      }
      // Paper end - Optional per player mob spawns
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 3849314a97b484af454aa8b9a3fe96389cf20e86..dcf6537cdc744ea45f0f9b08fcebc4185b3d99fb 100644
+index b295a8b383a3d572e0c499fc0ea27ae1a95f9c06..58452dd5ace7bea3e5fa6458be124dfd2ceee511 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -72,10 +72,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -70,7 +70,7 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..dcf6537cdc744ea45f0f9b08fcebc418
          long gameTime = this.level.getGameTime();
          long l = gameTime - this.lastInhabitedUpdate;
          this.lastInhabitedUpdate = gameTime;
-@@ -517,8 +534,8 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -516,8 +533,8 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
          }
  
          // Pufferfish start - optimize mob spawning
@@ -81,7 +81,7 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..dcf6537cdc744ea45f0f9b08fcebc418
                  // Paper start - per player mob spawning backoff
                  for (int ii = 0; ii < ServerPlayer.MOBCATEGORY_TOTAL_ENUMS; ii++) {
                      player.mobCounts[ii] = 0;
-@@ -530,34 +547,21 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -529,34 +546,21 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
                      player.mobBackoffCounts[ii] = newBackoff;
                  }
                  // Paper end - per player mob spawning backoff
@@ -126,7 +126,7 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..dcf6537cdc744ea45f0f9b08fcebc418
                      _pufferfish_spawnCountsReady.set(true);
                  });
              }
-@@ -620,6 +624,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -619,6 +623,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
                  chunkRange = Math.min(chunkRange, 8);
                  entityPlayer.playerNaturallySpawnedEvent = new com.destroystokyo.paper.event.entity.PlayerNaturallySpawnCreaturesEvent(entityPlayer.getBukkitEntity(), (byte) chunkRange);
                  entityPlayer.playerNaturallySpawnedEvent.callEvent();
@@ -134,7 +134,7 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..dcf6537cdc744ea45f0f9b08fcebc418
              }
              // Paper end - PlayerNaturallySpawnCreaturesEvent
              boolean flag1 = this.level.ticksPerSpawnCategory.getLong(org.bukkit.entity.SpawnCategory.ANIMAL) != 0L && this.level.getGameTime() % this.level.ticksPerSpawnCategory.getLong(org.bukkit.entity.SpawnCategory.ANIMAL) == 0L; // CraftBukkit
-@@ -632,7 +637,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -631,7 +636,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
  
          try {
              profiler.popPush("filteringSpawningChunks");
@@ -146,7 +146,7 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..dcf6537cdc744ea45f0f9b08fcebc418
              profiler.popPush("shuffleSpawningChunks");
              // Paper start - chunk tick iteration optimisation
              this.shuffleRandom.setSeed(this.level.random.nextLong());
-@@ -640,10 +648,25 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -639,10 +647,25 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
              // Paper end - chunk tick iteration optimisation
              profiler.popPush("tickSpawningChunks");
  
@@ -174,7 +174,7 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..dcf6537cdc744ea45f0f9b08fcebc418
              list.clear();
          }
  
-@@ -665,7 +688,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -664,7 +687,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
          }
  
          if (!spawnCategories.isEmpty()) {
@@ -184,17 +184,17 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..dcf6537cdc744ea45f0f9b08fcebc418
              }
          }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 2a18278df5b05467883587cbdc98335fdc71461f..1e435862eceb2731c4eb58f4f60c6c6dfe5765df 100644
+index 2cca085764d0ad40cee1ff29638941234109652e..6d0af1843737f8c125522d551d8cf0fe0321936e 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1175,6 +1175,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-     private int currentIceAndSnowTick = 0; protected void resetIceAndSnowTick() { this.currentIceAndSnowTick = this.simpleRandom.nextInt(16); } // Gale - Airplane - optimize random calls in chunk ticking
+@@ -1173,6 +1173,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+     // Paper end - optimise random ticking
  
      public final org.dreeam.leaf.world.DespawnMap despawnMap = new org.dreeam.leaf.world.DespawnMap(); // Leaf - optimize despawn
 +    public final org.dreeam.leaf.world.NatureSpawnChunkMap natureSpawnChunkMap = new org.dreeam.leaf.world.NatureSpawnChunkMap(); // Leaf - optimize mob spawning
+ 
      public void tickChunk(LevelChunk chunk, int randomTickSpeed) {
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
-         ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
 index 0cb3e9f4e51f30fc21c50eeb96ff1bb8a8894ca5..9182d8ca3391593b07580afa901526cef01cdd85 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java

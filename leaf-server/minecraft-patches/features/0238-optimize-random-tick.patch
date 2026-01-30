@@ -5,10 +5,10 @@ Subject: [PATCH] optimize random tick
 
 
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index dcf6537cdc744ea45f0f9b08fcebc4185b3d99fb..8f1c33e3fed2937d599a5db3c1b559cf63d28902 100644
+index 58452dd5ace7bea3e5fa6458be124dfd2ceee511..2f00896126121520c71566360b49d698b265e256 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -671,7 +671,13 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -670,7 +670,13 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
          }
  
          profiler.popPush("tickTickingChunks");
@@ -24,17 +24,17 @@ index dcf6537cdc744ea45f0f9b08fcebc4185b3d99fb..8f1c33e3fed2937d599a5db3c1b559cf
              profiler.popPush("customSpawners");
              this.level.tickCustomSpawners(this.spawnEnemies);
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 1e435862eceb2731c4eb58f4f60c6c6dfe5765df..7028fce7b114631d9361c8598d9fc0a47653d6f7 100644
+index 6d0af1843737f8c125522d551d8cf0fe0321936e..8d5de575fb1f6418ca5d8b2574e67fe5d58619d5 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1176,6 +1176,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1174,6 +1174,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      public final org.dreeam.leaf.world.DespawnMap despawnMap = new org.dreeam.leaf.world.DespawnMap(); // Leaf - optimize despawn
      public final org.dreeam.leaf.world.NatureSpawnChunkMap natureSpawnChunkMap = new org.dreeam.leaf.world.NatureSpawnChunkMap(); // Leaf - optimize mob spawning
 +    public final org.dreeam.leaf.world.RandomTickSystem randomTickSystem = new org.dreeam.leaf.world.RandomTickSystem(); // Leaf - optimize random tick
+ 
      public void tickChunk(LevelChunk chunk, int randomTickSpeed) {
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
-         ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
 index 1ae159c4dff71130bb66db101e5ef4e7aa0afcfc..6d22eead50e76c53cee73e2af87d95c2a4cad393 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
