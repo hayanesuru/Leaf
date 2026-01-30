@@ -25,14 +25,15 @@ index cf2a365bcbb1a278e5553c16ffef6d9ae81f4d41..407b0080ef21c37bbee9ff18b18d0387
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java b/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
-index b732193804c0a73e5ced822d7491c7700696338c..97b98284719b3b634428c5e8ef44050f847a5796 100644
+index b732193804c0a73e5ced822d7491c7700696338c..39daaf2cb844a957856e004c6fa3cf7c83041ade 100644
 --- a/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
 +++ b/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
-@@ -56,7 +56,14 @@ public class LookAtPlayerGoal extends Goal {
+@@ -56,7 +56,16 @@ public class LookAtPlayerGoal extends Goal {
  
              ServerLevel serverLevel = getServerLevel(this.mob);
              if (this.lookAtType == Player.class) {
 -                this.lookAt = serverLevel.getNearestPlayer(this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++                // Leaf start - optimize LookAtPlayerGoal
 +                if (org.dreeam.leaf.config.modules.opt.OptimizeLookAtPlayer.enabled) {
 +                    Player player = serverLevel.lookAtPlayerMap.get(this.mob.getX(), this.mob.getEyeY(), this.mob.getZ(), this.lookDistance);
 +                    if (player != null && this.lookAtContext.test(serverLevel, this.mob, player)) {
@@ -41,6 +42,7 @@ index b732193804c0a73e5ced822d7491c7700696338c..97b98284719b3b634428c5e8ef44050f
 +                } else {
 +                    this.lookAt = serverLevel.getNearestPlayer(this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 +                }
++                // Leaf end - optimize LookAtPlayerGoal
              } else {
                  this.lookAt = serverLevel.getNearestEntity(
                      this.mob
