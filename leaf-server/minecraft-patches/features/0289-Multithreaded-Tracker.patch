@@ -138,10 +138,10 @@ index 22f37a0779996c9e3a9416a2a1ba2bee74e3f568..e0f5ed5109402dcef0a71c44d0877c15
          return ObjectSets.unmodifiable(chunks);
      }
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 1d12bc9454bb2925cf8894aa7738abb29e38e029..aca1f4eb6cba11ea27863375c825a74eb11916e1 100644
+index c00289150461a17623cd0b42bb8aac3a76e0aaca..aea4dda49b5a06e92328ead6f962f73cdcc8c91c 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1985,6 +1985,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1979,6 +1979,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          // Leaf end - SparklyPaper - parallel world ticking
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
@@ -150,7 +150,7 @@ index 1d12bc9454bb2925cf8894aa7738abb29e38e029..aca1f4eb6cba11ea27863375c825a74e
          profilerFiller.popPush("connection");
          this.tickConnection();
          profilerFiller.popPush("players");
-@@ -2083,6 +2085,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2077,6 +2079,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          Map<ResourceKey<Level>, ServerLevel> newLevels = Maps.newLinkedHashMap(oldLevels);
          newLevels.remove(level.dimension());
          if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) level.tickExecutor.shutdown(); // Leaf - SparklyPaper - parallel world ticking (We remove it in here instead of ServerLevel.close() because ServerLevel.close() is never called!)
@@ -1086,10 +1086,10 @@ index 5e7f0429f8e6441b21994e92c4ecc67a4b71abd7..057e38b58454a53af3d4bb26dfe95a10
          void sendToTrackingPlayers(Packet<? super ClientGamePacketListener> packet);
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 32b7ca2f264ac3b0fd1331b2174900b83318fce9..541c384187a0b20386ccc35200c7c4eb1ce62e9b 100644
+index 54b7270ce41b0e74a098f7fcff2072041d562703..b551c5ea6f349002fb5fea743f925ff4675b0392 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -236,6 +236,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -234,6 +234,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      public boolean hasEntityMoveEvent; // Paper - Add EntityMoveEvent
      private final alternate.current.wire.WireHandler wireHandler = new alternate.current.wire.WireHandler(this); // Paper - optimize redstone (Alternate Current)
      public boolean hasRidableMoveEvent = false; // Purpur - Ridables
@@ -1097,7 +1097,7 @@ index 32b7ca2f264ac3b0fd1331b2174900b83318fce9..541c384187a0b20386ccc35200c7c4eb
  
      @Override
      public @Nullable LevelChunk getChunkIfLoaded(int x, int z) {
-@@ -1060,6 +1061,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -937,6 +938,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          this.debugSynchronizers.tick(this.server.debugSubscribers());
          profilerFiller.pop();
          this.environmentAttributes().invalidateTickCache();

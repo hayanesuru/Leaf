@@ -5,10 +5,10 @@ Subject: [PATCH] cache collision list
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index b8b0415ca3ba428de0836498a4b32f443e747d8f..a5ba157792e5f35e1cd27e13969f2026a3d5152b 100644
+index 83288cb75b10896fe9f5838f2005314baa513aa4..f852bb29e6b09b663cb2bd74c15c7137e7bd5f56 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1178,6 +1178,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1055,6 +1055,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      public final org.dreeam.leaf.world.DespawnMap despawnMap = new org.dreeam.leaf.world.DespawnMap(); // Leaf - optimize despawn
      public final org.dreeam.leaf.world.NatureSpawnChunkMap natureSpawnChunkMap = new org.dreeam.leaf.world.NatureSpawnChunkMap(); // Leaf - optimize mob spawning
      public final org.dreeam.leaf.world.RandomTickSystem randomTickSystem = new org.dreeam.leaf.world.RandomTickSystem(); // Leaf - optimize random tick

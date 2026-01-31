@@ -96,10 +96,10 @@ index 1f206998a61af887e312953319e69fc79e10e7e1..a7d9bc5821c0202462376b06ddc44aac
 +    // Leaf end - Paper PR: Optimise temptation lookups changes
  }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 696354ce6e9c1df6d8b911773aa7033ce2bc8723..b8b0415ca3ba428de0836498a4b32f443e747d8f 100644
+index 398e8fc319c820eb19c6aa1df0692c11450bdb5c..83288cb75b10896fe9f5838f2005314baa513aa4 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1000,7 +1000,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -877,7 +877,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
              io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
              boolean didDespawn = tickRateManager.runsNormally() && despawnMap.tick(this, this.entityTickList); // Leaf - optimize despawn

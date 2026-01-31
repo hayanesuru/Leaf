@@ -113,10 +113,10 @@ index 0000000000000000000000000000000000000000..1f206998a61af887e312953319e69fc7
 +    }
 +}
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 2643dc54f899420b6847d1c537d0f1dd4a3c2e05..696354ce6e9c1df6d8b911773aa7033ce2bc8723 100644
+index 2fd0d791775cc86dfe9e8fe391762d1ac752443f..398e8fc319c820eb19c6aa1df0692c11450bdb5c 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1000,6 +1000,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -877,6 +877,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
              io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
              boolean didDespawn = tickRateManager.runsNormally() && despawnMap.tick(this, this.entityTickList); // Leaf - optimize despawn
@@ -124,7 +124,7 @@ index 2643dc54f899420b6847d1c537d0f1dd4a3c2e05..696354ce6e9c1df6d8b911773aa7033c
              this.entityTickList
                  .forEach(
                      entity -> {
-@@ -3218,4 +3219,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -3095,4 +3096,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          this.lagCompensationTick = (System.nanoTime() - MinecraftServer.SERVER_INIT) / (java.util.concurrent.TimeUnit.MILLISECONDS.toNanos(50L));
      }
      // Paper end - lag compensation
