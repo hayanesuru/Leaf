@@ -1,0 +1,4 @@
+From: hayanesuru <hayanesuru@outlook.jp>
+Subject: [PATCH] parallel world ticking: optimize ServerWaypointManager
+
+remove unnecessary thread check in #updateConnection and #createConnection
