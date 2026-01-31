@@ -1,4 +1,0 @@
-From: hayanesuru <hayanesuru@outlook.jp>
-Subject: [PATCH] parallel world ticking: revert getBlockRandomPos
-
-used by chunk ticking, no changes needed here
