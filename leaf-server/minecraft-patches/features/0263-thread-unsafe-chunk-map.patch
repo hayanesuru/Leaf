@@ -81,10 +81,10 @@ index 50d98b6802bef29c3d1c4c114a7934dfa88821b3..62dc2b950486c76d01379a0d2fe2ad51
  
      // note: never call while inside the chunk system, this will absolutely break everything
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 10fd28052ccefb8a6d6053458dde0fa9473db599..1d12bc9454bb2925cf8894aa7738abb29e38e029 100644
+index 8435bd937be05f67b81d2c81a93a18cf85cf4d36..c00289150461a17623cd0b42bb8aac3a76e0aaca 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1953,6 +1953,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1947,6 +1947,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                      serverLevelTickingSemaphore.acquire();
                      tasks.add(
                          serverLevel.tickExecutor.submit(() -> {
@@ -93,7 +93,7 @@ index 10fd28052ccefb8a6d6053458dde0fa9473db599..1d12bc9454bb2925cf8894aa7738abb2
                              ca.spottedleaf.moonrise.common.util.TickThread.ServerLevelTickThread currentThread = (ca.spottedleaf.moonrise.common.util.TickThread.ServerLevelTickThread) Thread.currentThread();
                              currentThread.currentTickingServerLevel = serverLevel;
  
-@@ -1973,7 +1975,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1967,7 +1969,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              }
  
              while (!tasks.isEmpty()) {
@@ -190,7 +190,7 @@ index 3a40468e01e9bb6981af81adeb0d9c3c89b3fa8b..5e4bf72eed3f9e82df9afb69b5f77311
              return ret;
          }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 0c6ded7fc7fb60e789a3c0a826f56b099b33935e..0d88ef2e12dc297610c56136aeadcfcf5f2e76b9 100644
+index f0744ce1fa05c053b78806188452a23f70caacee..b0873979f714efbc4f436a6f68b2e3965273b3ae 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1030,6 +1030,18 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

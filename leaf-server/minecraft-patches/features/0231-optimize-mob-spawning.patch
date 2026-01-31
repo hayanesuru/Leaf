@@ -184,10 +184,10 @@ index 3849314a97b484af454aa8b9a3fe96389cf20e86..dcf6537cdc744ea45f0f9b08fcebc418
              }
          }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 2a18278df5b05467883587cbdc98335fdc71461f..1e435862eceb2731c4eb58f4f60c6c6dfe5765df 100644
+index c3c770a579be75020624b15fb1020217a6fb82a3..15cec3160fa5148291a343bd7bd44f2146488ecf 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1175,6 +1175,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1052,6 +1052,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      private int currentIceAndSnowTick = 0; protected void resetIceAndSnowTick() { this.currentIceAndSnowTick = this.simpleRandom.nextInt(16); } // Gale - Airplane - optimize random calls in chunk ticking
  
      public final org.dreeam.leaf.world.DespawnMap despawnMap = new org.dreeam.leaf.world.DespawnMap(); // Leaf - optimize despawn

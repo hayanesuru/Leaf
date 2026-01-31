@@ -16,10 +16,6 @@ public class SparklyPaperParallelWorldTicking extends ConfigModules {
     public static int threads = 8;
     public static boolean logContainerCreationStacktraces = false;
     public static boolean disableHardThrow = false;
-    @Deprecated
-    public static Boolean runAsyncTasksSync;
-    // STRICT, BUFFERED, DISABLED
-    public static String asyncUnsafeReadHandling = "BUFFERED";
 
     @Override
     public void onLoaded() {
@@ -38,25 +34,11 @@ public class SparklyPaperParallelWorldTicking extends ConfigModules {
             threads = 0;
         }
 
-        logContainerCreationStacktraces = config.getBoolean(getBasePath() + ".log-container-creation-stacktraces", logContainerCreationStacktraces);
-        logContainerCreationStacktraces = enabled && logContainerCreationStacktraces;
+        Boolean b = config.getBoolean(getBasePath() + ".log-container-creation-stacktraces");
+        logContainerCreationStacktraces = b != null && enabled && logContainerCreationStacktraces;
+
         disableHardThrow = config.getBoolean(getBasePath() + ".disable-hard-throw", disableHardThrow);
         disableHardThrow = enabled && disableHardThrow;
-        asyncUnsafeReadHandling = config.getString(getBasePath() + ".async-unsafe-read-handling", asyncUnsafeReadHandling).toUpperCase();
-
-        if (!asyncUnsafeReadHandling.equals("STRICT") && !asyncUnsafeReadHandling.equals("BUFFERED") && !asyncUnsafeReadHandling.equals("DISABLED")) {
-            LeafConfig.LOGGER.warn("Invalid value for {}.async-unsafe-read-handling: {}, fallback to STRICT.", getBasePath(), asyncUnsafeReadHandling);
-            asyncUnsafeReadHandling = "STRICT";
-        }
-        if (!enabled) {
-            asyncUnsafeReadHandling = "DISABLED";
-        }
-
-        // Transfer old config
-        runAsyncTasksSync = config.getBoolean(getBasePath() + ".run-async-tasks-sync");
-        if (runAsyncTasksSync != null && runAsyncTasksSync) {
-            LeafConfig.LOGGER.warn("The setting '{}.run-async-tasks-sync' is deprecated, removed automatically. Use 'async-unsafe-read-handling: BUFFERED' for buffered reads instead.", getBasePath());
-        }
 
         if (enabled) {
             LeafConfig.LOGGER.info("Using {} threads for Parallel World Ticking", threads);

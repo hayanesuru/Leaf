@@ -64,7 +64,7 @@ index 5bfdb48ff7ef740a5a01d02e87f0264e17338de4..4e16552680f86cf1589f862cb38c0f43
          }
  
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 72926c0c0a1d0a123acc981b88dcb9c2c8962568..28c9076346332862ff8ddd034971aa9acf7499c4 100644
+index 8f1c33e3fed2937d599a5db3c1b559cf63d28902..3a40468e01e9bb6981af81adeb0d9c3c89b3fa8b 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -643,8 +643,12 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -83,10 +83,10 @@ index 72926c0c0a1d0a123acc981b88dcb9c2c8962568..28c9076346332862ff8ddd034971aa9a
              profiler.popPush("tickSpawningChunks");
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 7028fce7b114631d9361c8598d9fc0a47653d6f7..2643dc54f899420b6847d1c537d0f1dd4a3c2e05 100644
+index 92631937172e835ac7d38ee15887999d0fc49ab6..2fd0d791775cc86dfe9e8fe391762d1ac752443f 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1593,26 +1593,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1470,26 +1470,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      }
  
@@ -113,7 +113,7 @@ index 7028fce7b114631d9361c8598d9fc0a47653d6f7..2643dc54f899420b6847d1c537d0f1dd
          entity.setOldPosAndRot();
          ProfilerFiller profilerFiller = Profiler.get();
          entity.tickCount++;
-@@ -1629,13 +1611,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1506,13 +1488,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          for (Entity entity1 : entity.getPassengers()) {
              this.tickPassenger(entity, entity1, isActive); // Paper - EAR 2
          }

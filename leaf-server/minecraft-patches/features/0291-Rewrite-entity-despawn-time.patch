@@ -20,10 +20,10 @@ Brings the ability to despawn weak-loaded entities once they are ticked,
 a solution for https://github.com/PaperMC/Paper/issues/12986
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 541c384187a0b20386ccc35200c7c4eb1ce62e9b..e41087a52c5c0521728357431afd182080ab1291 100644
+index b551c5ea6f349002fb5fea743f925ff4675b0392..f6ae220437aff87fb1371fa9b17574183bef4dfa 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1613,6 +1613,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1490,6 +1490,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          } else {entity.inactiveTick();} // Paper - EAR 2
          profilerFiller.pop();
  
@@ -32,7 +32,7 @@ index 541c384187a0b20386ccc35200c7c4eb1ce62e9b..e41087a52c5c0521728357431afd1820
          for (Entity entity1 : entity.getPassengers()) {
              this.tickPassenger(entity, entity1, isActive); // Paper - EAR 2
          }
-@@ -1641,6 +1643,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1518,6 +1520,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              // Paper end - EAR 2
              profilerFiller.pop();
  

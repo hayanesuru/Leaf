@@ -24,10 +24,10 @@ index dcf6537cdc744ea45f0f9b08fcebc4185b3d99fb..8f1c33e3fed2937d599a5db3c1b559cf
              profiler.popPush("customSpawners");
              this.level.tickCustomSpawners(this.spawnEnemies);
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 1e435862eceb2731c4eb58f4f60c6c6dfe5765df..7028fce7b114631d9361c8598d9fc0a47653d6f7 100644
+index 15cec3160fa5148291a343bd7bd44f2146488ecf..92631937172e835ac7d38ee15887999d0fc49ab6 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1176,6 +1176,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1053,6 +1053,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      public final org.dreeam.leaf.world.DespawnMap despawnMap = new org.dreeam.leaf.world.DespawnMap(); // Leaf - optimize despawn
      public final org.dreeam.leaf.world.NatureSpawnChunkMap natureSpawnChunkMap = new org.dreeam.leaf.world.NatureSpawnChunkMap(); // Leaf - optimize mob spawning

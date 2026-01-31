@@ -6,10 +6,10 @@ Subject: [PATCH] fast bit radix sort
 Co-authored-by: Taiyou06 <kaandindar21@gmail.com>
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index a5ba157792e5f35e1cd27e13969f2026a3d5152b..b7d85714a76df4cb9ef0dc797b9158a5fdddb50f 100644
+index f852bb29e6b09b663cb2bd74c15c7137e7bd5f56..0bcd0ad87978e2921305e426ff60535325fa5853 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1179,6 +1179,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1056,6 +1056,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      public final org.dreeam.leaf.world.NatureSpawnChunkMap natureSpawnChunkMap = new org.dreeam.leaf.world.NatureSpawnChunkMap(); // Leaf - optimize mob spawning
      public final org.dreeam.leaf.world.RandomTickSystem randomTickSystem = new org.dreeam.leaf.world.RandomTickSystem(); // Leaf - optimize random tick
      public final org.dreeam.leaf.world.EntityCollisionCache entityCollisionCache = new org.dreeam.leaf.world.EntityCollisionCache(); // Leaf - cache collision list
