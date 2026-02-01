@@ -1,0 +1,70 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Fri, 30 Jan 2026 15:15:24 +0900
+Subject: [PATCH] optimize LookAtPlayerGoal
+
+
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index cf2a365bcbb1a278e5553c16ffef6d9ae81f4d41..407b0080ef21c37bbee9ff18b18d0387daf8f69b 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -1003,6 +1003,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+             io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
+             boolean didDespawn = tickRateManager.runsNormally() && despawnMap.tick(this, this.entityTickList); // Leaf - optimize despawn
+             this.globalTemptationLookup.tick(this); // Paper - optimise temptation lookups - reset global cache prior to next entity tick // Leaf - Paper PR: Optimise temptation lookups changes
++            this.lookAtPlayerMap.tick(this); // Leaf - optimize LookAtPlayerGoal
+             this.entityTickList
+                 .forEach(
+                     entity -> {
+@@ -1183,6 +1184,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+     public final org.dreeam.leaf.world.RandomTickSystem randomTickSystem = new org.dreeam.leaf.world.RandomTickSystem(); // Leaf - optimize random tick
+     public final org.dreeam.leaf.world.EntityCollisionCache entityCollisionCache = new org.dreeam.leaf.world.EntityCollisionCache(); // Leaf - cache collision list
+     public final org.dreeam.leaf.util.FastBitRadixSort fastBitRadixSort = new org.dreeam.leaf.util.FastBitRadixSort(); // Leaf - fast bit radix sort
++    public final org.dreeam.leaf.world.LookAtPlayerMap lookAtPlayerMap = new org.dreeam.leaf.world.LookAtPlayerMap(); // Leaf - optimize LookAtPlayerGoal
+     public void tickChunk(LevelChunk chunk, int randomTickSpeed) {
+         final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
+         ChunkPos pos = chunk.getPos();
+diff --git a/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java b/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
+index b732193804c0a73e5ced822d7491c7700696338c..39daaf2cb844a957856e004c6fa3cf7c83041ade 100644
+--- a/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
++++ b/net/minecraft/world/entity/ai/goal/LookAtPlayerGoal.java
+@@ -56,7 +56,16 @@ public class LookAtPlayerGoal extends Goal {
+ 
+             ServerLevel serverLevel = getServerLevel(this.mob);
+             if (this.lookAtType == Player.class) {
+-                this.lookAt = serverLevel.getNearestPlayer(this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++                // Leaf start - optimize LookAtPlayerGoal
++                if (org.dreeam.leaf.config.modules.opt.OptimizeLookAtPlayer.enabled) {
++                    Player player = serverLevel.lookAtPlayerMap.get(this.mob.getX(), this.mob.getEyeY(), this.mob.getZ(), this.lookDistance);
++                    if (player != null && this.lookAtContext.test(serverLevel, this.mob, player)) {
++                        this.lookAt = player;
++                    }
++                } else {
++                    this.lookAt = serverLevel.getNearestPlayer(this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++                }
++                // Leaf end - optimize LookAtPlayerGoal
+             } else {
+                 this.lookAt = serverLevel.getNearestEntity(
+                     this.mob
+diff --git a/net/minecraft/world/entity/animal/panda/Panda.java b/net/minecraft/world/entity/animal/panda/Panda.java
+index 20d203b7d738e1dd02783f9e3cc73e561c0bd1d7..8c41e44326942d10734ab12108e5c1e28dc49d25 100644
+--- a/net/minecraft/world/entity/animal/panda/Panda.java
++++ b/net/minecraft/world/entity/animal/panda/Panda.java
+@@ -991,7 +991,16 @@ public class Panda extends Animal {
+                 if (this.lookAt == null) {
+                     ServerLevel serverLevel = getServerLevel(this.mob);
+                     if (this.lookAtType == Player.class) {
+-                        this.lookAt = serverLevel.getNearestPlayer(this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++                        // Leaf start - optimize LookAtPlayerGoal
++                        if (org.dreeam.leaf.config.modules.opt.OptimizeLookAtPlayer.enabled) {
++                            Player player = serverLevel.lookAtPlayerMap.get(this.mob.getX(), this.mob.getEyeY(), this.mob.getZ(), this.lookDistance);
++                            if (player != null && this.lookAtContext.test(serverLevel, this.mob, player)) {
++                                this.lookAt = player;
++                            }
++                        } else {
++                            this.lookAt = serverLevel.getNearestPlayer(this.lookAtContext, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
++                        }
++                        // Leaf end - optimize LookAtPlayerGoal
+                     } else {
+                         this.lookAt = serverLevel.getNearestEntity(
+                             this.mob
