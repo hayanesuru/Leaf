@@ -1,0 +1,163 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Fri, 10 Oct 2025 14:54:17 +0900
+Subject: [PATCH] Entity activation
+
+
+diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
+index 09dd84d9866a3bbb7282b3277be99a5c16cb0a74..d1f14df264172d0fcd7d95da24711745c88014ee 100644
+--- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
++++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
+@@ -213,6 +213,16 @@ public final class ChunkEntitySlices {
+         return collectedEntities;
+     }
+ 
++    // Leaf start - Entity activation
++    public void leaf$getAllEntities(final it.unimi.dsi.fastutil.objects.ObjectArrayList<Entity> into) {
++        final int len = this.entities.size();
++        final Entity[] rawData = this.entities.getRawData();
++        if (len != 0) {
++            into.addElements(into.size(), rawData, 0, len);
++        }
++    }
++    // Leaf end - Entity activation
++
+     public boolean isEmpty() {
+         return this.entities.size() == 0;
+     }
+diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
+index 703bf9c2a56b262e2719a1787584de537b8f12e0..a20ab4bb82df938f3b24674a8ba8cdcc9e2a26cf 100644
+--- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
++++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
+@@ -616,6 +616,48 @@ public abstract class EntityLookup implements LevelEntityGetter<Entity> {
+         }
+     }
+ 
++    // Leaf start - Entity activation
++    public final void leaf$getEntities(final AABB box, final it.unimi.dsi.fastutil.longs.LongOpenHashSet chunks, final it.unimi.dsi.fastutil.objects.ObjectArrayList<Entity> into) {
++        final int minChunkX = (Mth.floor(box.minX) - 2) >> 4;
++        final int minChunkZ = (Mth.floor(box.minZ) - 2) >> 4;
++        final int maxChunkX = (Mth.floor(box.maxX) + 2) >> 4;
++        final int maxChunkZ = (Mth.floor(box.maxZ) + 2) >> 4;
++
++        final int minRegionX = minChunkX >> REGION_SHIFT;
++        final int minRegionZ = minChunkZ >> REGION_SHIFT;
++        final int maxRegionX = maxChunkX >> REGION_SHIFT;
++        final int maxRegionZ = maxChunkZ >> REGION_SHIFT;
++
++        for (int currRegionZ = minRegionZ; currRegionZ <= maxRegionZ; ++currRegionZ) {
++            final int minZ = currRegionZ == minRegionZ ? minChunkZ & REGION_MASK : 0;
++            final int maxZ = currRegionZ == maxRegionZ ? maxChunkZ & REGION_MASK : REGION_MASK;
++
++            for (int currRegionX = minRegionX; currRegionX <= maxRegionX; ++currRegionX) {
++                final ChunkSlicesRegion region = this.getRegion(currRegionX, currRegionZ);
++
++                if (region == null) {
++                    continue;
++                }
++
++                final int minX = currRegionX == minRegionX ? minChunkX & REGION_MASK : 0;
++                final int maxX = currRegionX == maxRegionX ? maxChunkX & REGION_MASK : REGION_MASK;
++
++                for (int currZ = minZ; currZ <= maxZ; ++currZ) {
++                    for (int currX = minX; currX <= maxX; ++currX) {
++                        final ChunkEntitySlices chunk = region.get(currX | (currZ << REGION_SHIFT));
++                        if (chunk == null || !chunk.status.isOrAfter(FullChunkStatus.FULL)) {
++                            continue;
++                        }
++                        if (chunks.add(CoordinateUtils.getChunkKey((currRegionX << REGION_SHIFT) | currX, (currRegionZ << REGION_SHIFT) | currZ))) {
++                            chunk.leaf$getAllEntities(into);
++                        }
++                    }
++                }
++            }
++        }
++    }
++    // Leaf end - Entity activation
++
+     public void getHardCollidingEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate) {
+         final int minChunkX = (Mth.floor(box.minX) - 2) >> 4;
+         final int minChunkZ = (Mth.floor(box.minZ) - 2) >> 4;
+diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
+index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..d5be7443312de1fe7a1726fd6f13c05153e53876 100644
+--- a/io/papermc/paper/entity/activation/ActivationRange.java
++++ b/io/papermc/paper/entity/activation/ActivationRange.java
+@@ -86,14 +86,15 @@ public final class ActivationRange {
+     private static int getWakeUpDurationWithVariance(Entity entity, int wakeUpDuration) {
+         double deviation = entity.level().galeConfig().gameplayMechanics.entityWakeUpDurationRatioStandardDeviation;
+ 
+-        if (deviation <= 0) {
++        if (deviation <= 0.0) {
+             return wakeUpDuration;
+         }
+ 
+-        return (int) Math.min(Integer.MAX_VALUE, Math.max(1, Math.round(wakeUpDuration * wakeUpDurationRandom.nextGaussian(1, deviation))));
++        return (int) Math.min(Integer.MAX_VALUE, Math.max(1, Math.round(wakeUpDuration * (1.0 + deviation * entity.random.nextGaussian())))); // Leaf - entity activation
+     }
+     // Gale end - variable entity wake-up duration
+ 
++    @Deprecated // Leaf - entity activation
+     static AABB maxBB = new AABB(0, 0, 0, 0, 0, 0);
+ 
+     /**
+@@ -185,10 +186,7 @@ public final class ActivationRange {
+                 // Pufferfish start
+                 if (org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.enabled && entity.getType().dabEnabled &&
+                         (!org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.dontEnableIfInWater || entity.getType().is(net.minecraft.tags.EntityTypeTags.CAN_BREATHE_UNDER_WATER) || !entity.isInWater())) { // Leaf - Option for dontEnableIfInWater
+-                    if (!entity.activatedPriorityReset) {
+-                        entity.activatedPriorityReset = true;
+-                        entity.activatedPriority = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio;
+-                    }
++                    entity.activatedPriority = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio;
+                     int squaredDistance = (int) player.distanceToSqr(entity);
+                     entity.activatedPriority = squaredDistance > org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.startDistanceSquared ?
+                             Math.max(1, Math.min(squaredDistance >> org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.activationDistanceMod, entity.activatedPriority)) :
+@@ -206,6 +204,7 @@ public final class ActivationRange {
+      *
+      * @param entity
+      */
++    @Deprecated // Leaf - entity activation
+     private static void activateEntity(final Entity entity) {
+         if (MinecraftServer.currentTick > entity.activatedTick) {
+             if (entity.defaultActivationState) { // Pufferfish - diff on change
+diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
+index cf2a365bcbb1a278e5553c16ffef6d9ae81f4d41..f6ef0aa4f2b7c914ae66011563dd7f50ab684401 100644
+--- a/net/minecraft/server/level/ServerLevel.java
++++ b/net/minecraft/server/level/ServerLevel.java
+@@ -1000,13 +1000,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+                 profilerFiller.pop();
+             }
+ 
+-            io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
++            if (org.dreeam.leaf.config.modules.opt.OptimizeEntityActivation.enabled) { entityActivation.activateEntities(this); } else { io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); } // Paper - EAR // Leaf - Entity activation
+             boolean didDespawn = tickRateManager.runsNormally() && despawnMap.tick(this, this.entityTickList); // Leaf - optimize despawn
+             this.globalTemptationLookup.tick(this); // Paper - optimise temptation lookups - reset global cache prior to next entity tick // Leaf - Paper PR: Optimise temptation lookups changes
+             this.entityTickList
+                 .forEach(
+                     entity -> {
+-                        entity.activatedPriorityReset = false; // Pufferfish - DAB
++                        // entity.activatedPriorityReset = false; // Pufferfish - DAB // Leaf - Entity activation
+                         if (!entity.isRemoved()) {
+                             if (!tickRateManager.isEntityFrozen(entity)) {
+                                 profilerFiller.push("checkDespawn");
+@@ -1183,6 +1183,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+     public final org.dreeam.leaf.world.RandomTickSystem randomTickSystem = new org.dreeam.leaf.world.RandomTickSystem(); // Leaf - optimize random tick
+     public final org.dreeam.leaf.world.EntityCollisionCache entityCollisionCache = new org.dreeam.leaf.world.EntityCollisionCache(); // Leaf - cache collision list
+     public final org.dreeam.leaf.util.FastBitRadixSort fastBitRadixSort = new org.dreeam.leaf.util.FastBitRadixSort(); // Leaf - fast bit radix sort
++    public final org.dreeam.leaf.world.EntityActivation entityActivation = new org.dreeam.leaf.world.EntityActivation(); // Leaf - Entity activation
+     public void tickChunk(LevelChunk chunk, int randomTickSpeed) {
+         final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
+         ChunkPos pos = chunk.getPos();
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 8d092716cdcc48b829a1c0ee2e5416d648143a37..ebd24c23b94762dc6cf1edd937e724d5cb2259ba 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -378,7 +378,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+     private final int despawnTime; // Paper - entity despawn time limit
+     public int totalEntityAge; // Paper - age-like counter for all entities
+     private int lastTickTime; // Leaf - Rewrite entity despawn time
+-    public boolean activatedPriorityReset = false; // Pufferfish - DAB
++    // public boolean activatedPriorityReset = false; // Pufferfish - DAB
+     public int activatedPriority = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio; // Pufferfish - DAB (golf score)
+     public final io.papermc.paper.entity.activation.ActivationType activationType = io.papermc.paper.entity.activation.ActivationType.activationTypeFor(this); // Paper - EAR 2/tracking ranges
+     // Paper start - EAR 2
