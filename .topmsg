@@ -1,0 +1,2 @@
+From: hayanesuru <hayanesuru@outlook.jp>
+Subject: [PATCH] entity activation: use kd-tree for players and dedup entities
