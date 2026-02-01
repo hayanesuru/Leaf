@@ -1,9 +1,9 @@
 From: hayanesuru <hayanesuru@outlook.jp>
-Subject: [PATCH] fix async chunk sender tracking order
+Subject: [PATCH] async chunk sender: fix tracking order
 
 add a queue to receive encoded chunk data results
 copy heightmaps data on main thread
 remove AsyncChunkSendThread
 
-fix chunk packet sending after removal (change dimension)
-fix chunk packet sending before entity tracking
+fix removal (change dimension)
+fix entity tracking chunk packet order
