@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Mon, 2 Feb 2026 19:11:48 +0900
+Subject: [PATCH] optimize FlowingFluid#getHeight
+
+
+diff --git a/net/minecraft/world/level/material/FlowingFluid.java b/net/minecraft/world/level/material/FlowingFluid.java
+index 33abd4f0b812dfdbf789b45f22b0416697c34033..9620e9dfe6b0471dd9bf45b8d0c5141f90559034 100644
+--- a/net/minecraft/world/level/material/FlowingFluid.java
++++ b/net/minecraft/world/level/material/FlowingFluid.java
+@@ -617,7 +617,8 @@ public abstract class FlowingFluid extends Fluid {
+ 
+     @Override
+     public float getHeight(FluidState state, BlockGetter level, BlockPos pos) {
+-        return hasSameAbove(state, level, pos) ? 1.0F : state.getOwnHeight();
++        float ownHeight = state.getOwnHeight(); // Leaf - optimize FlowingFluid#getHeight
++        return ownHeight == 1.0F ? 1.0F : hasSameAbove(state, level, pos) ? 1.0F : ownHeight; // Leaf - optimize FlowingFluid#getHeight
+     }
+ 
+     @Override
