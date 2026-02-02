@@ -1,0 +1,4 @@
+From: hayanesuru <hayanesuru@outlook.jp>
+Subject: [PATCH] fix skeleton horse trap NPE
+
+Closes #531
