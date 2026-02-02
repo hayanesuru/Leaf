@@ -1,2 +1,8 @@
 From: hayanesuru <hayanesuru@outlook.jp>
-Subject: [PATCH] t/38-pack-node-evaluator-features
+Subject: [PATCH] async pathfinding: pack NodeEvaluatorFeatures
+
+improve hash performance
+
+MultiThreadedQueue is unnecessary
+
+use simple synchronization class replace ConcurrentHashMap since not has much threads
