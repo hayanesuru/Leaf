@@ -728,18 +728,21 @@ index 6c5696ab4981a6d582d4d0f13c9822bf84a5d9f1..5cd93a95091deb045b24c23d75a35a85
  
      @Override
 diff --git a/net/minecraft/world/level/pathfinder/Path.java b/net/minecraft/world/level/pathfinder/Path.java
-index 5959e1b1772ffbdfb108365171fe37cbf56ef825..68723bebf60bdb8faa243058e8b0d584cb9a2177 100644
+index 5959e1b1772ffbdfb108365171fe37cbf56ef825..701a3158c3e078e558fb1d3e11b6c40c7778561c 100644
 --- a/net/minecraft/world/level/pathfinder/Path.java
 +++ b/net/minecraft/world/level/pathfinder/Path.java
-@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Entity;
+@@ -11,9 +11,9 @@ import net.minecraft.world.entity.Entity;
  import net.minecraft.world.phys.Vec3;
  import org.jspecify.annotations.Nullable;
  
 -public final class Path {
-+public class Path { // Kaiiju - petal - async path processing - not final
++public class Path { // Kaiiju - petal - async path processing - public -> public-f
      public static final StreamCodec<FriendlyByteBuf, Path> STREAM_CODEC = StreamCodec.of((buffer, value) -> value.writeToStream(buffer), Path::createFromStream);
-     public final List<Node> nodes;
+-    public final List<Node> nodes;
++    public List<Node> nodes; // Kaiiju - petal - async path processing - public -> public-f
      private Path.@Nullable DebugData debugData;
+     private int nextNodeIndex;
+     private final BlockPos target;
 @@ -27,6 +27,17 @@ public final class Path {
          this.reached = reached;
      }
