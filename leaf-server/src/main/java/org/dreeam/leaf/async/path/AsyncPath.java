@@ -17,13 +17,9 @@ import java.util.function.Supplier;
 /**
  * I'll be using this to represent a path that not be processed yet!
  */
-public class AsyncPath extends Path {
+public final class AsyncPath extends Path implements Runnable {
 
-    /**
-     * Instead of three states, only one is actually required
-     * This will update when any thread is done with the path
-     */
-    private volatile boolean ready = false;
+    private boolean ready = false;
 
     /**
      * Runnable waiting for this to be processed
@@ -36,19 +32,9 @@ public class AsyncPath extends Path {
      */
     private final Set<BlockPos> positions;
 
-    /**
-     * The supplier of the real processed path
-     */
-    private final Supplier<Path> pathSupplier;
+    private @Nullable Supplier<Path> task;
+    private volatile @Nullable Path ret;
 
-    /*
-     * Processed values
-     */
-
-    /**
-     * This is a reference to the nodes list in the parent `Path` object
-     */
-    private final List<Node> nodes;
     /**
      * The block we're trying to path to
      * <p>
@@ -72,11 +58,18 @@ public class AsyncPath extends Path {
     public AsyncPath(List<Node> emptyNodeList, Set<BlockPos> positions, Supplier<Path> pathSupplier) {
         super(emptyNodeList, null, false);
 
-        this.nodes = emptyNodeList;
         this.positions = positions;
-        this.pathSupplier = pathSupplier;
+        this.task = pathSupplier;
 
         AsyncPathProcessor.queue(this);
+    }
+
+    @Override
+    public void run() {
+        Supplier<Path> task = this.task;
+        if (task != null) {
+            this.ret = task.get();
+        }
     }
 
     @Override
@@ -92,9 +85,6 @@ public class AsyncPath extends Path {
             runnable.run();
         } else {
             this.postProcessing.offer(runnable);
-            if (this.ready) {
-                this.runAllPostProcessing(true);
-            }
         }
     }
 
@@ -105,34 +95,30 @@ public class AsyncPath extends Path {
      * @return true if we are processing the same positions
      */
     public final boolean hasSameProcessingPositions(final Set<BlockPos> positions) {
-        if (this.positions.size() != positions.size()) {
-            return false;
-        }
-
-        // For single position (common case), do direct comparison
-        if (positions.size() == 1) { // Both have the same size at this point
-            return this.positions.iterator().next().equals(positions.iterator().next());
-        }
-
-        return this.positions.containsAll(positions);
+        return this.positions.equals(positions);
     }
 
     /**
      * Starts processing this path
      * Since this is no longer a synchronized function, checkProcessed is no longer required
      */
-    public final void process() {
-        if (this.ready) return;
-
-        synchronized (this) {
-            if (this.ready) return; // In the worst case, the main thread only waits until any async thread is done and returns immediately
-            final Path bestPath = this.pathSupplier.get();
-            this.nodes.addAll(bestPath.nodes); // We mutate this list to reuse the logic in Path
-            this.target = bestPath.getTarget();
-            this.distToTarget = bestPath.getDistToTarget();
-            this.canReach = bestPath.canReach();
-            this.ready = true;
+    private final void process() {
+        if (this.ready) {
+            return;
         }
+        final Path ret = this.ret;
+        final Path bestPath = ret != null ? ret : this.task.get();
+        complete(bestPath);
+    }
+
+    // not this.ready
+    private final void complete(Path bestPath) {
+        this.nodes = bestPath.nodes;
+        this.target = bestPath.getTarget();
+        this.distToTarget = bestPath.getDistToTarget();
+        this.canReach = bestPath.canReach();
+        this.task = null;
+        this.ready = true;
 
         this.runAllPostProcessing(TickThread.isTickThread());
     }
@@ -176,7 +162,14 @@ public class AsyncPath extends Path {
 
     @Override
     public boolean isDone() {
-        return this.ready && super.isDone();
+        boolean ready = this.ready;
+        if (!ready) {
+            Path ret = this.ret;
+            if (ret != null) {
+                complete(ret);
+            }
+        }
+        return ready && super.isDone();
     }
 
     @Override

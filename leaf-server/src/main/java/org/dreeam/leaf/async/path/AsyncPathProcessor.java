@@ -46,8 +46,8 @@ public class AsyncPathProcessor {
         }
     }
 
-    protected static CompletableFuture<Void> queue(AsyncPath path) {
-        return CompletableFuture.runAsync(path::process, PATH_PROCESSING_EXECUTOR)
+    protected static CompletableFuture<Void> queue(Runnable path) {
+        return CompletableFuture.runAsync(path, PATH_PROCESSING_EXECUTOR)
             .orTimeout(60L, TimeUnit.SECONDS)
             .exceptionally(throwable -> {
                 if (throwable instanceof TimeoutException e) {
