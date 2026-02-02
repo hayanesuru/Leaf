@@ -1,2 +1,4 @@
 From: hayanesuru <hayanesuru@outlook.jp>
 Subject: [PATCH] async pathfinding: fix path race condition
+
+#519 #589
