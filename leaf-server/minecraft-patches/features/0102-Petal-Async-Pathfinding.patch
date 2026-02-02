@@ -767,7 +767,7 @@ index 5959e1b1772ffbdfb108365171fe37cbf56ef825..68723bebf60bdb8faa243058e8b0d584
      }
  
 diff --git a/net/minecraft/world/level/pathfinder/PathFinder.java b/net/minecraft/world/level/pathfinder/PathFinder.java
-index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d90352e2c42cb 100644
+index 168b475b38b2872b27c1ab15f6846323ac16dd2c..2718b69768f5c849e7f61978dae76b98a34ff7c6 100644
 --- a/net/minecraft/world/level/pathfinder/PathFinder.java
 +++ b/net/minecraft/world/level/pathfinder/PathFinder.java
 @@ -26,10 +26,17 @@ public class PathFinder {
@@ -789,24 +789,24 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
      }
  
      public void setCaptureDebug(BooleanSupplier captureDebug) {
-@@ -41,25 +48,61 @@ public class PathFinder {
-     }
+@@ -42,24 +49,59 @@ public class PathFinder {
  
      public @Nullable Path findPath(PathNavigationRegion region, Mob mob, Set<BlockPos> targets, float maxRange, int reachRange, float maxVisitedNodesMultiplier) {
--        this.openSet.clear();
+         this.openSet.clear();
 -        this.nodeEvaluator.prepare(region, mob);
 -        Node start = this.nodeEvaluator.getStart();
 +        // Kaiiju start - petal - async path processing
-+        if (!org.dreeam.leaf.config.modules.async.AsyncPathfinding.enabled) this.openSet.clear(); // It's always cleared in processPath
 +        // Use a generated evaluator if we have one otherwise run sync
 +        NodeEvaluator nodeEvaluator = this.nodeEvaluatorGenerator == null
 +            ? this.nodeEvaluator
 +            : org.dreeam.leaf.async.path.NodeEvaluatorCache.takeNodeEvaluator(this.nodeEvaluatorGenerator, this.nodeEvaluator);
 +        nodeEvaluator.prepare(region, mob);
 +        Node start = nodeEvaluator.getStart();
-+        // Kaiiju end - petal - async path processing
          if (start == null) {
-+            org.dreeam.leaf.async.path.NodeEvaluatorCache.removeNodeEvaluator(nodeEvaluator); // Kaiiju - petal - async path processing - handle nodeEvaluatorGenerator
++            if (this.nodeEvaluatorGenerator != null) {
++                org.dreeam.leaf.async.path.NodeEvaluatorCache.removeNodeEvaluator(nodeEvaluator); // Kaiiju - petal - async path processing - handle nodeEvaluatorGenerator
++            }
++        // Kaiiju end - petal - async path processing
              return null;
          } else {
              // Paper start - Perf: remove streams and optimize collection
@@ -821,17 +821,21 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
 -            return path;
 +            // Kaiiju start - petal - async path processing
 +            if (this.nodeEvaluatorGenerator == null) {
-+                // run sync :(
-+                org.dreeam.leaf.async.path.NodeEvaluatorCache.removeNodeEvaluator(nodeEvaluator);
-+                return this.findPath(start, map, maxRange, reachRange, maxVisitedNodesMultiplier);
++                Path path = this.findPath(start, map, maxRange, reachRange, maxVisitedNodesMultiplier);
++                this.nodeEvaluator.done();
++                return path;
 +            }
 +
++            final int maxVisitedNodes = this.maxVisitedNodes;
++            final BooleanSupplier captureDebug = this.captureDebug;
 +            return new org.dreeam.leaf.async.path.AsyncPath(Lists.newArrayList(), targets, () -> {
 +                try {
-+                    return this.processPath(nodeEvaluator, start, map, maxRange, reachRange, maxVisitedNodesMultiplier);
-+                } catch (Exception e) {
-+                    e.printStackTrace();
-+                    return null;
++                    return this.findPath(nodeEvaluator,
++                        org.dreeam.leaf.async.path.NodeEvaluatorCache.HEAP_LOCAL.get(),
++                        org.dreeam.leaf.async.path.NodeEvaluatorCache.NEIGHBORS_LOCAL.get(),
++                        maxVisitedNodes,
++                        captureDebug,
++                        start, map, maxRange, reachRange, maxVisitedNodesMultiplier);
 +                } finally {
 +                    nodeEvaluator.done();
 +                    org.dreeam.leaf.async.path.NodeEvaluatorCache.returnNodeEvaluator(nodeEvaluator);
@@ -841,35 +845,75 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
          }
      }
  
++    // Kaiiju start - petal - async path processing
      private @Nullable Path findPath(Node node, List<Map.Entry<Target, BlockPos>> positions, float maxRange, int reachRange, float maxVisitedNodesMultiplier) { // Paper - optimize collection
-+        // Kaiiju start - petal - async path processing - split pathfinding into the original sync method for compat and processing for delaying
-+        try {
-+            return this.processPath(this.nodeEvaluator, node, positions, maxRange, reachRange, maxVisitedNodesMultiplier);
-+        } catch (Exception e) {
-+            e.printStackTrace();
-+            return null;
-+        } finally {
-+            this.nodeEvaluator.done();
-+        }
++        return findPath(this.nodeEvaluator, this.openSet, this.neighbors, this.maxVisitedNodes, this.captureDebug, node, positions, maxRange, reachRange, maxVisitedNodesMultiplier);
 +    }
-+    private synchronized Path processPath(NodeEvaluator nodeEvaluator, Node node, List<Map.Entry<Target, BlockPos>> positions, float maxRange, int reachRange, float maxVisitedNodesMultiplier) { // sync to only use the caching functions in this class on a single thread
++    private @Nullable Path findPath(NodeEvaluator nodeEvaluator, BinaryHeap openSet, Node[] neighbors1, int maxVisitedNodes, BooleanSupplier captureDebug, Node node, List<Map.Entry<Target, BlockPos>> positions, float maxRange, int reachRange, float maxVisitedNodesMultiplier) { // sync to only use the caching functions in this class on a single thread
 +        org.apache.commons.lang3.Validate.isTrue(!positions.isEmpty()); // ensure that we have at least one position, which means we'll always return a path
-+        // Kaiiju end - petal - async path processing
++    // Kaiiju end - petal - async path processing
          ProfilerFiller profilerFiller = Profiler.get();
          profilerFiller.push("find_path");
          profilerFiller.markForCharting(MetricCategory.PATH_FINDING);
-@@ -103,7 +146,7 @@ public class PathFinder {
+@@ -67,20 +109,20 @@ public class PathFinder {
+         node.g = 0.0F;
+         node.h = this.getBestH(node, positions); // Paper - optimize collection
+         node.f = node.h;
+-        this.openSet.clear();
+-        this.openSet.insert(node);
+-        boolean asBoolean = this.captureDebug.getAsBoolean();
++        openSet.clear(); // Kaiiju - petal - async path processing
++        openSet.insert(node); // Kaiiju - petal - async path processing
++        boolean asBoolean = captureDebug.getAsBoolean(); // Kaiiju - petal - async path processing
+         Set<Node> set1 = asBoolean ? new HashSet<>() : Set.of();
+         int i = 0;
+         List<Map.Entry<Target, BlockPos>> entryList = Lists.newArrayListWithExpectedSize(positions.size()); // Paper - optimize collection
+-        int i1 = (int)(this.maxVisitedNodes * maxVisitedNodesMultiplier);
++        int i1 = (int)(maxVisitedNodes * maxVisitedNodesMultiplier); // Kaiiju - petal - async path processing
+ 
+-        while (!this.openSet.isEmpty()) {
++        while (!openSet.isEmpty()) { // Kaiiju - petal - async path processing
+             if (++i >= i1) {
+                 break;
+             }
+ 
+-            Node node1 = this.openSet.pop();
++            Node node1 = openSet.pop(); // Kaiiju - petal - async path processing
+             node1.closed = true;
+ 
+             // Paper start - optimize collection
+@@ -103,10 +145,10 @@ public class PathFinder {
              }
  
              if (!(node1.distanceTo(node) >= maxRange)) {
 -                int neighbors = this.nodeEvaluator.getNeighbors(this.neighbors, node1);
-+                int neighbors = nodeEvaluator.getNeighbors(this.neighbors, node1); // Kaiiju - petal - async path processing - use provided nodeEvaluator
++                int neighbors = nodeEvaluator.getNeighbors(neighbors1, node1); // Kaiiju - petal - async path processing
  
                  for (int i2 = 0; i2 < neighbors; i2++) {
-                     Node node2 = this.neighbors[i2];
-@@ -145,6 +188,7 @@ public class PathFinder {
+-                    Node node2 = this.neighbors[i2];
++                    Node node2 = neighbors1[i2]; // Kaiiju - petal - async path processing
+                     float f = this.distance(node1, node2);
+                     node2.walkedDistance = node1.walkedDistance + f;
+                     float f1 = node1.g + f + node2.costMalus;
+@@ -115,10 +157,10 @@ public class PathFinder {
+                         node2.g = f1;
+                         node2.h = this.getBestH(node2, positions) * 1.5F; // Paper - Perf: remove streams and optimize collection
+                         if (node2.inOpenSet()) {
+-                            this.openSet.changeCost(node2, node2.g + node2.h);
++                            openSet.changeCost(node2, node2.g + node2.h); // Kaiiju - petal - async path processing
+                         } else {
+                             node2.f = node2.g + node2.h;
+-                            this.openSet.insert(node2);
++                            openSet.insert(node2); // Kaiiju - petal - async path processing
+                         }
+                     }
+                 }
+@@ -143,8 +185,9 @@ public class PathFinder {
+             for(Map.Entry<Target, BlockPos> entry : positions) {
+                 set.add(entry.getKey());
              }
-             best.setDebug(this.openSet.getHeap(), set1.toArray(Node[]::new), set);
+-            best.setDebug(this.openSet.getHeap(), set1.toArray(Node[]::new), set);
++            best.setDebug(openSet.getHeap(), set1.toArray(Node[]::new), set); // Kaiiju - petal - async path processing
          }
 +        //noinspection ConstantConditions // Kaiiju - petal - async path processing - ignore this warning, we know that the above loop always runs at least once since positions is not empty
          return best;
