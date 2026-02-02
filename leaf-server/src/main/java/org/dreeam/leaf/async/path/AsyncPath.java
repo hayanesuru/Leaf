@@ -10,6 +10,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
@@ -107,7 +108,8 @@ public final class AsyncPath extends Path implements Runnable {
             return;
         }
         final Path ret = this.ret;
-        final Path bestPath = ret != null ? ret : this.task.get();
+        final Supplier<Path> task = this.task;
+        final Path bestPath = ret != null ? ret : Objects.requireNonNull(task).get();
         complete(bestPath);
     }
 
