@@ -727,6 +727,28 @@ index 6c5696ab4981a6d582d4d0f13c9822bf84a5d9f1..5cd93a95091deb045b24c23d75a35a85
      }
  
      @Override
+diff --git a/net/minecraft/world/level/pathfinder/NodeEvaluator.java b/net/minecraft/world/level/pathfinder/NodeEvaluator.java
+index 73aacb7b64b5518937273b4a70df944ad05a1b2b..0373305a50d1ca5b1b20e74fa531287cf81d985c 100644
+--- a/net/minecraft/world/level/pathfinder/NodeEvaluator.java
++++ b/net/minecraft/world/level/pathfinder/NodeEvaluator.java
+@@ -37,6 +37,17 @@ public abstract class NodeEvaluator {
+         this.mob = null;
+     }
+ 
++    // Kaiiju start - petal - async path processing
++    public void invalidateCache() {
++        if (this.currentContext != null) {
++            this.currentContext.cache = null;
++        }
++    }
++    public void clearNodes() {
++        this.nodes.clear();
++    }
++    // Kaiiju end - petal - async path processing
++
+     protected Node getNode(BlockPos pos) {
+         return this.getNode(pos.getX(), pos.getY(), pos.getZ());
+     }
 diff --git a/net/minecraft/world/level/pathfinder/Path.java b/net/minecraft/world/level/pathfinder/Path.java
 index 5959e1b1772ffbdfb108365171fe37cbf56ef825..68723bebf60bdb8faa243058e8b0d584cb9a2177 100644
 --- a/net/minecraft/world/level/pathfinder/Path.java
@@ -767,7 +789,7 @@ index 5959e1b1772ffbdfb108365171fe37cbf56ef825..68723bebf60bdb8faa243058e8b0d584
      }
  
 diff --git a/net/minecraft/world/level/pathfinder/PathFinder.java b/net/minecraft/world/level/pathfinder/PathFinder.java
-index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d90352e2c42cb 100644
+index 168b475b38b2872b27c1ab15f6846323ac16dd2c..126271b5b15d0e48131174da1ac8d513265cf0ee 100644
 --- a/net/minecraft/world/level/pathfinder/PathFinder.java
 +++ b/net/minecraft/world/level/pathfinder/PathFinder.java
 @@ -26,10 +26,17 @@ public class PathFinder {
@@ -789,7 +811,7 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
      }
  
      public void setCaptureDebug(BooleanSupplier captureDebug) {
-@@ -41,25 +48,61 @@ public class PathFinder {
+@@ -41,25 +48,60 @@ public class PathFinder {
      }
  
      public @Nullable Path findPath(PathNavigationRegion region, Mob mob, Set<BlockPos> targets, float maxRange, int reachRange, float maxVisitedNodesMultiplier) {
@@ -828,12 +850,11 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
 +
 +            return new org.dreeam.leaf.async.path.AsyncPath(Lists.newArrayList(), targets, () -> {
 +                try {
++                    nodeEvaluator.invalidateCache();
 +                    return this.processPath(nodeEvaluator, start, map, maxRange, reachRange, maxVisitedNodesMultiplier);
-+                } catch (Exception e) {
-+                    e.printStackTrace();
-+                    return null;
 +                } finally {
 +                    nodeEvaluator.done();
++                    nodeEvaluator.clearNodes();
 +                    org.dreeam.leaf.async.path.NodeEvaluatorCache.returnNodeEvaluator(nodeEvaluator);
 +                }
 +            });
@@ -858,7 +879,7 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
          ProfilerFiller profilerFiller = Profiler.get();
          profilerFiller.push("find_path");
          profilerFiller.markForCharting(MetricCategory.PATH_FINDING);
-@@ -103,7 +146,7 @@ public class PathFinder {
+@@ -103,7 +145,7 @@ public class PathFinder {
              }
  
              if (!(node1.distanceTo(node) >= maxRange)) {
@@ -867,7 +888,7 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
  
                  for (int i2 = 0; i2 < neighbors; i2++) {
                      Node node2 = this.neighbors[i2];
-@@ -145,6 +188,7 @@ public class PathFinder {
+@@ -145,6 +187,7 @@ public class PathFinder {
              }
              best.setDebug(this.openSet.getHeap(), set1.toArray(Node[]::new), set);
          }
@@ -875,3 +896,16 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..ce46232f844d8318ab5067f91c8d9035
          return best;
          // Paper end - Perf: remove streams and optimize collection
      }
+diff --git a/net/minecraft/world/level/pathfinder/PathfindingContext.java b/net/minecraft/world/level/pathfinder/PathfindingContext.java
+index 57d60080810054ad791ac8537e105413576a666f..12cb285b8c2519cb8c8eded98d06ec8aec91c8b2 100644
+--- a/net/minecraft/world/level/pathfinder/PathfindingContext.java
++++ b/net/minecraft/world/level/pathfinder/PathfindingContext.java
+@@ -9,7 +9,7 @@ import org.jspecify.annotations.Nullable;
+ 
+ public class PathfindingContext {
+     private final CollisionGetter level;
+-    private final @Nullable PathTypeCache cache;
++    public @Nullable PathTypeCache cache; // Kaiiju - petal - async path processing - private -> public-f
+     private final BlockPos mobPosition;
+     private final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+ 
