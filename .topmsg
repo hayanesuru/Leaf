@@ -1,0 +1,2 @@
+From: hayanesuru <hayanesuru@outlook.jp>
+Subject: [PATCH] async pathfinding: use thread local for openSet and neighbors
