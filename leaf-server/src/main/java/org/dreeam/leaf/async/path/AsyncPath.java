@@ -171,7 +171,7 @@ public final class AsyncPath extends Path implements Runnable {
                 complete(ret);
             }
         }
-        return ready && super.isDone();
+        return this.ready && super.isDone();
     }
 
     @Override
