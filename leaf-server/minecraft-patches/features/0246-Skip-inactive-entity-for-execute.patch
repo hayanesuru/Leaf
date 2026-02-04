@@ -21,14 +21,15 @@ index 6fd00b09c1be79e8aec40e87493321c4e24a53c3..1bd52f976392544dc0e0967f2b046783
  
      public static Collection<ServerPlayer> getOptionalPlayers(CommandContext<CommandSourceStack> context, String name) throws CommandSyntaxException {
 diff --git a/net/minecraft/commands/arguments/selector/EntitySelector.java b/net/minecraft/commands/arguments/selector/EntitySelector.java
-index fbab3e2f4e3a9cdc1c148fc794036c5655368666..0fb09fe97b8ef5a2fd7ded9ac60897ea4d81897a 100644
+index fbab3e2f4e3a9cdc1c148fc794036c5655368666..253b071fc910919babeb458f1f3aef475f67ebb1 100644
 --- a/net/minecraft/commands/arguments/selector/EntitySelector.java
 +++ b/net/minecraft/commands/arguments/selector/EntitySelector.java
-@@ -161,6 +161,53 @@ public class EntitySelector {
+@@ -161,6 +161,54 @@ public class EntitySelector {
          }
      }
  
 +    // Leaf start - Skip inactive entity for execute
++    // Copy from findEntities
 +    public java.util.Collection<? extends Entity> findEntitiesSkipInactive(CommandSourceStack source) throws CommandSyntaxException {
 +        this.checkPermissions(source);
 +        if (!this.includesEntities) {
@@ -78,15 +79,16 @@ index fbab3e2f4e3a9cdc1c148fc794036c5655368666..0fb09fe97b8ef5a2fd7ded9ac60897ea
      private void addEntities(List<Entity> entities, ServerLevel level, @Nullable AABB box, Predicate<Entity> predicate) {
          int resultLimit = this.getResultLimit();
          if (entities.size() < resultLimit) {
-@@ -257,6 +304,38 @@ public class EntitySelector {
+@@ -257,6 +305,39 @@ public class EntitySelector {
          return Util.allOf(list);
      }
  
 +    // Leaf start - Skip inactive entity for execute
++    // Copy from getPredicate
 +    private Predicate<Entity> getPredicateSkipInactive(Vec3 pos, @Nullable AABB box, @Nullable FeatureFlagSet enabledFeatures) {
 +        boolean flag = enabledFeatures != null;
 +        boolean flag1 = box != null;
-+        boolean flag2 = !this.range.isAny();
++        boolean flag2 = this.range != null;
 +        int i = (flag ? 1 : 0) + (flag1 ? 1 : 0) + (flag2 ? 1 : 0);
 +        List<Predicate<Entity>> list;
 +        if (i == 0) {
