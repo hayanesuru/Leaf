@@ -96,7 +96,7 @@ index 1f206998a61af887e312953319e69fc79e10e7e1..a7d9bc5821c0202462376b06ddc44aac
 +    // Leaf end - Paper PR: Optimise temptation lookups changes
  }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 696354ce6e9c1df6d8b911773aa7033ce2bc8723..b8b0415ca3ba428de0836498a4b32f443e747d8f 100644
+index 8fece10d6e2e51019589b1b7933fbe06b37d97d2..d39e06fd6cb4dfeb81f74d9fbb485f9693102d0e 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1000,7 +1000,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

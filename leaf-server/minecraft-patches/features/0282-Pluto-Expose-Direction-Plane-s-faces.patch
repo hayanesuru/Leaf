@@ -35,7 +35,7 @@ index 45093451fb25ae3bb1e57d2e53c49a1ae666e31e..c228135032b5f74fd1ec96a2cf52aa3e
              }
          }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index b7d85714a76df4cb9ef0dc797b9158a5fdddb50f..32b7ca2f264ac3b0fd1331b2174900b83318fce9 100644
+index 15d5e0d4cb47e7395667d03e8004e9870278ba73..5af136f69be27a1e0674ea7edc6ef25b75dba455 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1270,7 +1270,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -100,7 +100,7 @@ index 9e4fc50053be66584612b97d3ef103e502195664..58d4c9fe5349d9bc43915d47e4eabc62
                  }
              }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 7326a0a0fbeb4f8c9e7bd6f3946bb4beaa09a3a6..2780253a8f4885927f1aa8a638df9c90c7f86161 100644
+index be09251aea3a217e40ae990649efa18b1b2abaa3..007465359f17db22dfea93a1f2148250d4b06419 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -2043,7 +2043,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

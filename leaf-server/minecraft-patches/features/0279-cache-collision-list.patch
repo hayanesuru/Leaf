@@ -5,7 +5,7 @@ Subject: [PATCH] cache collision list
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index b8b0415ca3ba428de0836498a4b32f443e747d8f..a5ba157792e5f35e1cd27e13969f2026a3d5152b 100644
+index d39e06fd6cb4dfeb81f74d9fbb485f9693102d0e..99ac45288e04a6d321b5c60c242cbbbb50129e67 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1178,6 +1178,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
