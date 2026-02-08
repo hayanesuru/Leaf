@@ -1,54 +1,36 @@
 package org.dreeam.leaf.async.path;
 
-import ca.spottedleaf.moonrise.common.util.TickThread;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * I'll be using this to represent a path that not be processed yet!
  */
-public class AsyncPath extends Path {
+public final class AsyncPath extends Path {
 
-    /**
-     * Instead of three states, only one is actually required
-     * This will update when any thread is done with the path
-     */
-    private volatile boolean ready = false;
+    private boolean ready = false;
 
-    /**
-     * Runnable waiting for this to be processed
-     * ConcurrentLinkedQueue is thread-safe, non-blocking and non-synchronized
-     */
-    private final ConcurrentLinkedQueue<Runnable> postProcessing = new ConcurrentLinkedQueue<>();
+    private final ArrayList<Consumer<Path>> postProcessing = new ArrayList<>();
 
     /**
      * A list of positions that this path could path towards
      */
     private final Set<BlockPos> positions;
 
-    /**
-     * The supplier of the real processed path
-     */
-    private final Supplier<Path> pathSupplier;
+    private @Nullable Supplier<Path> task;
+    private volatile @Nullable Path ret;
 
-    /*
-     * Processed values
-     */
-
-    /**
-     * This is a reference to the nodes list in the parent `Path` object
-     */
-    private final List<Node> nodes;
     /**
      * The block we're trying to path to
      * <p>
@@ -72,11 +54,10 @@ public class AsyncPath extends Path {
     public AsyncPath(List<Node> emptyNodeList, Set<BlockPos> positions, Supplier<Path> pathSupplier) {
         super(emptyNodeList, null, false);
 
-        this.nodes = emptyNodeList;
         this.positions = positions;
-        this.pathSupplier = pathSupplier;
+        this.task = pathSupplier;
 
-        AsyncPathProcessor.queue(this);
+        AsyncPathProcessor.queue(() -> this.ret = pathSupplier.get());
     }
 
     @Override
@@ -87,14 +68,11 @@ public class AsyncPath extends Path {
     /**
      * Returns the future representing the processing state of this path
      */
-    public final void schedulePostProcessing(Runnable runnable) {
+    public final void schedulePostProcessing(Consumer<Path> runnable) {
         if (this.ready) {
-            runnable.run();
+            runnable.accept(this);
         } else {
-            this.postProcessing.offer(runnable);
-            if (this.ready) {
-                this.runAllPostProcessing(true);
-            }
+            this.postProcessing.add(runnable);
         }
     }
 
@@ -105,47 +83,36 @@ public class AsyncPath extends Path {
      * @return true if we are processing the same positions
      */
     public final boolean hasSameProcessingPositions(final Set<BlockPos> positions) {
-        if (this.positions.size() != positions.size()) {
-            return false;
-        }
-
-        // For single position (common case), do direct comparison
-        if (positions.size() == 1) { // Both have the same size at this point
-            return this.positions.iterator().next().equals(positions.iterator().next());
-        }
-
-        return this.positions.containsAll(positions);
+        return this.positions.equals(positions);
     }
 
     /**
      * Starts processing this path
      * Since this is no longer a synchronized function, checkProcessed is no longer required
      */
-    public final void process() {
-        if (this.ready) return;
-
-        synchronized (this) {
-            if (this.ready) return; // In the worst case, the main thread only waits until any async thread is done and returns immediately
-            final Path bestPath = this.pathSupplier.get();
-            this.nodes.addAll(bestPath.nodes); // We mutate this list to reuse the logic in Path
-            this.target = bestPath.getTarget();
-            this.distToTarget = bestPath.getDistToTarget();
-            this.canReach = bestPath.canReach();
-            this.ready = true;
+    private final void process() {
+        if (this.ready) {
+            return;
         }
-
-        this.runAllPostProcessing(TickThread.isTickThread());
+        final Path ret = this.ret;
+        final Supplier<Path> task = this.task;
+        final Path bestPath = ret != null ? ret : Objects.requireNonNull(task).get();
+        complete(bestPath);
     }
 
-    private void runAllPostProcessing(boolean isTickThread) {
-        Runnable runnable;
-        while ((runnable = this.postProcessing.poll()) != null) {
-            if (isTickThread) {
-                runnable.run();
-            } else {
-                MinecraftServer.getServer().scheduleOnMain(runnable);
-            }
+    /// not this.ready
+    /// [#isDone]
+    private final void complete(Path bestPath) {
+        this.nodes = bestPath.nodes;
+        this.target = bestPath.getTarget();
+        this.distToTarget = bestPath.getDistToTarget();
+        this.canReach = bestPath.canReach();
+        this.task = null;
+        this.ready = true;
+        for (Consumer<Path> consumer : this.postProcessing) {
+            consumer.accept(this);
         }
+        this.postProcessing.clear();
     }
 
     /*
@@ -176,6 +143,13 @@ public class AsyncPath extends Path {
 
     @Override
     public boolean isDone() {
+        boolean ready = this.ready;
+        if (!ready) {
+            Path ret = this.ret;
+            if (ret != null) {
+                complete(ret);
+            }
+        }
         return this.ready && super.isDone();
     }
 
