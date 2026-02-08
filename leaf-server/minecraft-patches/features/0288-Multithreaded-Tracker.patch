@@ -1086,7 +1086,7 @@ index 5e7f0429f8e6441b21994e92c4ecc67a4b71abd7..057e38b58454a53af3d4bb26dfe95a10
          void sendToTrackingPlayers(Packet<? super ClientGamePacketListener> packet);
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 32b7ca2f264ac3b0fd1331b2174900b83318fce9..541c384187a0b20386ccc35200c7c4eb1ce62e9b 100644
+index 5af136f69be27a1e0674ea7edc6ef25b75dba455..56ece83a961d91883627148da7542630a7e09a30 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -236,6 +236,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -1127,7 +1127,7 @@ index e8e713b4e62e0afd82f447b9dc53ec54489cc71e..2e7c404e3808c39c0835e1e39fd238af
          return true;
      }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index b2aa97bcfb50557b280fa1776dcb5b6ec74abb9e..4305ab787419223866303d415b5f940f3f8690ef 100644
+index b07d6ce323a676447bfce932413bc38db0cb643b..3b3a801e632bf65b9bef5833755b2de3be1b059a 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3024,6 +3024,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

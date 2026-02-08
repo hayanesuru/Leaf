@@ -20,7 +20,7 @@ Brings the ability to despawn weak-loaded entities once they are ticked,
 a solution for https://github.com/PaperMC/Paper/issues/12986
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 541c384187a0b20386ccc35200c7c4eb1ce62e9b..e41087a52c5c0521728357431afd182080ab1291 100644
+index 56ece83a961d91883627148da7542630a7e09a30..8e8c083a86384817c0534bcd10590e62fa035e0f 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1613,6 +1613,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

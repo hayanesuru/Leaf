@@ -42,7 +42,7 @@ index d2be94132fafc92b969e1432447382eab4971f9d..3ffdd0b8b137f256cb410c39171949fa
                      if (fluidState.isEmpty() || !fluidState.is(fluid)) {
                          continue;
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 372a767721d23a4d5018f0d5ab3d8c96df4b3dbf..8eb26ccb7fe91b7a698866c358b2602f5ca8b0ac 100644
+index 0f3fc79829b707011fdc7d492bad7fab73a7420c..c22cf652869d72d131f96a2a0b5891c7e1c6619d 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3176,7 +3176,14 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
