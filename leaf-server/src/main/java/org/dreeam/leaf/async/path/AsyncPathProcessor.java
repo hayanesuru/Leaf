@@ -67,7 +67,7 @@ public class AsyncPathProcessor {
      */
     public static void awaitProcessing(@Nullable Path path, Consumer<@Nullable Path> afterProcessing) {
         if (path != null && !path.isProcessed() && path instanceof AsyncPath asyncPath) {
-            asyncPath.schedulePostProcessing(() -> afterProcessing.accept(path)); // Reduce double lambda allocation
+            asyncPath.schedulePostProcessing(afterProcessing); // Reduce double lambda allocation
         } else {
             afterProcessing.accept(path);
         }

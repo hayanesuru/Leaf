@@ -1,32 +1,27 @@
 package org.dreeam.leaf.async.path;
 
-import ca.spottedleaf.moonrise.common.util.TickThread;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
  * I'll be using this to represent a path that not be processed yet!
  */
-public final class AsyncPath extends Path implements Runnable {
+public final class AsyncPath extends Path {
 
     private boolean ready = false;
 
-    /**
-     * Runnable waiting for this to be processed
-     * ConcurrentLinkedQueue is thread-safe, non-blocking and non-synchronized
-     */
-    private final ConcurrentLinkedQueue<Runnable> postProcessing = new ConcurrentLinkedQueue<>();
+    private final ArrayList<Consumer<Path>> postProcessing = new ArrayList<>();
 
     /**
      * A list of positions that this path could path towards
@@ -62,15 +57,7 @@ public final class AsyncPath extends Path implements Runnable {
         this.positions = positions;
         this.task = pathSupplier;
 
-        AsyncPathProcessor.queue(this);
-    }
-
-    @Override
-    public void run() {
-        Supplier<Path> task = this.task;
-        if (task != null) {
-            this.ret = task.get();
-        }
+        AsyncPathProcessor.queue(() -> this.ret = pathSupplier.get());
     }
 
     @Override
@@ -81,11 +68,11 @@ public final class AsyncPath extends Path implements Runnable {
     /**
      * Returns the future representing the processing state of this path
      */
-    public final void schedulePostProcessing(Runnable runnable) {
+    public final void schedulePostProcessing(Consumer<Path> runnable) {
         if (this.ready) {
-            runnable.run();
+            runnable.accept(this);
         } else {
-            this.postProcessing.offer(runnable);
+            this.postProcessing.add(runnable);
         }
     }
 
@@ -113,7 +100,8 @@ public final class AsyncPath extends Path implements Runnable {
         complete(bestPath);
     }
 
-    // not this.ready
+    /// not this.ready
+    /// [#isDone]
     private final void complete(Path bestPath) {
         this.nodes = bestPath.nodes;
         this.target = bestPath.getTarget();
@@ -121,19 +109,10 @@ public final class AsyncPath extends Path implements Runnable {
         this.canReach = bestPath.canReach();
         this.task = null;
         this.ready = true;
-
-        this.runAllPostProcessing(TickThread.isTickThread());
-    }
-
-    private void runAllPostProcessing(boolean isTickThread) {
-        Runnable runnable;
-        while ((runnable = this.postProcessing.poll()) != null) {
-            if (isTickThread) {
-                runnable.run();
-            } else {
-                MinecraftServer.getServer().scheduleOnMain(runnable);
-            }
+        for (Consumer<Path> consumer : this.postProcessing) {
+            consumer.accept(this);
         }
+        this.postProcessing.clear();
     }
 
     /*
