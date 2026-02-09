@@ -767,7 +767,7 @@ index 5959e1b1772ffbdfb108365171fe37cbf56ef825..68723bebf60bdb8faa243058e8b0d584
      }
  
 diff --git a/net/minecraft/world/level/pathfinder/PathFinder.java b/net/minecraft/world/level/pathfinder/PathFinder.java
-index 168b475b38b2872b27c1ab15f6846323ac16dd2c..2718b69768f5c849e7f61978dae76b98a34ff7c6 100644
+index 168b475b38b2872b27c1ab15f6846323ac16dd2c..5e0fb9eecfddcba5992192132f14bc6ab0512f6b 100644
 --- a/net/minecraft/world/level/pathfinder/PathFinder.java
 +++ b/net/minecraft/world/level/pathfinder/PathFinder.java
 @@ -26,10 +26,17 @@ public class PathFinder {
@@ -789,7 +789,7 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..2718b69768f5c849e7f61978dae76b98
      }
  
      public void setCaptureDebug(BooleanSupplier captureDebug) {
-@@ -42,24 +49,59 @@ public class PathFinder {
+@@ -42,24 +49,58 @@ public class PathFinder {
  
      public @Nullable Path findPath(PathNavigationRegion region, Mob mob, Set<BlockPos> targets, float maxRange, int reachRange, float maxVisitedNodesMultiplier) {
          this.openSet.clear();
@@ -849,13 +849,12 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..2718b69768f5c849e7f61978dae76b98
      private @Nullable Path findPath(Node node, List<Map.Entry<Target, BlockPos>> positions, float maxRange, int reachRange, float maxVisitedNodesMultiplier) { // Paper - optimize collection
 +        return findPath(this.nodeEvaluator, this.openSet, this.neighbors, this.maxVisitedNodes, this.captureDebug, node, positions, maxRange, reachRange, maxVisitedNodesMultiplier);
 +    }
-+    private @Nullable Path findPath(NodeEvaluator nodeEvaluator, BinaryHeap openSet, Node[] neighbors1, int maxVisitedNodes, BooleanSupplier captureDebug, Node node, List<Map.Entry<Target, BlockPos>> positions, float maxRange, int reachRange, float maxVisitedNodesMultiplier) { // sync to only use the caching functions in this class on a single thread
-+        org.apache.commons.lang3.Validate.isTrue(!positions.isEmpty()); // ensure that we have at least one position, which means we'll always return a path
++    private Path findPath(NodeEvaluator nodeEvaluator, BinaryHeap openSet, Node[] neighbors1, int maxVisitedNodes, BooleanSupplier captureDebug, Node node, List<Map.Entry<Target, BlockPos>> positions, float maxRange, int reachRange, float maxVisitedNodesMultiplier) { // sync to only use the caching functions in this class on a single thread
 +    // Kaiiju end - petal - async path processing
          ProfilerFiller profilerFiller = Profiler.get();
          profilerFiller.push("find_path");
          profilerFiller.markForCharting(MetricCategory.PATH_FINDING);
-@@ -67,20 +109,20 @@ public class PathFinder {
+@@ -67,20 +108,20 @@ public class PathFinder {
          node.g = 0.0F;
          node.h = this.getBestH(node, positions); // Paper - optimize collection
          node.f = node.h;
@@ -882,7 +881,7 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..2718b69768f5c849e7f61978dae76b98
              node1.closed = true;
  
              // Paper start - optimize collection
-@@ -103,10 +145,10 @@ public class PathFinder {
+@@ -103,10 +144,10 @@ public class PathFinder {
              }
  
              if (!(node1.distanceTo(node) >= maxRange)) {
@@ -895,7 +894,7 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..2718b69768f5c849e7f61978dae76b98
                      float f = this.distance(node1, node2);
                      node2.walkedDistance = node1.walkedDistance + f;
                      float f1 = node1.g + f + node2.costMalus;
-@@ -115,10 +157,10 @@ public class PathFinder {
+@@ -115,10 +156,10 @@ public class PathFinder {
                          node2.g = f1;
                          node2.h = this.getBestH(node2, positions) * 1.5F; // Paper - Perf: remove streams and optimize collection
                          if (node2.inOpenSet()) {
@@ -908,14 +907,15 @@ index 168b475b38b2872b27c1ab15f6846323ac16dd2c..2718b69768f5c849e7f61978dae76b98
                          }
                      }
                  }
-@@ -143,8 +185,9 @@ public class PathFinder {
+@@ -143,9 +184,9 @@ public class PathFinder {
              for(Map.Entry<Target, BlockPos> entry : positions) {
                  set.add(entry.getKey());
              }
 -            best.setDebug(this.openSet.getHeap(), set1.toArray(Node[]::new), set);
 +            best.setDebug(openSet.getHeap(), set1.toArray(Node[]::new), set); // Kaiiju - petal - async path processing
          }
-+        //noinspection ConstantConditions // Kaiiju - petal - async path processing - ignore this warning, we know that the above loop always runs at least once since positions is not empty
-         return best;
+-        return best;
++        return java.util.Objects.requireNonNull(best); // Kaiiju - petal - async path processing
          // Paper end - Perf: remove streams and optimize collection
      }
+ 
