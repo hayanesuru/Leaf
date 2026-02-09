@@ -5,7 +5,7 @@ Subject: [PATCH] optimize get chunk
 
 
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 0d88ef2e12dc297610c56136aeadcfcf5f2e76b9..f82fa3c784e817ddd688e6aa1cf38e18aba00900 100644
+index 7d216de784e4fba2dc577eda4dfc98160faa42e2..8b1abdeda41f99294ed4524b68bb980b1e265dcd 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1376,12 +1376,17 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

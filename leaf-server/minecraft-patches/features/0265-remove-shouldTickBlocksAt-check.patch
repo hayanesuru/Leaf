@@ -5,7 +5,7 @@ Subject: [PATCH] remove shouldTickBlocksAt check
 
 
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index f82fa3c784e817ddd688e6aa1cf38e18aba00900..a0a2b6b32b0ea1a4199adf540b887b1028cb8c1e 100644
+index 8b1abdeda41f99294ed4524b68bb980b1e265dcd..80f699cece888aa7001867d0d431f9d26de8b9c6 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1492,7 +1492,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
