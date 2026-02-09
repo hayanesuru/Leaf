@@ -1,6 +1,8 @@
 package org.dreeam.leaf.async.path;
 
 import ca.spottedleaf.concurrentutil.collection.MultiThreadedQueue;
+import net.minecraft.world.level.pathfinder.BinaryHeap;
+import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
 import org.apache.commons.lang3.Validate;
 
@@ -12,6 +14,9 @@ public class NodeEvaluatorCache {
 
     private static final Map<NodeEvaluatorFeatures, MultiThreadedQueue<NodeEvaluator>> threadLocalNodeEvaluators = new ConcurrentHashMap<>();
     private static final Map<NodeEvaluator, NodeEvaluatorGenerator> nodeEvaluatorToGenerator = new ConcurrentHashMap<>();
+
+    public static final ThreadLocal<BinaryHeap> HEAP_LOCAL = ThreadLocal.withInitial(BinaryHeap::new);
+    public static final ThreadLocal<Node[]> NEIGHBORS_LOCAL = ThreadLocal.withInitial(() -> new Node[32]);
 
     private static Queue<NodeEvaluator> getQueueForFeatures(NodeEvaluatorFeatures nodeEvaluatorFeatures) {
         return threadLocalNodeEvaluators.computeIfAbsent(nodeEvaluatorFeatures, key -> new MultiThreadedQueue<>());
