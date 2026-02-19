@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: hayanesuru <hayanesuru@outlook.jp>
+Date: Thu, 19 Feb 2026 11:51:18 +0900
+Subject: [PATCH] avoid hasChunkAt calls in RemoveToBlockGoal
+
+
+diff --git a/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java b/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java
+index f15da598cb1d7872fafb8b173e5134b9667c9a9f..53e5152bca97082fffd0755e53d402f6597f69f0 100644
+--- a/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java
++++ b/net/minecraft/world/entity/ai/goal/MoveToBlockGoal.java
+@@ -114,13 +114,33 @@ public abstract class MoveToBlockGoal extends Goal {
+         BlockPos blockPos = this.mob.blockPosition();
+         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+ 
++        // Leaf start - avoid hasChunkAt calls in RemoveToBlockGoal
++        net.minecraft.world.level.Level world = this.mob.level();
++        if (this.getClass() == RemoveBlockGoal.class) {
++            RemoveBlockGoal removeBlockGoal = (RemoveBlockGoal) this;
++            for (int i2 = this.verticalSearchStart; i2 <= i1; i2 = i2 > 0 ? -i2 : 1 - i2) {
++                for (int i3 = 0; i3 < i; i3++) {
++                    for (int i4 = 0; i4 <= i3; i4 = i4 > 0 ? -i4 : 1 - i4) {
++                        for (int i5 = i4 < i3 && i4 > -i3 ? i3 : 0; i5 <= i3; i5 = i5 > 0 ? -i5 : 1 - i5) {
++                            mutableBlockPos.setWithOffset(blockPos, i4, i2 - 1, i5);
++                            if (this.mob.isWithinHome(mutableBlockPos) && removeBlockGoal.isValidTarget(world, mutableBlockPos)) {
++                                this.blockPos = mutableBlockPos;
++                                this.mob.movingTarget = mutableBlockPos == BlockPos.ZERO ? null : mutableBlockPos.immutable(); // Paper
++                                return true;
++                            }
++                        }
++                    }
++                }
++            }
++        }
++        // Leaf end - avoid hasChunkAt calls in RemoveToBlockGoal
+         for (int i2 = this.verticalSearchStart; i2 <= i1; i2 = i2 > 0 ? -i2 : 1 - i2) {
+             for (int i3 = 0; i3 < i; i3++) {
+                 for (int i4 = 0; i4 <= i3; i4 = i4 > 0 ? -i4 : 1 - i4) {
+                     for (int i5 = i4 < i3 && i4 > -i3 ? i3 : 0; i5 <= i3; i5 = i5 > 0 ? -i5 : 1 - i5) {
+                         mutableBlockPos.setWithOffset(blockPos, i4, i2 - 1, i5);
+-                        if (!this.mob.level().hasChunkAt(mutableBlockPos)) continue; // Gale - Airplane - block goal does not load chunks - if this block isn't loaded, continue
+-                        if (this.mob.isWithinHome(mutableBlockPos) && this.isValidTarget(this.mob.level(), mutableBlockPos)) {
++                        if (!world.hasChunkAt(mutableBlockPos)) continue; // Gale - Airplane - block goal does not load chunks - if this block isn't loaded, continue // Leaf - inline level
++                        if (this.mob.isWithinHome(mutableBlockPos) && this.isValidTarget(world, mutableBlockPos)) { // Leaf - inline level
+                             this.blockPos = mutableBlockPos;
+                             this.mob.movingTarget = mutableBlockPos == BlockPos.ZERO ? null : mutableBlockPos.immutable(); // Paper
+                             return true;
