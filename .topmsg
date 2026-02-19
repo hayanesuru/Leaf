@@ -1,2 +1,2 @@
 From: hayanesuru <hayanesuru@outlook.jp>
-Subject: [PATCH] reduce get chunk calls in `RemoveToBlockGoal`
+Subject: [PATCH] avoid hasChunkAt calls in `RemoveToBlockGoal`
