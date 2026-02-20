@@ -1,2 +1,4 @@
 From: hayanesuru <hayanesuru@outlook.jp>
 Subject: [PATCH] avoid hasChunkAt calls in `RemoveToBlockGoal`
+
+Leave `#isValidTarget` unchanged since plugins may hack it.
