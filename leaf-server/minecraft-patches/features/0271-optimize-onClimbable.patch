@@ -19,7 +19,7 @@ index 07709ff0a02b3d4c9c5c481b9e80777e9275c2ab..6a2b44f4c68daca06baec7eff6a8150b
  
          return this.inBlockState;
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 7cf902411d59762f388420bacde264c0e290dad8..a8bf96aafee76732cd49834e44235ab6620fa1c3 100644
+index ff37f6625f05ee771ddf25157cda94677a308162..1330ba14516446fe12f516cecae9033254ab8e1d 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -2290,10 +2290,10 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
