@@ -307,7 +307,7 @@ index 19ec939529eb638bdc4d7fd9260f161fae118314..21e891ecdb90a1828428441aef9c2593
          }
          // Paper end - Buffer joins to world
 diff --git a/net/minecraft/server/Main.java b/net/minecraft/server/Main.java
-index 094d2d528cb74b8f1d277cd780bba7f438dbe764..272e2871aca8d283229cc5618e3051146db56681 100644
+index 9216e85e74bb0121c72665f155b07cf9a37f430a..31ce71305260f082729780d4e8fb4dba557f9883 100644
 --- a/net/minecraft/server/Main.java
 +++ b/net/minecraft/server/Main.java
 @@ -105,6 +105,13 @@ public class Main {
@@ -325,7 +325,7 @@ index 094d2d528cb74b8f1d277cd780bba7f438dbe764..272e2871aca8d283229cc5618e305114
              Bootstrap.bootStrap();
              Bootstrap.validate();
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index c2227d57ea2e2da537a313d4bfd2f8c7f776be64..e236ca37a855918040d23e6659145659f58b4f04 100644
+index ca2caace6aab0dfcb0ab7a0fd28e66555c62fdc5..5d1c81c93e3925deb31681bd84c3a938cc17315d 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -290,6 +290,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -361,7 +361,7 @@ index c2227d57ea2e2da537a313d4bfd2f8c7f776be64..e236ca37a855918040d23e6659145659
          // CraftBukkit start
          if (this.server != null) {
              this.server.spark.disable(); // Paper - spark
-@@ -1112,6 +1124,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1107,6 +1119,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          this.safeShutdown(waitForShutdown, false);
      }
      public void safeShutdown(boolean waitForShutdown, boolean isRestarting) {
@@ -370,7 +370,7 @@ index c2227d57ea2e2da537a313d4bfd2f8c7f776be64..e236ca37a855918040d23e6659145659
          this.isRestarting = isRestarting;
          this.hasLoggedStop = true; // Paper - Debugging
          if (isDebugging()) io.papermc.paper.util.TraceUtil.dumpTraceForThread("Server stopped"); // Paper - Debugging
-@@ -1289,11 +1303,30 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1284,11 +1298,30 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              }
              // Paper end - Add onboarding message for initial server start
              // Paper start - Improve outdated version checking
@@ -402,7 +402,7 @@ index c2227d57ea2e2da537a313d4bfd2f8c7f776be64..e236ca37a855918040d23e6659145659
              while (this.running) {
                  final long tickStart = System.nanoTime(); // Paper - improve tick loop
                  long l; // Paper - improve tick loop - diff on change, expect this to be tick interval
-@@ -1307,9 +1340,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1302,9 +1335,11 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                      final long ticksBehind = Math.max(1L, this.tickSchedule.getPeriodsAhead(l, tickStart));
                      final long catchup = (long)Math.max(
                          1,
@@ -415,7 +415,7 @@ index c2227d57ea2e2da537a313d4bfd2f8c7f776be64..e236ca37a855918040d23e6659145659
                      // adjust ticksBehind so that it is not greater-than catchup
                      if (ticksBehind > catchup) {
                          final long difference = ticksBehind - catchup;
-@@ -1790,7 +1825,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1785,7 +1820,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              long worldTime = level.getGameTime();
              final ClientboundSetTimePacket worldPacket = new ClientboundSetTimePacket(worldTime, dayTime, doDaylight);
              for (Player entityhuman : level.players()) {
@@ -424,7 +424,7 @@ index c2227d57ea2e2da537a313d4bfd2f8c7f776be64..e236ca37a855918040d23e6659145659
                      continue;
                  }
                  ServerPlayer entityplayer = (ServerPlayer) entityhuman;
-@@ -1809,6 +1844,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1804,6 +1839,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              serverLevel.hasEntityMoveEvent = io.papermc.paper.event.entity.EntityMoveEvent.getHandlerList().getRegisteredListeners().length > 0; // Paper - Add EntityMoveEvent
              serverLevel.updateLagCompensationTick(); // Paper - lag compensation
              net.minecraft.world.level.block.entity.HopperBlockEntity.skipHopperEvents = serverLevel.paperConfig().hopper.disableMoveEvent || org.bukkit.event.inventory.InventoryMoveItemEvent.getHandlerList().getRegisteredListeners().length == 0; // Paper - Perf: Optimize Hoppers
@@ -12317,7 +12317,7 @@ index db164101d440c503e2e88b1f31af7f0638faaec5..51e9c23436b620c32c4e5a5448fac8ae
          }
      }
 diff --git a/net/minecraft/world/entity/monster/zombie/Husk.java b/net/minecraft/world/entity/monster/zombie/Husk.java
-index f36d92f0f62354be5f4e39e768aabb1369cfe18c..d1390e0a88de89b3dc381449ef98a89b327eb4c9 100644
+index 93fd34d12c1b9702ff7480f434648d70638bf1a9..585267eb9bd05475edaab6d1ed496fbbaeccb5d2 100644
 --- a/net/minecraft/world/entity/monster/zombie/Husk.java
 +++ b/net/minecraft/world/entity/monster/zombie/Husk.java
 @@ -27,11 +27,79 @@ import org.jspecify.annotations.Nullable;
@@ -12402,7 +12402,7 @@ index f36d92f0f62354be5f4e39e768aabb1369cfe18c..d1390e0a88de89b3dc381449ef98a89b
  
      @Override
 diff --git a/net/minecraft/world/entity/monster/zombie/Zombie.java b/net/minecraft/world/entity/monster/zombie/Zombie.java
-index d9935d71393b28ee8052b1c05739bfd44d6afb47..f9435eee22c85f8a62611d6742d145f4eeeff525 100644
+index d1b91335b1e979a2e64e6f0ec95dbe32023a25b7..b7f3fc561dddc382f3d2c581e5713320317e6a5d 100644
 --- a/net/minecraft/world/entity/monster/zombie/Zombie.java
 +++ b/net/minecraft/world/entity/monster/zombie/Zombie.java
 @@ -92,22 +92,85 @@ public class Zombie extends Monster {
