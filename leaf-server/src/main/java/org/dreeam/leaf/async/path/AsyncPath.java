@@ -62,7 +62,15 @@ public final class AsyncPath extends Path {
 
     @Override
     public boolean isProcessed() {
-        return this.ready;
+        if (this.ready) {
+            return true;
+        }
+        Path ret = this.ret;
+        if (ret != null) {
+            complete(ret);
+            return true;
+        }
+        return false;
     }
 
     /**
