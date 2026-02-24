@@ -28,15 +28,11 @@ public final class AsyncPath extends Path {
      */
     private final Set<BlockPos> positions;
 
-    private @Nullable Supplier<Path> task;
+    private @Nullable Supplier<Path> pathSupplier;
+
+    /// Represents an asynchronous task. `null` indicates that is not ready.
     private volatile @Nullable Path ret;
 
-    /**
-     * The block we're trying to path to
-     * <p>
-     * While processing, we have no idea where this is so consumers of `Path` should check that the path is processed before checking the target block
-     */
-    private BlockPos target;
     /**
      * How far we are to the target
      * <p>
@@ -55,9 +51,13 @@ public final class AsyncPath extends Path {
         super(emptyNodeList, null, false);
 
         this.positions = positions;
-        this.task = pathSupplier;
+        this.pathSupplier = pathSupplier;
 
-        AsyncPathProcessor.queue(() -> this.ret = pathSupplier.get());
+        AsyncPathProcessor.queue(() -> {
+            if (this.ret == null) {
+                this.ret = pathSupplier.get();
+            }
+        });
     }
 
     @Override
@@ -68,7 +68,7 @@ public final class AsyncPath extends Path {
     /**
      * Returns the future representing the processing state of this path
      */
-    public final void schedulePostProcessing(Consumer<Path> runnable) {
+    public void schedulePostProcessing(Consumer<Path> runnable) {
         if (this.ready) {
             runnable.accept(this);
         } else {
@@ -82,7 +82,7 @@ public final class AsyncPath extends Path {
      * @param positions - the positions to compare against
      * @return true if we are processing the same positions
      */
-    public final boolean hasSameProcessingPositions(final Set<BlockPos> positions) {
+    public boolean hasSameProcessingPositions(final Set<BlockPos> positions) {
         return this.positions.equals(positions);
     }
 
@@ -90,24 +90,25 @@ public final class AsyncPath extends Path {
      * Starts processing this path
      * Since this is no longer a synchronized function, checkProcessed is no longer required
      */
-    private final void process() {
+    private void process() {
         if (this.ready) {
             return;
         }
         final Path ret = this.ret;
-        final Supplier<Path> task = this.task;
-        final Path bestPath = ret != null ? ret : Objects.requireNonNull(task).get();
+        final Path bestPath = ret != null ? ret : (this.ret = Objects.requireNonNull(pathSupplier).get());
         complete(bestPath);
     }
 
-    /// not this.ready
-    /// [#isDone]
-    private final void complete(Path bestPath) {
+    /// not [#ready]
+    ///
+    /// @see #isDone
+    /// @see #process
+    private void complete(Path bestPath) {
         this.nodes = bestPath.nodes;
         this.target = bestPath.getTarget();
         this.distToTarget = bestPath.getDistToTarget();
         this.canReach = bestPath.canReach();
-        this.task = null;
+        this.pathSupplier = null;
         this.ready = true;
         for (Consumer<Path> consumer : this.postProcessing) {
             consumer.accept(this);
@@ -140,7 +141,6 @@ public final class AsyncPath extends Path {
     /*
      * Overrides to ensure we're processed first
      */
-
     @Override
     public boolean isDone() {
         boolean ready = this.ready;
@@ -242,5 +242,4 @@ public final class AsyncPath extends Path {
         this.process();
         return super.getPreviousNode();
     }
-
 }
