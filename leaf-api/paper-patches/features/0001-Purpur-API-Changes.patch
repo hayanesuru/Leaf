@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur API Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: d0b1b32e6f97c7a69bcebe04544589078133f0a9
+Commit: e4663d8b999a0bb5ccd511117df409d1480d6db5
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "co/aikar/timings/TimedEventExecutor.java.patch"
