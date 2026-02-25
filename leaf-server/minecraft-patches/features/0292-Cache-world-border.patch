@@ -18,7 +18,7 @@ index 8e8c083a86384817c0534bcd10590e62fa035e0f..b94a5ff96b6800752d8a19d8132c25c4
  
      @Override
      public @Nullable LevelChunk getChunkIfLoaded(int x, int z) {
-@@ -2517,8 +2518,14 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2518,8 +2519,14 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      @Override
      public WorldBorder getWorldBorder() {
