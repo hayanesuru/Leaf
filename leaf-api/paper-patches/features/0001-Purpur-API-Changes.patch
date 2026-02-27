@@ -6,7 +6,7 @@ Subject: [PATCH] Purpur API Changes
 Original license: MIT
 Original project: https://github.com/PurpurMC/Purpur
 
-Commit: d0b1b32e6f97c7a69bcebe04544589078133f0a9
+Commit: e4663d8b999a0bb5ccd511117df409d1480d6db5
 
 Patches listed below are removed in this patch, They exists in Gale or Leaf:
 * "co/aikar/timings/TimedEventExecutor.java.patch"
@@ -809,10 +809,10 @@ index 2e29c62bda14355ebce073573628bdf5f5bd9a76..4002603f6eadec63b5cf5d0be87f582e
  
      /**
 diff --git a/src/main/java/org/bukkit/entity/CopperGolem.java b/src/main/java/org/bukkit/entity/CopperGolem.java
-index 659733c3d1164f0466e53f65c1fcc9994960a5a4..25c21b7fd1b1335537a475263902b1be56aea300 100644
+index 6d3bd4f689064d5ca9bc36722dc4bf9b3d5b3615..3fd30150b4f37ac357fb3b840c4d85e654229385 100644
 --- a/src/main/java/org/bukkit/entity/CopperGolem.java
 +++ b/src/main/java/org/bukkit/entity/CopperGolem.java
-@@ -39,6 +39,22 @@ public interface CopperGolem extends Golem, Shearable {
+@@ -53,6 +53,22 @@ public interface CopperGolem extends Golem, Shearable {
       */
      void setOxidizing(Oxidizing oxidizing);
  
