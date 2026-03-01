@@ -14,7 +14,7 @@ the CME was caused by map.put(this.dispatcher.getRoot(), rootCommandNode); itera
 different approach to https://github.com/PaperMC/Paper/pull/13233 without locking/synchronization
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index 49ba16546fb3f2eb22bfc8e259d7c3c7e07dcae2..3afde0da77c18a341141c432d4e1c90f8a52baaa 100644
+index 49ba16546fb3f2eb22bfc8e259d7c3c7e07dcae2..1dedea0b4bee8e46726029b7c05d849e9ed27947 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
 @@ -470,10 +470,12 @@ public class Commands {
@@ -34,7 +34,7 @@ index 49ba16546fb3f2eb22bfc8e259d7c3c7e07dcae2..3afde0da77c18a341141c432d4e1c90f
      }
  
      // Fixed pool, but with discard policy
-@@ -487,12 +489,15 @@ public class Commands {
+@@ -487,12 +489,14 @@ public class Commands {
          new java.util.concurrent.ThreadPoolExecutor.DiscardPolicy()
      );
  
@@ -44,7 +44,7 @@ index 49ba16546fb3f2eb22bfc8e259d7c3c7e07dcae2..3afde0da77c18a341141c432d4e1c90f
          Map<CommandNode<CommandSourceStack>, CommandNode<CommandSourceStack>> map = new HashMap<>();
          RootCommandNode<CommandSourceStack> rootCommandNode = new RootCommandNode<>();
 -        map.put(this.dispatcher.getRoot(), rootCommandNode);
-         fillUsableCommands(dispatcherRootChildren, rootCommandNode, player.createCommandSourceStack(), map); // Paper - Perf: Async command map building; pass copy of children
+-        fillUsableCommands(dispatcherRootChildren, rootCommandNode, player.createCommandSourceStack(), map); // Paper - Perf: Async command map building; pass copy of children
 +        // Paper PR start - fix ConcurrentModificationException in async command sending - pass copy of root
 +        map.put(dispatcherRoot, rootCommandNode);
 +        fillUsableCommands(dispatcherRoot, rootCommandNode, player.createCommandSourceStack(), map);
@@ -52,7 +52,7 @@ index 49ba16546fb3f2eb22bfc8e259d7c3c7e07dcae2..3afde0da77c18a341141c432d4e1c90f
  
          java.util.Collection<String> bukkit = new java.util.LinkedHashSet<>();
          for (CommandNode node : rootCommandNode.getChildren()) {
-@@ -523,8 +528,8 @@ public class Commands {
+@@ -523,8 +527,8 @@ public class Commands {
          player.connection.send(new ClientboundCommandsPacket(rootCommandNode, COMMAND_NODE_INSPECTOR));
      }
  
@@ -63,7 +63,7 @@ index 49ba16546fb3f2eb22bfc8e259d7c3c7e07dcae2..3afde0da77c18a341141c432d4e1c90f
              // Paper start - Brigadier API
              if (commandNode.clientNode != null) {
                  commandNode = commandNode.clientNode;
-@@ -576,7 +581,7 @@ public class Commands {
+@@ -576,7 +580,7 @@ public class Commands {
                  output.put(commandNode, commandNode1);
                  current.addChild(commandNode1);
                  if (!commandNode.getChildren().isEmpty()) {
