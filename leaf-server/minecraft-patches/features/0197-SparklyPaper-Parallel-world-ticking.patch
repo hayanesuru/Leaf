@@ -728,7 +728,7 @@ index 75be3647b91b34b32d79fb185f53289141923a91..9f7d2b0766b0c3a181e3db33140758f7
          serverPlayer.restoreFrom(player, keepInventory);
          serverPlayer.setId(player.getId());
 diff --git a/net/minecraft/server/waypoints/ServerWaypointManager.java b/net/minecraft/server/waypoints/ServerWaypointManager.java
-index 471e558a609c9e457720660b90fe57322b860461..3bf75ecdee76c53e178509619be8011bce4226d9 100644
+index 471e558a609c9e457720660b90fe57322b860461..56dd9ff0bd35a7d20ef0aa8b465708029b01bea9 100644
 --- a/net/minecraft/server/waypoints/ServerWaypointManager.java
 +++ b/net/minecraft/server/waypoints/ServerWaypointManager.java
 @@ -20,8 +20,16 @@ public class ServerWaypointManager implements WaypointManager<WaypointTransmitte
@@ -787,7 +787,7 @@ index 471e558a609c9e457720660b90fe57322b860461..3bf75ecdee76c53e178509619be8011b
          this.connections.row(player).values().removeIf(connection -> {
              connection.disconnect();
              return true;
-@@ -87,6 +100,7 @@ public class ServerWaypointManager implements WaypointManager<WaypointTransmitte
+@@ -87,11 +100,13 @@ public class ServerWaypointManager implements WaypointManager<WaypointTransmitte
      }
  
      public void breakAllConnections() {
@@ -795,22 +795,12 @@ index 471e558a609c9e457720660b90fe57322b860461..3bf75ecdee76c53e178509619be8011b
          this.connections.values().forEach(WaypointTransmitter.Connection::disconnect);
          this.connections.clear();
      }
-@@ -106,6 +120,7 @@ public class ServerWaypointManager implements WaypointManager<WaypointTransmitte
-     }
  
-     private void createConnection(ServerPlayer player, WaypointTransmitter waypoint) {
-+        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread(this.level, "Cannot create waypoint connections off-main"); // Leaf - SparklyPaper - parallel world ticking
-         if (player != waypoint) {
-             if (isLocatorBarEnabledFor(player)) {
-                 waypoint.makeWaypointConnectionWith(player).ifPresentOrElse(connection -> {
-@@ -122,6 +137,7 @@ public class ServerWaypointManager implements WaypointManager<WaypointTransmitte
-     }
- 
-     private void updateConnection(ServerPlayer player, WaypointTransmitter waypoint, WaypointTransmitter.Connection connection) {
-+        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread(this.level, "Cannot update waypoint connection off-main"); // Leaf - SparklyPaper - parallel world ticking
-         if (player != waypoint) {
-             if (isLocatorBarEnabledFor(player)) {
-                 if (!connection.isBroken()) {
+     public void remakeConnections(WaypointTransmitter waypoint) {
++        if (org.dreeam.leaf.config.modules.async.SparklyPaperParallelWorldTicking.enabled) { ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread(this.level, "Cannot remake waypoint connections off-main"); } // Leaf - SparklyPaper - parallel world ticking
+         for (ServerPlayer serverPlayer : this.players) {
+             this.createConnection(serverPlayer, waypoint);
+         }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
 index dc41aa4da487929e955de17a91c8bc4471d9519b..f2ba25c6cb6414c5e26b07c279a4ee63f740455a 100644
 --- a/net/minecraft/world/entity/Entity.java
