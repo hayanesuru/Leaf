@@ -9,14 +9,14 @@ jobs:
   build:
     # Run workflow only on main repo
     if: ${{ github.repository == 'Winds-Studio/Leaf' }}
-    runs-on: blacksmith-8vcpu-ubuntu-2204
+    runs-on: blacksmith-8vcpu-ubuntu-2404
     env:
       MC_VERSION: "1.21.11"
       BUILD_NUMBER: ${{ github.run_number }}
       GRAALVM_ARGS: "-Dgraal.CompilerConfiguration=enterprise -Dgraal.UsePriorityInlining=true -Dgraal.Vectorization=true -Dgraal.OptDuplication=true --add-modules jdk.incubator.vector"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: useblacksmith/checkout@v1
         with:
           fetch-depth: 0
 
@@ -46,12 +46,6 @@ jobs:
           GITHUB_REPO: ${{ github.repository }}
           MC_VERSION: ${{ env.MC_VERSION }}
           BUILD_NUMBER: ${{ env.BUILD_NUMBER }}
-
-      - name: Upload Leaf
-        uses: actions/upload-artifact@v6
-        with:
-          name: Leaf ${{ env.MC_VERSION }}
-          path: ./leaf-${{ env.MC_VERSION }}-${{ env.BUILD_NUMBER }}.jar
 
       - name: Release Leaf
         uses: softprops/action-gh-release@v2
