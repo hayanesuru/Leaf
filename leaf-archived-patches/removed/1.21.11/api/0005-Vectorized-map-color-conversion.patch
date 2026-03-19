@@ -3,6 +3,9 @@ From: Martijn Muijsers <martijnmuijsers@live.nl>
 Date: Thu, 24 Nov 2022 17:03:21 +0100
 Subject: [PATCH] Vectorized map color conversion
 
+Removed since Leaf 1.21.11, not necessary
+Better to use `use-map-color-cache` in bukkit.yml
+
 License: GPL-3.0-only (https://www.gnu.org/licenses/gpl-3.0.html)
 Gale - https://galemc.org
 
