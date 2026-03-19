@@ -3,7 +3,7 @@ From: hayanesuru <hayanesuru@outlook.jp>
 Date: Sat, 9 Aug 2025 15:39:09 +0900
 Subject: [PATCH] Pluto: don't load chunks to spread grass
 
-Original license: GPL-3.0
+Original license: GPL-3.0-only
 Original project: https://github.com/Yive/Pluto
 
 diff --git a/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java b/net/minecraft/world/level/block/SpreadingSnowyDirtBlock.java

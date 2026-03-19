@@ -5,7 +5,7 @@ Subject: [PATCH] Pluto: Expose Direction$Plane's faces
 
 The JMH benchmark of this patch can be found in SunBox's `CachedEnumValuesForLoop`
 
-Original license: GPL-3.0
+Original license: GPL-3.0-only
 Original project: https://github.com/Yive/Pluto
 
 diff --git a/net/minecraft/core/Direction.java b/net/minecraft/core/Direction.java

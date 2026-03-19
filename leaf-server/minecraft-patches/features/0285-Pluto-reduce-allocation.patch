@@ -3,7 +3,7 @@ From: Yive <6853318+Yive@users.noreply.github.com>
 Date: Tue, 6 May 2025 10:12:32 -0700
 Subject: [PATCH] Pluto: reduce allocation
 
-Original license: GPL-3.0
+Original license: GPL-3.0-only
 Original project: https://github.com/Yive/Pluto
 
 diff --git a/alternate/current/wire/WireHandler.java b/alternate/current/wire/WireHandler.java
