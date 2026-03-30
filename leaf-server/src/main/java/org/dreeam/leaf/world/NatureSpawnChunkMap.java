@@ -144,9 +144,8 @@ public final class NatureSpawnChunkMap {
         }
 
         buildKdTree(world.purpurConfig.mobSpawningIgnoreCreativePlayers, players);
-        this.ready = true;
-
         collectSpawningChunks(world.moonrise$getPlayerTickingChunks(), this.regionBitSets, out);
+        this.ready = true;
     }
 
     private ServerPlayer[] initPlayer(ServerLevel world) {
@@ -174,17 +173,17 @@ public final class NatureSpawnChunkMap {
         double[] pxl = new double[players.length];
         double[] pyl = new double[players.length];
         double[] pzl = new double[players.length];
-        int i1 = 0;
+        int i = 0;
         for (ServerPlayer p : players) {
             if (!p.isSpectator() && !(ignoreCreativePlayers && p.isCreative())) {
-                pxl[i1] = p.getX();
-                pyl[i1] = p.getY();
-                pzl[i1] = p.getZ();
-                i1++;
+                pxl[i] = p.getX();
+                pyl[i] = p.getY();
+                pzl[i] = p.getZ();
+                i++;
             }
         }
-        final int[] indices = new int[i1];
-        for (int j = 0; j < i1; j++) {
+        final int[] indices = new int[i];
+        for (int j = 0; j < i; j++) {
             indices[j] = j;
         }
         this.tree.build(new double[][]{pxl, pyl, pzl}, indices);
