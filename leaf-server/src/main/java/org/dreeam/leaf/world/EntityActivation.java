@@ -108,16 +108,16 @@ public final class EntityActivation {
         if (size != 0 && playerSize != 0) {
             final boolean dab = DynamicActivationofBrain.enabled;
             final boolean dontEnableIfInWater = DynamicActivationofBrain.dontEnableIfInWater;
-            final int startSq = DynamicActivationofBrain.startDistanceSquared;
-            final int distMod = DynamicActivationofBrain.activationDistanceMod;
-            final int maxPrio = DynamicActivationofBrain.maximumActivationPrio;
-            activateEntities(size, raw, tickMarkers, currentTick, ranges, kdTree2, dab, dontEnableIfInWater, kdTree3, startSq, distMod, maxPrio);
+            final double startSq = DynamicActivationofBrain.startDistanceSquared;
+            final double scale = Math.pow(2.0, -DynamicActivationofBrain.activationDistanceMod);
+            final double maxPrio = DynamicActivationofBrain.maximumActivationPrio;
+            activateEntities(size, raw, tickMarkers, currentTick, ranges, kdTree2, dab, dontEnableIfInWater, kdTree3, startSq, scale, maxPrio);
         }
         entities.clear();
         chunks.clear();
     }
 
-    private static void activateEntities(int size, Object[] entities, boolean tickMarkers, long currentTick, double[] ranges, KDTree2D kdTree2, boolean dab, boolean dontEnableIfInWater, KDTree3D kdTree3, int startSq, int distMod, int maxPrio) {
+    private static void activateEntities(int size, Object[] entities, boolean tickMarkers, long currentTick, double[] ranges, KDTree2D kdTree2, boolean dab, boolean dontEnableIfInWater, KDTree3D kdTree3, double startSq, double scale, double maxPrio) {
         for (int i = 0; i < size; i++) {
             final Entity entity = (Entity) entities[i];
             if (!tickMarkers && entity instanceof Marker) {
@@ -140,9 +140,9 @@ public final class EntityActivation {
             if (dab
                 && entity.getType().dabEnabled
                 && (!dontEnableIfInWater || !entity.isInWater() || (entity instanceof WaterAnimal || (entity instanceof final LivingEntity livingEntity && livingEntity.canBreatheUnderwater())))) {
-                final int distSq = (int) kdTree3.nearestSqr(p.x, p.y, p.z, 16384.0);
+                final double distSq = kdTree3.nearestSqr(p.x, p.y, p.z, 16384.0);
                 a = distSq > startSq ?
-                    Math.max(1, Math.min(distSq >> distMod, maxPrio)) :
+                    (int) Math.clamp(distSq * scale, 1, maxPrio) :
                     1;
             } else {
                 a = 1;

@@ -106,6 +106,10 @@ public final class KDTree3D {
             : dx * dx + dy * dy + dz * dz;
     }
 
+    public boolean isEmpty() {
+        return this.search.length == 0 || this.search[0] == SENTINEL;
+    }
+
     public double nearestSqr(final double tx, final double ty, final double tz, double dist) {
         final int[] stack = this.search;
         final int[] nrl = this.nrl;
