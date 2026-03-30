@@ -200,15 +200,17 @@ index c30c53942005d230e73841c9e6bb4d05e746d866..1aac9a7370a3640e49d6f6df6499d384
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 98313e336f1e10d11d6e58bba80c42038c66aed9..d930d371d1abb3aaacb736445d7f88eec21c7535 100644
+index 98313e336f1e10d11d6e58bba80c42038c66aed9..470677fbb9eb9768227f36dd4ed4c5441e70d456 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -378,7 +378,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -378,8 +378,8 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      public final int despawnTime; // Paper - entity despawn time limit // Leaf - Rewrite entity despawn time - private -> public
      public int totalEntityAge; // Paper - age-like counter for all entities
      private int lastTickTime; // Leaf - Rewrite entity despawn time
 -    public boolean activatedPriorityReset = false; // Pufferfish - DAB
+-    public int activatedPriority = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio; // Pufferfish - DAB (golf score)
 +    // public boolean activatedPriorityReset = false; // Pufferfish - DAB
-     public int activatedPriority = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio; // Pufferfish - DAB (golf score)
++    public int activatedPriority = (int) org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio; // Pufferfish - DAB (golf score)
      public final io.papermc.paper.entity.activation.ActivationType activationType = io.papermc.paper.entity.activation.ActivationType.activationTypeFor(this); // Paper - EAR 2/tracking ranges
      // Paper start - EAR 2
+     public final boolean defaultActivationState;
