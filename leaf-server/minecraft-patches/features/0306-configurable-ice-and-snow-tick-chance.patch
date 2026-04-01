@@ -5,15 +5,18 @@ Subject: [PATCH] configurable ice and snow tick chance
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 301f8c9edb1fedfd26b159767ebf76577833225e..03970c735aff749a1cc44efa93aa515aa6e8a108 100644
+index 301f8c9edb1fedfd26b159767ebf76577833225e..692b690cbcdaab571de59d26f0d47792cf4ce099 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1228,7 +1228,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1226,9 +1226,10 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         ProfilerFiller profilerFiller = Profiler.get();
+         profilerFiller.push("iceandsnow");
  
++        int rate = org.dreeam.leaf.config.modules.gameplay.IceAndSnowChance.iceAndSnowChance; // Leaf - configurable ice and snow tick chance
          if (!this.paperConfig().environment.disableIceAndSnow) { // Paper - Option to disable ice and snow
          for (int i = 0; i < randomTickSpeed; i++) {
 -            if (simpleRandom.nextInt(48) == 0) {  // Paper - optimise random ticking
-+            if (simpleRandom.nextInt(org.dreeam.leaf.config.modules.gameplay.IceAndSnowChance.iceAndSnowChance) == 0) {  // Paper - optimise random ticking // Leaf - configurable ice and snow tick chance
++            if (simpleRandom.nextInt(rate) == 0) {  // Paper - optimise random ticking // Leaf - configurable ice and snow tick chance
                  this.tickPrecipitation(this.getBlockRandomPos(minBlockX, 0, minBlockZ, 15));
              }
          }

@@ -14,7 +14,7 @@ public class IceAndSnowChance extends ConfigModules {
     @Override
     public void onLoaded() {
         iceAndSnowChance = config.getInt(getBasePath(), 48 * 8);
-        if (iceAndSnowChance < 0) {
+        if (iceAndSnowChance <= 0) {
             iceAndSnowChance = 48;
         }
     }
