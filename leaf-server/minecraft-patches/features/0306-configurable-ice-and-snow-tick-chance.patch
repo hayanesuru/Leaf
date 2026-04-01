@@ -5,10 +5,10 @@ Subject: [PATCH] configurable ice and snow tick chance
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index d8201ab6396b75adf701ae552327ab747ba54461..912e9fa314fcfc6e5723bc55b8069ec9e3ba0d19 100644
+index 301f8c9edb1fedfd26b159767ebf76577833225e..03970c735aff749a1cc44efa93aa515aa6e8a108 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1192,7 +1192,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1228,7 +1228,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
          if (!this.paperConfig().environment.disableIceAndSnow) { // Paper - Option to disable ice and snow
          for (int i = 0; i < randomTickSpeed; i++) {
