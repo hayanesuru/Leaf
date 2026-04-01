@@ -59,8 +59,7 @@ public final class RandomTickSystem {
         for (int k = 0, len = queue.size(); k < len; ++k) {
             final long packed = q[k];
             final LevelChunk chunk = raw[(int) (packed >>> SECTION_BITS)];
-            final int section = (int) (packed & SECTION_MASK);
-            tickBlock(world, chunk, section, random, minY);
+            tickBlock(world, chunk, (int) (packed & SECTION_MASK), random, minY);
         }
     }
 
