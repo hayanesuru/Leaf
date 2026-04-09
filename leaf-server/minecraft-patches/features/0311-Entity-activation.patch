@@ -79,7 +79,7 @@ index c1d24cff2af534edfb9fcc45f3cf2b31eb04c6de..7e800dc79900490606fff0b0f191f07c
          final int minChunkX = (Mth.floor(box.minX) - 2) >> 4;
          final int minChunkZ = (Mth.floor(box.minZ) - 2) >> 4;
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..d661b17b3ab4f92e8d87f909ac7abfa22a0daaef 100644
+index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..f80921024be8afb1510263f49edccfb93ff9b607 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
 @@ -86,14 +86,15 @@ public final class ActivationRange {
@@ -109,7 +109,7 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..d661b17b3ab4f92e8d87f909ac7abfa2
 +        final boolean dontEnableIfInWater = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.dontEnableIfInWater;
 +        final double startSq = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.startDistanceSquared;
 +        final double scale = Math.pow(2.0, -org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.activationDistanceMod);
-+        final double maxPrio = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio;
++        final int maxPriority = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio;
 +        final boolean idleTimeoutTickNearbyEntities = world.purpurConfig.idleTimeoutTickNearbyEntities;
 +        final boolean ignoreSpectatorActivation = world.spigotConfig.ignoreSpectatorActivation;
 +        final long currentTick = MinecraftServer.currentTick;
@@ -155,7 +155,7 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..d661b17b3ab4f92e8d87f909ac7abfa2
 +                        (dontEnableIfInWater || entity.getType().is(net.minecraft.tags.EntityTypeTags.CAN_BREATHE_UNDER_WATER) || !entity.isInWater())) { // Leaf - Option for dontEnableIfInWater
 +                    int distSq = (int) player.distanceToSqr(entity);
 +                    a = distSq > startSq ?
-+                        (int) Math.clamp(distSq * scale, 1.0, maxPrio) :
++                        Math.min(maxPriority, Math.max((int) (distSq * scale), 1)) :
 +                        1;
                  } else {
 -                    entity.activatedPriority = 1;
@@ -202,16 +202,14 @@ index c30c53942005d230e73841c9e6bb4d05e746d866..1aac9a7370a3640e49d6f6df6499d384
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a9e2068fefcee36dd694f2c42544618b975c0695..7736e0960909d30abe99a139cff5e0fb8699e18c 100644
+index a9e2068fefcee36dd694f2c42544618b975c0695..d52acba7ecd8ed7709471f55d25396b32515f5ac 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -379,8 +379,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -379,7 +379,6 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      public final int despawnTime; // Paper - entity despawn time limit // Leaf - Rewrite entity despawn time - private -> public
      public int totalEntityAge; // Paper - age-like counter for all entities
      private int lastTickTime; // Leaf - Rewrite entity despawn time
 -    public boolean activatedPriorityReset = false; // Pufferfish - DAB
--    public int activatedPriority = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio; // Pufferfish - DAB (golf score)
-+    public int activatedPriority = (int) org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio; // Pufferfish - DAB (golf score)
+     public int activatedPriority = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio; // Pufferfish - DAB (golf score)
      public final io.papermc.paper.entity.activation.ActivationType activationType = io.papermc.paper.entity.activation.ActivationType.activationTypeFor(this); // Paper - EAR 2/tracking ranges
      // Paper start - EAR 2
-     public final boolean defaultActivationState;

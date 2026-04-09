@@ -110,14 +110,14 @@ public final class EntityActivation {
             final boolean dontEnableIfInWater = DynamicActivationofBrain.dontEnableIfInWater;
             final double startSq = DynamicActivationofBrain.startDistanceSquared;
             final double scale = Math.pow(2.0, -DynamicActivationofBrain.activationDistanceMod);
-            final double maxPrio = DynamicActivationofBrain.maximumActivationPrio;
-            activateEntities(size, raw, tickMarkers, currentTick, ranges, kdTree2, dab, dontEnableIfInWater, kdTree3, startSq, scale, maxPrio);
+            final int maxPriority = DynamicActivationofBrain.maximumActivationPrio;
+            activateEntities(size, raw, tickMarkers, currentTick, ranges, kdTree2, dab, dontEnableIfInWater, kdTree3, startSq, scale, maxPriority);
         }
         entities.clear();
         chunks.clear();
     }
 
-    private static void activateEntities(int size, Object[] entities, boolean tickMarkers, long currentTick, double[] ranges, KDTree2D kdTree2, boolean dab, boolean dontEnableIfInWater, KDTree3D kdTree3, double startSq, double scale, double maxPrio) {
+    private static void activateEntities(int size, Object[] entities, boolean tickMarkers, long currentTick, double[] ranges, KDTree2D kdTree2, boolean dab, boolean dontEnableIfInWater, KDTree3D kdTree3, double startSq, double scale, int maxPriority) {
         for (int i = 0; i < size; i++) {
             final Entity entity = (Entity) entities[i];
             if (!tickMarkers && entity instanceof Marker) {
@@ -141,9 +141,7 @@ public final class EntityActivation {
                 && entity.getType().dabEnabled
                 && (!dontEnableIfInWater || !entity.isInWater() || (entity instanceof WaterAnimal || (entity instanceof final LivingEntity livingEntity && livingEntity.canBreatheUnderwater())))) {
                 final double distSq = kdTree3.nearestSqr(p.x, p.y, p.z, 16384.0);
-                a = distSq > startSq ?
-                    (int) Math.clamp(distSq * scale, 1.0, maxPrio) :
-                    1;
+                a = distSq > startSq ? Math.min(maxPriority, Math.max((int) (distSq * scale), 1)) : 1;
             } else {
                 a = 1;
             }

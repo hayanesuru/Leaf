@@ -21,7 +21,7 @@ public class DynamicActivationofBrain extends ConfigModules {
     public static boolean enabled = false;
     public static double startDistance = 12.0;
     public static double startDistanceSquared;
-    public static double maximumActivationPrio = 20.0;
+    public static int maximumActivationPrio = 20;
     public static double activationDistanceMod = 8.0;
     public static boolean dontEnableIfInWater = false;
     public static List<String> blackedEntities = new ArrayList<>(Arrays.asList(
@@ -52,7 +52,7 @@ public class DynamicActivationofBrain extends ConfigModules {
                 from the player to start being effected by DEAR.""",
             """
                 生物距离玩家多少格 DAB 开始生效"""));
-        maximumActivationPrio = config.getDouble(getBasePath() + ".max-tick-freq", maximumActivationPrio, config.pickStringRegionBased("""
+        maximumActivationPrio = config.getInt(getBasePath() + ".max-tick-freq", maximumActivationPrio, config.pickStringRegionBased("""
                 This value defines how often in ticks, the furthest entity
                 will get their pathfinders and behaviors ticked. 20 = 1s""",
             """
