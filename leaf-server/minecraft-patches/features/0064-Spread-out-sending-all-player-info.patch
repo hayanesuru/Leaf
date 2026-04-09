@@ -145,7 +145,7 @@ index 3f64ab220e2c736d9693bc501677a61269813259..7f7406f6ca9d5d97fc5bab992f70c070
      public void broadcastAll(Packet packet, net.minecraft.world.entity.player.Player entityhuman) {
          for (ServerPlayer entityplayer : this.players) { // Paper - replace for i with for each for thread safety
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 326bfab11f8379f795f7296f328518a3b8eb4d74..5948068ffdfcdc3d9a59211988df97521eff3a67 100644
+index f6370bad11757a3e7a262f57eb993e3b8bd41f2c..1b8853a9f2df092439fb463c786e3add8344e8a9 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -213,9 +213,12 @@ public abstract class Player extends Avatar implements ContainerUser {

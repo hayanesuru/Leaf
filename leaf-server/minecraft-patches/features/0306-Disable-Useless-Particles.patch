@@ -9,7 +9,7 @@ Original project: https://github.com/CraftCanvasMC/Canvas
 It is recommended to enable these options, as the client displays most of these particles already, so the server-side particle logic is not needed
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 17b78912c5567022c2c9e1d3abc9ff56fe8eed07..18af545d910909f42998a2ea50556e2cc83e9fa5 100644
+index d5c8a2c9594e3bb9bfbc116f42f5475cfb7f6c88..a9e2068fefcee36dd694f2c42544618b975c0695 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -966,7 +966,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name

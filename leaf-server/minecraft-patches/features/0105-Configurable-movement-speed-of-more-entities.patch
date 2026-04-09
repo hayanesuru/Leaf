@@ -17,7 +17,7 @@ index 0c177ba57de1401f31f33020e265061eca48f429..c65831fc755423cdec2aa981d96641f3
  
      @Override
 diff --git a/net/minecraft/world/entity/monster/zombie/Husk.java b/net/minecraft/world/entity/monster/zombie/Husk.java
-index d1390e0a88de89b3dc381449ef98a89b327eb4c9..85e0cb3951955c8534e6e0b2d3c760d36dfac4ed 100644
+index 585267eb9bd05475edaab6d1ed496fbbaeccb5d2..2f0a07009031a23cd3989690a661c0d67c3cf417 100644
 --- a/net/minecraft/world/entity/monster/zombie/Husk.java
 +++ b/net/minecraft/world/entity/monster/zombie/Husk.java
 @@ -51,6 +51,7 @@ public class Husk extends Zombie {
@@ -29,7 +29,7 @@ index d1390e0a88de89b3dc381449ef98a89b327eb4c9..85e0cb3951955c8534e6e0b2d3c760d3
  
      @Override
 diff --git a/net/minecraft/world/entity/monster/zombie/Zombie.java b/net/minecraft/world/entity/monster/zombie/Zombie.java
-index f9435eee22c85f8a62611d6742d145f4eeeff525..f4fe3c4fbf03bf0ca29f36618c28e0b944cd34dd 100644
+index b7f3fc561dddc382f3d2c581e5713320317e6a5d..aeda26fe88ff02d34fc46e0d02f24c72c7a29931 100644
 --- a/net/minecraft/world/entity/monster/zombie/Zombie.java
 +++ b/net/minecraft/world/entity/monster/zombie/Zombie.java
 @@ -126,6 +126,7 @@ public class Zombie extends Monster {

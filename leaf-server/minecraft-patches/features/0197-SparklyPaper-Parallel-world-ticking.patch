@@ -1492,7 +1492,7 @@ index 5471619a0484ece08640e2b3fd26746c351dc3e0..5a71e70e840a48716b05c97005526402
      // CraftBukkit end
  }
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 6052cb3b348def15429dad5aac83c096b6fff4d3..81904bcbb982d770320304ef237b85203cc016df 100644
+index d55053418bdbb0095187cb08f1d6b79e90f6c9d1..df77a5eb9d8e876b1e4bbb2843884847a2be19de 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -408,6 +408,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot

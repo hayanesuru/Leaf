@@ -24,7 +24,7 @@ index 80f699cece888aa7001867d0d431f9d26de8b9c6..be09251aea3a217e40ae990649efa18b
          return !this.dimensionType().hasFixedTime() && this.skyDarken < 4;
      }
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 672656e9a5079c3050dee9efffd9db0b8a303ec9..e96a9872152fc3276fedda14f6bc61eafbafca0f 100644
+index ed4845ac0ab9e0bf561fd78f9da11595e8e51ec9..be347691dcf6fc64c1a354ee799a55097990e319 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -338,6 +338,21 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot

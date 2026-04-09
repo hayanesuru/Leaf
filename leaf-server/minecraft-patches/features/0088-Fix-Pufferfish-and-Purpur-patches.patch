@@ -5,7 +5,7 @@ Subject: [PATCH] Fix Pufferfish and Purpur patches
 
 
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 78b737bc6fffef41d64311938f846dc9fc52e383..f8e4fc3a90e4fec0ff7be45eef5c1dc08a1e385b 100644
+index 8bc3b4e93de8bff6ff37ee808d07cd2884a1c224..eba1c5264cd0bc9d05b3727d613a4ce42f465be6 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -310,7 +310,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

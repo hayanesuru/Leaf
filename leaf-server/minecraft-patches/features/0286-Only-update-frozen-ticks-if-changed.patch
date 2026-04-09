@@ -5,7 +5,7 @@ Subject: [PATCH] Only update frozen ticks if changed
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index b7fc1ff32ae359bbac3d269678618534db3fa35f..60a50e6291a1c3494e499951abef1931849210db 100644
+index 9436b20485b3e864c316c650791c6470bc530e97..233f8723edce2f332f3b2e77fc7e5b4f1cae2f1d 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3926,7 +3926,13 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

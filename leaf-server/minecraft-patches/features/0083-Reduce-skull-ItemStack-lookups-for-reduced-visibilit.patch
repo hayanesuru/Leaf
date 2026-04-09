@@ -18,7 +18,7 @@ this patch is focused around the sensors used for ai
 delete the line of sight cache less often and use a faster nearby comparison
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index dd267e4779a34cdb44c2aedc8c6de697e69fc4ad..9905d329bb3caf85e1e123ce91c830596649f9be 100644
+index 91ce47c60e3351aa3af632309b3e8084286c2476..6a5613187fa36cdf57aba3fa08d70fb9d0575740 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -1062,22 +1062,23 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

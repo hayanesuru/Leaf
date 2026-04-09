@@ -289,7 +289,7 @@ index b383836c200ca9f7bd84639367aa81b57868fb25..3af4a6dcc81afaf2860325fe5852c9a9
  
      private static Map<EquipmentSlot, Float> createForAllSlots(List<EquipmentSlot> equipmentSlots, float dropChance) {
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 286cb419a7d1fb659eff0021c67277405bd815c2..053f0fd1ba71580268e374da6771430fd6592e8d 100644
+index f97257c8f0e3fd192576ba6172e3ce96e1e696d0..91e1f386f9d202cbe86f292754ceed4ec2cb0e67 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -3629,7 +3629,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -518,7 +518,7 @@ index f57feed60fdd99cc652be67ed2ada7d761167deb..43015706d3b3bb5520997adb7a579846
  
          @Override
 diff --git a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
-index c58bc63a0e9af0088921050549cd2c0d68fa1b3e..033910f4f29c8af3cb0a9788442ff2a0d2a0fbef 100644
+index c0bb687b94f3baa9ffda9c47c69a1d6d244acd4e..366c0611010e528ec038d12df70bb4dcea045b50 100644
 --- a/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity.java
 @@ -45,7 +45,7 @@ public abstract class AbstractFurnaceBlockEntity extends BaseContainerBlockEntit

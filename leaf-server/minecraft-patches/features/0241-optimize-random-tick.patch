@@ -36,7 +36,7 @@ index 4931071c7c0dc8a0af408db76f136264639c9cfa..6ef471812bd2b14dd92e4198a9714434
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 1ae159c4dff71130bb66db101e5ef4e7aa0afcfc..6d22eead50e76c53cee73e2af87d95c2a4cad393 100644
+index eeb584120e55c705bf046ef3ba2a4cbade48c01b..7682ec5b4a3e7c1ddc4532bdb0b1c16064bcae04 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -160,6 +160,10 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot

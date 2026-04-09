@@ -27,7 +27,7 @@ index 33fb59123ce59b8fd5c9f84bc31e52d21ad060ff..d2e910e6bdf06deeecf8cfb6c256e2d1
                      (org.bukkit.entity.Vehicle) this.getBukkitEntity(),
                      entity.getBukkitEntity()
 diff --git a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
-index 48099ae66045b6e78ec52832e3b972ac9c9bc246..f460727366dd83cf35eaa29ccc919e9910578918 100644
+index a297c683850464b9e4102b9db94040c0daae176d..964bffe10bc10e93ff7e2b12db7d973989f28262 100644
 --- a/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
 +++ b/net/minecraft/world/entity/vehicle/minecart/AbstractMinecart.java
 @@ -180,6 +180,7 @@ public abstract class AbstractMinecart extends VehicleEntity {

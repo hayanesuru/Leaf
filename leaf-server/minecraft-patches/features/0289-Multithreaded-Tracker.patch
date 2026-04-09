@@ -80,7 +80,7 @@ index 288a3eb57f3431dd624ad8a4b08684563abbc5ad..499cad369242f9ad724b3251538d62d8
              if (list == null) {
                  throw new IllegalStateException("Does not contain player " + player);
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
-index d8e0ba633224cc665c7dc65463cdb27e70be73a6..4ad7cb1369f0c2a69a1199de71654f7de5c84470 100644
+index 2e44ee5c444f0856e764d92ea84d87c6ec08b4ea..0a6fbbe4097ea3619f5b2601d38ac13543642e31 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
 @@ -345,7 +345,7 @@ public final class RegionizedPlayerChunkLoader {
