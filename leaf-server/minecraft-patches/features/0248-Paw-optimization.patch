@@ -291,10 +291,10 @@ index dfb9a10622ba2a0c2759bb563fefd729f1109865..1b107d778d4a5a7783f3a12371104517
              BlockState blockState = level.getBlockState(blockPos);
              if (!blockState.is(BlockTags.PALE_OAK_LOGS)) {
 diff --git a/net/minecraft/world/level/block/DiodeBlock.java b/net/minecraft/world/level/block/DiodeBlock.java
-index 02ffb5569e2405d86b3a4a695dd17c9372169ff7..4be74d72f60ca6f1792ec5d1bc24ec6bd567e28d 100644
+index a750e2d7f6c5ac7561c8b06870e022b07875c587..d27ca0aa1f0e3675d51ec76f1c482a9bc50971ab 100644
 --- a/net/minecraft/world/level/block/DiodeBlock.java
 +++ b/net/minecraft/world/level/block/DiodeBlock.java
-@@ -99,7 +99,7 @@ public abstract class DiodeBlock extends HorizontalDirectionalBlock {
+@@ -100,7 +100,7 @@ public abstract class DiodeBlock extends HorizontalDirectionalBlock {
              dropResources(state, level, pos, blockEntity);
              level.removeBlock(pos, false);
  
