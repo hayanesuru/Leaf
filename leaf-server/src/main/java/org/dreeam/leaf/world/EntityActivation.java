@@ -142,7 +142,7 @@ public final class EntityActivation {
                 && (!dontEnableIfInWater || !entity.isInWater() || (entity instanceof WaterAnimal || (entity instanceof final LivingEntity livingEntity && livingEntity.canBreatheUnderwater())))) {
                 final double distSq = kdTree3.nearestSqr(p.x, p.y, p.z, 16384.0);
                 a = distSq > startSq ?
-                    (int) Math.clamp(distSq * scale, 1, maxPrio) :
+                    (int) Math.clamp(distSq * scale, 1.0, maxPrio) :
                     1;
             } else {
                 a = 1;
