@@ -5,10 +5,10 @@ Subject: [PATCH] optimize random tick
 
 
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 297e251250bab92eef3a09f306eea5f0e3082514..1ebfc5804e97334497f5a76076135e35ed9b2b71 100644
+index d6ea3443a828ec3edebf51ec27d8e93cf08e153f..38880c3291bed8c7e12013c6c8721d52c0aaeb7e 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -654,7 +654,13 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -653,7 +653,13 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
          }
  
          profiler.popPush("tickTickingChunks");
@@ -24,10 +24,10 @@ index 297e251250bab92eef3a09f306eea5f0e3082514..1ebfc5804e97334497f5a76076135e35
              profiler.popPush("customSpawners");
              this.level.tickCustomSpawners(this.spawnEnemies);
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 4931071c7c0dc8a0af408db76f136264639c9cfa..6ef471812bd2b14dd92e4198a971443487a9176e 100644
+index 7a315705f0f974198e7b16062ec46db95728df4d..de92dd49492d44112ad7a177d1f5f0d30354515c 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1176,6 +1176,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1174,6 +1174,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      public final org.dreeam.leaf.world.DespawnMap despawnMap = new org.dreeam.leaf.world.DespawnMap(); // Leaf - optimize despawn
      public final org.dreeam.leaf.world.NatureSpawnChunkMap natureSpawnChunkMap = new org.dreeam.leaf.world.NatureSpawnChunkMap(); // Leaf - optimize mob spawning
