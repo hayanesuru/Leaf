@@ -47,8 +47,8 @@ public final class RandomTickSystem {
 
         final BitRandomSource random = world.simpleRandom;
         if (!disableIceAndSnow) {
-            int speed = IceAndSnowChance.iceAndSnowChance;
-            iceSnow(world, size, randomTickSpeed, Math.max(1, speed * 2), random, raw);
+            int speed = IceAndSnowChance.iceAndSnowChance * 2 - 1;
+            iceSnow(world, size, randomTickSpeed, Math.max(1, speed), random, raw);
         }
         final long weightsSum = collectTickingChunks(size, random, raw, randomTickSpeed);
         if (weightsSum != 0L) {
@@ -224,12 +224,12 @@ public final class RandomTickSystem {
         }
     }
 
-    private static void iceSnow(ServerLevel world, int size, int randomTickSpeed, int speed, BitRandomSource random, LevelChunk[] raw) {
-        int currentIceAndSnowTick = boundedNextInt(random, speed);
+    private static void iceSnow(ServerLevel world, int size, int tickSpeed, int speed, BitRandomSource random, LevelChunk[] raw) {
+        int rand = 1 + boundedNextInt(random, speed);
         for (int i = 0; i < size; i++) {
-            currentIceAndSnowTick -= randomTickSpeed;
-            if (currentIceAndSnowTick <= 0) {
-                currentIceAndSnowTick = boundedNextInt(random, speed);
+            rand -= tickSpeed;
+            if (rand <= 0) {
+                rand = 1 + boundedNextInt(random, speed);
                 LevelChunk chunk = raw[i];
                 ChunkPos pos = chunk.getPos();
                 world.tickPrecipitation(world.getBlockRandomPos(pos.getMinBlockX(), 0, pos.getMinBlockZ(), 15));
