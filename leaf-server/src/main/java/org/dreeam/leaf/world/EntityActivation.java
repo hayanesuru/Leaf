@@ -11,7 +11,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Marker;
 import net.minecraft.world.entity.animal.fish.WaterAnimal;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain;
@@ -35,6 +34,7 @@ public final class EntityActivation {
         final int waterActivationRange = world.spigotConfig.waterActivationRange;
         final int flyingActivationRange = world.spigotConfig.flyingMonsterActivationRange;
         final int villagerActivationRange = world.spigotConfig.villagerActivationRange;
+
         world.wakeupInactiveRemainingAnimals = Math.min(world.wakeupInactiveRemainingAnimals + 1, world.spigotConfig.wakeUpInactiveAnimals);
         world.wakeupInactiveRemainingVillagers = Math.min(world.wakeupInactiveRemainingVillagers + 1, world.spigotConfig.wakeUpInactiveVillagers);
         world.wakeupInactiveRemainingMonsters = Math.min(world.wakeupInactiveRemainingMonsters + 1, world.spigotConfig.wakeUpInactiveMonsters);
@@ -91,13 +91,7 @@ public final class EntityActivation {
         }
 
         final int[] indices = new int[playerSize];
-        for (int k = 0; k < playerSize; k++) {
-            indices[k] = k;
-        }
         kdTree2.build(new double[][]{pxl, pzl}, indices);
-        for (int k = 0; k < playerSize; k++) {
-            indices[k] = k;
-        }
         kdTree3.build(new double[][]{pxl, pyl, pzl}, indices);
 
         final double worldHeight = world.getHeight();
@@ -106,12 +100,19 @@ public final class EntityActivation {
         final int size = entities.size();
 
         if (size != 0 && playerSize != 0) {
-            final boolean dab = DynamicActivationofBrain.enabled;
-            final boolean dontEnableIfInWater = DynamicActivationofBrain.dontEnableIfInWater;
-            final double startSq = DynamicActivationofBrain.startDistanceSquared;
-            final double scale = Math.pow(2.0, -DynamicActivationofBrain.activationDistanceMod);
-            final int maxPriority = DynamicActivationofBrain.maximumActivationPrio;
-            activateEntities(size, raw, tickMarkers, currentTick, ranges, kdTree2, dab, dontEnableIfInWater, kdTree3, startSq, scale, maxPriority);
+            activateEntities(size,
+                raw,
+                tickMarkers,
+                currentTick,
+                ranges,
+                kdTree2,
+                DynamicActivationofBrain.enabled,
+                DynamicActivationofBrain.dontEnableIfInWater,
+                kdTree3,
+                DynamicActivationofBrain.startDistanceSquared,
+                Math.pow(2.0, -DynamicActivationofBrain.activationDistanceMod),
+                DynamicActivationofBrain.maximumActivationPrio
+            );
         }
         entities.clear();
         chunks.clear();
@@ -141,6 +142,7 @@ public final class EntityActivation {
                 && entity.getType().dabEnabled
                 && (!dontEnableIfInWater || !entity.isInWater() || (entity instanceof WaterAnimal || (entity instanceof final LivingEntity livingEntity && livingEntity.canBreatheUnderwater())))) {
                 final double distSq = kdTree3.nearestSqr(p.x, p.y, p.z, 16384.0);
+                //noinspection MathClampMigration
                 a = distSq > startSq ? Math.min(maxPriority, Math.max((int) (distSq * scale), 1)) : 1;
             } else {
                 a = 1;
@@ -149,9 +151,9 @@ public final class EntityActivation {
         }
     }
 
-    private static void getEntities(ServerLevel world, Player[] players, int playerSize, int maxRange, double worldHeight, EntityLookup lookup, LongOpenHashSet chunks, ObjectArrayList<Entity> entities) {
+    private static void getEntities(ServerLevel world, ServerPlayer[] players, int playerSize, int maxRange, double worldHeight, EntityLookup lookup, LongOpenHashSet chunks, ObjectArrayList<Entity> entities) {
         for (int k = 0; k < playerSize; k++) {
-            final Player player = players[k];
+            final ServerPlayer player = players[k];
             final AABB box = player.getBoundingBox().inflate(maxRange, worldHeight, maxRange);
             lookup.leaf$getEntities(box, chunks, entities);
             ca.spottedleaf.moonrise.common.PlatformHooks.get().addToGetEntities(world, null, box, null, entities);

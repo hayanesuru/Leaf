@@ -28,7 +28,9 @@ public final class KDTree2D {
             ensureSearch(0, 0);
             return;
         }
-
+        for (int i = 0; i < indices.length; i++) {
+            indices[i] = i;
+        }
         int st = 0;
         ensureConstruct(st);
         stack[st++] = new Node(SENTINEL, false, 0, indices.length, 0);

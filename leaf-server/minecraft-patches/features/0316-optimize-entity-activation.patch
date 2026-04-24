@@ -1,18 +1,18 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: hayanesuru <hayanesuru@outlook.jp>
 Date: Fri, 10 Oct 2025 14:54:17 +0900
-Subject: [PATCH] Entity activation
+Subject: [PATCH] optimize entity activation
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-index 09dd84d9866a3bbb7282b3277be99a5c16cb0a74..d1f14df264172d0fcd7d95da24711745c88014ee 100644
+index 09dd84d9866a3bbb7282b3277be99a5c16cb0a74..7cc11ec11650073066d8224c0109730c9562564d 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 @@ -213,6 +213,16 @@ public final class ChunkEntitySlices {
          return collectedEntities;
      }
  
-+    // Leaf start - Entity activation
++    // Leaf start - optimize entity activation
 +    public void leaf$getAllEntities(final it.unimi.dsi.fastutil.objects.ObjectArrayList<Entity> into) {
 +        final int len = this.entities.size();
 +        final Entity[] rawData = this.entities.getRawData();
@@ -20,21 +20,21 @@ index 09dd84d9866a3bbb7282b3277be99a5c16cb0a74..d1f14df264172d0fcd7d95da24711745
 +            into.addElements(into.size(), rawData, 0, len);
 +        }
 +    }
-+    // Leaf end - Entity activation
++    // Leaf end - optimize entity activation
 +
      public boolean isEmpty() {
          return this.entities.size() == 0;
      }
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
-index c1d24cff2af534edfb9fcc45f3cf2b31eb04c6de..7e800dc79900490606fff0b0f191f07cce8bc22c 100644
+index c1d24cff2af534edfb9fcc45f3cf2b31eb04c6de..fcdfbce42f65da08286c0b3231ecb4b45c21d796 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
 @@ -633,6 +633,48 @@ public abstract class EntityLookup implements LevelEntityGetter<Entity> {
          }
      }
  
-+    // Leaf start - Entity activation
-+    public final void leaf$getEntities(final AABB box, final it.unimi.dsi.fastutil.longs.LongOpenHashSet chunks, final it.unimi.dsi.fastutil.objects.ObjectArrayList<Entity> into) {
++    // Leaf start - optimize entity activation
++    public final void leaf$getEntities(final AABB box, final it.unimi.dsi.fastutil.longs.LongOpenHashSet chunkSet, final it.unimi.dsi.fastutil.objects.ObjectArrayList<Entity> into) {
 +        final int minChunkX = (Mth.floor(box.minX) - 2) >> 4;
 +        final int minChunkZ = (Mth.floor(box.minZ) - 2) >> 4;
 +        final int maxChunkX = (Mth.floor(box.maxX) + 2) >> 4;
@@ -65,7 +65,7 @@ index c1d24cff2af534edfb9fcc45f3cf2b31eb04c6de..7e800dc79900490606fff0b0f191f07c
 +                        if (chunk == null || !chunk.status.isOrAfter(FullChunkStatus.FULL)) {
 +                            continue;
 +                        }
-+                        if (chunks.add(CoordinateUtils.getChunkKey((currRegionX << REGION_SHIFT) | currX, (currRegionZ << REGION_SHIFT) | currZ))) {
++                        if (chunkSet.add(CoordinateUtils.getChunkKey((currRegionX << REGION_SHIFT) | currX, (currRegionZ << REGION_SHIFT) | currZ))) {
 +                            chunk.leaf$getAllEntities(into);
 +                        }
 +                    }
@@ -73,13 +73,13 @@ index c1d24cff2af534edfb9fcc45f3cf2b31eb04c6de..7e800dc79900490606fff0b0f191f07c
 +            }
 +        }
 +    }
-+    // Leaf end - Entity activation
++    // Leaf end - optimize entity activation
 +
      public void getHardCollidingEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate) {
          final int minChunkX = (Mth.floor(box.minX) - 2) >> 4;
          final int minChunkZ = (Mth.floor(box.minZ) - 2) >> 4;
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..f80921024be8afb1510263f49edccfb93ff9b607 100644
+index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..c2366db99635ac4027f3daa1d58ea03e306848f2 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
 @@ -86,14 +86,15 @@ public final class ActivationRange {
@@ -87,23 +87,24 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..f80921024be8afb1510263f49edccfb9
          double deviation = entity.level().galeConfig().gameplayMechanics.entityWakeUpDurationRatioStandardDeviation;
  
 -        if (deviation <= 0) {
-+        if (deviation <= 0.0) {
++        if (deviation <= 0.0) { // Leaf - optimize entity activation
              return wakeUpDuration;
          }
  
 -        return (int) Math.min(Integer.MAX_VALUE, Math.max(1, Math.round(wakeUpDuration * wakeUpDurationRandom.nextGaussian(1, deviation))));
-+        return (int) Math.min(Integer.MAX_VALUE, Math.max(1, Math.round(wakeUpDuration * (1.0 + deviation * entity.random.nextGaussian())))); // Leaf - entity activation
++        return (int) Math.min(Integer.MAX_VALUE, Math.max(1, Math.round(wakeUpDuration * (1.0 + deviation * entity.random.nextGaussian())))); // Leaf - optimize entity activation
      }
      // Gale end - variable entity wake-up duration
  
-+    @Deprecated // Leaf - entity activation
++    @Deprecated // Leaf - optimize entity activation
      static AABB maxBB = new AABB(0, 0, 0, 0, 0, 0);
  
      /**
-@@ -155,13 +156,23 @@ public final class ActivationRange {
+@@ -155,13 +156,25 @@ public final class ActivationRange {
          maxRange = Math.max(maxRange, villagerActivationRange);
          maxRange = Math.min((world.spigotConfig.simulationDistance << 4) - 8, maxRange);
  
++        // Leaf start - optimize entity activation
 +        final boolean tickMarkers = world.paperConfig().entities.markers.tick;
 +        final boolean dab = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.enabled;
 +        final boolean dontEnableIfInWater = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.dontEnableIfInWater;
@@ -114,31 +115,34 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..f80921024be8afb1510263f49edccfb9
 +        final boolean ignoreSpectatorActivation = world.spigotConfig.ignoreSpectatorActivation;
 +        final long currentTick = MinecraftServer.currentTick;
 +        it.unimi.dsi.fastutil.ints.IntOpenHashSet reset = new it.unimi.dsi.fastutil.ints.IntOpenHashSet();
++        // Leaf end - optimize entity activation
          for (final Player player : world.players()) {
 -            player.activatedTick = MinecraftServer.currentTick;
 -            if (world.spigotConfig.ignoreSpectatorActivation && player.isSpectator()) {
-+            player.activatedTick = currentTick;
-+            if (ignoreSpectatorActivation && player.isSpectator()) {
++            player.activatedTick = currentTick; // Leaf - optimize entity activation
++            if (ignoreSpectatorActivation && player.isSpectator()) { // Leaf - optimize entity activation
                  continue;
              }
  
 -            if (!player.level().purpurConfig.idleTimeoutTickNearbyEntities && player.isAfk()) continue; // Purpur - AFK API
-+            if (!idleTimeoutTickNearbyEntities && player.isAfk()) continue; // Purpur - AFK API
++            if (!idleTimeoutTickNearbyEntities && player.isAfk()) continue; // Purpur - AFK API // Leaf - optimize entity activation
  
              final int worldHeight = world.getHeight();
              ActivationRange.maxBB = player.getBoundingBox().inflate(maxRange, worldHeight, maxRange);
-@@ -174,7 +185,7 @@ public final class ActivationRange {
+@@ -174,7 +187,7 @@ public final class ActivationRange {
              ActivationType.VILLAGER.boundingBox = player.getBoundingBox().inflate(villagerActivationRange, worldHeight, villagerActivationRange);
  
              final List<Entity> entities = world.getEntities((Entity) null, ActivationRange.maxBB, e -> true);
 -            final boolean tickMarkers = world.paperConfig().entities.markers.tick;
-+            reset.ensureCapacity(entities.size());
++            reset.ensureCapacity(entities.size()); // Leaf - optimize entity activation
              for (final Entity entity : entities) {
                  if (!tickMarkers && entity instanceof Marker) {
                      continue;
-@@ -183,19 +194,17 @@ public final class ActivationRange {
+@@ -182,21 +195,21 @@ public final class ActivationRange {
+ 
                  ActivationRange.activateEntity(entity);
  
++                // Leaf start - optimize entity activation
                  // Pufferfish start
 -                if (org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.enabled && entity.getType().dabEnabled &&
 -                        (!org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.dontEnableIfInWater || entity.getType().is(net.minecraft.tags.EntityTypeTags.CAN_BREATHE_UNDER_WATER) || !entity.isInWater())) { // Leaf - Option for dontEnableIfInWater
@@ -163,18 +167,20 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..f80921024be8afb1510263f49edccfb9
                  }
 +                entity.activatedPriority = reset.add(entity.getId()) ? a : Math.min(a, entity.activatedPriority);
                  // Pufferfish end
++                // Leaf end - optimize entity activation
              }
          }
-@@ -206,6 +215,7 @@ public final class ActivationRange {
+     }
+@@ -206,6 +219,7 @@ public final class ActivationRange {
       *
       * @param entity
       */
-+    @Deprecated // Leaf - entity activation
++    @Deprecated // Leaf - optimize entity activation
      private static void activateEntity(final Entity entity) {
          if (MinecraftServer.currentTick > entity.activatedTick) {
              if (entity.defaultActivationState) { // Pufferfish - diff on change
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index c30c53942005d230e73841c9e6bb4d05e746d866..1aac9a7370a3640e49d6f6df6499d384696b02ba 100644
+index c30c53942005d230e73841c9e6bb4d05e746d866..8cc97ad7deba15022b658974fad32e62c62dff57 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1032,13 +1032,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -182,14 +188,14 @@ index c30c53942005d230e73841c9e6bb4d05e746d866..1aac9a7370a3640e49d6f6df6499d384
              }
  
 -            io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
-+            if (org.dreeam.leaf.config.modules.opt.OptimizeEntityActivation.enabled) { entityActivation.activateEntities(this); } else { io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); } // Paper - EAR // Leaf - Entity activation
++            if (org.dreeam.leaf.config.modules.opt.OptimizeEntityActivation.enabled) { entityActivation.activateEntities(this); } else { io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); } // Paper - EAR // Leaf - optimize entity activation
              boolean didDespawn = tickRateManager.runsNormally() && despawnMap.tick(this, this.entityTickList); // Leaf - optimize despawn
              this.globalTemptationLookup.tick(this); // Paper - optimise temptation lookups - reset global cache prior to next entity tick // Leaf - Paper PR: Optimise temptation lookups changes
              this.entityTickList
                  .forEach(
                      entity -> {
 -                        entity.activatedPriorityReset = false; // Pufferfish - DAB
-+                        // entity.activatedPriorityReset = false; // Pufferfish - DAB // Leaf - Entity activation
++                        // entity.activatedPriorityReset = false; // Pufferfish - DAB // Leaf - optimize entity activation
                          if (!entity.isRemoved()) {
                              if (!tickRateManager.isEntityFrozen(entity)) {
                                  profilerFiller.push("checkDespawn");
@@ -197,19 +203,20 @@ index c30c53942005d230e73841c9e6bb4d05e746d866..1aac9a7370a3640e49d6f6df6499d384
      public final org.dreeam.leaf.world.RandomTickSystem randomTickSystem = new org.dreeam.leaf.world.RandomTickSystem(); // Leaf - optimize random tick
      public final org.dreeam.leaf.world.EntityCollisionCache entityCollisionCache = new org.dreeam.leaf.world.EntityCollisionCache(); // Leaf - cache collision list
      public final org.dreeam.leaf.util.FastBitRadixSort fastBitRadixSort = new org.dreeam.leaf.util.FastBitRadixSort(); // Leaf - fast bit radix sort
-+    public final org.dreeam.leaf.world.EntityActivation entityActivation = new org.dreeam.leaf.world.EntityActivation(); // Leaf - Entity activation
++    public final org.dreeam.leaf.world.EntityActivation entityActivation = new org.dreeam.leaf.world.EntityActivation(); // Leaf - optimize entity activation
      public void tickChunk(LevelChunk chunk, int randomTickSpeed) {
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a9e2068fefcee36dd694f2c42544618b975c0695..d52acba7ecd8ed7709471f55d25396b32515f5ac 100644
+index d05e653fa5bb9273b791bd9b21695ca44b9c3c5d..c8a99d6686a8ffa4fa6d4c809dead997f4e865df 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -379,7 +379,6 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -379,7 +379,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      public final int despawnTime; // Paper - entity despawn time limit // Leaf - Rewrite entity despawn time - private -> public
      public int totalEntityAge; // Paper - age-like counter for all entities
      private int lastTickTime; // Leaf - Rewrite entity despawn time
 -    public boolean activatedPriorityReset = false; // Pufferfish - DAB
++    // public boolean activatedPriorityReset = false; // Pufferfish - DAB // Leaf - optimize entity activation
      public int activatedPriority = org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.maximumActivationPrio; // Pufferfish - DAB (golf score)
      public final io.papermc.paper.entity.activation.ActivationType activationType = io.papermc.paper.entity.activation.ActivationType.activationTypeFor(this); // Paper - EAR 2/tracking ranges
      // Paper start - EAR 2
