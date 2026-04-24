@@ -12,7 +12,7 @@ Some changes to the original temptation lookups optimization patch
     - Happy ghast
 
 diff --git a/io/papermc/paper/entity/temptation/GlobalTemptationLookup.java b/io/papermc/paper/entity/temptation/GlobalTemptationLookup.java
-index 1f206998a61af887e312953319e69fc79e10e7e1..a7d9bc5821c0202462376b06ddc44aac1c95f063 100644
+index 1f206998a61af887e312953319e69fc79e10e7e1..427fffff1230d7c73906fdeeac1281b01ab67f61 100644
 --- a/io/papermc/paper/entity/temptation/GlobalTemptationLookup.java
 +++ b/io/papermc/paper/entity/temptation/GlobalTemptationLookup.java
 @@ -18,6 +18,7 @@ public class GlobalTemptationLookup {
@@ -62,8 +62,8 @@ index 1f206998a61af887e312953319e69fc79e10e7e1..a7d9bc5821c0202462376b06ddc44aac
          for (int i = 0; i < registeredPredicateCounter; i++) {
 -            this.precalculatedTemptItems.get(i).clear();
 +            this.precalculatedTemptItems[i].clear();
-+            this.calculatedThisTick.clear();
-+        }
+         }
+         this.calculatedThisTick.clear();
 +
 +        int j = 0;
 +        final net.minecraft.server.level.ServerPlayer[] array = world.players().toArray(EMPTY_PLAYERS);
@@ -73,8 +73,7 @@ index 1f206998a61af887e312953319e69fc79e10e7e1..a7d9bc5821c0202462376b06ddc44aac
 +                array[j] = p;
 +                j++;
 +            }
-         }
--        this.calculatedThisTick.clear();
++        }
 +        this.players = it.unimi.dsi.fastutil.objects.ObjectArrays.setLength(array, j);
      }
 +    // Leaf end - Paper PR: Optimise temptation lookups changes
