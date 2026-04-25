@@ -17,6 +17,11 @@ By: Kevin Raneri <kevin.raneri@gmail.com>
 As part of: Pufferfish (https://github.com/pufferfish-gg/Pufferfish)
 Licensed under: GPL-3.0-only (https://www.gnu.org/licenses/gpl-3.0.html)
 
+* Description *
+
+Throttling of ice and snow tick has been moved to another patch as
+configurable ice and snow tick chance.
+
 * Airplane description *
 
 Especially at over 30,000 chunks these random calls are fairly heavy. We

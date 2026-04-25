@@ -9,11 +9,11 @@ public class IceAndSnowChance extends ConfigModules {
         return EnumConfigCategory.GAMEPLAY.getBaseKeyName() + ".ice-and-snow-chance";
     }
 
-    public static int iceAndSnowChance = 48 * 8;
+    public static int iceAndSnowChance = 48;
 
     @Override
     public void onLoaded() {
-        iceAndSnowChance = config.getInt(getBasePath(), 48 * 8);
+        iceAndSnowChance = config.getInt(getBasePath(), iceAndSnowChance);
         if (iceAndSnowChance <= 0) {
             iceAndSnowChance = 48;
         }
