@@ -5,7 +5,7 @@ Subject: [PATCH] optimize mob despawn
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 45332215fab95b64ec30ffdfc3ae07b98944b15f..943b969e7551f8ce264fa9298828348ddc2a7d38 100644
+index 485a9804b8cfe517bdb16da44035a93e4768caef..2f93c3112c9b66b5488e5cd93f79ccfe72e9fec0 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -856,6 +856,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -25,9 +25,9 @@ index 45332215fab95b64ec30ffdfc3ae07b98944b15f..943b969e7551f8ce264fa9298828348d
                                  profilerFiller.pop();
                                  if (true) { // Paper - rewrite chunk system
                                      Entity vehicle = entity.getVehicle();
-@@ -1029,6 +1030,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
- 
-     private int currentIceAndSnowTick = 0; protected void resetIceAndSnowTick() { this.currentIceAndSnowTick = this.simpleRandom.nextInt(16); } // Gale - Airplane - optimize random calls in chunk ticking
+@@ -1027,6 +1028,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+     }
+     // Paper end - optimise random ticking
  
 +    public final org.dreeam.leaf.world.DespawnMap despawnMap = new org.dreeam.leaf.world.DespawnMap(); // Leaf - optimize despawn
      public void tickChunk(LevelChunk chunk, int randomTickSpeed) {

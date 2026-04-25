@@ -64,10 +64,10 @@ index 5bfdb48ff7ef740a5a01d02e87f0264e17338de4..4e16552680f86cf1589f862cb38c0f43
          }
  
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 1ebfc5804e97334497f5a76076135e35ed9b2b71..963a44b8454e88973fdca908aa12fde2d0c27e96 100644
+index 38880c3291bed8c7e12013c6c8721d52c0aaeb7e..9f08d9d80f2d07db144c575c662148e077ea0b68 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -621,8 +621,12 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -620,8 +620,12 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
              this.level.natureSpawnChunkMap.build(this.level.moonrise$getPlayerTickingChunks(), list); // Leaf - optimize mob spawning
              profiler.popPush("shuffleSpawningChunks");
              // Paper start - chunk tick iteration optimisation
@@ -83,10 +83,10 @@ index 1ebfc5804e97334497f5a76076135e35ed9b2b71..963a44b8454e88973fdca908aa12fde2
              profiler.popPush("tickSpawningChunks");
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index f7dc4a4a1c9602c9f0c35e770bc3b310a72b5acf..0facf5cf724bee96ebaca08bfc871865e96eb13a 100644
+index 43ea7679db974a3824fe30da71bd5364d3aa3415..824c0c6eeded68e9ae5215da3646f9ba33d93494 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1595,26 +1595,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1593,26 +1593,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      }
  
@@ -113,7 +113,7 @@ index f7dc4a4a1c9602c9f0c35e770bc3b310a72b5acf..0facf5cf724bee96ebaca08bfc871865
          entity.setOldPosAndRot();
          ProfilerFiller profilerFiller = Profiler.get();
          entity.tickCount++;
-@@ -1631,13 +1613,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1629,13 +1611,6 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          for (Entity entity1 : entity.getPassengers()) {
              this.tickPassenger(entity, entity1, isActive); // Paper - EAR 2
          }

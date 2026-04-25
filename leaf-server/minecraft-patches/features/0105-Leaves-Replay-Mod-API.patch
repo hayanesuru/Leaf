@@ -292,7 +292,7 @@ index 5a8cd3e6b448a4472092690cf589bca10b142126..8f22d5faf89006153b1fff4ff0b622f8
  
              this.setListData(list);
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 4cf3b7169370d82309d3a3fd04f078c52a1d535b..a967d447f57ed3635482a8aacf37290881f54b1a 100644
+index 8a643f500e78ace5379fc077aba581e034a4606d..aaab81ae642c560ed898189608363e458f88c4af 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -231,6 +231,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -311,7 +311,7 @@ index 4cf3b7169370d82309d3a3fd04f078c52a1d535b..a967d447f57ed3635482a8aacf372908
      }
  
      // Paper start
-@@ -2898,6 +2900,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2896,6 +2898,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              // ServerLevel.this.getChunkSource().addEntity(entity); // Paper - ignore and warn about illegal addEntity calls instead of crashing server; moved down below valid=true
              if (entity instanceof ServerPlayer serverPlayer) {
                  ServerLevel.this.players.add(serverPlayer);
@@ -323,7 +323,7 @@ index 4cf3b7169370d82309d3a3fd04f078c52a1d535b..a967d447f57ed3635482a8aacf372908
                  if (serverPlayer.isReceivingWaypoints()) {
                      ServerLevel.this.getWaypointManager().addPlayer(serverPlayer);
                  }
-@@ -2976,6 +2983,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2974,6 +2981,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              ServerLevel.this.getChunkSource().removeEntity(entity);
              if (entity instanceof ServerPlayer serverPlayer) {
                  ServerLevel.this.players.remove(serverPlayer);

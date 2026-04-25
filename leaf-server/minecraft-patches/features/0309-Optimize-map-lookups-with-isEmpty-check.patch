@@ -108,7 +108,7 @@ index 3f7b844c6654542798afb39df58bf30428e24310..06de9dbee79f978e92193e9fc9bd67a1
      }
  
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index adb373bcfaf6b10120267a865eb4da6bcf160496..47331bccf45258cde8932749da0cafeb83124c90 100644
+index 5c762c4c1e3530db7688336dd9cf78a515b74959..3e7a35328ecea74cd4b1018f9f511a2381c946ec 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -1195,7 +1195,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin

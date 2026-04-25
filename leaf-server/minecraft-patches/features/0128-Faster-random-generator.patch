@@ -14,7 +14,7 @@ ThreadUnsafeRandom (Moonrise): 102,265,100 ns
 SimpleThreadUnsafeRandom (Moonrise): 97,054,600 ns
 
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index 3b753337e4ce101057931d320b4a1267d00e9432..8ebc3aaa79526cc489885bc817d0c9880ab6ca55 100644
+index 83e02e02aa3a95acdc2bc914307d7577fec87e8f..551d189457c8a65763476edd84b50c156ac916cc 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
 @@ -155,7 +155,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
@@ -27,7 +27,7 @@ index 3b753337e4ce101057931d320b4a1267d00e9432..8ebc3aaa79526cc489885bc817d0c988
          final ServerLevel world = this.level;
          final int randomTickSpeed = world.getGameRules().get(GameRules.RANDOM_TICK_SPEED);
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 4570c94ec107343ef94c37e01ded699a098eddc9..2d594e9122f7ec804eb8c0fee9a847a0cf9d30cc 100644
+index d2ee918e1fcfdd3bc23b9f17ab9a367a5c0bd42e..a093cf90a3fe2cb7c1f00ef1735d04a662aa9acf 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -981,7 +981,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -39,8 +39,8 @@ index 4570c94ec107343ef94c37e01ded699a098eddc9..2d594e9122f7ec804eb8c0fee9a847a0
          final boolean doubleTickFluids = !ca.spottedleaf.moonrise.common.PlatformHooks.get().configFixMC224294();
  
          final ChunkPos cpos = chunk.getPos();
-@@ -1030,7 +1030,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-     private int currentIceAndSnowTick = 0; protected void resetIceAndSnowTick() { this.currentIceAndSnowTick = this.simpleRandom.nextInt(16); } // Gale - Airplane - optimize random calls in chunk ticking
+@@ -1028,7 +1028,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+     // Paper end - optimise random ticking
  
      public void tickChunk(LevelChunk chunk, int randomTickSpeed) {
 -        final ca.spottedleaf.moonrise.common.util.SimpleThreadUnsafeRandom simpleRandom = this.simpleRandom; // Paper - optimise random ticking

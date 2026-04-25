@@ -97,7 +97,7 @@ index 703bf9c2a56b262e2719a1787584de537b8f12e0..c1d24cff2af534edfb9fcc45f3cf2b31
  
          private final ChunkEntitySlices[] slices = new ChunkEntitySlices[REGION_SIZE * REGION_SIZE];
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 6e7b1052a09a108dca5a4160a51b57b3af4baba4..546ecf7d2824d06f7ae0764b450bbadb0b70b3ed 100644
+index ce0b87d86e5271e3279bcf734c366a0e4dd9800c..0aa9a6ebf9eaa29ed843c31a26dcd3f587191fcf 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1063,6 +1063,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -108,7 +108,7 @@ index 6e7b1052a09a108dca5a4160a51b57b3af4baba4..546ecf7d2824d06f7ae0764b450bbadb
          if (org.dreeam.leaf.config.modules.async.MultithreadedTracker.enabled) { this.leaf$asyncTracker.onEntitiesTickEnd(); } // Leaf - Multithreaded tracker
      }
  
-@@ -1615,6 +1616,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1613,6 +1614,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          } else {entity.inactiveTick();} // Paper - EAR 2
          profilerFiller.pop();
  
@@ -117,7 +117,7 @@ index 6e7b1052a09a108dca5a4160a51b57b3af4baba4..546ecf7d2824d06f7ae0764b450bbadb
          for (Entity entity1 : entity.getPassengers()) {
              this.tickPassenger(entity, entity1, isActive); // Paper - EAR 2
          }
-@@ -1643,6 +1646,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1641,6 +1644,8 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              // Paper end - EAR 2
              profilerFiller.pop();
  

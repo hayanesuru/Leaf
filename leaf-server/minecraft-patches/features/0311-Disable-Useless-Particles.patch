@@ -46,7 +46,7 @@ index 06de9dbee79f978e92193e9fc9bd67a1e2d16398..d05e653fa5bb9273b791bd9b21695ca4
              for (int i = 0; i < 2; i++) {
                  serverLevel.sendParticles(
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 47331bccf45258cde8932749da0cafeb83124c90..ea8d350c94d36e213d91af75d4d3567172162e1a 100644
+index 3e7a35328ecea74cd4b1018f9f511a2381c946ec..14ed5941c5023e7c0b6093d79a33a7142b66d820 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -1021,7 +1021,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
