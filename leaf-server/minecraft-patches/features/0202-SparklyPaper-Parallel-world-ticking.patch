@@ -693,10 +693,10 @@ index 6fa8c5bb6689b56b95c5f0a1c7d2691f12ac673c..f3bc26efd9c141c4165ebb53da175f94
          // Paper end - Inventory close reason
          this.connection.send(new ClientboundContainerClosePacket(this.containerMenu.containerId));
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index fbcfb2fdd3e9ce0c5796778ecd63ae63f64f7bec..4f89e3da9d56ec441124d7e3a45c5b961a32d1fe 100644
+index 617f5f9742acaf17c9b954009e5086f9302f1735..99517eaf6bfb77ebadfa663c7c7cb4901754fe7e 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -262,6 +262,7 @@ public abstract class PlayerList {
+@@ -266,6 +266,7 @@ public abstract class PlayerList {
      // Leaves end - replay mod api
  
      public void placeNewPlayer(Connection connection, ServerPlayer player, CommonListenerCookie cookie) {
@@ -704,7 +704,7 @@ index fbcfb2fdd3e9ce0c5796778ecd63ae63f64f7bec..4f89e3da9d56ec441124d7e3a45c5b96
          player.isRealPlayer = true; // Paper
          player.loginTime = System.currentTimeMillis(); // Paper - Replace OfflinePlayer#getLastPlayed
          NameAndId nameAndId = player.nameAndId();
-@@ -764,6 +765,14 @@ public abstract class PlayerList {
+@@ -768,6 +769,14 @@ public abstract class PlayerList {
  
      // Paper start - respawn event
      public ServerPlayer respawn(ServerPlayer player, boolean keepInventory, Entity.RemovalReason reason, org.bukkit.event.player.PlayerRespawnEvent.RespawnReason respawnReason) {
@@ -719,7 +719,7 @@ index fbcfb2fdd3e9ce0c5796778ecd63ae63f64f7bec..4f89e3da9d56ec441124d7e3a45c5b96
          ServerPlayer.RespawnResult result = player.findRespawnPositionAndUseSpawnBlock0(!keepInventory, TeleportTransition.DO_NOTHING, respawnReason);
          if (result == null) { // disconnected player during the respawn event
              return player;
-@@ -777,6 +786,7 @@ public abstract class PlayerList {
+@@ -781,6 +790,7 @@ public abstract class PlayerList {
          player.level().removePlayerImmediately(player, reason);
          ServerLevel level = teleportTransition.newLevel();
          ServerPlayer serverPlayer = player; // Paper - TODO - recreate instance
