@@ -802,10 +802,10 @@ index 471e558a609c9e457720660b90fe57322b860461..56dd9ff0bd35a7d20ef0aa8b46570802
              this.createConnection(serverPlayer, waypoint);
          }
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 89de07bff4b22b33b493e310fa6aab9e5c362a04..65983af0f8e6a69ce705feca104b7d51d8ba75ca 100644
+index 062ce093ec869015abb4c29d6fc1821b58ef2741..74fc5c79a1d5e22388b09ef3cbad25423e582a6b 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -3574,15 +3574,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -3579,15 +3579,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
                      ProfilerFiller profilerFiller = Profiler.get();
                      profilerFiller.push("portal");
                      this.setPortalCooldown();
@@ -822,7 +822,7 @@ index 89de07bff4b22b33b493e310fa6aab9e5c362a04..65983af0f8e6a69ce705feca104b7d51
  
                      profilerFiller.pop();
                  } else if (this.portalProcess.hasExpired()) {
-@@ -3592,6 +3584,56 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -3597,6 +3589,56 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          }
      }
  
@@ -879,7 +879,7 @@ index 89de07bff4b22b33b493e310fa6aab9e5c362a04..65983af0f8e6a69ce705feca104b7d51
      public int getDimensionChangingDelay() {
          Entity firstPassenger = this.getFirstPassenger();
          return firstPassenger instanceof ServerPlayer ? firstPassenger.getDimensionChangingDelay() : 300;
-@@ -4162,6 +4204,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -4167,6 +4209,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      }
  
      private @Nullable Entity teleportCrossDimension(ServerLevel oldLevel, ServerLevel newLevel, TeleportTransition teleportTransition) {
