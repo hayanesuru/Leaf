@@ -72,6 +72,17 @@ public final class NatureSpawnChunkMap {
         }
     }
 
+    public void tick(ServerLevel world, List<LevelChunk> out) {
+        ServerPlayer[] players = initPlayer(world);
+        for (int index = 0; index < SIZE_RADIUS; index++) {
+            buildBfs(index);
+        }
+
+        buildKdTree(world.purpurConfig.mobSpawningIgnoreCreativePlayers, players);
+        collectSpawningChunks(world.moonrise$getPlayerTickingChunks(), this.regionBitSets, out);
+        this.ready = true;
+    }
+
     private void buildBfs(int index) {
         LongArrayList list = this.centersByRadius[index];
         Long2LongOpenHashMap bitSets = this.regionBitSets;
@@ -135,17 +146,6 @@ public final class NatureSpawnChunkMap {
             }
         }
         return size + 1;
-    }
-
-    public void tick(ServerLevel world, List<LevelChunk> out) {
-        ServerPlayer[] players = initPlayer(world);
-        for (int index = 0; index < SIZE_RADIUS; index++) {
-            buildBfs(index);
-        }
-
-        buildKdTree(world.purpurConfig.mobSpawningIgnoreCreativePlayers, players);
-        collectSpawningChunks(world.moonrise$getPlayerTickingChunks(), this.regionBitSets, out);
-        this.ready = true;
     }
 
     private ServerPlayer[] initPlayer(ServerLevel world) {
