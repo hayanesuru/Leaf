@@ -11,7 +11,7 @@ public class OptimizeMobSpawning extends ConfigModules {
     }
 
     @Experimental
-    public static boolean enabled = true;
+    public static boolean enabled = false;
 
     @Override
     public void onLoaded() {
