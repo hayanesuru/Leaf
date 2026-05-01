@@ -3,6 +3,7 @@ From: hayanesuru <hayanesuru@outlook.jp>
 Date: Fri, 23 Jan 2026 18:47:34 +0900
 Subject: [PATCH] fix skeleton horse trap NPE
 
+Prevent removing the goal during the goals iteration.
 
 diff --git a/net/minecraft/world/entity/animal/equine/SkeletonHorse.java b/net/minecraft/world/entity/animal/equine/SkeletonHorse.java
 index d958741b7d218a4bc7e5a06beca308c7d6bb94ba..82c59d2742d94273db698a5ec0f4c411932b3f52 100644
