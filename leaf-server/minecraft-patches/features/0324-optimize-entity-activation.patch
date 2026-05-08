@@ -79,7 +79,7 @@ index c1d24cff2af534edfb9fcc45f3cf2b31eb04c6de..fcdfbce42f65da08286c0b3231ecb4b4
          final int minChunkX = (Mth.floor(box.minX) - 2) >> 4;
          final int minChunkZ = (Mth.floor(box.minZ) - 2) >> 4;
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..c2366db99635ac4027f3daa1d58ea03e306848f2 100644
+index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..42e2bbc00fc830b7c5a39a5b69b4977ef34e0db8 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
 @@ -86,14 +86,15 @@ public final class ActivationRange {
@@ -154,18 +154,18 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..c2366db99635ac4027f3daa1d58ea03e
 -                    entity.activatedPriority = squaredDistance > org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.startDistanceSquared ?
 -                            Math.max(1, Math.min(squaredDistance >> org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.activationDistanceMod, entity.activatedPriority)) :
 -                            1;
-+                final int a;
++                final int priority;
 +                if (dab && entity.getType().dabEnabled &&
-+                        (dontEnableIfInWater || entity.getType().is(net.minecraft.tags.EntityTypeTags.CAN_BREATHE_UNDER_WATER) || !entity.isInWater())) { // Leaf - Option for dontEnableIfInWater
++                        (!dontEnableIfInWater || entity.getType().is(net.minecraft.tags.EntityTypeTags.CAN_BREATHE_UNDER_WATER) || !entity.isInWater())) { // Leaf - Option for dontEnableIfInWater
 +                    int distSq = (int) player.distanceToSqr(entity);
-+                    a = distSq > startSq ?
++                    priority = distSq > startSq ?
 +                        Math.min(maxPriority, Math.max((int) (distSq * scale), 1)) :
 +                        1;
                  } else {
 -                    entity.activatedPriority = 1;
-+                    a = 1;
++                    priority = 1;
                  }
-+                entity.activatedPriority = reset.add(entity.getId()) ? a : Math.min(a, entity.activatedPriority);
++                entity.activatedPriority = reset.add(entity.getId()) ? priority : Math.min(priority, entity.activatedPriority);
                  // Pufferfish end
 +                // Leaf end - optimize entity activation
              }

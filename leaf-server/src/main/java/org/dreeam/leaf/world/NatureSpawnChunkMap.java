@@ -182,11 +182,7 @@ public final class NatureSpawnChunkMap {
                 i++;
             }
         }
-        final int[] indices = new int[i];
-        for (int j = 0; j < i; j++) {
-            indices[j] = j;
-        }
-        this.tree.build(new double[][]{pxl, pyl, pzl}, indices);
+        this.tree.build(new double[][]{pxl, pyl, pzl}, new int[i]);
     }
 
     private static void collectSpawningChunks(ReferenceList<LevelChunk> chunks, Long2LongOpenHashMap bitSets, List<LevelChunk> out) {

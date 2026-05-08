@@ -69,6 +69,7 @@ public final class EntityActivation {
         final KDTree2D kdTree2 = this.kdTree2;
         final KDTree3D kdTree3 = this.kdTree3;
         final boolean tickMarkers = world.paperConfig().entities.markers.tick;
+        final boolean dab = DynamicActivationofBrain.enabled;
         int playerSize = 0;
         final ServerPlayer[] players = world.players().toArray(EMPTY_PLAYERS);
         final double[] pxl = new double[players.length];
@@ -92,7 +93,7 @@ public final class EntityActivation {
 
         final int[] indices = new int[playerSize];
         kdTree2.build(new double[][]{pxl, pzl}, indices);
-        kdTree3.build(new double[][]{pxl, pyl, pzl}, indices);
+        if (dab) kdTree3.build(new double[][]{pxl, pyl, pzl}, indices);
 
         final double worldHeight = world.getHeight();
         getEntities(world, players, playerSize, maxRange, worldHeight, lookup, chunks, entities);
@@ -106,7 +107,7 @@ public final class EntityActivation {
                 currentTick,
                 ranges,
                 kdTree2,
-                DynamicActivationofBrain.enabled,
+                dab,
                 DynamicActivationofBrain.dontEnableIfInWater,
                 kdTree3,
                 DynamicActivationofBrain.startDistanceSquared,
@@ -137,17 +138,17 @@ public final class EntityActivation {
                     entity.activatedTick = currentTick;
                 }
             }
-            final int a;
+            final int priority;
             if (dab
                 && entity.getType().dabEnabled
                 && (!dontEnableIfInWater || !entity.isInWater() || (entity instanceof WaterAnimal || (entity instanceof final LivingEntity livingEntity && livingEntity.canBreatheUnderwater())))) {
                 final double distSq = kdTree3.nearestSqr(p.x, p.y, p.z, 16384.0);
                 //noinspection MathClampMigration
-                a = distSq > startSq ? Math.min(maxPriority, Math.max((int) (distSq * scale), 1)) : 1;
+                priority = distSq > startSq ? Math.min(maxPriority, Math.max((int) (distSq * scale), 1)) : 1;
             } else {
-                a = 1;
+                priority = 1;
             }
-            entity.activatedPriority = a;
+            entity.activatedPriority = priority;
         }
     }
 
