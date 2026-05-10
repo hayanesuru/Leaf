@@ -202,8 +202,9 @@ public final class TrackerCtx {
         flush(world, this.packets);
         if (!startSeen.isEmpty()) {
             for (StartSeen track : startSeen) {
+                Entity entity = track.e;
                 for (ServerPlayerConnection connection : track.q) {
-                    track.e.startSeenByPlayer(connection.getPlayer());
+                    entity.startSeenByPlayer(connection.getPlayer());
                 }
             }
         }
@@ -215,8 +216,9 @@ public final class TrackerCtx {
         }
         flush(world, this.packets);
         for (StopSeen untrack : stopSeen) {
+            Entity entity = untrack.e;
             for (ServerPlayerConnection connection : untrack.q) {
-                untrack.e.stopSeenByPlayer(connection.getPlayer());
+                entity.stopSeenByPlayer(connection.getPlayer());
             }
         }
     }
