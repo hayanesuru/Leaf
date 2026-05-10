@@ -173,7 +173,7 @@ index 0c2979e431b23c27b91b4661162f512e68191cd3..2316934906cc9dfaf7b5518beaa72a58
      }
      // CraftBukkit end
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index 21340bd7fd7a90dfef705c3819a391763a835e3e..21cbdbb67686cb67be66ea5f0e695b47c92823a9 100644
+index 21340bd7fd7a90dfef705c3819a391763a835e3e..ace8962353cb54fce23f696157524d615c89a762 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
 @@ -1076,6 +1076,13 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
@@ -384,7 +384,7 @@ index 21340bd7fd7a90dfef705c3819a391763a835e3e..21cbdbb67686cb67be66ea5f0e695b47
                  }
              }
          }
-@@ -1440,10 +1508,156 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
+@@ -1440,10 +1508,152 @@ public class ChunkMap extends SimpleRegionStorage implements ChunkHolder.PlayerP
              // Paper end - optimise entity tracker
          }
  
@@ -407,10 +407,6 @@ index 21340bd7fd7a90dfef705c3819a391763a835e3e..21cbdbb67686cb67be66ea5f0e695b47
 +            final boolean chunkStateChanged = this.lastChunkUpdate != currChunkUpdate || this.lastTrackedChunk != chunk;
 +            this.lastChunkUpdate = currChunkUpdate;
 +            this.lastTrackedChunk = chunk;
-+
-+            if (!(chunkStateChanged || ((entity.tickCount + entity.getId()) & 15) == 15)) {
-+                return this.seenBy().length != 0;
-+            }
 +
 +            boolean updated = false;
 +            final double ex = this.entity.getX();
