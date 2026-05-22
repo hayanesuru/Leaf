@@ -54,10 +54,10 @@ index 6f01763c178324dd1741b996cd21cb9c23795b71..a724462c46a5ab00f68803e06793dbdc
          }
      }
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index ac594cc5ee90ff8c3f38fbe06f88baad82774f9e..69efa071d4e5adb75abb35e96233c9d98a60346c 100644
+index 6cd577d631c7c9d094e727e0dc5579db8f62e8ea..3fb0c67855de020b219790f542d25975803d7720 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -2823,6 +2823,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -2826,6 +2826,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
          for (TickingBlockEntity tickingBlockEntity : this.blockEntityTickers) {
              BlockPos pos = tickingBlockEntity.getPos();
@@ -281,7 +281,7 @@ index 14124df21792508be7c237a0d682f1e1be26e98c..9d7d1c8173afc832e3658609e838575c
      }
  
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 007465359f17db22dfea93a1f2148250d4b06419..436dcf14ddd87615c368ad4b18c9f5f0f556254f 100644
+index f557c7ded5ba929baf629674a399de959a030a4a..6bcb94208a57fedb5e53647577a20ec0f694de83 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -2199,4 +2199,25 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -2216,10 +2216,10 @@ index b6f319824fb353c0b783fc4b2e732792653b0d79..b1d67fab7258ed24b5d30d9268900a1a
      }
  
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 96d4b20e2a264921d690cb193687df6e94d1ce1b..7e234ce9282502f114ed14e53d85d4eceadceb6b 100644
+index d7a25e1a724d71c5ee2d5d358301d6a68a6c8af2..43b5506797a52fb954a60301d41d72591427abfe 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -993,12 +993,14 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -994,12 +994,14 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
                      (pos, ticker1) -> {
                          TickingBlockEntity tickingBlockEntity = this.createTicker(blockEntity, ticker);
                          if (ticker1 != null) {
@@ -2234,7 +2234,7 @@ index 96d4b20e2a264921d690cb193687df6e94d1ce1b..7e234ce9282502f114ed14e53d85d4ec
                              this.level.addBlockEntityTicker(rebindableTickingBlockEntityWrapper);
                              return rebindableTickingBlockEntityWrapper;
                          } else {
-@@ -1092,8 +1094,8 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -1093,8 +1095,8 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
          void run(LevelChunk chunk);
      }
  
@@ -2245,7 +2245,7 @@ index 96d4b20e2a264921d690cb193687df6e94d1ce1b..7e234ce9282502f114ed14e53d85d4ec
          private BlockPos cachedPos; // Leaf - Cache tile entity position
          private @Nullable BlockEntity blockEntityReference = null; // Leaf - Improve BlockEntity ticking isRemoved check
  
-@@ -1108,7 +1110,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
+@@ -1109,7 +1111,7 @@ public class LevelChunk extends ChunkAccess implements DebugValueSource, ca.spot
  
          }
  
