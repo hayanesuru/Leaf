@@ -49,10 +49,10 @@ index 09fe3dc6d661b7f21d899dcb04e249d39cd4b6ba..0d51d2ac814d000724e056be6f480766
          if (!PlatformHooks.get().allowAsyncTicketUpdates() && isTickThread) {
              TickThread.ensureTickThread("Cannot asynchronously process ticket updates");
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index ff46777225fc102e25d4e6ff3a9a3ab748173ca2..45b17a4fbb7f4941f23f5bf4983f9eccf425b73f 100644
+index 269f4f95ca5259cce7bd4652f87ddde92bd9a5da..b0be24fbba95f2590b1793f9e96ab19d832112de 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
-@@ -134,7 +134,7 @@ public final class ActivationRange {
+@@ -133,7 +133,7 @@ public final class ActivationRange {
       *
       * @param world
       */
@@ -1103,7 +1103,7 @@ index 19bdb38a69dcdb3d30f08a85b3e9c3d6d723191f..3a0c8dca827f567a00e611461aeb7469
          this.containerId = containerId;
      }
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index ee113e10ae244f21744c6b3a64d157fe85ec9f74..bba028a852aa1552269a1942994cc8ad1cb3e695 100644
+index 7f27bccfc559a4d5706ab1cc464e3cec4e754267..1e57a16c754245d51499e7630f417a51f41e5006 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
 @@ -404,8 +404,8 @@ public final class ItemStack implements DataComponentHolder {

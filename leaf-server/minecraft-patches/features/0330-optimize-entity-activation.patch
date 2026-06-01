@@ -79,20 +79,10 @@ index c1d24cff2af534edfb9fcc45f3cf2b31eb04c6de..fcdfbce42f65da08286c0b3231ecb4b4
          final int minChunkX = (Mth.floor(box.minX) - 2) >> 4;
          final int minChunkZ = (Mth.floor(box.minZ) - 2) >> 4;
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..42e2bbc00fc830b7c5a39a5b69b4977ef34e0db8 100644
+index b0be24fbba95f2590b1793f9e96ab19d832112de..f4f9e4ab0151b643c1e81b917442b98e8564d8ba 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
-@@ -86,14 +86,15 @@ public final class ActivationRange {
-     private static int getWakeUpDurationWithVariance(Entity entity, int wakeUpDuration) {
-         double deviation = entity.level().galeConfig().gameplayMechanics.entityWakeUpDurationRatioStandardDeviation;
- 
--        if (deviation <= 0) {
-+        if (deviation <= 0.0) { // Leaf - optimize entity activation
-             return wakeUpDuration;
-         }
- 
--        return (int) Math.min(Integer.MAX_VALUE, Math.max(1, Math.round(wakeUpDuration * wakeUpDurationRandom.nextGaussian(1, deviation))));
-+        return (int) Math.min(Integer.MAX_VALUE, Math.max(1, Math.round(wakeUpDuration * (1.0 + deviation * entity.random.nextGaussian())))); // Leaf - optimize entity activation
+@@ -93,6 +93,7 @@ public final class ActivationRange {
      }
      // Gale end - variable entity wake-up duration
  
@@ -100,7 +90,7 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..42e2bbc00fc830b7c5a39a5b69b4977e
      static AABB maxBB = new AABB(0, 0, 0, 0, 0, 0);
  
      /**
-@@ -155,13 +156,25 @@ public final class ActivationRange {
+@@ -154,13 +155,25 @@ public final class ActivationRange {
          maxRange = Math.max(maxRange, villagerActivationRange);
          maxRange = Math.min((world.spigotConfig.simulationDistance << 4) - 8, maxRange);
  
@@ -115,21 +105,21 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..42e2bbc00fc830b7c5a39a5b69b4977e
 +        final boolean ignoreSpectatorActivation = world.spigotConfig.ignoreSpectatorActivation;
 +        final long currentTick = MinecraftServer.currentTick;
 +        it.unimi.dsi.fastutil.ints.IntOpenHashSet reset = new it.unimi.dsi.fastutil.ints.IntOpenHashSet();
-+        // Leaf end - optimize entity activation
          for (final Player player : world.players()) {
 -            player.activatedTick = MinecraftServer.currentTick;
 -            if (world.spigotConfig.ignoreSpectatorActivation && player.isSpectator()) {
-+            player.activatedTick = currentTick; // Leaf - optimize entity activation
-+            if (ignoreSpectatorActivation && player.isSpectator()) { // Leaf - optimize entity activation
++            player.activatedTick = currentTick;
++            if (ignoreSpectatorActivation && player.isSpectator()) {
                  continue;
              }
  
 -            if (!player.level().purpurConfig.idleTimeoutTickNearbyEntities && player.isAfk()) continue; // Purpur - AFK API
-+            if (!idleTimeoutTickNearbyEntities && player.isAfk()) continue; // Purpur - AFK API // Leaf - optimize entity activation
++            if (!idleTimeoutTickNearbyEntities && player.isAfk()) continue; // Purpur - AFK API
++        // Leaf end - optimize entity activation
  
              final int worldHeight = world.getHeight();
              ActivationRange.maxBB = player.getBoundingBox().inflate(maxRange, worldHeight, maxRange);
-@@ -174,7 +187,7 @@ public final class ActivationRange {
+@@ -173,7 +186,7 @@ public final class ActivationRange {
              ActivationType.VILLAGER.boundingBox = player.getBoundingBox().inflate(villagerActivationRange, worldHeight, villagerActivationRange);
  
              final List<Entity> entities = world.getEntities((Entity) null, ActivationRange.maxBB, e -> true);
@@ -138,7 +128,7 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..42e2bbc00fc830b7c5a39a5b69b4977e
              for (final Entity entity : entities) {
                  if (!tickMarkers && entity instanceof Marker) {
                      continue;
-@@ -182,21 +195,21 @@ public final class ActivationRange {
+@@ -181,21 +194,21 @@ public final class ActivationRange {
  
                  ActivationRange.activateEntity(entity);
  
@@ -155,9 +145,9 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..42e2bbc00fc830b7c5a39a5b69b4977e
 -                            Math.max(1, Math.min(squaredDistance >> org.dreeam.leaf.config.modules.opt.DynamicActivationofBrain.activationDistanceMod, entity.activatedPriority)) :
 -                            1;
 +                final int priority;
-+                if (dab && entity.getType().dabEnabled &&
-+                        (!dontEnableIfInWater || entity.getType().is(net.minecraft.tags.EntityTypeTags.CAN_BREATHE_UNDER_WATER) || !entity.isInWater())) { // Leaf - Option for dontEnableIfInWater
-+                    int distSq = (int) player.distanceToSqr(entity);
++                if (dab && entity.getType().dabEnabled && !(dontEnableIfInWater && entity.isInWater() && !(entity instanceof net.minecraft.world.entity.animal.fish.WaterAnimal || (entity instanceof final LivingEntity livingEntity && livingEntity.canBreatheUnderwater())))) { // Leaf - Option for dontEnableIfInWater
++                    double distSq = player.distanceToSqr(entity.position);
++                    //noinspection MathClampMigration
 +                    priority = distSq > startSq ?
 +                        Math.min(maxPriority, Math.max((int) (distSq * scale), 1)) :
 +                        1;
@@ -171,7 +161,7 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..42e2bbc00fc830b7c5a39a5b69b4977e
              }
          }
      }
-@@ -206,6 +219,7 @@ public final class ActivationRange {
+@@ -205,6 +218,7 @@ public final class ActivationRange {
       *
       * @param entity
       */
@@ -180,7 +170,7 @@ index 45b17a4fbb7f4941f23f5bf4983f9eccf425b73f..42e2bbc00fc830b7c5a39a5b69b4977e
          if (MinecraftServer.currentTick > entity.activatedTick) {
              if (entity.defaultActivationState) { // Pufferfish - diff on change
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index de82681bc4c647479e4c32041a10f5c3af92c86d..f6b9501a5ecccad12f25c19f4769247fdc8b6acd 100644
+index 3fb0c67855de020b219790f542d25975803d7720..c7988daec4d023c0f006413c5c939cc82abd5090 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1034,13 +1034,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -199,7 +189,7 @@ index de82681bc4c647479e4c32041a10f5c3af92c86d..f6b9501a5ecccad12f25c19f4769247f
                          if (!entity.isRemoved()) {
                              if (!tickRateManager.isEntityFrozen(entity)) {
                                  profilerFiller.push("checkDespawn");
-@@ -1220,6 +1220,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1223,6 +1223,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
      public final org.dreeam.leaf.world.RandomTickSystem randomTickSystem = new org.dreeam.leaf.world.RandomTickSystem(); // Leaf - optimize random tick
      public final org.dreeam.leaf.world.EntityCollisionCache entityCollisionCache = new org.dreeam.leaf.world.EntityCollisionCache(); // Leaf - cache collision list
      public final org.dreeam.leaf.util.FastBitRadixSort fastBitRadixSort = new org.dreeam.leaf.util.FastBitRadixSort(); // Leaf - fast bit radix sort
@@ -208,7 +198,7 @@ index de82681bc4c647479e4c32041a10f5c3af92c86d..f6b9501a5ecccad12f25c19f4769247f
          final net.minecraft.world.level.levelgen.BitRandomSource simpleRandom = this.simpleRandom; // Paper - optimise random ticking // Leaf - Faster random generator - upcasting
          ChunkPos pos = chunk.getPos();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index f3399891bc467c792c942ec20c2c920c6bfc205f..4d9bc1034fe5638d5efbe92e9b566d4cf5d9a926 100644
+index 621006ced1b053c44ecc2187e03635bc188c58c3..a01d7d2cc8fe294fdd4a23562038ce205318326f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -379,7 +379,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name

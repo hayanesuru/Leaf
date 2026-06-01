@@ -9,10 +9,10 @@ Gale - https://galemc.org
 TODO: Replace random of wakeUpDurationRandom if needed.
 
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index c84def1bb0632f64cfe76f7cd18273e0b4789187..4dec984b7cb96dfe825631d3166f1f0f24c5cccb 100644
+index c84def1bb0632f64cfe76f7cd18273e0b4789187..9d05b2b2172d3f7375c005bb32b8ff24d67c89cc 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
-@@ -59,27 +59,41 @@ public final class ActivationRange {
+@@ -59,27 +59,40 @@ public final class ActivationRange {
          if (entity.activationType == ActivationType.VILLAGER) {
              if (inactiveFor > config.wakeUpInactiveVillagersEvery && world.wakeupInactiveRemainingVillagers > 0) {
                  world.wakeupInactiveRemainingVillagers--;
@@ -42,16 +42,15 @@ index c84def1bb0632f64cfe76f7cd18273e0b4789187..4dec984b7cb96dfe825631d3166f1f0f
      }
  
 +    // Gale start - variable entity wake-up duration
-+    private static final java.util.Random wakeUpDurationRandom = new java.util.Random();
-+
 +    private static int getWakeUpDurationWithVariance(Entity entity, int wakeUpDuration) {
 +        double deviation = entity.level().galeConfig().gameplayMechanics.entityWakeUpDurationRatioStandardDeviation;
 +
-+        if (deviation <= 0) {
++        if (deviation <= 0.0) {
 +            return wakeUpDuration;
 +        }
 +
-+        return (int) Math.min(Integer.MAX_VALUE, Math.max(1, Math.round(wakeUpDuration * wakeUpDurationRandom.nextGaussian(1, deviation))));
++        //noinspection MathClampMigration
++        return (int) Math.min(Integer.MAX_VALUE, Math.max(1, Math.round(wakeUpDuration * (1.0 + deviation * entity.random.nextGaussian())))); // Leaf - variable entity wake-up duration - use entity random
 +    }
 +    // Gale end - variable entity wake-up duration
 +

@@ -128,23 +128,23 @@ public final class EntityActivation {
             if (currentTick <= entity.activatedTick) {
                 continue;
             }
-            final Vec3 p = entity.position;
+            final Vec3 pos = entity.position;
             if (entity.defaultActivationState) {
                 entity.activatedTick = currentTick;
             } else {
                 final double max = ranges[entity.activationType.ordinal()];
-                final double near = kdTree2.nearestSqr(p.x, p.z, max);
+                final double near = kdTree2.nearestSqr(pos.x, pos.z, max);
                 if (near != max) {
                     entity.activatedTick = currentTick;
                 }
             }
             final int priority;
-            if (dab
-                && entity.getType().dabEnabled
-                && (!dontEnableIfInWater || !entity.isInWater() || (entity instanceof WaterAnimal || (entity instanceof final LivingEntity livingEntity && livingEntity.canBreatheUnderwater())))) {
-                final double distSq = kdTree3.nearestSqr(p.x, p.y, p.z, 16384.0);
+            if (dab && entity.getType().dabEnabled && !(dontEnableIfInWater && entity.isInWater() && !(entity instanceof WaterAnimal || (entity instanceof final LivingEntity livingEntity && livingEntity.canBreatheUnderwater())))) {
+                final double distSq = kdTree3.nearestSqr(pos.x, pos.y, pos.z, 16384.0);
                 //noinspection MathClampMigration
-                priority = distSq > startSq ? Math.min(maxPriority, Math.max((int) (distSq * scale), 1)) : 1;
+                priority = distSq > startSq ?
+                    Math.min(maxPriority, Math.max((int) (distSq * scale), 1)) :
+                    1;
             } else {
                 priority = 1;
             }

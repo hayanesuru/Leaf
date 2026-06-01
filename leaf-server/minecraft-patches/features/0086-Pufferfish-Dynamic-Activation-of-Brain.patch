@@ -30,10 +30,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 diff --git a/io/papermc/paper/entity/activation/ActivationRange.java b/io/papermc/paper/entity/activation/ActivationRange.java
-index 4dec984b7cb96dfe825631d3166f1f0f24c5cccb..ff46777225fc102e25d4e6ff3a9a3ab748173ca2 100644
+index 9d05b2b2172d3f7375c005bb32b8ff24d67c89cc..269f4f95ca5259cce7bd4652f87ddde92bd9a5da 100644
 --- a/io/papermc/paper/entity/activation/ActivationRange.java
 +++ b/io/papermc/paper/entity/activation/ActivationRange.java
-@@ -181,6 +181,22 @@ public final class ActivationRange {
+@@ -180,6 +180,22 @@ public final class ActivationRange {
                  }
  
                  ActivationRange.activateEntity(entity);
@@ -56,7 +56,7 @@ index 4dec984b7cb96dfe825631d3166f1f0f24c5cccb..ff46777225fc102e25d4e6ff3a9a3ab7
              }
          }
      }
-@@ -192,11 +208,11 @@ public final class ActivationRange {
+@@ -191,11 +207,11 @@ public final class ActivationRange {
       */
      private static void activateEntity(final Entity entity) {
          if (MinecraftServer.currentTick > entity.activatedTick) {
